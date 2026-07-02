@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI for Everyone — Learn Artificial Intelligence</title>
+  <title>The AI Classroom: Learn Artificial Intelligence</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -68,6 +68,18 @@
       display: flex; align-items: center; gap: .5rem;
     }
     .nav-logo span { color: var(--accent); }
+    .logo-mark { width: 30px; height: 30px; flex-shrink: 0; }
+    .logo-node { fill: var(--accent); transform-origin: center; animation: logoPulse 3s ease-in-out infinite; }
+    .logo-node-1 { animation-delay: 0s; }
+    .logo-node-2 { animation-delay: .5s; fill: var(--brand-mid); }
+    .logo-node-3 { animation-delay: 1s; fill: var(--brand-mid); }
+    .logo-node-4 { animation-delay: 1.5s; }
+    .logo-edge { stroke: rgba(255,255,255,.35); stroke-width: 1.4; }
+    .logo-edge-center { stroke: rgba(255,255,255,.2); }
+    @keyframes logoPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: .7; }
+    }
     .nav-links { display: flex; gap: .25rem; }
     .nav-links a {
       color: rgba(255,255,255,.75);
@@ -78,22 +90,255 @@
       transition: background .2s, color .2s;
     }
     .nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .nav-links a.active { background: var(--accent); color: #fff; }
     .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
     .hamburger span { width: 24px; height: 2px; background: white; border-radius: 2px; }
+
+    /* ── PANELS (click-to-show sections) ── */
+    .panel { display: none; }
+    .panel.visible { display: block; }
+    #hero.panel.visible { display: flex; }
+
+    /* ── CARD / FORM (shared by new sections) ── */
+    .card {
+      background: var(--white); border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      transition: box-shadow .25s, border-color .25s;
+    }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: .4rem; color: var(--text); }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: .75rem 1rem; border: 1.5px solid var(--gray-200);
+      border-radius: 10px; font-size: 1rem; font-family: 'Inter', sans-serif;
+      background: var(--white); color: var(--text);
+      transition: border-color .2s, box-shadow .2s; outline: none;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--brand); box-shadow: 0 0 0 3px rgba(29,78,216,.1);
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .btn-secondary { background: var(--brand); color: #fff; }
+    .btn-secondary:hover { background: var(--brand-dark); }
+
+    /* ── VISUAL LEARNING LAB ── */
+    .lab-hero {
+      background: linear-gradient(135deg, var(--brand-dark), #162C6B);
+      text-align: center; padding: 4rem 2rem 2.5rem; margin-bottom: 2.5rem;
+    }
+    .lab-picker {
+      display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem;
+      background: var(--gray-50); border-radius: var(--radius); padding: 1.5rem;
+    }
+    .lab-picker-group { flex: 1; min-width: 200px; }
+    .lab-picker-label { font-weight: 700; font-size: .85rem; color: var(--muted); margin-bottom: .65rem; text-transform: uppercase; letter-spacing: .08em; }
+    .lab-picker-options { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .lab-pick {
+      background: var(--white); border: 2px solid var(--gray-200);
+      border-radius: 100px; padding: .5rem 1.1rem; font-size: .88rem; font-weight: 700;
+      cursor: pointer; color: var(--text); transition: all .2s; font-family: 'Inter', sans-serif;
+    }
+    .lab-pick:hover { border-color: var(--brand); color: var(--brand); }
+    .lab-pick.active { background: var(--brand); border-color: var(--brand); color: white; }
+
+    /* Tutor */
+    .tutor-wrap { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+    .tutor-avatar {
+      width: 64px; height: 64px; border-radius: 50%; background: var(--brand-dark);
+      display: flex; align-items: center; justify-content: center; font-size: 2rem;
+      flex-shrink: 0; border: 3px solid var(--accent); animation: tutorBob 3s ease-in-out infinite;
+    }
+    @keyframes tutorBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .tutor-bubble {
+      background: var(--brand-light); border-radius: 16px; border-top-left-radius: 4px;
+      padding: 1rem 1.25rem; font-size: .95rem; color: var(--text); line-height: 1.6;
+      border: 1.5px solid var(--brand); position: relative; flex: 1;
+      animation: fadeIn .4s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+    /* Question card */
+    .lab-question-card {
+      background: var(--white); border: 1.5px solid var(--gray-100);
+      border-radius: var(--radius); padding: 2rem; margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    }
+    .lab-question-text {
+      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.5rem;
+      color: var(--text); margin-bottom: 1.5rem; text-align: center;
+    }
+
+    /* Blocks area */
+    .lab-blocks-area {
+      display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center;
+      margin-bottom: 1.5rem; min-height: 80px; padding: 1rem;
+      background: var(--gray-50); border-radius: 12px;
+    }
+    .lab-block-group { display: flex; flex-direction: column; align-items: center; gap: .4rem; }
+    .lab-block-row { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center; }
+    .lab-block {
+      width: 42px; height: 42px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 800; cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 3px 8px rgba(0,0,0,.15);
+      animation: blockPop .3s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .lab-block:hover { transform: translateY(-3px) scale(1.1); box-shadow: 0 6px 16px rgba(0,0,0,.2); }
+    @keyframes blockPop { from{opacity:0;transform:scale(0)} to{opacity:1;transform:scale(1)} }
+    .lab-block-a { background: linear-gradient(135deg, #60A5FA, #3B82F6); color: white; }
+    .lab-block-b { background: linear-gradient(135deg, #F97316, #EA580C); color: white; }
+    .lab-block-c { background: linear-gradient(135deg, #34D399, #059669); color: white; }
+    .lab-block-label { font-size: .78rem; font-weight: 700; color: var(--muted); }
+
+    /* Number line */
+    .lab-number-line-wrap { margin-bottom: 1.5rem; overflow-x: auto; padding: .5rem 0; }
+    .lab-number-line { display: flex; align-items: center; gap: 0; min-width: max-content; margin: 0 auto; width: fit-content; }
+    .lab-nl-step {
+      display: flex; flex-direction: column; align-items: center; gap: .2rem; cursor: default;
+    }
+    .lab-nl-tick { width: 40px; height: 20px; border-bottom: 3px solid var(--brand); position: relative; }
+    .lab-nl-tick.highlighted { border-bottom-color: var(--accent); }
+    .lab-nl-tick.highlighted::after {
+      content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+      width: 12px; height: 12px; background: var(--accent); border-radius: 50%;
+    }
+    .lab-nl-num { font-size: .78rem; font-weight: 700; color: var(--muted); }
+    .lab-nl-num.highlighted { color: var(--accent); }
+
+    /* Answer row */
+    .lab-answer-row { display: flex; align-items: center; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .lab-equation { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.6rem; color: var(--text); }
+    .lab-answer-input {
+      width: 90px; padding: .7rem; border: 2.5px solid var(--gray-200);
+      border-radius: 12px; font-size: 1.4rem; font-weight: 800; text-align: center;
+      font-family: 'Nunito', sans-serif; outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    .lab-answer-input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(29,78,216,.1); }
+    .lab-answer-input.correct { border-color: var(--green); background: var(--green-light); }
+    .lab-answer-input.wrong { border-color: var(--accent); background: var(--accent-light); animation: shake .4s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    .lab-feedback { text-align: center; font-weight: 700; font-size: 1rem; min-height: 1.5em; margin-top: 1rem; }
+
+    /* Controls */
+    .lab-controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .lab-score-wrap { display: flex; align-items: center; gap: .75rem; margin-left: auto; }
+    .lab-score-label { font-size: .8rem; color: var(--muted); font-weight: 600; }
+    .lab-score {
+      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.5rem;
+      color: var(--brand); min-width: 2ch; text-align: center;
+    }
+    .lab-streak { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--accent); }
+
+    /* Progress */
+    .lab-progress-wrap { margin-bottom: 2rem; }
+    .lab-progress-label { font-size: .8rem; font-weight: 700; color: var(--muted); margin-bottom: .4rem; }
+    .lab-progress-bg { height: 10px; background: var(--gray-100); border-radius: 100px; margin-bottom: .4rem; }
+    .lab-progress-fill { height: 100%; background: linear-gradient(90deg, var(--brand), var(--accent)); border-radius: 100px; transition: width .5s ease; }
+    .lab-progress-text { font-size: .8rem; color: var(--muted); }
+
+    /* Celebration */
+    .lab-celebration {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none; opacity: 0; transition: opacity .3s;
+    }
+    .lab-celebration.show { opacity: 1; }
+    .lab-celebration-inner {
+      background: white; border-radius: 24px;
+      padding: 2.5rem 3rem; text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,.25);
+      transform: scale(.8); transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .lab-celebration.show .lab-celebration-inner { transform: scale(1); }
+    .lab-celebration-emoji { font-size: 4rem; margin-bottom: .5rem; }
+    .lab-celebration-text { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.8rem; color: var(--brand); }
+
+    @media (max-width: 600px) {
+      .lab-controls { flex-direction: column; align-items: flex-start; }
+      .lab-score-wrap { margin-left: 0; }
+    }
+
+    /* ── AI TOOL FINDER ── */
+    .finder-search-wrap { margin-bottom: 2.5rem; }
+    .finder-input-row { display: flex; gap: .75rem; margin-bottom: 1rem; }
+    .finder-input {
+      flex: 1; padding: 1rem 1.25rem; border: 2px solid var(--gray-200);
+      border-radius: 100px; font-size: 1rem; font-family: 'Inter', sans-serif;
+      color: var(--text); outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    .finder-input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(29,78,216,.1); }
+    .finder-input-row .btn { border-radius: 100px; white-space: nowrap; }
+    .finder-chips { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+    .finder-chip-label { font-size: .82rem; color: var(--muted); font-weight: 600; margin-right: .25rem; }
+    .finder-chip {
+      background: var(--gray-50); border: 1.5px solid var(--gray-200);
+      border-radius: 100px; padding: .4rem 1rem; font-size: .82rem; font-weight: 600;
+      color: var(--brand); cursor: pointer; transition: background .2s, border-color .2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .finder-chip:hover { background: var(--brand-light); border-color: var(--brand); }
+
+    .finder-results { display: flex; flex-direction: column; gap: 1rem; }
+    .finder-empty {
+      text-align: center; padding: 3rem 1.5rem; color: var(--muted);
+      background: var(--gray-50); border-radius: var(--radius);
+    }
+    .finder-empty .fe-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+    .finder-count-note { color: var(--muted); font-size: .85rem; margin-bottom: .25rem; }
+    .finder-result-card {
+      background: var(--white); border: 1.5px solid var(--gray-100);
+      border-radius: var(--radius); padding: 1.5rem;
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      transition: box-shadow .25s, border-color .25s;
+    }
+    .finder-result-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,.08); border-color: var(--brand-light); }
+    .finder-result-card.top-match { border-color: var(--accent); border-width: 2px; }
+    .fr-icon { font-size: 2.25rem; flex-shrink: 0; }
+    .fr-info { flex: 1; }
+    .fr-badge {
+      display: inline-block; background: var(--accent); color: #fff;
+      font-size: .7rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+      padding: .2rem .6rem; border-radius: 100px; margin-bottom: .4rem;
+    }
+    .fr-name { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.1rem; margin-bottom: .25rem; }
+    .fr-desc { color: var(--muted); font-size: .9rem; margin-bottom: .6rem; }
+    .fr-tags { display: flex; gap: .35rem; flex-wrap: wrap; }
+    .fr-tag {
+      background: var(--brand-light); color: var(--brand);
+      font-size: .72rem; font-weight: 700; padding: .15rem .6rem; border-radius: 100px;
+    }
+    .fr-link {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: var(--brand); color: #fff; text-decoration: none;
+      padding: .45rem 1rem; border-radius: 100px; font-size: .82rem; font-weight: 700;
+      transition: background .2s; white-space: nowrap; flex-shrink: 0; align-self: center;
+    }
+    .fr-link:hover { background: var(--brand-dark); }
+
+    @media (max-width: 600px) {
+      .finder-input-row { flex-direction: column; }
+      .finder-result-card { flex-direction: column; }
+      .fr-link { align-self: flex-start; }
+    }
 
     /* ── HERO ── */
     #hero {
       background: linear-gradient(160deg, var(--brand-dark) 0%, #162C6B 60%, #0F1E4A 100%);
       min-height: 100vh;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center;
-      padding: 4rem 2rem 3rem;
+      padding: 5rem 2rem 3rem;
       position: relative; overflow: hidden;
     }
     #neural-canvas {
-      position: absolute; inset: 0; opacity: .35;
+      position: absolute; inset: 0; opacity: .25;
     }
-    .hero-content { position: relative; z-index: 2; max-width: 760px; }
+    .hero-main {
+      position: relative; z-index: 2;
+      display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem;
+      align-items: center; max-width: 1100px; width: 100%;
+      margin-bottom: 2.5rem;
+    }
+    .hero-content { text-align: left; }
     .hero-badge {
       display: inline-block;
       background: rgba(249,115,22,.15);
@@ -105,17 +350,35 @@
     }
     .hero-title {
       font-family: 'Nunito', sans-serif;
-      font-weight: 900; font-size: clamp(2.4rem, 6vw, 4.2rem);
-      color: var(--white); line-height: 1.1;
+      font-weight: 900; font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+      color: var(--white); line-height: 1.15;
       margin-bottom: 1.25rem;
     }
     .hero-title em { color: var(--accent); font-style: normal; }
     .hero-sub {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-      color: rgba(255,255,255,.7);
-      max-width: 560px; margin: 0 auto 2.5rem;
+      font-size: clamp(1rem, 1.6vw, 1.1rem);
+      color: rgba(255,255,255,.75);
+      max-width: 520px; margin: 0 0 2rem;
+      line-height: 1.7;
     }
-    .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero-visual { position: relative; display: flex; align-items: center; justify-content: center; }
+    .hero-photo {
+      width: 100%; max-width: 420px; aspect-ratio: 4/3; object-fit: cover;
+      border-radius: 20px; position: relative; z-index: 2;
+      box-shadow: 0 24px 60px rgba(0,0,0,.4);
+      border: 3px solid rgba(255,255,255,.1);
+      animation: heroPhotoFloat 5s ease-in-out infinite;
+    }
+    .hero-photo-glow {
+      position: absolute; inset: 10% 5%;
+      background: radial-gradient(circle, rgba(249,115,22,.35), transparent 70%);
+      z-index: 1; filter: blur(20px);
+    }
+    @keyframes heroPhotoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
     .btn {
       display: inline-flex; align-items: center; gap: .5rem;
       padding: .8rem 1.8rem; border-radius: 100px;
@@ -127,8 +390,45 @@
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: var(--accent-dark); }
     .btn-outline { background: transparent; border: 2px solid rgba(255,255,255,.4); color: white; }
+
+    /* ── QUOTE CAROUSEL ── */
+    .quote-carousel {
+      position: relative; z-index: 2;
+      max-width: 700px; width: 100%;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 2rem 2.5rem;
+      backdrop-filter: blur(6px);
+    }
+    .quote-track { position: relative; min-height: 90px; }
+    .quote-slide {
+      position: absolute; inset: 0;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity .6s ease, transform .6s ease;
+      pointer-events: none;
+      text-align: center;
+    }
+    .quote-slide.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .quote-text {
+      font-family: 'Nunito', sans-serif; font-weight: 700; font-style: italic;
+      font-size: clamp(.95rem, 2vw, 1.15rem); color: #fff; line-height: 1.6;
+      margin-bottom: .6rem;
+    }
+    .quote-text::before { content: '"'; }
+    .quote-text::after { content: '"'; }
+    .quote-author { color: var(--accent); font-size: .85rem; font-weight: 700; }
+    .quote-author span { color: rgba(255,255,255,.5); font-weight: 500; }
+    .quote-dots { display: flex; justify-content: center; gap: .4rem; margin-top: 1.25rem; }
+    .quote-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,.25); border: none; cursor: pointer;
+      transition: background .25s, transform .25s; padding: 0;
+    }
+    .quote-dot.active { background: var(--accent); transform: scale(1.3); }
+
     .scroll-hint {
-      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      position: relative; z-index: 2; margin-top: 2rem;
       color: rgba(255,255,255,.4); font-size: .8rem; letter-spacing: .05em;
       display: flex; flex-direction: column; align-items: center; gap: .4rem;
     }
@@ -288,6 +588,8 @@
     .ethics-card:nth-child(2) { border-top-color: var(--brand); }
     .ethics-card:nth-child(3) { border-top-color: var(--purple); }
     .ethics-card:nth-child(4) { border-top-color: var(--green); }
+    .ethics-card:nth-child(5) { border-top-color: var(--accent-dark); }
+    .ethics-card:nth-child(6) { border-top-color: var(--brand-mid); }
     .ethics-card .ec-icon { font-size: 2.4rem; margin-bottom: .75rem; }
     .ethics-card h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.15rem; margin-bottom: .4rem; }
     .ethics-card p { color: var(--muted); font-size: .92rem; }
@@ -339,6 +641,13 @@
       .hamburger { display: flex; }
       .timeline::before { left: 20px; }
       .tl-dot { width: 44px; height: 44px; font-size: 1rem; }
+      .hero-main { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+      .hero-content { text-align: center; }
+      .hero-sub { margin-left: auto; margin-right: auto; }
+      .hero-ctas { justify-content: center; }
+      .hero-visual { order: -1; }
+      .hero-photo { max-width: 280px; }
+      .quote-carousel { padding: 1.5rem 1.25rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -350,14 +659,32 @@
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="#hero">🤖 <span>AI</span> for Everyone</a>
+  <a class="nav-logo" href="#" onclick="showPanel('hero');return false;">
+    <svg class="logo-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="20" cy="8" r="3.2" class="logo-node logo-node-1"/>
+      <circle cx="8" cy="22" r="3.2" class="logo-node logo-node-2"/>
+      <circle cx="32" cy="22" r="3.2" class="logo-node logo-node-3"/>
+      <circle cx="20" cy="33" r="3.2" class="logo-node logo-node-4"/>
+      <line x1="20" y1="8" x2="8" y2="22" class="logo-edge"/>
+      <line x1="20" y1="8" x2="32" y2="22" class="logo-edge"/>
+      <line x1="8" y1="22" x2="20" y2="33" class="logo-edge"/>
+      <line x1="32" y1="22" x2="20" y2="33" class="logo-edge"/>
+      <line x1="8" y1="22" x2="32" y2="22" class="logo-edge logo-edge-center"/>
+    </svg>
+    The <span>AI</span> Classroom
+  </a>
   <div class="nav-links" id="navLinks">
-    <a href="#what">What is AI?</a>
-    <a href="#history">History</a>
-    <a href="#types">Types</a>
-    <a href="#study">Study Tools</a>
-    <a href="#ethics">Ethics</a>
-    <a href="#quiz">Quiz</a>
+    <a href="#" data-panel="what" onclick="showPanel('what');return false;">What is AI?</a>
+    <a href="#" data-panel="history" onclick="showPanel('history');return false;">History</a>
+    <a href="#" data-panel="types" onclick="showPanel('types');return false;">Types</a>
+    <a href="#" data-panel="study" onclick="showPanel('study');return false;">Study Tools</a>
+    <a href="#" data-panel="ethics" onclick="showPanel('ethics');return false;">Ethics</a>
+    <a href="#" data-panel="quiz" onclick="showPanel('quiz');return false;">Quiz</a>
+    <a href="#" data-panel="lab" onclick="showPanel('lab');return false;">🧪 Visual Learning Lab</a>
+    <a href="#" data-panel="finder" onclick="showPanel('finder');return false;">Find My AI Tool</a>
+    <a href="#" data-panel="more-study" onclick="showPanel('more-study');return false;">More Study Material</a>
+    <a href="#" data-panel="resources" onclick="showPanel('resources');return false;">Help &amp; Resources</a>
+    <a href="#" data-panel="contact" onclick="showPanel('contact');return false;">Contact Us</a>
   </div>
   <div class="hamburger" id="hamburger" onclick="toggleNav()">
     <span></span><span></span><span></span>
@@ -365,36 +692,118 @@
 </nav>
 
 <!-- HERO -->
-<section id="hero">
+<section id="hero" class="panel">
   <canvas id="neural-canvas"></canvas>
-  <div class="hero-content">
-    <div class="hero-badge">✨ For Students of All Ages</div>
-    <h1 class="hero-title">Understand <em>Artificial Intelligence</em> — and Make It Work for You</h1>
-    <p class="hero-sub">From its fascinating history to the tools you can use today, learn everything you need to know about AI — no experience required.</p>
-    <div class="hero-ctas">
-      <a href="#what" class="btn btn-primary">🚀 Start Learning</a>
-      <a href="#quiz" class="btn btn-outline">🎯 Take the Quiz</a>
+  <div class="hero-main">
+    <div class="hero-content">
+      <div class="hero-badge">✨ For Students of All Ages</div>
+      <h1 class="hero-title">Understand <em>Artificial Intelligence</em> and Make It Work for You</h1>
+      <p class="hero-sub">AI is changing how we learn, write, create, and solve problems. The AI Classroom breaks it all down with friendly, judgment-free lessons, real tools you can use today, and a teacher's patience, so you walk away actually understanding it, not just memorizing buzzwords.</p>
+      <div class="hero-ctas">
+        <a href="#" class="btn btn-primary" onclick="showPanel('what');return false;">🚀 Start Learning</a>
+        <a href="#" class="btn btn-outline" onclick="showPanel('quiz');return false;">🎯 Take the Quiz</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img src="https://images.pexels.com/photos/5905445/pexels-photo-5905445.jpeg" alt="A tutor warmly teaching a student using a laptop" class="hero-photo"/>
+      <div class="hero-photo-glow"></div>
     </div>
   </div>
-  <div class="scroll-hint">Scroll to explore</div>
+
+  <!-- QUOTE STRIP (manual scroll) -->
+  <div class="quote-section-label">Words from the People Who Shaped AI</div>
+  <div class="quote-scroller-wrap">
+    <button class="quote-arrow quote-arrow-left" onclick="scrollQuotes(-1)" aria-label="Previous quote">‹</button>
+    <div class="quote-scroller" id="quoteScroller"></div>
+    <button class="quote-arrow quote-arrow-right" onclick="scrollQuotes(1)" aria-label="Next quote">›</button>
+  </div>
+
+  <div class="scroll-hint">Explore using the menu above</div>
+
+  <!-- WHAT THIS SITE DOES -->
+  <div class="hero-extra">
+    <div class="section-inner">
+      <div class="eyebrow" style="color:var(--accent);">What This Site Does</div>
+      <h2 class="section-title" style="color:#fff;">Everything You Need to Actually Understand AI</h2>
+      <p class="section-desc" style="color:rgba(255,255,255,.7);">The AI Classroom is a free, judgment-free space where students of any age can learn what AI is, how it works, and how to use it well, from history and core concepts all the way to picking the right tool for a real assignment.</p>
+
+      <div class="what-does-grid">
+        <div class="wd-card">
+          <img src="https://images.pexels.com/photos/7943962/pexels-photo-7943962.jpeg" alt="Students learning together in a classroom" class="wd-img"/>
+          <div class="wd-body">
+            <div class="wd-icon">📖</div>
+            <h3>Clear, Guided Lessons</h3>
+            <p>Step-by-step chapters on what AI is, its history, and the main types, written the way a patient teacher would explain it, no jargon dumped on you all at once.</p>
+          </div>
+        </div>
+        <div class="wd-card">
+          <img src="https://images.pexels.com/photos/5905445/pexels-photo-5905445.jpeg" alt="A tutor helping a student with a laptop" class="wd-img"/>
+          <div class="wd-body">
+            <div class="wd-icon">🧭</div>
+            <h3>Real Tool Recommendations</h3>
+            <p>Use our AI Tool Finder to describe what you're working on and instantly get matched with the right AI tool out of well over a hundred real options.</p>
+          </div>
+        </div>
+        <div class="wd-card">
+          <div class="wd-img wd-img-icon">⚖️</div>
+          <div class="wd-body">
+            <div class="wd-icon">🛡️</div>
+            <h3>Responsible Use, Built In</h3>
+            <p>Every lesson pairs AI literacy with AI ethics, so you learn not just how to use these tools, but when, and when not, to lean on them.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUR MISSION -->
+  <div class="hero-extra hero-mission">
+    <div class="section-inner">
+      <div class="eyebrow" style="color:var(--accent);">Why We Exist</div>
+      <h2 class="section-title" style="color:#fff;">Our Mission</h2>
+      <p class="section-desc" style="color:rgba(255,255,255,.7);">We believe every student, regardless of age, background, or access, deserves to understand the technology that's reshaping their world.</p>
+
+      <div class="mission-statement">
+        <p>Our mission is to make Artificial Intelligence understandable, approachable, and genuinely useful for students of every age. We strip away the hype and the jargon, and replace it with clear explanations, real examples, and practical skills students can use today, in their homework, their projects, and their everyday curiosity.</p>
+      </div>
+
+      <div class="types-grid">
+        <div class="type-card tc-blue" style="background:#EFF6FF;">
+          <div class="tc-icon">🎯</div>
+          <h3>Clarity Over Hype</h3>
+          <p>We explain AI the way a good teacher would, with patience, honest analogies, and zero unnecessary jargon.</p>
+        </div>
+        <div class="type-card tc-green" style="background:#ECFDF5;">
+          <div class="tc-icon">🌍</div>
+          <h3>Access For Everyone</h3>
+          <p>This site is free, ad-free, and designed to work for learners of every age, background, and skill level.</p>
+        </div>
+        <div class="type-card tc-gold" style="background:#FFF4EE;">
+          <div class="tc-icon">⚖️</div>
+          <h3>Responsible Use</h3>
+          <p>We teach AI literacy alongside AI ethics, so students learn to use these tools wisely, not blindly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- WHAT IS AI -->
-<section id="what">
+<section id="what" class="panel">
   <div class="section-inner">
     <div class="what-grid">
       <div>
         <div class="eyebrow">Chapter 1</div>
         <h2 class="section-title">What Is Artificial Intelligence?</h2>
         <div class="definition-box">
-          <p><strong>Artificial Intelligence (AI)</strong> is the ability of a computer or machine to do things that normally require human intelligence — like learning, problem-solving, understanding language, and recognising patterns.</p>
+          <p><strong>Artificial Intelligence (AI)</strong> is the ability of a computer or machine to do things that normally require human intelligence, like learning, problem-solving, understanding language, and recognising patterns.</p>
         </div>
         <div class="analogy-cards">
           <div class="analogy-card">
             <span class="analogy-icon">🐶</span>
             <div>
               <strong>Think of it like training a dog</strong>
-              You show a dog what "sit" means over and over. AI learns the same way — from lots of examples — until it gets good at a task.
+              You show a dog what "sit" means over and over. AI learns the same way, from lots of examples, until it gets good at a task.
             </div>
           </div>
           <div class="analogy-card">
@@ -408,7 +817,7 @@
             <span class="analogy-icon">📷</span>
             <div>
               <strong>Like face unlock on your phone</strong>
-              Your phone's camera learned what your face looks like and recognises it every time — that's AI at work.
+              Your phone's camera learned what your face looks like and recognises it every time. That's AI at work.
             </div>
           </div>
         </div>
@@ -422,18 +831,18 @@
 </section>
 
 <!-- HISTORY -->
-<section id="history">
+<section id="history" class="panel">
   <div class="section-inner">
     <div class="eyebrow">Chapter 2</div>
     <h2 class="section-title">A Brief History of AI</h2>
-    <p class="section-desc">AI didn't appear overnight — it's been built by brilliant minds over decades of discovery, setbacks, and breakthroughs.</p>
+    <p class="section-desc">AI didn't appear overnight. It's been built by brilliant minds over decades of discovery, setbacks, and breakthroughs.</p>
     <div class="timeline">
       <div class="tl-item">
         <div class="tl-dot">💡</div>
         <div class="tl-body">
           <div class="tl-year">1950</div>
           <h3>Alan Turing asks "Can Machines Think?"</h3>
-          <p>British mathematician Alan Turing published a landmark paper proposing the "Turing Test" — a way to measure whether a machine could exhibit intelligent behaviour indistinguishable from a human.</p>
+          <p>British mathematician Alan Turing published a landmark paper proposing the "Turing Test," a way to measure whether a machine could exhibit intelligent behaviour indistinguishable from a human.</p>
         </div>
       </div>
       <div class="tl-item">
@@ -448,7 +857,7 @@
         <div class="tl-dot">🥶</div>
         <div class="tl-body">
           <div class="tl-year">1970s–80s</div>
-          <h3>The "AI Winters" — Hype Meets Reality</h3>
+          <h3>The "AI Winters": Hype Meets Reality</h3>
           <p>Progress stalled and funding dried up twice. Computers weren't powerful enough, and AI systems couldn't handle real-world complexity. These periods were called "AI winters."</p>
         </div>
       </div>
@@ -457,7 +866,7 @@
         <div class="tl-body">
           <div class="tl-year">1997</div>
           <h3>Deep Blue Beats the World Chess Champion</h3>
-          <p>IBM's Deep Blue defeated Garry Kasparov, the reigning world chess champion — a milestone proving computers could outperform humans in complex strategic thinking.</p>
+          <p>IBM's Deep Blue defeated Garry Kasparov, the reigning world chess champion, a milestone proving computers could outperform humans in complex strategic thinking.</p>
         </div>
       </div>
       <div class="tl-item">
@@ -473,7 +882,7 @@
         <div class="tl-body">
           <div class="tl-year">2022–Today</div>
           <h3>The Age of Generative AI</h3>
-          <p>ChatGPT, Claude, DALL·E, and other generative AI tools became mainstream, allowing anyone — including students — to write, code, create art, and solve problems with AI assistance.</p>
+          <p>ChatGPT, Claude, DALL·E, and other generative AI tools became mainstream, allowing anyone, including students, to write, code, create art, and solve problems with AI assistance.</p>
         </div>
       </div>
     </div>
@@ -481,16 +890,16 @@
 </section>
 
 <!-- TYPES -->
-<section id="types">
+<section id="types" class="panel">
   <div class="section-inner">
     <div class="eyebrow">Chapter 3</div>
     <h2 class="section-title">Types of AI</h2>
-    <p class="section-desc">AI isn't one thing — it's a whole family of different technologies, each with its own strengths and purposes.</p>
+    <p class="section-desc">AI isn't one thing. It's a whole family of different technologies, each with its own strengths and purposes.</p>
     <div class="types-grid">
       <div class="type-card tc-blue" style="background:#EFF6FF;">
         <div class="tc-icon">🤖</div>
         <h3>Machine Learning</h3>
-        <p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get — like learning to spot spam emails from millions of examples.</p>
+        <p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get, like learning to spot spam emails from millions of examples.</p>
         <span class="tc-tag tc-blue">Learning from data</span>
       </div>
       <div class="type-card tc-coral" style="background:#FFF4EE;">
@@ -514,7 +923,7 @@
       <div class="type-card tc-gold" style="background:#FFF4EE;">
         <div class="tc-icon">🎨</div>
         <h3>Generative AI</h3>
-        <p>AI that creates new content — text, images, music, code, and video. Tools like Claude, ChatGPT, DALL·E, and Midjourney all fall into this category.</p>
+        <p>AI that creates new content, including text, images, music, code, and video. Tools like Claude, ChatGPT, DALL·E, and Midjourney all fall into this category.</p>
         <span class="tc-tag tc-gold">Creating content</span>
       </div>
       <div class="type-card" style="background:#F0F4FF;">
@@ -528,11 +937,11 @@
 </section>
 
 <!-- STUDY TOOLS -->
-<section id="study">
+<section id="study" class="panel">
   <div class="section-inner">
     <div class="eyebrow">Chapter 4</div>
     <h2 class="section-title">How to Use AI in Your Studies & Life</h2>
-    <p class="section-desc">AI is one of the most powerful tools a student has ever had — here's how to use it responsibly and effectively.</p>
+    <p class="section-desc">AI is one of the most powerful tools a student has ever had. Here's how to use it responsibly and effectively.</p>
     <div class="study-grid">
       <div class="study-card">
         <div class="sc-num">01</div>
@@ -542,7 +951,7 @@
       <div class="study-card">
         <div class="sc-num">02</div>
         <h3>Writing & Feedback</h3>
-        <p>Use AI to get feedback on your essays, check grammar, brainstorm ideas, or understand how to improve your arguments — then rewrite in your own words.</p>
+        <p>Use AI to get feedback on your essays, check grammar, brainstorm ideas, or understand how to improve your arguments. Then rewrite in your own words.</p>
       </div>
       <div class="study-card">
         <div class="sc-num">03</div>
@@ -557,7 +966,7 @@
       <div class="study-card">
         <div class="sc-num">05</div>
         <h3>Coding & Technology</h3>
-        <p>AI is an incredible coding tutor — it can explain code line by line, help you debug errors, suggest improvements, and even generate starter code to learn from.</p>
+        <p>AI is an incredible coding tutor. It can explain code line by line, help you debug errors, suggest improvements, and even generate starter code to learn from.</p>
       </div>
       <div class="study-card">
         <div class="sc-num">06</div>
@@ -601,17 +1010,21 @@
           <span class="tp-icon">🦉</span>
           <div><strong>Duolingo</strong><span>AI-powered language learning</span></div>
         </a>
+        <a class="tool-pill" href="https://www.deepl.com" target="_blank">
+          <span class="tp-icon">🌍</span>
+          <div><strong>DeepL</strong><span>Accurate AI translation</span></div>
+        </a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ETHICS -->
-<section id="ethics">
+<section id="ethics" class="panel">
   <div class="section-inner">
     <div class="eyebrow">Chapter 5</div>
     <h2 class="section-title">Using AI Responsibly</h2>
-    <p class="section-desc">AI is a powerful tool — and like all powerful tools, it comes with responsibilities. Here's what every student should know.</p>
+    <p class="section-desc">AI is a powerful tool, and like all powerful tools, it comes with responsibilities. Here's what every student should know.</p>
     <div class="ethics-grid">
       <div class="ethics-card">
         <div class="ec-icon">🎓</div>
@@ -621,7 +1034,7 @@
       <div class="ethics-card">
         <div class="ec-icon">🔍</div>
         <h3>Fact-Check Everything</h3>
-        <p>AI can "hallucinate" — confidently stating false information. Always verify important facts from AI with trusted sources like books, academic papers, or reputable websites.</p>
+        <p>AI can "hallucinate," confidently stating false information. Always verify important facts from AI with trusted sources like books, academic papers, or reputable websites.</p>
       </div>
       <div class="ethics-card">
         <div class="ec-icon">🔒</div>
@@ -631,14 +1044,24 @@
       <div class="ethics-card">
         <div class="ec-icon">⚖️</div>
         <h3>Bias & Fairness</h3>
-        <p>AI learns from human-created data, which can contain biases. AI systems can reflect and even amplify those biases — something researchers and developers are actively working to fix.</p>
+        <p>AI learns from human-created data, which can contain biases. AI systems can reflect and even amplify those biases, something researchers and developers are actively working to fix.</p>
+      </div>
+      <div class="ethics-card">
+        <div class="ec-icon">🤝</div>
+        <h3>Giving Credit</h3>
+        <p>If you use AI to help shape an idea or draft, be transparent about it when your school or workplace asks. Honesty about your process builds trust and avoids accusations of dishonesty later.</p>
+      </div>
+      <div class="ethics-card">
+        <div class="ec-icon">🌱</div>
+        <h3>Environmental Impact</h3>
+        <p>Training and running large AI models uses significant electricity and water for cooling data centers. Being mindful of how often and why you use AI is part of using it responsibly.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- QUIZ -->
-<section id="quiz">
+<section id="quiz" class="panel">
   <div class="section-inner">
     <div class="eyebrow">Test Your Knowledge</div>
     <h2 class="section-title">Quick AI Quiz</h2>
@@ -662,13 +1085,912 @@
   </div>
 </section>
 
+<!-- VISUAL LEARNING LAB -->
+<section id="lab" class="panel">
+  <div class="lab-hero">
+    <div class="eyebrow" style="color:var(--accent);">Interactive Learning</div>
+    <h2 class="section-title" style="color:#fff;">Visual Learning Lab 🧪</h2>
+    <p style="color:rgba(255,255,255,.7);max-width:580px;margin:0 auto;">Learn by doing. Pick a subject, choose your level, and watch concepts come alive with interactive visuals, animations, and a friendly tutor that cheers you on.</p>
+  </div>
+
+  <div class="section-inner">
+    <!-- SUBJECT & LEVEL PICKER -->
+    <div class="lab-picker">
+      <div class="lab-picker-group">
+        <div class="lab-picker-label">📚 Subject</div>
+        <div class="lab-picker-options" id="subjectPicker">
+          <button class="lab-pick active" onclick="setSubject('addition')">➕ Addition</button>
+          <button class="lab-pick" onclick="setSubject('subtraction')">➖ Subtraction</button>
+          <button class="lab-pick" onclick="setSubject('multiplication')">✖️ Multiplication</button>
+          <button class="lab-pick" onclick="setSubject('counting')">🔢 Counting</button>
+        </div>
+      </div>
+      <div class="lab-picker-group">
+        <div class="lab-picker-label">🎯 Difficulty</div>
+        <div class="lab-picker-options" id="diffPicker">
+          <button class="lab-pick active" onclick="setDifficulty('easy')">🌱 Easy</button>
+          <button class="lab-pick" onclick="setDifficulty('medium')">🌿 Medium</button>
+          <button class="lab-pick" onclick="setDifficulty('hard')">🌳 Hard</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUTOR CHARACTER -->
+    <div class="tutor-wrap">
+      <div class="tutor-avatar" id="tutorAvatar">🤖</div>
+      <div class="tutor-bubble" id="tutorBubble">Hi! I'm Axon, your AI tutor. Let's learn together! Press <strong>New Question</strong> to start.</div>
+    </div>
+
+    <!-- QUESTION DISPLAY -->
+    <div class="lab-question-card" id="labQuestionCard" style="display:none;">
+      <div class="lab-question-text" id="labQuestionText"></div>
+      <div class="lab-blocks-area" id="labBlocksArea"></div>
+      <div class="lab-number-line-wrap" id="labNumberLineWrap" style="display:none;">
+        <div class="lab-number-line" id="labNumberLine"></div>
+      </div>
+      <div class="lab-answer-row">
+        <span class="lab-equation" id="labEquation"></span>
+        <input type="number" id="labAnswerInput" class="lab-answer-input" placeholder="?" min="0" max="999"
+          onkeydown="if(event.key==='Enter') checkAnswer()"/>
+        <button class="btn btn-primary" onclick="checkAnswer()">Check ✓</button>
+      </div>
+      <div class="lab-feedback" id="labFeedback"></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="lab-controls">
+      <button class="btn btn-secondary" onclick="generateQuestion()">🎲 New Question</button>
+      <button class="btn" style="background:var(--gray-100);color:var(--text);" onclick="showHint()">💡 Give me a Hint</button>
+      <div class="lab-score-wrap">
+        <span class="lab-score-label">Score</span>
+        <span class="lab-score" id="labScore">0</span>
+        <span class="lab-score-label">Streak</span>
+        <span class="lab-streak" id="labStreak">0 🔥</span>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="lab-progress-wrap">
+      <div class="lab-progress-label">Session Progress</div>
+      <div class="lab-progress-bg"><div class="lab-progress-fill" id="labProgressFill" style="width:0%"></div></div>
+      <div class="lab-progress-text" id="labProgressText">0 answered</div>
+    </div>
+
+    <!-- CELEBRATION OVERLAY -->
+    <div class="lab-celebration" id="labCelebration">
+      <div class="lab-celebration-inner">
+        <div class="lab-celebration-emoji" id="celebEmoji">🎉</div>
+        <div class="lab-celebration-text" id="celebText">Correct!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FIND MY AI TOOL -->
+<section id="finder" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Got a Question or a Problem?</div>
+    <h2 class="section-title">Find My AI Tool</h2>
+    <p class="section-desc">Type what you're trying to do or what you're stuck on, in your own words, and we'll match you with AI tools that can help.</p>
+
+    <div class="finder-search-wrap">
+      <div class="finder-input-row">
+        <input
+          type="text"
+          id="finderInput"
+          class="finder-input"
+          placeholder="e.g. 'I need help writing an essay' or 'best free AI for coding'"
+          oninput="handleFinderInput()"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();runFinderSearch();}"
+        />
+        <button class="btn btn-primary" onclick="runFinderSearch()">Search →</button>
+      </div>
+      <div class="finder-chips">
+        <span class="finder-chip-label">Try:</span>
+        <button class="finder-chip" onclick="quickFinderSearch('help me write essays')">Writing essays</button>
+        <button class="finder-chip" onclick="quickFinderSearch('best free ai for coding')">Free coding help</button>
+        <button class="finder-chip" onclick="quickFinderSearch('ai tutor for studying')">A study tutor</button>
+        <button class="finder-chip" onclick="quickFinderSearch('generate images for a project')">Generating images</button>
+      </div>
+    </div>
+
+    <div id="finderResults" class="finder-results">
+      <div class="finder-empty">
+        <div class="fe-icon">🔎</div>
+        <p>Start typing above to see AI tools matched to your needs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MORE STUDY MATERIAL -->
+<section id="more-study" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Go Deeper</div>
+    <h2 class="section-title">More Study Material</h2>
+    <p class="section-desc">Ready to go beyond the basics? Here are more topics, organized by subject, to keep building your AI knowledge.</p>
+
+    <div class="types-grid">
+      <div class="type-card tc-blue" style="background:#EFF6FF;">
+        <div class="tc-icon">🧮</div>
+        <h3>The Math Behind AI</h3>
+        <p>Explore linear algebra, probability, and calculus concepts that power machine learning, explained without requiring a math degree.</p>
+        <span class="tc-tag tc-blue">Intermediate</span>
+      </div>
+      <div class="type-card tc-purple" style="background:#FAF5FF;">
+        <div class="tc-icon">🔤</div>
+        <h3>How ChatGPT & Claude Work</h3>
+        <p>A deep dive into transformers, tokens, and how large language models actually generate human-like text.</p>
+        <span class="tc-tag tc-purple">Intermediate</span>
+      </div>
+      <div class="type-card tc-coral" style="background:#FFF4EE;">
+        <div class="tc-icon">🏥</div>
+        <h3>AI in Medicine</h3>
+        <p>Learn how AI helps doctors detect cancer earlier, discover new drugs faster, and personalize patient care.</p>
+        <span class="tc-tag tc-coral">Beginner</span>
+      </div>
+      <div class="type-card tc-green" style="background:#ECFDF5;">
+        <div class="tc-icon">🚗</div>
+        <h3>Self-Driving Cars</h3>
+        <p>How computer vision, sensors, and real-time decision-making come together to let cars "see" the road.</p>
+        <span class="tc-tag tc-green">Beginner</span>
+      </div>
+      <div class="type-card tc-gold" style="background:#FFF4EE;">
+        <div class="tc-icon">🎮</div>
+        <h3>AI in Games</h3>
+        <p>From chess engines to non-player characters, discover how game AI thinks and reacts in real time.</p>
+        <span class="tc-tag tc-gold">Beginner</span>
+      </div>
+      <div class="type-card" style="background:#F0F4FF;">
+        <div class="tc-icon">🔬</div>
+        <h3>AI Research Careers</h3>
+        <p>Curious about working in AI? Explore the paths, from research scientist to AI ethicist to ML engineer.</p>
+        <span class="tc-tag" style="background:#DBEAFE;color:#1D4ED8;">All Levels</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ADDITIONAL HELP & RESOURCES -->
+<section id="resources" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">We've Got You</div>
+    <h2 class="section-title">Additional Help &amp; Resources</h2>
+    <p class="section-desc">Stuck on something, or want to explore further on your own? Here's where to look next.</p>
+
+    <div class="definition-box" style="margin-bottom:2rem;">
+      <p><strong>New to AI?</strong> Start with the "What is AI?" and "History" sections in the menu above, then take the quiz to test what you've learned.</p>
+    </div>
+
+    <div class="types-grid">
+      <div class="type-card tc-blue" style="background:#EFF6FF;">
+        <div class="tc-icon">📺</div>
+        <h3>Recommended Videos</h3>
+        <p>3Blue1Brown's neural network series and Crash Course AI — both completely free — are excellent video explainers for visual learners.</p>
+      </div>
+      <div class="type-card tc-green" style="background:#ECFDF5;">
+        <div class="tc-icon">📖</div>
+        <h3>Recommended Reading</h3>
+        <p>"AI Superpowers" by Kai-Fu Lee and "Life 3.0" by Max Tegmark — two of the most accessible books on the topic — are great for curious students.</p>
+      </div>
+      <div class="type-card tc-purple" style="background:#FAF5FF;">
+        <div class="tc-icon">🏫</div>
+        <h3>Free Online Courses</h3>
+        <p>Khan Academy, Coursera's "AI For Everyone," and Google's "AI Essentials" — all free and beginner-friendly — are great places to start.</p>
+      </div>
+      <div class="type-card tc-gold" style="background:#FFF4EE;">
+        <div class="tc-icon">❓</div>
+        <h3>Frequently Asked Questions</h3>
+        <p>Wondering if AI will take over jobs, or whether it's "alive"? Visit our Contact page and ask. We love these questions.</p>
+      </div>
+      <div class="type-card tc-coral" style="background:#FFF4EE;">
+        <div class="tc-icon">🛠️</div>
+        <h3>Troubleshooting AI Tools</h3>
+        <p>Getting strange or unhelpful answers from a chatbot? Try being more specific, breaking your question into smaller parts, or giving an example of the kind of answer you want.</p>
+      </div>
+      <div class="type-card" style="background:#F0F4FF;">
+        <div class="tc-icon">🗂️</div>
+        <h3>Glossary of AI Terms</h3>
+        <p>Confused by a term like "token," "parameter," or "fine-tuning"? Check the definitions woven throughout our lessons, or ask us directly through the Contact page.</p>
+      </div>
+      <div class="type-card tc-green" style="background:#ECFDF5;">
+        <div class="tc-icon">🧑‍🏫</div>
+        <h3>For Teachers &amp; Parents</h3>
+        <p>Looking for guidance on how to introduce AI concepts at home or in the classroom? We've collected age-appropriate talking points and discussion questions, available on request.</p>
+      </div>
+      <div class="type-card tc-purple" style="background:#FAF5FF;">
+        <div class="tc-icon">💼</div>
+        <h3>AI Tools for Job Hunting</h3>
+        <p>Older students can use AI to polish resumes, prepare for interviews, and research companies — a practical, real-world application beyond the classroom.</p>
+      </div>
+      <div class="type-card tc-blue" style="background:#EFF6FF;">
+        <div class="tc-icon">🧑‍💻</div>
+        <h3>Community &amp; Forums</h3>
+        <p>Want to discuss AI with other learners? Reddit's r/artificial and Hugging Face's community forums are friendly, active spaces for questions and discussion.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT US -->
+<section id="contact" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">We'd Love to Hear From You</div>
+    <h2 class="section-title">Contact Us</h2>
+    <p class="section-desc">Questions, feedback, or ideas for new topics? Send us a message below.</p>
+
+    <div class="what-grid">
+      <div>
+        <div class="definition-box">
+          <p><strong>Email:</strong> hello@aiforeveryone.example<br/>
+          <strong>Response time:</strong> Usually within 1–2 business days.</p>
+        </div>
+        <div class="analogy-cards">
+          <div class="analogy-card">
+            <span class="analogy-icon">🎓</span>
+            <div><strong>Students</strong>Ask us anything about AI. No question is too basic.</div>
+          </div>
+          <div class="analogy-card">
+            <span class="analogy-icon">🏫</span>
+            <div><strong>Teachers</strong>Interested in using this site in your classroom? Let us know.</div>
+          </div>
+          <div class="analogy-card">
+            <span class="analogy-icon">👪</span>
+            <div><strong>Parents</strong>Have a question about how your child can learn safely? Reach out.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div id="contact-form-wrap" class="card" style="padding:2rem;">
+          <form id="contactForm" onsubmit="submitContact(event)">
+            <div class="form-group">
+              <label for="c-name">Full Name</label>
+              <input type="text" id="c-name" placeholder="Alex Johnson" required/>
+            </div>
+            <div class="form-group">
+              <label for="c-email">Email</label>
+              <input type="email" id="c-email" placeholder="you@example.com" required/>
+            </div>
+            <div class="form-group">
+              <label for="c-message">Message</label>
+              <textarea id="c-message" placeholder="Tell us what's on your mind..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Send Message →</button>
+          </form>
+        </div>
+        <div id="form-success" class="card" style="display:none;text-align:center;padding:2.5rem 1.5rem;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">📬</div>
+          <h3 style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.5rem;">Message Sent!</h3>
+          <p style="color:var(--muted);">Thanks for reaching out. We'll get back to you within 1 to 2 business days.</p>
+          <button class="btn btn-secondary" style="margin-top:1.25rem;" onclick="resetContactForm()">Send Another Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
-  <p>Made with ❤️ for curious learners everywhere — <strong>AI for Everyone</strong></p>
+  <p>Made with ❤️ for curious learners everywhere. <strong>The AI Classroom</strong></p>
   <p style="margin-top:.5rem;">Remember: AI is a tool. <em>You</em> are the thinker.</p>
 </footer>
 
 <script>
+  /* ── AI TOOL FINDER DATABASE ── */
+  /* "priority" boosts well-known, highly recommended, student-friendly tools to the top of ties */
+  const finderTools = [
+    // ── TOP RECOMMENDED (highest priority) ──
+    { name:'Claude', icon:'🤖', desc:'Excellent at writing, research, analysis, and thoughtful conversation. Known for being safe, nuanced, and accurate.', tags:['writing','research','analysis','coding','studying','homework','essay','summarize','explain','assistant','chatbot'], free:true, priority:10, link:'https://claude.ai' },
+    { name:'ChatGPT', icon:'💬', desc:'The most widely used AI chatbot. A strong all-rounder for writing, coding, brainstorming, and answering questions.', tags:['writing','coding','brainstorm','general','studying','homework','essay','question','idea','assistant','chatbot'], free:true, priority:10, link:'https://chat.openai.com' },
+    { name:'Khanmigo', icon:'📚', desc:'An AI tutor built specifically for students. It guides you with questions rather than just handing you answers, perfect for school.', tags:['tutor','studying','homework','math','science','history','learn','school'], free:true, priority:9, link:'https://www.khanacademy.org/khan-labs' },
+    { name:'Google Gemini', icon:'✨', desc:'Google\'s AI assistant, integrated with Search, Docs, and Gmail. Strong at research and multi-step reasoning.', tags:['writing','research','assistant','chatbot','studying','search','google'], free:true, priority:9, link:'https://gemini.google.com' },
+    { name:'Microsoft Copilot', icon:'🪟', desc:'AI built into Microsoft 365, helps you write in Word, analyse data in Excel, build slides in PowerPoint, and manage emails in Outlook.', tags:['office','data','writing','presentation','excel','word','studying'], free:true, priority:8, link:'https://copilot.microsoft.com' },
+    { name:'NotebookLM', icon:'📓', desc:'Upload your notes, PDFs, and documents and chat with them. Acts as a research assistant grounded in your own materials.', tags:['research','notes','pdf','study','summarize','documents','studying'], free:true, priority:8, link:'https://notebooklm.google.com' },
+    { name:'Grammarly', icon:'📝', desc:'An AI writing assistant that checks grammar, style, tone, and clarity in real time as you write.', tags:['grammar','writing','editing','essay','proofread','spelling','clarity'], free:true, priority:8, link:'https://www.grammarly.com' },
+    { name:'GitHub Copilot', icon:'🖥️', desc:'An AI coding assistant that lives inside your code editor. Suggests code as you type and helps you debug.', tags:['coding','code','programming','debug','developer','software'], free:false, priority:8, link:'https://github.com/features/copilot' },
+    { name:'Canva AI', icon:'✏️', desc:'A design tool with built-in AI: generate images, write copy, create presentations, and design graphics all in one place.', tags:['design','presentation','image','slides','project','poster','visual','beginner'], free:true, priority:7, link:'https://www.canva.com' },
+    { name:'Duolingo', icon:'🦉', desc:'An AI-powered language learning app that adapts to your level, with streaks, stories, and personalised practice.', tags:['language','translate','spanish','french','learn language','vocabulary','speaking'], free:true, priority:7, link:'https://www.duolingo.com' },
+    { name:'Midjourney', icon:'🎨', desc:'One of the most popular AI image generators. Creates stunning, artistic visuals from text descriptions.', tags:['image','art','design','creative','picture','drawing','visual'], free:false, priority:7, link:'https://www.midjourney.com' },
+  
+    // ── WRITING & EDITING ──
+    { name:'QuillBot', icon:'🪶', desc:'AI paraphrasing and summarizing tool, popular with students for rewriting and condensing text.', tags:['writing','paraphrase','summarize','essay','rewrite'], free:true, priority:5, link:'https://quillbot.com' },
+    { name:'Hemingway Editor', icon:'📏', desc:'Highlights overly complex sentences and suggests simpler, clearer writing.', tags:['writing','editing','clarity','essay','readability'], free:true, priority:4, link:'https://hemingwayapp.com' },
+    { name:'Jasper', icon:'🧙', desc:'AI writing tool aimed at marketing and content creation, good for blogs and ad copy.', tags:['writing','marketing','content','blog'], free:false, priority:3, link:'https://www.jasper.ai' },
+    { name:'Copy.ai', icon:'📋', desc:'Generates marketing copy, social posts, and product descriptions quickly.', tags:['writing','marketing','content','copywriting'], free:true, priority:3, link:'https://www.copy.ai' },
+    { name:'Sudowrite', icon:'✍️', desc:'AI tool built specifically for fiction writers, helps brainstorm plots and write vivid scenes.', tags:['writing','creative','fiction','story','novel'], free:false, priority:3, link:'https://www.sudowrite.com' },
+    { name:'Wordtune', icon:'🎵', desc:'Rewrites sentences to sound clearer, more formal, or more casual, with one click.', tags:['writing','editing','rewrite','tone','essay'], free:true, priority:4, link:'https://www.wordtune.com' },
+    { name:'ProWritingAid', icon:'🔍', desc:'In-depth grammar and style checker with detailed writing reports, popular for long-form work.', tags:['writing','grammar','editing','essay','style'], free:true, priority:4, link:'https://prowritingaid.com' },
+    { name:'Scribbr AI Proofreader', icon:'🎓', desc:'AI proofreading tool tailored for academic papers and theses.', tags:['writing','grammar','academic','essay','thesis','proofread'], free:false, priority:4, link:'https://www.scribbr.com' },
+    { name:'Outwrite', icon:'📤', desc:'Grammar, style, and readability checker with a focus on academic and professional writing.', tags:['writing','grammar','editing','academic'], free:true, priority:2, link:'https://www.outwrite.com' },
+    { name:'Writesonic', icon:'🚀', desc:'AI writer for articles, essays, and ad copy with multiple tone options.', tags:['writing','content','essay','article'], free:true, priority:2, link:'https://writesonic.com' },
+    { name:'Rytr', icon:'🖋️', desc:'Budget-friendly AI writing assistant for short-form content and emails.', tags:['writing','content','email'], free:true, priority:2, link:'https://rytr.me' },
+    { name:'INK Editor', icon:'🖊️', desc:'SEO-focused AI writing tool, useful for students building websites or blogs.', tags:['writing','seo','blog','content'], free:true, priority:1, link:'https://inkforall.com' },
+    { name:'Sapling', icon:'🌱', desc:'Grammar and writing assistant with a focus on professional messaging.', tags:['writing','grammar','editing','email'], free:true, priority:2, link:'https://sapling.ai' },
+    { name:'LanguageTool', icon:'🧰', desc:'Open-source grammar and style checker supporting many languages.', tags:['writing','grammar','editing','language','proofread'], free:true, priority:3, link:'https://languagetool.org' },
+    { name:'Slick Write', icon:'💡', desc:'Free writing tool that flags errors, style issues, and gives statistics on your prose.', tags:['writing','grammar','style','essay'], free:true, priority:1, link:'https://slickwrite.com' },
+  
+    // ── CODING & DEVELOPMENT ──
+    { name:'Replit AI (Ghostwriter)', icon:'👻', desc:'AI coding assistant built into the Replit online code editor, great for beginners.', tags:['coding','code','programming','beginner','editor'], free:true, priority:6, link:'https://replit.com' },
+    { name:'Cursor', icon:'🖱️', desc:'An AI-first code editor that lets you chat with your codebase and generate code naturally.', tags:['coding','code','programming','editor','developer'], free:true, priority:6, link:'https://www.cursor.com' },
+    { name:'Tabnine', icon:'⌨️', desc:'AI code completion tool that works across many editors and languages.', tags:['coding','code','programming','autocomplete'], free:true, priority:4, link:'https://www.tabnine.com' },
+    { name:'Amazon CodeWhisperer', icon:'☁️', desc:'AWS\'s free AI coding companion, integrates with popular IDEs.', tags:['coding','code','programming','aws','developer'], free:true, priority:4, link:'https://aws.amazon.com/codewhisperer' },
+    { name:'Codeium', icon:'🧩', desc:'Free AI code completion and chat tool supporting dozens of languages.', tags:['coding','code','programming','free','autocomplete'], free:true, priority:5, link:'https://codeium.com' },
+    { name:'Sourcegraph Cody', icon:'🔭', desc:'AI coding assistant that understands your whole codebase for smarter suggestions.', tags:['coding','code','programming','developer'], free:true, priority:3, link:'https://sourcegraph.com/cody' },
+    { name:'CodeT5', icon:'🔧', desc:'Open-source AI model for code generation and understanding, good for learning how code AI works.', tags:['coding','code','programming','learning','open source'], free:true, priority:2, link:'https://github.com/salesforce/CodeT5' },
+    { name:'Phind', icon:'🔎', desc:'AI search engine built specifically for developers and technical questions.', tags:['coding','search','developer','programming','debug'], free:true, priority:4, link:'https://www.phind.com' },
+    { name:'CodeWP', icon:'🌐', desc:'AI code generator focused on WordPress development.', tags:['coding','wordpress','web','developer'], free:true, priority:1, link:'https://codewp.ai' },
+    { name:'Mintlify', icon:'📘', desc:'AI tool that automatically writes documentation for your code.', tags:['coding','documentation','developer'], free:true, priority:1, link:'https://mintlify.com' },
+  
+    // ── IMAGE & ART GENERATION ──
+    { name:'DALL·E 3', icon:'🖼️', desc:'OpenAI\'s image generator, creates photorealistic images and illustrations from text, built into ChatGPT Plus.', tags:['image','art','design','creative','picture','visual'], free:false, priority:6, link:'https://openai.com/dall-e-3' },
+    { name:'Adobe Firefly', icon:'🔥', desc:'Adobe\'s AI image generator, integrated into Photoshop and Illustrator for creative projects.', tags:['image','art','design','creative','photoshop','visual'], free:true, priority:5, link:'https://www.adobe.com/products/firefly.html' },
+    { name:'Leonardo AI', icon:'🦁', desc:'Free-friendly AI art generator popular for game assets, characters, and concept art.', tags:['image','art','design','creative','game','character'], free:true, priority:4, link:'https://leonardo.ai' },
+    { name:'Stable Diffusion', icon:'🌀', desc:'Open-source AI image generator that can run locally or through many free web interfaces.', tags:['image','art','creative','open source','free'], free:true, priority:4, link:'https://stability.ai' },
+    { name:'Bing Image Creator', icon:'🪁', desc:'Free AI image generator powered by DALL·E, built into Microsoft Bing and Edge.', tags:['image','art','free','design','creative'], free:true, priority:5, link:'https://www.bing.com/images/create' },
+    { name:'Playground AI', icon:'🎡', desc:'Free, beginner-friendly AI image generator with an easy visual interface.', tags:['image','art','beginner','free','design'], free:true, priority:3, link:'https://playground.com' },
+    { name:'NightCafe', icon:'☕', desc:'Community-driven AI art generator with multiple art styles to explore.', tags:['image','art','creative','community'], free:true, priority:2, link:'https://creator.nightcafe.studio' },
+    { name:'Craiyon', icon:'🖍️', desc:'Free, simple AI image generator great for quick, casual image experiments.', tags:['image','art','free','beginner','simple'], free:true, priority:2, link:'https://www.craiyon.com' },
+    { name:'Lexica', icon:'🔮', desc:'Searchable library of AI-generated art with prompts you can learn from and remix.', tags:['image','art','inspiration','prompts'], free:true, priority:2, link:'https://lexica.art' },
+    { name:'Microsoft Designer', icon:'🖌️', desc:'AI design tool for posters, social posts, and presentations using simple prompts.', tags:['design','image','presentation','poster','visual'], free:true, priority:3, link:'https://designer.microsoft.com' },
+    { name:'Remove.bg', icon:'✂️', desc:'AI tool that automatically removes image backgrounds in seconds.', tags:['image','design','editing','photo'], free:true, priority:2, link:'https://www.remove.bg' },
+    { name:'Photoroom', icon:'📸', desc:'AI photo editor for removing backgrounds and creating product photos.', tags:['image','design','editing','photo'], free:true, priority:1, link:'https://www.photoroom.com' },
+    { name:'Let\'s Enhance', icon:'🔬', desc:'AI tool to upscale and sharpen low-resolution images.', tags:['image','editing','photo','upscale'], free:true, priority:1, link:'https://letsenhance.io' },
+  
+    // ── VIDEO ──
+    { name:'Runway', icon:'🎬', desc:'AI video generation and editing tool, can create video from text prompts or edit existing footage.', tags:['video','editing','creative','film'], free:true, priority:4, link:'https://runwayml.com' },
+    { name:'Pictory', icon:'🎞️', desc:'Turns scripts or articles into short videos automatically using AI.', tags:['video','editing','content','presentation'], free:true, priority:3, link:'https://pictory.ai' },
+    { name:'Synthesia', icon:'🎭', desc:'Creates AI avatar videos from text, useful for presentations without filming yourself.', tags:['video','presentation','avatar'], free:false, priority:3, link:'https://www.synthesia.io' },
+    { name:'CapCut', icon:'✂️', desc:'Free video editor with AI features like auto-captions and background removal, popular with students.', tags:['video','editing','free','captions'], free:true, priority:5, link:'https://www.capcut.com' },
+    { name:'Descript', icon:'🎙️', desc:'Edit video and audio by editing text, AI transcribes and lets you cut by deleting words.', tags:['video','audio','editing','transcribe','podcast'], free:true, priority:4, link:'https://www.descript.com' },
+    { name:'Opus Clip', icon:'📎', desc:'AI tool that automatically clips long videos into short, shareable highlights.', tags:['video','editing','content','social'], free:true, priority:2, link:'https://www.opus.pro' },
+    { name:'HeyGen', icon:'🗣️', desc:'Creates AI avatar presenter videos from a script, useful for class presentations.', tags:['video','presentation','avatar'], free:true, priority:3, link:'https://www.heygen.com' },
+    { name:'Pika', icon:'🐹', desc:'AI tool for generating short video clips from text or images.', tags:['video','creative','generate'], free:true, priority:2, link:'https://pika.art' },
+  
+    // ── AUDIO & MUSIC ──
+    { name:'ElevenLabs', icon:'🔊', desc:'Realistic AI voice generator and text-to-speech tool, popular for narration and accessibility.', tags:['audio','voice','speech','narration','accessibility'], free:true, priority:4, link:'https://elevenlabs.io' },
+    { name:'Suno', icon:'🎵', desc:'AI music generator that creates full songs, including vocals, from text prompts.', tags:['music','audio','creative','song'], free:true, priority:4, link:'https://suno.com' },
+    { name:'Udio', icon:'🎼', desc:'AI music generation tool for creating original songs from text descriptions.', tags:['music','audio','creative','song'], free:true, priority:2, link:'https://www.udio.com' },
+    { name:'Otter.ai', icon:'🦦', desc:'AI meeting and lecture transcription tool, great for turning class recordings into notes.', tags:['audio','transcribe','notes','lecture','studying'], free:true, priority:5, link:'https://otter.ai' },
+    { name:'Murf AI', icon:'🎤', desc:'AI voiceover generator for presentations, videos, and e-learning content.', tags:['audio','voice','presentation','narration'], free:true, priority:2, link:'https://murf.ai' },
+    { name:'Speechify', icon:'📢', desc:'Text-to-speech app that reads articles, PDFs, and textbooks aloud, useful for studying on the go.', tags:['audio','accessibility','studying','reading','textbook'], free:true, priority:5, link:'https://speechify.com' },
+    { name:'Krisp', icon:'🎧', desc:'AI tool that removes background noise from calls and recordings.', tags:['audio','noise','call','recording'], free:true, priority:1, link:'https://krisp.ai' },
+    { name:'Soundraw', icon:'🌊', desc:'AI music generator for royalty-free background tracks for videos and projects.', tags:['music','audio','video','creative'], free:true, priority:2, link:'https://soundraw.io' },
+  
+    // ── RESEARCH & STUDY ──
+    { name:'Perplexity AI', icon:'❓', desc:'AI search engine that answers questions with cited sources, great for research with built-in citations.', tags:['research','search','studying','citation','question'], free:true, priority:7, link:'https://www.perplexity.ai' },
+    { name:'Consensus', icon:'🧪', desc:'AI search engine for finding answers backed by peer-reviewed scientific research.', tags:['research','science','studying','academic','citation'], free:true, priority:5, link:'https://consensus.app' },
+    { name:'Elicit', icon:'🔬', desc:'AI research assistant that helps find and summarize academic papers.', tags:['research','academic','studying','papers'], free:true, priority:4, link:'https://elicit.com' },
+    { name:'SciSpace', icon:'📑', desc:'AI tool that explains complex academic papers in simple language.', tags:['research','academic','studying','papers','explain'], free:true, priority:4, link:'https://typeset.io' },
+    { name:'Wolfram Alpha', icon:'🧮', desc:'Computational engine that solves math problems step by step and answers factual questions.', tags:['math','studying','homework','calculation','science'], free:true, priority:6, link:'https://www.wolframalpha.com' },
+    { name:'Photomath', icon:'📷', desc:'Scan a math problem with your phone camera and get a step-by-step solution.', tags:['math','studying','homework','calculation'], free:true, priority:6, link:'https://photomath.com' },
+    { name:'Socratic by Google', icon:'🦉', desc:'AI homework helper that explains concepts across subjects using your phone camera.', tags:['studying','homework','tutor','explain'], free:true, priority:5, link:'https://socratic.org' },
+    { name:'Quizlet', icon:'🃏', desc:'Study app with AI-generated flashcards, practice tests, and explanations.', tags:['studying','flashcards','memorize','test','homework'], free:true, priority:6, link:'https://quizlet.com' },
+    { name:'StudyFetch', icon:'🧠', desc:'AI study assistant that creates personalized study guides from your course materials.', tags:['studying','homework','notes','guide'], free:true, priority:3, link:'https://studyfetch.com' },
+    { name:'Numerade', icon:'🔢', desc:'AI and video explanations for math and science textbook problems.', tags:['math','science','studying','homework','textbook'], free:false, priority:3, link:'https://www.numerade.com' },
+    { name:'Brainly', icon:'🧩', desc:'Homework help community enhanced with AI-generated explanations.', tags:['studying','homework','question','community'], free:true, priority:3, link:'https://brainly.com' },
+    { name:'CourseHero AI', icon:'🎯', desc:'AI study tools including tutoring, writing help, and practice problems.', tags:['studying','homework','tutor','writing'], free:false, priority:2, link:'https://www.coursehero.com' },
+    { name:'Glasp AI', icon:'🖇️', desc:'AI tool that summarizes articles and YouTube videos for faster studying.', tags:['research','summarize','studying','article','video'], free:true, priority:2, link:'https://glasp.co' },
+    { name:'Explainpaper', icon:'📃', desc:'Highlight confusing parts of a research paper and get an AI explanation.', tags:['research','academic','studying','papers','explain'], free:true, priority:3, link:'https://www.explainpaper.com' },
+  
+    // ── PRODUCTIVITY & ORGANIZATION ──
+    { name:'Notion AI', icon:'🗒️', desc:'AI built into Notion for writing, summarizing notes, and organizing study plans.', tags:['notes','studying','organization','writing','productivity'], free:true, priority:5, link:'https://www.notion.so/product/ai' },
+    { name:'Mem', icon:'🧠', desc:'AI-powered note-taking app that automatically organizes and connects your notes.', tags:['notes','studying','organization','productivity'], free:true, priority:2, link:'https://get.mem.ai' },
+    { name:'Reclaim AI', icon:'📅', desc:'AI calendar assistant that automatically schedules study time and tasks.', tags:['productivity','schedule','time management','calendar'], free:true, priority:2, link:'https://reclaim.ai' },
+    { name:'Motion', icon:'⏱️', desc:'AI planner that builds your daily schedule automatically based on your tasks and deadlines.', tags:['productivity','schedule','time management','planning'], free:false, priority:2, link:'https://www.usemotion.com' },
+    { name:'Todoist AI', icon:'✅', desc:'To-do list app with AI features to help prioritize and organize tasks.', tags:['productivity','tasks','organization','planning'], free:true, priority:2, link:'https://todoist.com' },
+    { name:'Taskade', icon:'📋', desc:'AI-powered workspace for to-do lists, notes, and project planning together.', tags:['productivity','tasks','organization','project'], free:true, priority:1, link:'https://www.taskade.com' },
+    { name:'Goblin Tools', icon:'👹', desc:'Simple AI tools that break overwhelming tasks into small, manageable steps.', tags:['productivity','planning','organization','tasks'], free:true, priority:3, link:'https://goblin.tools' },
+  
+    // ── PRESENTATIONS & DESIGN ──
+    { name:'Gamma', icon:'🎯', desc:'AI tool that turns an outline or topic into a polished presentation or document in minutes.', tags:['presentation','slides','design','project'], free:true, priority:6, link:'https://gamma.app' },
+    { name:'Beautiful.ai', icon:'💎', desc:'AI presentation tool that automatically formats slides as you add content.', tags:['presentation','slides','design'], free:true, priority:3, link:'https://www.beautiful.ai' },
+    { name:'Tome', icon:'📖', desc:'AI tool for generating narrative presentations and pitch decks from a prompt.', tags:['presentation','slides','design','project'], free:true, priority:3, link:'https://tome.app' },
+    { name:'Slidesgo AI', icon:'🖥️', desc:'AI-assisted templates for building school and work presentations quickly.', tags:['presentation','slides','design','template'], free:true, priority:2, link:'https://slidesgo.com' },
+    { name:'Designs.ai', icon:'🎨', desc:'All-in-one AI design suite for logos, videos, and graphics.', tags:['design','image','video','logo'], free:false, priority:1, link:'https://designs.ai' },
+  
+    // ── DATA & SPREADSHEETS ──
+    { name:'Julius AI', icon:'📊', desc:'AI tool that analyzes data and creates charts just by describing what you want in plain English.', tags:['data','analysis','spreadsheet','chart','excel'], free:true, priority:4, link:'https://julius.ai' },
+    { name:'Rows AI', icon:'🧾', desc:'Spreadsheet tool with built-in AI for formulas, analysis, and automation.', tags:['data','spreadsheet','excel','analysis'], free:true, priority:2, link:'https://rows.com' },
+    { name:'Akkio', icon:'📈', desc:'No-code AI tool for building data predictions and models without programming.', tags:['data','analysis','prediction'], free:false, priority:1, link:'https://www.akkio.com' },
+    { name:'Obviously AI', icon:'🔍', desc:'No-code machine learning platform for making predictions from spreadsheet data.', tags:['data','analysis','prediction','spreadsheet'], free:false, priority:1, link:'https://www.obviously.ai' },
+  
+    // ── TRANSLATION & LANGUAGE ──
+    { name:'DeepL', icon:'🌍', desc:'The most accurate AI translation tool available, outperforms Google Translate on nuance and natural phrasing.', tags:['translate','language','writing','french','spanish'], free:true, priority:6, link:'https://www.deepl.com' },
+    { name:'Google Translate', icon:'🗺️', desc:'Free, widely available AI translation tool supporting over 100 languages.', tags:['translate','language','free'], free:true, priority:5, link:'https://translate.google.com' },
+    { name:'Reverso', icon:'🔄', desc:'Translation tool with example sentences in context, useful for learning grammar.', tags:['translate','language','grammar','learning'], free:true, priority:2, link:'https://www.reverso.net' },
+    { name:'Babbel', icon:'💬', desc:'Structured language learning app with AI-driven lessons and speech recognition.', tags:['language','learn language','speaking','vocabulary'], free:false, priority:3, link:'https://www.babbel.com' },
+    { name:'Memrise', icon:'🧠', desc:'AI-enhanced vocabulary and language learning app using spaced repetition.', tags:['language','vocabulary','learn language','memorize'], free:true, priority:3, link:'https://www.memrise.com' },
+    { name:'ELSA Speak', icon:'🗣️', desc:'AI tool that gives feedback on your English pronunciation in real time.', tags:['language','speaking','pronunciation','english'], free:true, priority:2, link:'https://elsaspeak.com' },
+    { name:'Lingvanex', icon:'🌐', desc:'AI translation tool that works across text, voice, and documents.', tags:['translate','language','document'], free:true, priority:1, link:'https://lingvanex.com' },
+  
+    // ── 3D, GAMES & DESIGN ──
+    { name:'Meshy', icon:'🧱', desc:'AI tool that generates 3D models from text or images, useful for game design projects.', tags:['3d','design','game','creative'], free:true, priority:2, link:'https://www.meshy.ai' },
+    { name:'Scenario', icon:'🎮', desc:'AI tool for generating game art assets in consistent styles.', tags:['game','art','design','creative'], free:true, priority:1, link:'https://www.scenario.com' },
+    { name:'Charmed AI', icon:'🪄', desc:'AI tool for generating game characters and concept art.', tags:['game','art','character','design'], free:true, priority:1, link:'https://charmed.ai' },
+    { name:'Promethean AI', icon:'🏛️', desc:'AI assistant for building 3D virtual worlds and game environments.', tags:['3d','game','design','creative'], free:false, priority:1, link:'https://www.prometheanai.com' },
+  
+    // ── BUSINESS, CAREER & RESUME ──
+    { name:'Teal', icon:'💼', desc:'AI resume builder and job application tracker, popular with students entering the job market.', tags:['career','resume','job','interview'], free:true, priority:4, link:'https://www.tealhq.com' },
+    { name:'Kickresume', icon:'🚀', desc:'AI tool for writing and formatting professional resumes and cover letters.', tags:['career','resume','job','cover letter'], free:true, priority:3, link:'https://www.kickresume.com' },
+    { name:'Yoodli', icon:'🎤', desc:'AI speech coach that gives feedback on presentations, interviews, and public speaking.', tags:['career','interview','presentation','speaking'], free:true, priority:3, link:'https://yoodli.ai' },
+    { name:'Interview Warmup by Google', icon:'🔥', desc:'Free AI tool that helps you practice answering common interview questions.', tags:['career','interview','job','practice'], free:true, priority:3, link:'https://grow.google/certificates/interview-warmup' },
+    { name:'Huntr', icon:'🎯', desc:'AI-powered job search tracker and resume tailoring tool.', tags:['career','job','resume','tracker'], free:true, priority:2, link:'https://huntr.co' },
+    { name:'LinkedIn AI Tools', icon:'🔗', desc:'AI features built into LinkedIn for writing posts, summaries, and connecting with recruiters.', tags:['career','job','networking','writing'], free:true, priority:2, link:'https://www.linkedin.com' },
+  
+    // ── ACCESSIBILITY ──
+    { name:'Be My AI', icon:'👁️', desc:'AI tool that describes images and surroundings aloud for blind and low-vision users.', tags:['accessibility','vision','image','describe'], free:true, priority:3, link:'https://www.bemyeyes.com' },
+    { name:'Otter.ai Live Captions', icon:'💬', desc:'Real-time AI captioning for lectures and meetings, helpful for students who are deaf or hard of hearing.', tags:['accessibility','captions','lecture','hearing'], free:true, priority:3, link:'https://otter.ai' },
+    { name:'Read&Write', icon:'📖', desc:'AI literacy support tool with text-to-speech, word prediction, and translation for students with learning differences.', tags:['accessibility','reading','writing','dyslexia','studying'], free:false, priority:3, link:'https://www.texthelp.com/products/read-and-write-education' },
+    { name:'Immersive Reader', icon:'🔤', desc:'Free Microsoft tool that reads text aloud and simplifies pages for easier reading and focus.', tags:['accessibility','reading','studying','focus'], free:true, priority:3, link:'https://www.microsoft.com/en-us/education/products/immersive-reader' },
+  
+    // ── SAFETY & WELLBEING ──
+    { name:'Woebot', icon:'🤍', desc:'AI chatbot designed to support mental wellbeing using cognitive behavioral techniques.', tags:['wellbeing','mental health','support','chatbot'], free:true, priority:2, link:'https://woebothealth.com' },
+    { name:'Replika', icon:'💙', desc:'AI companion chatbot for casual conversation, note: not a substitute for real mental health support.', tags:['chatbot','companion','wellbeing'], free:true, priority:1, link:'https://replika.com' },
+  
+    // ── MISC USEFUL TOOLS ──
+    { name:'Cleanup.pictures', icon:'🧽', desc:'AI tool that removes unwanted objects from photos automatically.', tags:['image','editing','photo'], free:true, priority:1, link:'https://cleanup.pictures' },
+    { name:'Magic Eraser', icon:'🪄', desc:'AI photo editing tool for quickly erasing unwanted elements.', tags:['image','editing','photo'], free:true, priority:1, link:'https://magicstudio.com/magiceraser' },
+    { name:'PDF.ai', icon:'📄', desc:'Chat with any PDF to quickly find answers and summaries from long documents.', tags:['pdf','research','studying','document','summarize'], free:true, priority:3, link:'https://pdf.ai' },
+    { name:'ChatPDF', icon:'📑', desc:'Upload a PDF and ask questions about it directly, useful for textbooks and long readings.', tags:['pdf','research','studying','document','summarize'], free:true, priority:3, link:'https://www.chatpdf.com' },
+    { name:'Humata', icon:'🔬', desc:'AI tool for asking questions across multiple research documents at once.', tags:['research','document','studying','pdf'], free:true, priority:2, link:'https://www.humata.ai' },
+    { name:'TLDR This', icon:'📰', desc:'Summarizes long articles into key points in seconds.', tags:['summarize','research','studying','article'], free:true, priority:3, link:'https://tldrthis.com' },
+    { name:'Recall', icon:'🧷', desc:'AI tool that automatically summarizes and organizes things you read online.', tags:['summarize','research','studying','organization'], free:true, priority:2, link:'https://www.getrecall.ai' },
+    { name:'Poe by Quora', icon:'🦉', desc:'A single app that gives access to many different AI chatbots, including Claude and ChatGPT, in one place.', tags:['chatbot','assistant','writing','general'], free:true, priority:4, link:'https://poe.com' },
+    { name:'You.com', icon:'🔍', desc:'AI search engine that combines web search with chatbot-style answers and citations.', tags:['search','research','chatbot','citation'], free:true, priority:3, link:'https://you.com' },
+    { name:'Character.AI', icon:'🎭', desc:'Chat with AI characters for creative roleplay, practicing conversations, or language practice.', tags:['chatbot','creative','roleplay','language'], free:true, priority:2, link:'https://character.ai' },
+    { name:'Pi by Inflection', icon:'🥧', desc:'A conversational AI designed for supportive, friendly everyday chat and brainstorming.', tags:['chatbot','assistant','conversation'], free:true, priority:2, link:'https://pi.ai' }
+  ];
+  
+
+  /* ── PANEL NAVIGATION ── */
+  const allPanelIds = ['hero','what','history','types','study','ethics','quiz','lab','finder','more-study','resources','contact'];
+
+  function showPanel(id) {
+    allPanelIds.forEach(pid => {
+      const el = document.getElementById(pid);
+      if (el) el.classList.toggle('visible', pid === id);
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.classList.toggle('active', a.dataset.panel === id);
+    });
+    document.getElementById('navLinks').classList.remove('open');
+
+    // Wait a frame so the panel is actually visible/laid out before measuring its position
+    requestAnimationFrame(() => {
+      const target = document.getElementById(id);
+      if (!target) return;
+      const navHeight = document.querySelector('nav').offsetHeight;
+      const targetY = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+      window.scrollTo({ top: Math.max(targetY, 0), behavior: 'smooth' });
+    });
+  }
+
+  // Show hero by default on load
+  showPanel('hero');
+
+  /* ── QUOTE CAROUSEL ── */
+  const aiQuotes = [
+    { text: "We can only see a short distance ahead, but we can see plenty there that needs to be done.", author: "Alan Turing", role: "Mathematician, father of computer science" },
+    { text: "The question of whether a computer can think is no more interesting than the question of whether a submarine can swim.", author: "Edsger Dijkstra", role: "Computer scientist" },
+    { text: "Artificial intelligence is the new electricity.", author: "Andrew Ng", role: "AI researcher, co-founder of Coursera" },
+    { text: "Machine intelligence is the last invention that humanity will ever need to make.", author: "Nick Bostrom", role: "Philosopher, AI researcher" },
+    { text: "By far the greatest danger of artificial intelligence is that people conclude too early that they understand it.", author: "Eliezer Yudkowsky", role: "AI researcher" },
+    { text: "The development of full artificial intelligence could spell the end of the human race, or it could be the most beneficial event in our history. It depends on how we manage it.", author: "Stephen Hawking", role: "Physicist" },
+    { text: "AI doesn't have to be evil to destroy humanity. If AI has a goal and humanity just happens to be in the way, it will destroy humanity as a matter of course.", author: "Elon Musk", role: "Entrepreneur" },
+    { text: "The key to artificial intelligence has always been the representation.", author: "Jeff Hawkins", role: "Neuroscientist, computer engineer" },
+    { text: "Every aspect of learning, or any other feature of intelligence, can in principle be so precisely described that a machine can be made to simulate it.", author: "John McCarthy", role: "Coined the term 'Artificial Intelligence'" }
+  ];
+
+  function initQuoteCarousel() {
+    const track = document.getElementById('quoteTrack');
+    const dots = document.getElementById('quoteDots');
+    if (!track || !dots) return;
+
+    track.innerHTML = aiQuotes.map((q, i) => `
+      <div class="quote-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
+        <p class="quote-text">${q.text}</p>
+        <p class="quote-author">${q.author} <span>, ${q.role}</span></p>
+      </div>`).join('');
+
+    dots.innerHTML = aiQuotes.map((_, i) => `
+      <button class="quote-dot ${i === 0 ? 'active' : ''}" onclick="goToQuote(${i})" aria-label="Show quote ${i+1}"></button>`).join('');
+
+    startQuoteAutoplay();
+  }
+
+  let currentQuote = 0;
+  let quoteInterval;
+
+  function showQuote(idx) {
+    currentQuote = idx;
+    document.querySelectorAll('.quote-slide').forEach((el, i) => el.classList.toggle('active', i === idx));
+    document.querySelectorAll('.quote-dot').forEach((el, i) => el.classList.toggle('active', i === idx));
+  }
+
+  function goToQuote(idx) {
+    showQuote(idx);
+    restartQuoteAutoplay();
+  }
+
+  function startQuoteAutoplay() {
+    quoteInterval = setInterval(() => {
+      showQuote((currentQuote + 1) % aiQuotes.length);
+    }, 6000);
+  }
+
+  function restartQuoteAutoplay() {
+    clearInterval(quoteInterval);
+    startQuoteAutoplay();
+  }
+
+  initQuoteCarousel();
+
+  /* ── AI TOOL FINDER ── */
+
+  function scoreTools(query) {
+    const q = query.toLowerCase();
+    const words = q.split(/\s+/).filter(w => w.length > 2);
+    return finderTools.map(tool => {
+      let score = 0;
+      tool.tags.forEach(tag => {
+        if (q.includes(tag)) score += 5;
+        words.forEach(w => { if (tag.includes(w) || w.includes(tag)) score += 1; });
+      });
+      if (q.includes('free') && tool.free) score += 4;
+      // Priority acts as a small tiebreaker so well-known, highly recommended tools
+      // surface first when relevance scores are close, without overriding actual relevance.
+      const priorityBoost = (tool.priority || 0) * 0.3;
+      return { ...tool, score: score + priorityBoost, rawScore: score };
+    }).filter(t => t.rawScore > 0).sort((a, b) => b.score - a.score);
+  }
+
+  function renderFinderResults(results, query) {
+    const container = document.getElementById('finderResults');
+    if (!query.trim()) {
+      container.innerHTML = `
+        <div class="finder-empty">
+          <div class="fe-icon">🔎</div>
+          <p>Start typing above to see AI tools matched to your needs.</p>
+        </div>`;
+      return;
+    }
+    if (results.length === 0) {
+      container.innerHTML = `
+        <div class="finder-empty">
+          <div class="fe-icon">🤔</div>
+          <p><strong>No exact matches found.</strong> Try describing your goal differently, like "writing help," "coding," "studying," or "free image generator."</p>
+        </div>`;
+      return;
+    }
+    const topResults = results.slice(0, 12);
+    const countNote = `<p class="finder-count-note">Showing ${topResults.length} of ${results.length} matching tools, our top picks first.</p>`;
+    container.innerHTML = countNote + topResults.map((t, i) => `
+      <div class="finder-result-card ${i === 0 ? 'top-match' : ''}">
+        <div class="fr-icon">${t.icon}</div>
+        <div class="fr-info">
+          ${i === 0 ? '<div class="fr-badge">⭐ Best Match</div>' : ''}
+          <div class="fr-name">${t.name}</div>
+          <div class="fr-desc">${t.desc}</div>
+          <div class="fr-tags">${t.tags.slice(0,4).map(tag => `<span class="fr-tag">${tag}</span>`).join('')}${t.free ? '<span class="fr-tag" style="background:var(--green-light);color:var(--green)">Free</span>' : ''}</div>
+        </div>
+        <a href="${t.link}" target="_blank" class="fr-link">Visit →</a>
+      </div>`).join('');
+  }
+
+  let finderDebounce;
+  function handleFinderInput() {
+    clearTimeout(finderDebounce);
+    finderDebounce = setTimeout(runFinderSearch, 350);
+  }
+
+  function runFinderSearch() {
+    const query = document.getElementById('finderInput').value;
+    const results = scoreTools(query);
+    renderFinderResults(results, query);
+  }
+
+  function quickFinderSearch(text) {
+    document.getElementById('finderInput').value = text;
+    runFinderSearch();
+  }
+
+  /* ── VISUAL LEARNING LAB ── */
+  const lab = {
+    subject: 'addition',
+    difficulty: 'easy',
+    score: 0,
+    streak: 0,
+    answered: 0,
+    correct: 0,
+    currentQ: null,
+    hintUsed: false,
+    tutorMsgs: {
+      start: [
+        "Let's do this! I believe in you! 💪",
+        "Ready? Here we go! 🚀",
+        "Great choice! Let's learn together! 🌟"
+      ],
+      correct: [
+        "Fantastic work! You're a superstar! ⭐",
+        "Yes! That's exactly right! 🎉",
+        "Amazing! You're on fire! 🔥",
+        "Brilliant! Keep it up! 🏆",
+        "Perfect! You've totally got this! 💫"
+      ],
+      wrong: [
+        "Not quite — look at the blocks and count again! 🔍",
+        "Almost! Try counting each block one more time. 🧮",
+        "Good try! Hint: count the first group, then the second. 💡",
+        "Don't give up! Look at how many blocks there are. 👀"
+      ],
+      hint: [
+        "Try counting the blue blocks first, then the orange ones!",
+        "Point to each block one by one as you count.",
+        "Think of it as groups — how many in each group?",
+        "Count out loud — it really helps!"
+      ],
+      streak3: "3 in a row! You're unstoppable! 🔥🔥🔥",
+      streak5: "FIVE in a row! You're a genius! 🧠✨",
+      streak10: "TEN IN A ROW! You're a legend! 👑🏆"
+    }
+  };
+
+  const difficultyRanges = {
+    easy:   { min: 1, max: 9 },
+    medium: { min: 5, max: 20 },
+    hard:   { min: 10, max: 50 }
+  };
+
+  function setSubject(s) {
+    lab.subject = s;
+    document.querySelectorAll('#subjectPicker .lab-pick').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    if (lab.currentQ) generateQuestion();
+  }
+
+  function setDifficulty(d) {
+    lab.difficulty = d;
+    document.querySelectorAll('#diffPicker .lab-pick').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    if (lab.currentQ) generateQuestion();
+  }
+
+  function rnd(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function generateQuestion() {
+    const { min, max } = difficultyRanges[lab.difficulty];
+    let a, b, answer, questionText, equation;
+    lab.hintUsed = false;
+
+    if (lab.subject === 'counting') {
+      a = rnd(min, Math.min(max, 20));
+      answer = a;
+      questionText = `How many blocks do you count? 🔢`;
+      equation = `Count = `;
+    } else if (lab.subject === 'addition') {
+      a = rnd(min, max);
+      b = rnd(min, max);
+      answer = a + b;
+      questionText = `Can you add these two groups together? ➕`;
+      equation = `${a} + ${b} = `;
+    } else if (lab.subject === 'subtraction') {
+      a = rnd(min + 2, max);
+      b = rnd(min, a);
+      answer = a - b;
+      questionText = `Take away the orange blocks from the blue ones! ➖`;
+      equation = `${a} - ${b} = `;
+    } else if (lab.subject === 'multiplication') {
+      const mMax = lab.difficulty === 'easy' ? 5 : lab.difficulty === 'medium' ? 8 : 12;
+      a = rnd(1, mMax);
+      b = rnd(1, mMax);
+      answer = a * b;
+      questionText = `${a} groups of ${b} — how many altogether? ✖️`;
+      equation = `${a} × ${b} = `;
+    }
+
+    lab.currentQ = { a, b, answer, subject: lab.subject };
+
+    // Show question card
+    const card = document.getElementById('labQuestionCard');
+    card.style.display = 'block';
+    document.getElementById('labQuestionText').textContent = questionText;
+    document.getElementById('labEquation').textContent = equation;
+    document.getElementById('labFeedback').textContent = '';
+    document.getElementById('labFeedback').style.color = '';
+
+    // Reset input
+    const input = document.getElementById('labAnswerInput');
+    input.value = '';
+    input.className = 'lab-answer-input';
+    input.disabled = false;
+
+    // Render blocks
+    renderBlocks(a, b);
+
+    // Number line for easy mode
+    const nlWrap = document.getElementById('labNumberLineWrap');
+    if (lab.difficulty === 'easy' && lab.subject !== 'multiplication') {
+      renderNumberLine(a, b);
+      nlWrap.style.display = 'block';
+    } else {
+      nlWrap.style.display = 'none';
+    }
+
+    // Tutor message
+    setTutor(pick(lab.tutorMsgs.start));
+    input.focus();
+  }
+
+  function renderBlocks(a, b) {
+    const area = document.getElementById('labBlocksArea');
+    area.innerHTML = '';
+
+    if (lab.subject === 'counting') {
+      const row = document.createElement('div');
+      row.className = 'lab-block-row';
+      for (let i = 0; i < a; i++) {
+        const bl = makeBlock('lab-block-a', i * 40);
+        bl.title = `Block ${i + 1}`;
+        row.appendChild(bl);
+      }
+      area.appendChild(row);
+
+    } else if (lab.subject === 'addition' || lab.subject === 'subtraction') {
+      const g1 = document.createElement('div');
+      g1.className = 'lab-block-group';
+      const r1 = document.createElement('div'); r1.className = 'lab-block-row';
+      for (let i = 0; i < a; i++) r1.appendChild(makeBlock('lab-block-a', i * 35));
+      const l1 = document.createElement('div'); l1.className = 'lab-block-label';
+      l1.textContent = lab.subject === 'subtraction' ? `${a} blocks` : `${a}`;
+      g1.appendChild(r1); g1.appendChild(l1);
+
+      const op = document.createElement('div');
+      op.style.cssText = 'font-size:2rem;font-weight:900;color:var(--muted);align-self:center;';
+      op.textContent = lab.subject === 'addition' ? '+' : '−';
+
+      const g2 = document.createElement('div');
+      g2.className = 'lab-block-group';
+      const r2 = document.createElement('div'); r2.className = 'lab-block-row';
+      for (let i = 0; i < b; i++) r2.appendChild(makeBlock('lab-block-b', i * 35));
+      const l2 = document.createElement('div'); l2.className = 'lab-block-label';
+      l2.textContent = `${b}`;
+      g2.appendChild(r2); g2.appendChild(l2);
+
+      area.style.alignItems = 'center';
+      area.appendChild(g1); area.appendChild(op); area.appendChild(g2);
+
+    } else if (lab.subject === 'multiplication') {
+      area.style.flexDirection = 'column';
+      for (let i = 0; i < a; i++) {
+        const row = document.createElement('div'); row.className = 'lab-block-row';
+        for (let j = 0; j < b; j++) row.appendChild(makeBlock('lab-block-c', (i * b + j) * 30));
+        area.appendChild(row);
+      }
+      area.style.flexDirection = '';
+    }
+  }
+
+  function makeBlock(cls, delay) {
+    const bl = document.createElement('div');
+    bl.className = `lab-block ${cls}`;
+    bl.style.animationDelay = `${delay}ms`;
+    bl.onclick = () => { bl.style.transform = 'scale(1.3)'; setTimeout(() => bl.style.transform = '', 200); };
+    return bl;
+  }
+
+  function renderNumberLine(a, b) {
+    const line = document.getElementById('labNumberLine');
+    line.innerHTML = '';
+    const total = lab.subject === 'addition' ? a + b : a;
+    const max = Math.max(total + 1, 10);
+    for (let i = 0; i <= max; i++) {
+      const step = document.createElement('div'); step.className = 'lab-nl-step';
+      const tick = document.createElement('div'); tick.className = 'lab-nl-tick';
+      const num  = document.createElement('div'); num.className = 'lab-nl-num';
+      num.textContent = i;
+      if (lab.subject === 'addition' && i > 0 && i <= a + b) tick.classList.add('highlighted');
+      if (lab.subject === 'subtraction' && i >= a - b && i <= a) tick.classList.add('highlighted');
+      if (tick.classList.contains('highlighted')) num.classList.add('highlighted');
+      step.appendChild(tick); step.appendChild(num);
+      line.appendChild(step);
+    }
+  }
+
+  function checkAnswer() {
+    if (!lab.currentQ) return;
+    const input = document.getElementById('labAnswerInput');
+    const val = parseInt(input.value);
+    if (isNaN(val)) { setTutor("Type a number in the box first! 📝"); return; }
+
+    const fb = document.getElementById('labFeedback');
+    lab.answered++;
+    updateProgress();
+
+    if (val === lab.currentQ.answer) {
+      // Correct!
+      lab.score++;
+      lab.streak++;
+      input.classList.add('correct');
+      fb.style.color = 'var(--green)';
+      fb.textContent = '✅ Correct! Well done!';
+      input.disabled = true;
+
+      let msg = pick(lab.tutorMsgs.correct);
+      if (lab.streak === 3)  msg = lab.tutorMsgs.streak3;
+      if (lab.streak === 5)  msg = lab.tutorMsgs.streak5;
+      if (lab.streak === 10) msg = lab.tutorMsgs.streak10;
+      setTutor(msg);
+      updateScore();
+      showCelebration();
+      setTimeout(generateQuestion, 2200);
+
+    } else {
+      // Wrong
+      lab.streak = 0;
+      input.classList.add('wrong');
+      fb.style.color = 'var(--accent-dark)';
+      fb.textContent = `❌ Not quite — the answer was ${lab.currentQ.answer}. Try the next one!`;
+      setTutor(pick(lab.tutorMsgs.wrong));
+      updateScore();
+      setTimeout(() => {
+        input.classList.remove('wrong');
+        input.value = '';
+        input.disabled = false;
+        input.focus();
+        fb.textContent = '';
+      }, 2000);
+    }
+  }
+
+  function showHint() {
+    if (!lab.currentQ) { setTutor("Press New Question first, then I'll give you a hint! 😊"); return; }
+    setTutor(pick(lab.tutorMsgs.hint));
+    lab.hintUsed = true;
+  }
+
+  function setTutor(msg) {
+    const bubble = document.getElementById('tutorBubble');
+    bubble.style.animation = 'none';
+    bubble.offsetHeight; // reflow
+    bubble.style.animation = 'fadeIn .4s ease';
+    bubble.innerHTML = msg;
+  }
+
+  function updateScore() {
+    document.getElementById('labScore').textContent = lab.score;
+    document.getElementById('labStreak').textContent = `${lab.streak} 🔥`;
+  }
+
+  function updateProgress() {
+    const pct = Math.min((lab.answered / 10) * 100, 100);
+    document.getElementById('labProgressFill').style.width = pct + '%';
+    document.getElementById('labProgressText').textContent = `${lab.answered} answered this session`;
+  }
+
+  function showCelebration() {
+    const emojis = ['🎉','⭐','🏆','🌟','💫','🎊','✨'];
+    const texts  = ['Correct!','Brilliant!','Amazing!','Well Done!','Superstar!'];
+    document.getElementById('celebEmoji').textContent = pick(emojis);
+    document.getElementById('celebText').textContent  = pick(texts);
+    const cel = document.getElementById('labCelebration');
+    cel.classList.add('show');
+    setTimeout(() => cel.classList.remove('show'), 1800);
+  }
+
+  /* ── CONTACT FORM ── */
+  function submitContact(e) {
+    e.preventDefault();
+    document.getElementById('contact-form-wrap').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }
+  function resetContactForm() {
+    document.getElementById('contactForm').reset();
+    document.getElementById('contact-form-wrap').style.display = '';
+    document.getElementById('form-success').style.display = 'none';
+  }
+
   /* ── HAMBURGER ── */
   function toggleNav() {
     document.getElementById('navLinks').classList.toggle('open');
@@ -848,11 +2170,11 @@
 
     const pct = score / questions.length;
     let emoji, title, desc;
-    if (pct === 1)       { emoji='🏆'; title='Perfect Score!'; desc='You're an AI expert! Outstanding work.'; }
+    if (pct === 1)       { emoji='🏆'; title='Perfect Score!'; desc="You're an AI expert! Outstanding work."; }
     else if (pct >= .8)  { emoji='🌟'; title='Amazing Job!'; desc='You really know your AI. Keep it up!'; }
-    else if (pct >= .6)  { emoji='👍'; title='Good Work!'; desc='Solid understanding — go review the sections you missed.'; }
+    else if (pct >= .6)  { emoji='👍'; title='Good Work!'; desc='Solid understanding. Go review the sections you missed.'; }
     else if (pct >= .4)  { emoji='📚'; title='Keep Learning!'; desc='Read through the chapters again and try once more.'; }
-    else                 { emoji='💪'; title='Keep Going!'; desc='AI takes time to learn — you\'ve got this!'; }
+    else                 { emoji='💪'; title='Keep Going!'; desc="AI takes time to learn. You've got this!"; }
 
     document.getElementById('resultEmoji').textContent = emoji;
     document.getElementById('resultTitle').textContent = title;
