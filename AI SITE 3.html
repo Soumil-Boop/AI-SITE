@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The AI Classroom: Learn Artificial Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* 60% Neutral */
+      --white:  #FFFFFF;
+      --gray-50: #F4F6F9;
+      --gray-100: #E9EDF2;
+      --gray-200: #D1D9E0;
+      --text:   #111827;
+      --muted:  #6B7280;
+
+      /* 30% Brand Blue */
+      --brand:       #1D4ED8;
+      --brand-dark:  #1E3A8A;
+      --brand-light: #DBEAFE;
+      --brand-mid:   #3B82F6;
+
+      /* 10% Accent Orange */
+      --accent:      #F97316;
+      --accent-dark: #C2410C;
+      --accent-light:#FFF0E6;
+
+      /* Supporting (used sparingly in timeline/type chips) */
+      --green:  #059669;
+      --purple: #7C3AED;
+
+      --radius: 16px;
+
+      /* Legacy aliases so existing selectors still resolve */
+      --navy:   var(--brand-dark);
+      --blue:   var(--brand-mid);
+      --coral:  var(--accent);
+      --gold:   var(--accent);
+      --card:   var(--brand-light);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--brand-dark);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      box-shadow: 0 2px 20px rgba(29,78,216,.3);
+    }
+    .nav-logo {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900; font-size: 1.3rem;
+      color: var(--white);
+      text-decoration: none;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: .25rem; }
+    .nav-links a {
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      font-size: .9rem; font-weight: 500;
+      padding: .4rem .85rem;
+      border-radius: 8px;
+      transition: background .2s, color .2s;
+    }
+    .nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .nav-links a.active { background: var(--accent); color: #fff; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 24px; height: 2px; background: white; border-radius: 2px; }
+
+    /* ── PANELS (click-to-show sections) ── */
+    .panel { display: none; }
+    .panel.visible { display: block; }
+    #hero.panel.visible { display: flex; }
+
+    /* ── CARD / FORM (shared by new sections) ── */
+    .card {
+      background: var(--white); border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      transition: box-shadow .25s, border-color .25s;
+    }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: .4rem; color: var(--text); }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: .75rem 1rem; border: 1.5px solid var(--gray-200);
+      border-radius: 10px; font-size: 1rem; font-family: 'Inter', sans-serif;
+      background: var(--white); color: var(--text);
+      transition: border-color .2s, box-shadow .2s; outline: none;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--brand); box-shadow: 0 0 0 3px rgba(29,78,216,.1);
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .btn-secondary { background: var(--brand); color: #fff; }
+    .btn-secondary:hover { background: var(--brand-dark); }
+
+    /* ── HERO ── */
+    #hero {
+      background: linear-gradient(160deg, var(--brand-dark) 0%, #162C6B 60%, #0F1E4A 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem 3rem;
+      position: relative; overflow: hidden;
+    }
+    #neural-canvas {
+      position: absolute; inset: 0; opacity: .35;
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 760px; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(249,115,22,.15);
+      border: 1px solid rgba(249,115,22,.45);
+      color: var(--accent);
+      font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: .35rem .9rem; border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900; font-size: clamp(2.4rem, 6vw, 4.2rem);
+      color: var(--white); line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+    .hero-title em { color: var(--accent); font-style: normal; }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: rgba(255,255,255,.7);
+      max-width: 560px; margin: 0 auto 2.5rem;
+    }
+    .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .8rem 1.8rem; border-radius: 100px;
+      font-weight: 700; font-size: 1rem; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+      cursor: pointer; border: none;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-dark); }
+    .btn-outline { background: transparent; border: 2px solid rgba(255,255,255,.4); color: white; }
+    .scroll-hint {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,.4); font-size: .8rem; letter-spacing: .05em;
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+    }
+    .scroll-hint::after {
+      content: ''; width: 1px; height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 2rem; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .eyebrow {
+      font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--brand); margin-bottom: .6rem;
+    }
+    .section-title {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900; font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+    .section-desc { color: var(--muted); max-width: 640px; font-size: 1.05rem; margin-bottom: 3rem; }
+
+    /* ── WHAT IS AI ── */
+    #what { background: var(--white); }
+    .what-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2rem; align-items: center;
+    }
+    .what-visual {
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .what-visual::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(249,115,22,.25), transparent 60%);
+    }
+    .brain-emoji { font-size: 7rem; display: block; filter: drop-shadow(0 0 20px rgba(249,115,22,.5)); }
+    .definition-box {
+      background: var(--brand-light); border-radius: var(--radius); padding: 2rem;
+      border-left: 5px solid var(--brand);
+      margin-bottom: 1.5rem;
+    }
+    .definition-box p { font-size: 1.15rem; color: var(--text); line-height: 1.7; }
+    .analogy-cards { display: flex; flex-direction: column; gap: 1rem; }
+    .analogy-card {
+      background: var(--white); border: 1.5px solid var(--gray-200);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      display: flex; align-items: flex-start; gap: 1rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .analogy-card:hover { border-color: var(--brand); box-shadow: 0 4px 16px rgba(29,78,216,.1); }
+    .analogy-icon { font-size: 2rem; flex-shrink: 0; }
+    .analogy-card strong { display: block; font-weight: 700; margin-bottom: .2rem; }
+
+    /* ── HISTORY ── */
+    #history { background: var(--gray-50); }
+    .timeline { position: relative; display: flex; flex-direction: column; gap: 0; }
+    .timeline::before {
+      content: ''; position: absolute; left: 28px; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, var(--brand), var(--brand-mid), var(--accent));
+    }
+    .tl-item {
+      display: flex; gap: 1.5rem; padding-bottom: 2.5rem; position: relative;
+    }
+    .tl-dot {
+      width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      position: relative; z-index: 1;
+      border: 3px solid white;
+      box-shadow: 0 0 0 3px currentColor;
+    }
+    .tl-item:nth-child(1) .tl-dot { background: #DBEAFE; color: var(--brand); box-shadow: 0 0 0 3px var(--brand); }
+    .tl-item:nth-child(2) .tl-dot { background: #EDE9FE; color: var(--purple); box-shadow: 0 0 0 3px var(--purple); }
+    .tl-item:nth-child(3) .tl-dot { background: var(--brand-light); color: var(--brand-mid); box-shadow: 0 0 0 3px var(--brand-mid); }
+    .tl-item:nth-child(4) .tl-dot { background: #D1FAE5; color: var(--green); box-shadow: 0 0 0 3px var(--green); }
+    .tl-item:nth-child(5) .tl-dot { background: var(--accent-light); color: var(--accent); box-shadow: 0 0 0 3px var(--accent); }
+    .tl-item:nth-child(6) .tl-dot { background: var(--accent-light); color: var(--accent-dark); box-shadow: 0 0 0 3px var(--accent-dark); }
+    .tl-body { padding-top: .6rem; }
+    .tl-year { font-size: .8rem; font-weight: 700; color: var(--muted); letter-spacing: .1em; }
+    .tl-body h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.2rem; margin: .2rem 0 .4rem; }
+    .tl-body p { color: var(--muted); font-size: .95rem; }
+
+    /* ── TYPES ── */
+    #types { background: var(--white); }
+    .types-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .type-card {
+      border-radius: var(--radius); padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .type-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.1); }
+    .type-card .tc-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+    .type-card h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: .5rem; }
+    .type-card p { font-size: .95rem; line-height: 1.65; }
+    .type-card .tc-tag {
+      display: inline-block; margin-top: 1rem;
+      font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      padding: .25rem .7rem; border-radius: 100px;
+    }
+    .tc-blue   { background: #DBEAFE; color: var(--brand); }
+    .tc-coral  { background: var(--accent-light); color: var(--accent-dark); }
+    .tc-purple { background: #EDE9FE; color: var(--purple); }
+    .tc-green  { background: #D1FAE5; color: var(--green); }
+    .tc-gold   { background: var(--accent-light); color: var(--accent-dark); }
+
+    /* ── STUDY TIPS ── */
+    #study { background: var(--brand-dark); }
+    #study .eyebrow { color: var(--accent); }
+    #study .section-title { color: var(--white); }
+    #study .section-desc { color: rgba(255,255,255,.6); }
+    .study-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .study-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius); padding: 2rem;
+      transition: background .25s, border-color .25s;
+    }
+    .study-card:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.25); }
+    .study-card .sc-num {
+      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 3rem;
+      color: var(--accent); line-height: 1; margin-bottom: .75rem;
+    }
+    .study-card h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.2rem; color: white; margin-bottom: .5rem; }
+    .study-card p { color: rgba(255,255,255,.6); font-size: .95rem; }
+    .tools-section { margin-top: 4rem; }
+    .tools-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.6rem; color: white; margin-bottom: 1.5rem; }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .tool-pill {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: .85rem;
+      color: white; text-decoration: none;
+      transition: background .2s;
+    }
+    .tool-pill:hover { background: rgba(255,255,255,.12); }
+    .tool-pill .tp-icon { font-size: 1.8rem; }
+    .tool-pill strong { display: block; font-size: .95rem; font-weight: 700; }
+    .tool-pill span { display: block; font-size: .8rem; color: rgba(255,255,255,.5); }
+
+    /* ── ETHICS ── */
+    #ethics { background: var(--gray-50); }
+    #ethics .eyebrow { color: var(--brand); }
+    .ethics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+    .ethics-card {
+      background: white; border-radius: var(--radius); padding: 1.75rem;
+      border-top: 4px solid transparent;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      transition: transform .25s;
+    }
+    .ethics-card:hover { transform: translateY(-3px); }
+    .ethics-card:nth-child(1) { border-top-color: var(--accent); }
+    .ethics-card:nth-child(2) { border-top-color: var(--brand); }
+    .ethics-card:nth-child(3) { border-top-color: var(--purple); }
+    .ethics-card:nth-child(4) { border-top-color: var(--green); }
+    .ethics-card .ec-icon { font-size: 2.4rem; margin-bottom: .75rem; }
+    .ethics-card h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.15rem; margin-bottom: .4rem; }
+    .ethics-card p { color: var(--muted); font-size: .92rem; }
+
+    /* ── QUIZ ── */
+    #quiz { background: linear-gradient(135deg, var(--brand-dark) 0%, #162C6B 100%); }
+    #quiz .eyebrow { color: var(--accent); }
+    #quiz .section-title { color: white; }
+    #quiz .section-desc { color: rgba(255,255,255,.6); }
+    .quiz-box {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 20px; padding: 2.5rem;
+      max-width: 680px;
+    }
+    .quiz-q { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.3rem; color: white; margin-bottom: 1.25rem; }
+    .quiz-q span { color: var(--gold); }
+    .quiz-options { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.5rem; }
+    .quiz-opt {
+      background: rgba(255,255,255,.08);
+      border: 1.5px solid rgba(255,255,255,.15);
+      border-radius: 10px; padding: .9rem 1.2rem;
+      color: white; font-size: .95rem;
+      cursor: pointer; transition: all .2s; text-align: left;
+    }
+    .quiz-opt:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
+    .quiz-opt.correct { background: rgba(52,211,153,.2); border-color: var(--green); color: var(--green); }
+    .quiz-opt.wrong   { background: rgba(255,107,107,.2); border-color: var(--coral); color: var(--coral); }
+    .quiz-feedback { font-size: .95rem; color: rgba(255,255,255,.7); margin-bottom: 1rem; min-height: 1.4em; }
+    .quiz-progress { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .quiz-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,.12); border-radius: 100px; }
+    .quiz-bar-fill { height: 100%; border-radius: 100px; background: var(--accent); transition: width .4s; }
+    .quiz-score { color: rgba(255,255,255,.5); font-size: .85rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy); color: rgba(255,255,255,.5);
+      text-align: center; padding: 2.5rem 2rem;
+      font-size: .88rem;
+    }
+    footer strong { color: white; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .what-grid { grid-template-columns: 1fr; }
+      .what-visual { order: -1; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--navy); padding: 1rem; gap: .25rem; }
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+      .timeline::before { left: 20px; }
+      .tl-dot { width: 44px; height: 44px; font-size: 1rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#" onclick="showPanel('hero');return false;">🤖 The <span>AI</span> Classroom</a>
+  <div class="nav-links" id="navLinks">
+    <a href="#" data-panel="what" onclick="showPanel('what');return false;">What is AI?</a>
+    <a href="#" data-panel="history" onclick="showPanel('history');return false;">History</a>
+    <a href="#" data-panel="types" onclick="showPanel('types');return false;">Types</a>
+    <a href="#" data-panel="study" onclick="showPanel('study');return false;">Study Tools</a>
+    <a href="#" data-panel="ethics" onclick="showPanel('ethics');return false;">Ethics</a>
+    <a href="#" data-panel="quiz" onclick="showPanel('quiz');return false;">Quiz</a>
+    <a href="#" data-panel="mission" onclick="showPanel('mission');return false;">Our Mission</a>
+    <a href="#" data-panel="more-study" onclick="showPanel('more-study');return false;">More Study Material</a>
+    <a href="#" data-panel="resources" onclick="showPanel('resources');return false;">Help &amp; Resources</a>
+    <a href="#" data-panel="contact" onclick="showPanel('contact');return false;">Contact Us</a>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="panel">
+  <canvas id="neural-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">✨ For Students of All Ages</div>
+    <h1 class="hero-title">Understand <em>Artificial Intelligence</em> and Make It Work for You</h1>
+    <p class="hero-sub">From its fascinating history to the tools you can use today, learn everything you need to know about AI. No experience required.</p>
+    <div class="hero-ctas">
+      <a href="#" class="btn btn-primary" onclick="showPanel('what');return false;">🚀 Start Learning</a>
+      <a href="#" class="btn btn-outline" onclick="showPanel('quiz');return false;">🎯 Take the Quiz</a>
+    </div>
+  </div>
+  <div class="scroll-hint">Explore using the menu above</div>
+</section>
+
+<!-- WHAT IS AI -->
+<section id="what" class="panel">
+  <div class="section-inner">
+    <div class="what-grid">
+      <div>
+        <div class="eyebrow">Chapter 1</div>
+        <h2 class="section-title">What Is Artificial Intelligence?</h2>
+        <div class="definition-box">
+          <p><strong>Artificial Intelligence (AI)</strong> is the ability of a computer or machine to do things that normally require human intelligence, like learning, problem-solving, understanding language, and recognising patterns.</p>
+        </div>
+        <div class="analogy-cards">
+          <div class="analogy-card">
+            <span class="analogy-icon">🐶</span>
+            <div>
+              <strong>Think of it like training a dog</strong>
+              You show a dog what "sit" means over and over. AI learns the same way, from lots of examples, until it gets good at a task.
+            </div>
+          </div>
+          <div class="analogy-card">
+            <span class="analogy-icon">🎵</span>
+            <div>
+              <strong>Like a music recommendation</strong>
+              When Spotify suggests a song you love, that's AI noticing your patterns and predicting what you'll enjoy next.
+            </div>
+          </div>
+          <div class="analogy-card">
+            <span class="analogy-icon">📷</span>
+            <div>
+              <strong>Like face unlock on your phone</strong>
+              Your phone's camera learned what your face looks like and recognises it every time. That's AI at work.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="what-visual">
+        <span class="brain-emoji">🧠</span>
+        <p style="color:rgba(255,255,255,.7);margin-top:1rem;font-size:.95rem;">AI combines data, algorithms, and computing power to simulate intelligent behaviour.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section id="history" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Chapter 2</div>
+    <h2 class="section-title">A Brief History of AI</h2>
+    <p class="section-desc">AI didn't appear overnight. It's been built by brilliant minds over decades of discovery, setbacks, and breakthroughs.</p>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot">💡</div>
+        <div class="tl-body">
+          <div class="tl-year">1950</div>
+          <h3>Alan Turing asks "Can Machines Think?"</h3>
+          <p>British mathematician Alan Turing published a landmark paper proposing the "Turing Test," a way to measure whether a machine could exhibit intelligent behaviour indistinguishable from a human.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">🎓</div>
+        <div class="tl-body">
+          <div class="tl-year">1956</div>
+          <h3>The Birth of "Artificial Intelligence"</h3>
+          <p>John McCarthy coined the term "Artificial Intelligence" at the Dartmouth Conference, which gathered top scientists to discuss the possibility of machines that could learn and reason.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">🥶</div>
+        <div class="tl-body">
+          <div class="tl-year">1970s–80s</div>
+          <h3>The "AI Winters": Hype Meets Reality</h3>
+          <p>Progress stalled and funding dried up twice. Computers weren't powerful enough, and AI systems couldn't handle real-world complexity. These periods were called "AI winters."</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">♟️</div>
+        <div class="tl-body">
+          <div class="tl-year">1997</div>
+          <h3>Deep Blue Beats the World Chess Champion</h3>
+          <p>IBM's Deep Blue defeated Garry Kasparov, the reigning world chess champion, a milestone proving computers could outperform humans in complex strategic thinking.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">📸</div>
+        <div class="tl-body">
+          <div class="tl-year">2012</div>
+          <h3>Deep Learning Revolution</h3>
+          <p>A neural network called AlexNet shattered records in image recognition, kicking off the modern deep learning era. Suddenly AI could see, hear, and understand the world far better than before.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">💬</div>
+        <div class="tl-body">
+          <div class="tl-year">2022–Today</div>
+          <h3>The Age of Generative AI</h3>
+          <p>ChatGPT, Claude, DALL·E, and other generative AI tools became mainstream, allowing anyone, including students, to write, code, create art, and solve problems with AI assistance.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TYPES -->
+<section id="types" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Chapter 3</div>
+    <h2 class="section-title">Types of AI</h2>
+    <p class="section-desc">AI isn't one thing. It's a whole family of different technologies, each with its own strengths and purposes.</p>
+    <div class="types-grid">
+      <div class="type-card tc-blue" style="background:#EFF6FF;">
+        <div class="tc-icon">🤖</div>
+        <h3>Machine Learning</h3>
+        <p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get, like learning to spot spam emails from millions of examples.</p>
+        <span class="tc-tag tc-blue">Learning from data</span>
+      </div>
+      <div class="type-card tc-coral" style="background:#FFF4EE;">
+        <div class="tc-icon">🕸️</div>
+        <h3>Neural Networks</h3>
+        <p>Inspired by the human brain, these are layers of connected "neurons" that process information. They're behind face recognition, voice assistants, and self-driving cars.</p>
+        <span class="tc-tag tc-coral">Brain-inspired</span>
+      </div>
+      <div class="type-card tc-purple" style="background:#FAF5FF;">
+        <div class="tc-icon">💬</div>
+        <h3>Natural Language Processing</h3>
+        <p>AI that understands and generates human language. This powers chatbots, translation tools, voice assistants like Siri, and AI writing tools.</p>
+        <span class="tc-tag tc-purple">Language & text</span>
+      </div>
+      <div class="type-card tc-green" style="background:#ECFDF5;">
+        <div class="tc-icon">👁️</div>
+        <h3>Computer Vision</h3>
+        <p>AI that can "see" and interpret images and video. Used in medical imaging, self-driving cars, facial recognition, and even art generation.</p>
+        <span class="tc-tag tc-green">Seeing the world</span>
+      </div>
+      <div class="type-card tc-gold" style="background:#FFF4EE;">
+        <div class="tc-icon">🎨</div>
+        <h3>Generative AI</h3>
+        <p>AI that creates new content, including text, images, music, code, and video. Tools like Claude, ChatGPT, DALL·E, and Midjourney all fall into this category.</p>
+        <span class="tc-tag tc-gold">Creating content</span>
+      </div>
+      <div class="type-card" style="background:#F0F4FF;">
+        <div class="tc-icon">♟️</div>
+        <h3>Reinforcement Learning</h3>
+        <p>AI that learns by trial and error, receiving rewards for good decisions. This is how AI learns to play games, optimise supply chains, and control robots.</p>
+        <span class="tc-tag" style="background:#DBEAFE;color:#1D4ED8;">Trial & reward</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STUDY TOOLS -->
+<section id="study" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Chapter 4</div>
+    <h2 class="section-title">How to Use AI in Your Studies & Life</h2>
+    <p class="section-desc">AI is one of the most powerful tools a student has ever had. Here's how to use it responsibly and effectively.</p>
+    <div class="study-grid">
+      <div class="study-card">
+        <div class="sc-num">01</div>
+        <h3>Research & Summarising</h3>
+        <p>Ask AI to explain complex topics in simple terms, summarise long articles, or give you a quick overview of a subject before you dive deeper into real sources.</p>
+      </div>
+      <div class="study-card">
+        <div class="sc-num">02</div>
+        <h3>Writing & Feedback</h3>
+        <p>Use AI to get feedback on your essays, check grammar, brainstorm ideas, or understand how to improve your arguments. Then rewrite in your own words.</p>
+      </div>
+      <div class="study-card">
+        <div class="sc-num">03</div>
+        <h3>Maths & Problem Solving</h3>
+        <p>AI can walk you through maths problems step by step, explain where you went wrong, or generate practice problems to sharpen your skills.</p>
+      </div>
+      <div class="study-card">
+        <div class="sc-num">04</div>
+        <h3>Learning New Languages</h3>
+        <p>Chat with AI in a foreign language to practice conversation, ask for translations, or get grammar explained in a way that actually makes sense.</p>
+      </div>
+      <div class="study-card">
+        <div class="sc-num">05</div>
+        <h3>Coding & Technology</h3>
+        <p>AI is an incredible coding tutor. It can explain code line by line, help you debug errors, suggest improvements, and even generate starter code to learn from.</p>
+      </div>
+      <div class="study-card">
+        <div class="sc-num">06</div>
+        <h3>Creative Projects</h3>
+        <p>Generate ideas for stories, artwork concepts, music lyrics, presentation designs, and more. Use AI as a creative collaborator, not a replacement for your own voice.</p>
+      </div>
+    </div>
+
+    <div class="tools-section">
+      <div class="tools-title">🛠️ AI Tools Worth Knowing</div>
+      <div class="tools-grid">
+        <a class="tool-pill" href="https://claude.ai" target="_blank">
+          <span class="tp-icon">🤖</span>
+          <div><strong>Claude</strong><span>Writing, research & analysis</span></div>
+        </a>
+        <a class="tool-pill" href="https://chat.openai.com" target="_blank">
+          <span class="tp-icon">💬</span>
+          <div><strong>ChatGPT</strong><span>General purpose AI assistant</span></div>
+        </a>
+        <a class="tool-pill" href="https://www.khanacademy.org/khan-labs" target="_blank">
+          <span class="tp-icon">📚</span>
+          <div><strong>Khanmigo</strong><span>AI tutor by Khan Academy</span></div>
+        </a>
+        <a class="tool-pill" href="https://copilot.microsoft.com" target="_blank">
+          <span class="tp-icon">🪟</span>
+          <div><strong>Microsoft Copilot</strong><span>AI in Word, Excel & more</span></div>
+        </a>
+        <a class="tool-pill" href="https://www.grammarly.com" target="_blank">
+          <span class="tp-icon">✏️</span>
+          <div><strong>Grammarly</strong><span>AI writing & grammar tool</span></div>
+        </a>
+        <a class="tool-pill" href="https://www.canva.com/ai-image-generator/" target="_blank">
+          <span class="tp-icon">🎨</span>
+          <div><strong>Canva AI</strong><span>Design & image generation</span></div>
+        </a>
+        <a class="tool-pill" href="https://notebooklm.google.com" target="_blank">
+          <span class="tp-icon">📓</span>
+          <div><strong>NotebookLM</strong><span>AI notebook by Google</span></div>
+        </a>
+        <a class="tool-pill" href="https://www.duolingo.com" target="_blank">
+          <span class="tp-icon">🦉</span>
+          <div><strong>Duolingo</strong><span>AI-powered language learning</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETHICS -->
+<section id="ethics" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Chapter 5</div>
+    <h2 class="section-title">Using AI Responsibly</h2>
+    <p class="section-desc">AI is a powerful tool, and like all powerful tools, it comes with responsibilities. Here's what every student should know.</p>
+    <div class="ethics-grid">
+      <div class="ethics-card">
+        <div class="ec-icon">🎓</div>
+        <h3>Academic Integrity</h3>
+        <p>Using AI to do your work for you and submitting it as your own is dishonest. Use AI to <em>help you learn</em>, not to replace your thinking. Always check your school's AI policy.</p>
+      </div>
+      <div class="ethics-card">
+        <div class="ec-icon">🔍</div>
+        <h3>Fact-Check Everything</h3>
+        <p>AI can "hallucinate," confidently stating false information. Always verify important facts from AI with trusted sources like books, academic papers, or reputable websites.</p>
+      </div>
+      <div class="ethics-card">
+        <div class="ec-icon">🔒</div>
+        <h3>Privacy & Safety</h3>
+        <p>Never share personal information, passwords, or sensitive details with AI tools. Be aware of what data apps collect, and get a parent or guardian's guidance if you're unsure.</p>
+      </div>
+      <div class="ethics-card">
+        <div class="ec-icon">⚖️</div>
+        <h3>Bias & Fairness</h3>
+        <p>AI learns from human-created data, which can contain biases. AI systems can reflect and even amplify those biases, something researchers and developers are actively working to fix.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Test Your Knowledge</div>
+    <h2 class="section-title">Quick AI Quiz</h2>
+    <p class="section-desc">See how much you've learned! Answer the questions below.</p>
+    <div class="quiz-box">
+      <div class="quiz-progress">
+        <div class="quiz-bar-bg"><div class="quiz-bar-fill" id="quizBar" style="width:0%"></div></div>
+        <span class="quiz-score" id="quizScore">0 / 5</span>
+      </div>
+      <div class="quiz-q" id="quizQ"><span id="quizNum">Q1.</span> <span id="quizText"></span></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="btn btn-primary" id="quizNext" onclick="nextQuestion()" style="display:none;">Next Question →</button>
+      <div id="quizResult" style="display:none;text-align:center;padding-top:1rem;">
+        <div style="font-size:3rem;margin-bottom:.75rem;" id="resultEmoji">🎉</div>
+        <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.8rem;color:white;" id="resultTitle"></div>
+        <div style="color:rgba(255,255,255,.6);margin:.5rem 0 1.5rem;" id="resultDesc"></div>
+        <button class="btn btn-primary" onclick="restartQuiz()">Try Again 🔄</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUR MISSION -->
+<section id="mission" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Why We Exist</div>
+    <h2 class="section-title">Our Mission</h2>
+    <p class="section-desc">We believe every student, regardless of age, background, or access, deserves to understand the technology that's reshaping their world.</p>
+
+    <div class="definition-box" style="margin-bottom:2rem;">
+      <p>Our mission is to make Artificial Intelligence understandable, approachable, and genuinely useful for students of every age. We strip away the hype and the jargon, and replace it with clear explanations, real examples, and practical skills students can use today, in their homework, their projects, and their everyday curiosity.</p>
+    </div>
+
+    <div class="types-grid">
+      <div class="type-card tc-blue" style="background:#EFF6FF;">
+        <div class="tc-icon">🎯</div>
+        <h3>Clarity Over Hype</h3>
+        <p>We explain AI the way a good teacher would, with patience, honest analogies, and zero unnecessary jargon.</p>
+      </div>
+      <div class="type-card tc-green" style="background:#ECFDF5;">
+        <div class="tc-icon">🌍</div>
+        <h3>Access For Everyone</h3>
+        <p>This site is free, ad-free, and designed to work for learners of every age, background, and skill level.</p>
+      </div>
+      <div class="type-card tc-gold" style="background:#FFF4EE;">
+        <div class="tc-icon">⚖️</div>
+        <h3>Responsible Use</h3>
+        <p>We teach AI literacy alongside AI ethics, so students learn to use these tools wisely, not blindly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MORE STUDY MATERIAL -->
+<section id="more-study" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">Go Deeper</div>
+    <h2 class="section-title">More Study Material</h2>
+    <p class="section-desc">Ready to go beyond the basics? Here are more topics, organized by subject, to keep building your AI knowledge.</p>
+
+    <div class="types-grid">
+      <div class="type-card tc-blue" style="background:#EFF6FF;">
+        <div class="tc-icon">🧮</div>
+        <h3>The Math Behind AI</h3>
+        <p>Explore linear algebra, probability, and calculus concepts that power machine learning, explained without requiring a math degree.</p>
+        <span class="tc-tag tc-blue">Intermediate</span>
+      </div>
+      <div class="type-card tc-purple" style="background:#FAF5FF;">
+        <div class="tc-icon">🔤</div>
+        <h3>How ChatGPT & Claude Work</h3>
+        <p>A deep dive into transformers, tokens, and how large language models actually generate human-like text.</p>
+        <span class="tc-tag tc-purple">Intermediate</span>
+      </div>
+      <div class="type-card tc-coral" style="background:#FFF4EE;">
+        <div class="tc-icon">🏥</div>
+        <h3>AI in Medicine</h3>
+        <p>Learn how AI helps doctors detect cancer earlier, discover new drugs faster, and personalize patient care.</p>
+        <span class="tc-tag tc-coral">Beginner</span>
+      </div>
+      <div class="type-card tc-green" style="background:#ECFDF5;">
+        <div class="tc-icon">🚗</div>
+        <h3>Self-Driving Cars</h3>
+        <p>How computer vision, sensors, and real-time decision-making come together to let cars "see" the road.</p>
+        <span class="tc-tag tc-green">Beginner</span>
+      </div>
+      <div class="type-card tc-gold" style="background:#FFF4EE;">
+        <div class="tc-icon">🎮</div>
+        <h3>AI in Games</h3>
+        <p>From chess engines to non-player characters, discover how game AI thinks and reacts in real time.</p>
+        <span class="tc-tag tc-gold">Beginner</span>
+      </div>
+      <div class="type-card" style="background:#F0F4FF;">
+        <div class="tc-icon">🔬</div>
+        <h3>AI Research Careers</h3>
+        <p>Curious about working in AI? Explore the paths, from research scientist to AI ethicist to ML engineer.</p>
+        <span class="tc-tag" style="background:#DBEAFE;color:#1D4ED8;">All Levels</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ADDITIONAL HELP & RESOURCES -->
+<section id="resources" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">We've Got You</div>
+    <h2 class="section-title">Additional Help &amp; Resources</h2>
+    <p class="section-desc">Stuck on something, or want to explore further on your own? Here's where to look next.</p>
+
+    <div class="definition-box" style="margin-bottom:2rem;">
+      <p><strong>New to AI?</strong> Start with the "What is AI?" and "History" sections in the menu above, then take the quiz to test what you've learned.</p>
+    </div>
+
+    <div class="types-grid">
+      <div class="type-card tc-blue" style="background:#EFF6FF;">
+        <div class="tc-icon">📺</div>
+        <h3>Recommended Videos</h3>
+        <p>3Blue1Brown's neural network series and Crash Course AI — both completely free — are excellent video explainers for visual learners.</p>
+      </div>
+      <div class="type-card tc-green" style="background:#ECFDF5;">
+        <div class="tc-icon">📖</div>
+        <h3>Recommended Reading</h3>
+        <p>"AI Superpowers" by Kai-Fu Lee and "Life 3.0" by Max Tegmark — two of the most accessible books on the topic — are great for curious students.</p>
+      </div>
+      <div class="type-card tc-purple" style="background:#FAF5FF;">
+        <div class="tc-icon">🏫</div>
+        <h3>Free Online Courses</h3>
+        <p>Khan Academy, Coursera's "AI For Everyone," and Google's "AI Essentials" — all free and beginner-friendly — are great places to start.</p>
+      </div>
+      <div class="type-card tc-gold" style="background:#FFF4EE;">
+        <div class="tc-icon">❓</div>
+        <h3>Frequently Asked Questions</h3>
+        <p>Wondering if AI will take over jobs, or whether it's "alive"? Visit our Contact page and ask. We love these questions.</p>
+      </div>
+      <div class="type-card tc-coral" style="background:#FFF4EE;">
+        <div class="tc-icon">🛠️</div>
+        <h3>Troubleshooting AI Tools</h3>
+        <p>Getting strange or unhelpful answers from a chatbot? Try being more specific, breaking your question into smaller parts, or giving an example of the kind of answer you want.</p>
+      </div>
+      <div class="type-card" style="background:#F0F4FF;">
+        <div class="tc-icon">🗂️</div>
+        <h3>Glossary of AI Terms</h3>
+        <p>Confused by a term like "token," "parameter," or "fine-tuning"? Check the definitions woven throughout our lessons, or ask us directly through the Contact page.</p>
+      </div>
+      <div class="type-card tc-green" style="background:#ECFDF5;">
+        <div class="tc-icon">🧑‍🏫</div>
+        <h3>For Teachers &amp; Parents</h3>
+        <p>Looking for guidance on how to introduce AI concepts at home or in the classroom? We've collected age-appropriate talking points and discussion questions, available on request.</p>
+      </div>
+      <div class="type-card tc-purple" style="background:#FAF5FF;">
+        <div class="tc-icon">💼</div>
+        <h3>AI Tools for Job Hunting</h3>
+        <p>Older students can use AI to polish resumes, prepare for interviews, and research companies — a practical, real-world application beyond the classroom.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT US -->
+<section id="contact" class="panel">
+  <div class="section-inner">
+    <div class="eyebrow">We'd Love to Hear From You</div>
+    <h2 class="section-title">Contact Us</h2>
+    <p class="section-desc">Questions, feedback, or ideas for new topics? Send us a message below.</p>
+
+    <div class="what-grid">
+      <div>
+        <div class="definition-box">
+          <p><strong>Email:</strong> hello@aiforeveryone.example<br/>
+          <strong>Response time:</strong> Usually within 1–2 business days.</p>
+        </div>
+        <div class="analogy-cards">
+          <div class="analogy-card">
+            <span class="analogy-icon">🎓</span>
+            <div><strong>Students</strong>Ask us anything about AI. No question is too basic.</div>
+          </div>
+          <div class="analogy-card">
+            <span class="analogy-icon">🏫</span>
+            <div><strong>Teachers</strong>Interested in using this site in your classroom? Let us know.</div>
+          </div>
+          <div class="analogy-card">
+            <span class="analogy-icon">👪</span>
+            <div><strong>Parents</strong>Have a question about how your child can learn safely? Reach out.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div id="contact-form-wrap" class="card" style="padding:2rem;">
+          <form id="contactForm" onsubmit="submitContact(event)">
+            <div class="form-group">
+              <label for="c-name">Full Name</label>
+              <input type="text" id="c-name" placeholder="Alex Johnson" required/>
+            </div>
+            <div class="form-group">
+              <label for="c-email">Email</label>
+              <input type="email" id="c-email" placeholder="you@example.com" required/>
+            </div>
+            <div class="form-group">
+              <label for="c-message">Message</label>
+              <textarea id="c-message" placeholder="Tell us what's on your mind..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Send Message →</button>
+          </form>
+        </div>
+        <div id="form-success" class="card" style="display:none;text-align:center;padding:2.5rem 1.5rem;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">📬</div>
+          <h3 style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.5rem;">Message Sent!</h3>
+          <p style="color:var(--muted);">Thanks for reaching out. We'll get back to you within 1 to 2 business days.</p>
+          <button class="btn btn-secondary" style="margin-top:1.25rem;" onclick="resetContactForm()">Send Another Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Made with ❤️ for curious learners everywhere. <strong>The AI Classroom</strong></p>
+  <p style="margin-top:.5rem;">Remember: AI is a tool. <em>You</em> are the thinker.</p>
+</footer>
+
+<script>
+  /* ── PANEL NAVIGATION ── */
+  const allPanelIds = ['hero','what','history','types','study','ethics','quiz','mission','more-study','resources','contact'];
+
+  function showPanel(id) {
+    allPanelIds.forEach(pid => {
+      const el = document.getElementById(pid);
+      if (el) el.classList.toggle('visible', pid === id);
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.classList.toggle('active', a.dataset.panel === id);
+    });
+    document.getElementById('navLinks').classList.remove('open');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // Show hero by default on load
+  showPanel('hero');
+
+  /* ── CONTACT FORM ── */
+  function submitContact(e) {
+    e.preventDefault();
+    document.getElementById('contact-form-wrap').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }
+  function resetContactForm() {
+    document.getElementById('contactForm').reset();
+    document.getElementById('contact-form-wrap').style.display = '';
+    document.getElementById('form-success').style.display = 'none';
+  }
+
+  /* ── HAMBURGER ── */
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  /* ── NEURAL NETWORK CANVAS ── */
+  const canvas = document.getElementById('neural-canvas');
+  const ctx = canvas.getContext('2d');
+  let nodes = [], animFrame;
+
+  function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    initNodes();
+  }
+
+  function initNodes() {
+    nodes = [];
+    const count = Math.floor((canvas.width * canvas.height) / 18000);
+    for (let i = 0; i < count; i++) {
+      nodes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - .5) * .4,
+        vy: (Math.random() - .5) * .4,
+        r: Math.random() * 2.5 + 1.5,
+        pulse: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function drawCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const t = Date.now() * .001;
+
+    nodes.forEach(n => {
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+      if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+      const glow = .5 + .5 * Math.sin(t * 1.5 + n.pulse);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * (1 + .3 * glow), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(96,165,250,${.5 + .5 * glow})`;
+      ctx.fill();
+    });
+
+    nodes.forEach((a, i) => {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const b = nodes[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 150) {
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(147,197,253,${(1 - dist/150) * .4})`;
+          ctx.lineWidth = .8;
+          ctx.stroke();
+        }
+      }
+    });
+
+    animFrame = requestAnimationFrame(drawCanvas);
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+  drawCanvas();
+
+  /* ── QUIZ ── */
+  const questions = [
+    {
+      q: "Who coined the term 'Artificial Intelligence'?",
+      opts: ["Alan Turing", "John McCarthy", "Elon Musk", "Albert Einstein"],
+      ans: 1,
+      feedback: "✅ Correct! John McCarthy coined the term at the 1956 Dartmouth Conference."
+    },
+    {
+      q: "What is 'Machine Learning'?",
+      opts: [
+        "A robot that can walk",
+        "AI that learns from data without being explicitly programmed",
+        "A type of computer virus",
+        "Software that fixes bugs automatically"
+      ],
+      ans: 1,
+      feedback: "✅ Exactly! Machine learning systems improve by learning from examples and data."
+    },
+    {
+      q: "What is it called when an AI confidently states something that is false?",
+      opts: ["A glitch", "A hallucination", "A bug", "An error 404"],
+      ans: 1,
+      feedback: "✅ Right! AI 'hallucinations' are when a model generates convincing but incorrect information."
+    },
+    {
+      q: "Which of these is an example of AI you probably use every day?",
+      opts: ["A light switch", "A bicycle", "Music recommendations on Spotify", "A printed book"],
+      ans: 2,
+      feedback: "✅ Spot on! Music recommendation engines use AI to predict what you'll enjoy."
+    },
+    {
+      q: "What is the best way to use AI for your homework?",
+      opts: [
+        "Copy its answer word for word",
+        "Use it to help you understand the topic, then write in your own words",
+        "Ask it to do the entire assignment for you",
+        "Only use it during tests"
+      ],
+      ans: 1,
+      feedback: "✅ Perfect! AI is most valuable as a learning tool, not a shortcut."
+    }
+  ];
+
+  let current = 0, score = 0, answered = false;
+
+  function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('quizNum').textContent = `Q${current+1}.`;
+    document.getElementById('quizText').textContent = q.q;
+    document.getElementById('quizFeedback').textContent = '';
+    document.getElementById('quizNext').style.display = 'none';
+    answered = false;
+
+    const opts = document.getElementById('quizOptions');
+    opts.innerHTML = '';
+    q.opts.forEach((o, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt';
+      btn.textContent = o;
+      btn.onclick = () => selectAnswer(i);
+      opts.appendChild(btn);
+    });
+
+    updateProgress();
+  }
+
+  function selectAnswer(idx) {
+    if (answered) return;
+    answered = true;
+    const q = questions[current];
+    const btns = document.querySelectorAll('.quiz-opt');
+    btns.forEach((b, i) => {
+      if (i === q.ans) b.classList.add('correct');
+      else if (i === idx) b.classList.add('wrong');
+    });
+    if (idx === q.ans) { score++; }
+    document.getElementById('quizFeedback').textContent = idx === q.ans ? q.feedback : `❌ Not quite. The answer was: "${q.opts[q.ans]}"`;
+    document.getElementById('quizNext').style.display = 'inline-flex';
+    if (current === questions.length - 1) {
+      document.getElementById('quizNext').textContent = 'See Results 🎉';
+    }
+    updateProgress();
+  }
+
+  function nextQuestion() {
+    current++;
+    if (current >= questions.length) {
+      showResult(); return;
+    }
+    loadQuestion();
+  }
+
+  function updateProgress() {
+    const pct = (current / questions.length) * 100;
+    document.getElementById('quizBar').style.width = pct + '%';
+    document.getElementById('quizScore').textContent = `${score} / ${questions.length}`;
+  }
+
+  function showResult() {
+    document.getElementById('quizQ').style.display = 'none';
+    document.getElementById('quizOptions').style.display = 'none';
+    document.getElementById('quizFeedback').style.display = 'none';
+    document.getElementById('quizNext').style.display = 'none';
+    document.getElementById('quizResult').style.display = 'block';
+    document.getElementById('quizBar').style.width = '100%';
+    document.getElementById('quizScore').textContent = `${score} / ${questions.length}`;
+
+    const pct = score / questions.length;
+    let emoji, title, desc;
+    if (pct === 1)       { emoji='🏆'; title='Perfect Score!'; desc="You're an AI expert! Outstanding work."; }
+    else if (pct >= .8)  { emoji='🌟'; title='Amazing Job!'; desc='You really know your AI. Keep it up!'; }
+    else if (pct >= .6)  { emoji='👍'; title='Good Work!'; desc='Solid understanding. Go review the sections you missed.'; }
+    else if (pct >= .4)  { emoji='📚'; title='Keep Learning!'; desc='Read through the chapters again and try once more.'; }
+    else                 { emoji='💪'; title='Keep Going!'; desc="AI takes time to learn. You've got this!"; }
+
+    document.getElementById('resultEmoji').textContent = emoji;
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultDesc').textContent = desc;
+  }
+
+  function restartQuiz() {
+    current = 0; score = 0; answered = false;
+    document.getElementById('quizQ').style.display = '';
+    document.getElementById('quizOptions').style.display = '';
+    document.getElementById('quizFeedback').style.display = '';
+    document.getElementById('quizResult').style.display = 'none';
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+</body>
+</html>
