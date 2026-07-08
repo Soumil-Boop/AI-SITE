@@ -1,0 +1,59 @@
+/* ============================================================
+   grid.css — Layout Grids Used Across All Pages
+   ============================================================ */
+
+/* Generic auto-fit grid for cards */
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; }
+
+/* Two-column layout (text + visual) */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+/* Timeline layout */
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 28px; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--brand), var(--brand-mid), var(--accent));
+}
+.tl-item {
+  display: flex;
+  gap: 1.5rem;
+  padding-bottom: 2.5rem;
+  position: relative;
+}
+.tl-dot {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  position: relative;
+  z-index: 1;
+  border: 3px solid white;
+}
+.tl-body { padding-top: .6rem; }
+.tl-year { font-size: .8rem; font-weight: 700; color: var(--muted); letter-spacing: .1em; }
+.tl-body h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.2rem; margin: .2rem 0 .4rem; }
+.tl-body p  { color: var(--muted); font-size: .95rem; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .two-col { grid-template-columns: 1fr; }
+  .timeline::before { left: 20px; }
+  .tl-dot { width: 44px; height: 44px; font-size: 1rem; }
+}

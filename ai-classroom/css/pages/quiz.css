@@ -1,0 +1,39 @@
+/* ============================================================
+   quiz.css — Quiz Section Styles
+   ============================================================ */
+.quiz-box {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 680px;
+}
+.quiz-q {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: white;
+  margin-bottom: 1.25rem;
+}
+.quiz-q span { color: var(--accent); }
+.quiz-options { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.5rem; }
+.quiz-opt {
+  background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.15);
+  border-radius: var(--radius-sm);
+  padding: .9rem 1.2rem;
+  color: white;
+  font-size: .95rem;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+.quiz-opt:hover  { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
+.quiz-opt.correct { background: rgba(52,211,153,.2);  border-color: var(--green);  color: var(--green); }
+.quiz-opt.wrong   { background: rgba(249,115,22,.2);  border-color: var(--accent); color: var(--accent); }
+.quiz-feedback { font-size: .95rem; color: rgba(255,255,255,.7); margin-bottom: 1rem; min-height: 1.4em; }
+.quiz-progress { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.quiz-bar-bg   { flex: 1; height: 6px; background: rgba(255,255,255,.12); border-radius: 100px; }
+.quiz-bar-fill { height: 100%; border-radius: 100px; background: var(--accent); transition: width .4s; }
+.quiz-score    { color: rgba(255,255,255,.5); font-size: .85rem; }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Find My AI Tool — The AI Classroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css/base/variables.css"/>
+    <link rel="stylesheet" href="../css/base/reset.css"/>
+    <link rel="stylesheet" href="../css/base/typography.css"/>
+    <link rel="stylesheet" href="../css/components/nav.css"/>
+    <link rel="stylesheet" href="../css/components/buttons.css"/>
+    <link rel="stylesheet" href="../css/components/cards.css"/>
+    <link rel="stylesheet" href="../css/components/forms.css"/>
+    <link rel="stylesheet" href="../css/layout/grid.css"/>
+    <link rel="stylesheet" href="../css/layout/sections.css"/>
+    <link rel="stylesheet" href="../css/pages/finder.css"/>
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<div class="page-hero">
+  <span class="eyebrow eyebrow--accent">Personalised Recommendation</span>
+  <h1>Find My AI Tool</h1>
+  <p>Type what you are trying to do or what you are stuck on, in your own words, and we will match you with the right AI tools.</p>
+</div>
+<section>
+  <div class="section-inner">
+    <div class="finder-search-wrap">
+      <div class="finder-input-row">
+        <input type="text" id="finderInput" class="finder-input" placeholder="e.g. 'I need help writing an essay' or 'best free AI for coding'"/>
+        <button class="btn btn--primary" onclick="runFinderSearch()">Search →</button>
+      </div>
+      <div class="finder-chips">
+        <span class="finder-chip-label">Try:</span>
+        <button class="finder-chip" onclick="quickFinderSearch('help me write essays')">Writing essays</button>
+        <button class="finder-chip" onclick="quickFinderSearch('best free ai for coding')">Free coding help</button>
+        <button class="finder-chip" onclick="quickFinderSearch('ai tutor for studying')">A study tutor</button>
+        <button class="finder-chip" onclick="quickFinderSearch('generate images for a project')">Generating images</button>
+      </div>
+    </div>
+    <div id="finderResults" class="finder-results">
+      <div class="finder-empty">
+        <span class="fe-icon">🔎</span>
+        <p>Start typing above to see AI tools matched to your needs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <p>Made with ❤️ for curious learners everywhere. <strong>The AI Classroom</strong></p>
+  <p style="margin-top:.5rem;">AI is a tool. <em>You</em> are the thinker.</p>
+</footer>
+
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/core/nav.js"></script>
+  <script src="../data/tools-data.js"></script>
+  <script src="../js/components/finder.js"></script>
+<script>mountNav('finder.html');</script>
+</body>
+</html>

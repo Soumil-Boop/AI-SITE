@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us — The AI Classroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css/base/variables.css"/>
+    <link rel="stylesheet" href="../css/base/reset.css"/>
+    <link rel="stylesheet" href="../css/base/typography.css"/>
+    <link rel="stylesheet" href="../css/components/nav.css"/>
+    <link rel="stylesheet" href="../css/components/buttons.css"/>
+    <link rel="stylesheet" href="../css/components/cards.css"/>
+    <link rel="stylesheet" href="../css/components/forms.css"/>
+    <link rel="stylesheet" href="../css/layout/grid.css"/>
+    <link rel="stylesheet" href="../css/layout/sections.css"/>
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<div class="page-hero">
+  <span class="eyebrow eyebrow--accent">We Would Love to Hear From You</span>
+  <h1>Get in Touch</h1>
+  <p>Questions, feedback, or ideas for new topics? Send us a message below.</p>
+</div>
+<section>
+  <div class="section-inner">
+    <div class="two-col">
+      <div>
+        <h2 class="section-title">Let us Talk</h2>
+        <p class="section-desc">Whether you are a student with a question, a teacher interested in using this resource, or you spotted something that needs fixing, we want to hear from you.</p>
+        <div style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:2rem;">
+          <div class="analogy-card"><span class="analogy-icon">✉️</span><div><strong>Email Us</strong><span style="color:var(--muted);font-size:.9rem;">hello@theaiclassroom.example</span></div></div>
+          <div class="analogy-card"><span class="analogy-icon">⏱️</span><div><strong>Response Time</strong><span style="color:var(--muted);font-size:.9rem;">We typically reply within 1 to 2 business days</span></div></div>
+          <div class="analogy-card"><span class="analogy-icon">🏫</span><div><strong>For Educators</strong><span style="color:var(--muted);font-size:.9rem;">Ask about bringing this curriculum to your classroom</span></div></div>
+        </div>
+      </div>
+      <div class="card" style="padding:2rem;">
+        <div id="contact-form-wrap">
+          <form id="contactForm" onsubmit="submitContact(event)">
+            <div class="form-group"><label for="c-name">Full Name</label><input type="text" id="c-name" placeholder="Your name" required/></div>
+            <div class="form-group"><label for="c-email">Email</label><input type="email" id="c-email" placeholder="you@example.com" required/></div>
+            <div class="form-group"><label for="c-message">Message</label><textarea id="c-message" placeholder="Tell us what is on your mind..." required></textarea></div>
+            <button type="submit" class="btn btn--primary btn--full">Send Message →</button>
+          </form>
+        </div>
+        <div id="form-success" style="display:none;text-align:center;padding:2rem;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">📬</div>
+          <h3 style="font-family:'Nunito',sans-serif;font-weight:900;margin-bottom:.5rem;">Message Sent!</h3>
+          <p style="color:var(--muted);">Thanks for reaching out. We will get back to you within 1 to 2 business days.</p>
+          <button class="btn btn--secondary" style="margin-top:1.25rem;" onclick="resetContactForm()">Send Another Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <p>Made with ❤️ for curious learners everywhere. <strong>The AI Classroom</strong></p>
+  <p style="margin-top:.5rem;">AI is a tool. <em>You</em> are the thinker.</p>
+</footer>
+
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/core/nav.js"></script>
+  <script src="../js/components/contact.js"></script>
+<script>mountNav('contact.html');</script>
+</body>
+</html>

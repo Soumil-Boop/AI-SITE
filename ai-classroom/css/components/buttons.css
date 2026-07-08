@@ -1,0 +1,46 @@
+/* ============================================================
+   buttons.css — Button Styles
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .75rem 1.75rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s, background .2s;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Variants */
+.btn--primary  { background: var(--accent);      color: #fff; }
+.btn--primary:hover  { background: var(--accent-dark); }
+
+.btn--secondary { background: var(--brand);       color: #fff; }
+.btn--secondary:hover { background: var(--brand-dark); }
+
+.btn--outline {
+  background: transparent;
+  border: 2px solid rgba(255,255,255,.4);
+  color: white;
+}
+.btn--ghost {
+  background: var(--gray-100);
+  color: var(--text);
+}
+.btn--ghost:hover { background: var(--gray-200); }
+
+/* Sizes */
+.btn--sm { padding: .45rem 1rem; font-size: .875rem; }
+.btn--lg { padding: 1rem 2.25rem; font-size: 1.1rem; }
+
+/* Full width */
+.btn--full { width: 100%; justify-content: center; }

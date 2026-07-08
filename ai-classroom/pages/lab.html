@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visual Learning Lab — The AI Classroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css/base/variables.css"/>
+    <link rel="stylesheet" href="../css/base/reset.css"/>
+    <link rel="stylesheet" href="../css/base/typography.css"/>
+    <link rel="stylesheet" href="../css/components/nav.css"/>
+    <link rel="stylesheet" href="../css/components/buttons.css"/>
+    <link rel="stylesheet" href="../css/components/cards.css"/>
+    <link rel="stylesheet" href="../css/components/forms.css"/>
+    <link rel="stylesheet" href="../css/layout/grid.css"/>
+    <link rel="stylesheet" href="../css/layout/sections.css"/>
+    <link rel="stylesheet" href="../css/pages/lab.css"/>
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<div class="lab-hero">
+  <span class="eyebrow eyebrow--accent">Interactive Learning</span>
+  <h2 class="section-title text-white">Visual Learning Lab 🧪</h2>
+  <p class="text-white" style="opacity:.7;max-width:580px;margin:0 auto;">Learn by doing. Pick a subject, choose your level, and watch concepts come alive with interactive visuals and a friendly tutor that cheers you on.</p>
+</div>
+<section>
+  <div class="section-inner">
+    <div class="lab-picker">
+      <div class="lab-picker-group">
+        <span class="lab-picker-label">📚 Subject</span>
+        <div class="lab-picker-options" id="subjectPicker">
+          <button class="lab-pick active" onclick="setSubject('addition',this)">➕ Addition</button>
+          <button class="lab-pick" onclick="setSubject('subtraction',this)">➖ Subtraction</button>
+          <button class="lab-pick" onclick="setSubject('multiplication',this)">✖️ Multiplication</button>
+          <button class="lab-pick" onclick="setSubject('counting',this)">🔢 Counting</button>
+        </div>
+      </div>
+      <div class="lab-picker-group">
+        <span class="lab-picker-label">🎯 Difficulty</span>
+        <div class="lab-picker-options" id="diffPicker">
+          <button class="lab-pick active" onclick="setDifficulty('easy',this)">🌱 Easy</button>
+          <button class="lab-pick" onclick="setDifficulty('medium',this)">🌿 Medium</button>
+          <button class="lab-pick" onclick="setDifficulty('hard',this)">🌳 Hard</button>
+        </div>
+      </div>
+    </div>
+    <div class="tutor-wrap">
+      <div class="tutor-avatar" id="tutorAvatar">🤖</div>
+      <div class="tutor-bubble" id="tutorBubble">Hi! I am Axon, your AI tutor. Press <strong>New Question</strong> to start!</div>
+    </div>
+    <div class="lab-question-card" id="labQuestionCard" style="display:none;">
+      <div class="lab-question-text" id="labQuestionText"></div>
+      <div class="lab-blocks-area" id="labBlocksArea"></div>
+      <div class="lab-number-line-wrap" id="labNumberLineWrap" style="display:none;">
+        <div class="lab-number-line" id="labNumberLine"></div>
+      </div>
+      <div class="lab-answer-row">
+        <span class="lab-equation" id="labEquation"></span>
+        <input type="number" id="labAnswerInput" class="lab-answer-input" placeholder="?" min="0" max="999" onkeydown="if(event.key==='Enter') checkAnswer()"/>
+        <button class="btn btn--primary" onclick="checkAnswer()">Check ✓</button>
+      </div>
+      <div class="lab-feedback" id="labFeedback"></div>
+    </div>
+    <div class="lab-controls">
+      <button class="btn btn--secondary" onclick="generateQuestion()">🎲 New Question</button>
+      <button class="btn btn--ghost" onclick="showHint()">💡 Give me a Hint</button>
+      <div class="lab-score-wrap">
+        <span class="lab-score-label">Score</span>
+        <span class="lab-score" id="labScore">0</span>
+        <span class="lab-score-label">Streak</span>
+        <span class="lab-streak" id="labStreak">0 🔥</span>
+      </div>
+    </div>
+    <div class="lab-progress-wrap">
+      <span class="lab-progress-label">Session Progress</span>
+      <div class="lab-progress-bg"><div class="lab-progress-fill" id="labProgressFill" style="width:0%"></div></div>
+      <div class="lab-progress-text" id="labProgressText">0 answered</div>
+    </div>
+    <div class="lab-celebration" id="labCelebration">
+      <div class="lab-celebration-inner">
+        <span class="lab-celebration-emoji" id="celebEmoji">🎉</span>
+        <div class="lab-celebration-text" id="celebText">Correct!</div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <p>Made with ❤️ for curious learners everywhere. <strong>The AI Classroom</strong></p>
+  <p style="margin-top:.5rem;">AI is a tool. <em>You</em> are the thinker.</p>
+</footer>
+
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/core/nav.js"></script>
+  <script src="../js/components/lab.js"></script>
+<script>mountNav('lab.html');</script>
+</body>
+</html>

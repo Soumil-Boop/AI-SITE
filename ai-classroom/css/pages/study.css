@@ -1,0 +1,7 @@
+/* ============================================================
+   study.css — Study Tools Page Styles
+   ============================================================ */
+.study-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+.tools-section { margin-top: 4rem; }
+.tools-title   { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.6rem; color: white; margin-bottom: 1.5rem; }
+.tools-grid    { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
