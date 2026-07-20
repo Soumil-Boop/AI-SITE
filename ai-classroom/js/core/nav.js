@@ -48,13 +48,40 @@ function mountNav(activePage) {
         </svg>
         The <span>AI</span> Classroom
       </a>
-      <div class="nav-links" id="navLinks">${links}</div>
+      <div class="nav-links" id="navLinks">
+        ${links}
+        <a href="login.html"     id="navSignIn"     class="nav-auth-btn">Sign In</a>
+        <a href="dashboard.html" id="navDashboard"  class="nav-auth-btn nav-dashboard-btn" style="display:none;">My Dashboard</a>
+      </div>
       <button class="hamburger" onclick="toggleMobileNav()" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
     </nav>`;
+
+  // Wire up auth state — show/hide Sign In vs Dashboard
+  _initNavAuth();
 }
 
 function toggleMobileNav() {
   document.getElementById('navLinks').classList.toggle('open');
+}
+
+/* ── AUTH STATE: show Sign In or Dashboard depending on login status ── */
+function _initNavAuth() {
+  try {
+    // Dynamically import so nav works even before Firebase is set up
+    import('../js/auth/auth.js').then(({ onAuthChange }) => {
+      onAuthChange(user => {
+        const signInEl   = document.getElementById('navSignIn');
+        const dashEl     = document.getElementById('navDashboard');
+        if (!signInEl || !dashEl) return;
+        signInEl.style.display = user ? 'none'   : 'inline-flex';
+        dashEl.style.display   = user ? 'inline-flex' : 'none';
+      });
+    }).catch(() => {
+      // Firebase not set up yet — Sign In link stays visible, no error thrown
+    });
+  } catch(e) {
+    // Silently ignore if module imports aren't supported
+  }
 }

@@ -2,6 +2,9 @@
    lab.js — Visual Learning Lab Logic
    ============================================================ */
 
+import { saveLabSession } from '../db/progress.js';
+import { getCurrentUser } from '../auth/auth.js';
+ 
 const LAB = {
   subject: 'addition',
   difficulty: 'easy',
@@ -228,4 +231,16 @@ function showCelebration() {
   const cel = document.getElementById('labCelebration');
   cel.classList.add('show');
   setTimeout(() => cel.classList.remove('show'), 1800);
+}
+
+const user = getCurrentUser();
+if (user) {
+  const newBadges = await saveLabSession(user.uid, {
+    subject, curriculum, ageGroup, topic,
+    correct: LAB.score,
+    wrong:   LAB.answered - LAB.score,
+    streak:  LAB.streak
+  });
+  // Show badge notifications if any were earned
+  newBadges?.forEach(badge => showBadgeToast(badge));
 }

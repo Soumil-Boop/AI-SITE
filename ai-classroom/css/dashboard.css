@@ -1,0 +1,201 @@
+/* ============================================================
+   dashboard.css — Styles for login, dashboard, and admin pages
+   ============================================================ */
+
+/* ── AUTH GATE ──────────────────────────────────────────────── */
+.auth-gate {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: white; z-index: 9999;
+}
+.auth-gate-inner { text-align: center; color: var(--muted); }
+.auth-spinner {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid var(--brand-light);
+  border-top-color: var(--brand);
+  animation: spin .8s linear infinite;
+  margin: 0 auto 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── AUTH PAGE ──────────────────────────────────────────────── */
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--brand-dark), #162C6B);
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+.auth-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.3);
+}
+.auth-logo { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.75rem; }
+.auth-logo-text { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.3rem; }
+.auth-tabs { display: flex; border-bottom: 2px solid var(--gray-100); margin-bottom: 1.5rem; }
+.auth-tab {
+  flex: 1; padding: .65rem; font-weight: 700; font-size: .95rem;
+  background: none; border: none; border-bottom: 3px solid transparent;
+  margin-bottom: -2px; cursor: pointer; color: var(--muted); transition: all .2s;
+}
+.auth-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+.auth-submit { width: 100%; justify-content: center; margin-top: .75rem; }
+.auth-error { color: var(--accent-dark); font-size: .85rem; min-height: 1.2em; margin: .25rem 0; }
+.auth-divider { text-align: center; margin: 1.25rem 0; color: var(--muted); font-size: .85rem; position: relative; }
+.auth-divider::before, .auth-divider::after {
+  content: ''; position: absolute; top: 50%; width: 42%; height: 1px;
+  background: var(--gray-100);
+}
+.auth-divider::before { left: 0; }
+.auth-divider::after  { right: 0; }
+.btn-google {
+  width: 100%; display: flex; align-items: center; justify-content: center;
+  gap: .75rem; padding: .7rem; border: 2px solid var(--gray-100);
+  border-radius: 100px; background: white; font-weight: 600; cursor: pointer;
+  margin-bottom: .75rem; transition: border-color .2s;
+}
+.btn-google:hover { border-color: var(--brand); }
+.auth-guest { width: 100%; justify-content: center; color: var(--muted); }
+.auth-terms { font-size: .75rem; color: var(--muted); text-align: center; margin-top: 1rem; }
+
+/* ── DASHBOARD HERO ─────────────────────────────────────────── */
+.dash-hero {
+  background: linear-gradient(135deg, var(--brand-dark), #162C6B);
+  padding: 3rem 2rem 2.5rem;
+}
+.dash-hero-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; gap: 1.5rem;
+}
+.dash-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--accent); color: white;
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border: 3px solid rgba(255,255,255,.3);
+}
+.dash-hero h1 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2rem; color: white; }
+.dash-role-badge {
+  display: inline-block; background: rgba(255,255,255,.15);
+  color: white; font-size: .72rem; font-weight: 700;
+  padding: .2rem .7rem; border-radius: 100px; margin-top: .4rem;
+  letter-spacing: .08em; text-transform: uppercase;
+}
+
+/* ── STAT CARDS ─────────────────────────────────────────────── */
+.dash-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+  gap: 1rem; margin: 2rem 0;
+}
+.dash-stat-card {
+  background: white; border: 1.5px solid var(--gray-100);
+  border-radius: var(--radius); padding: 1.25rem;
+  text-align: center;
+}
+.dash-stat-num   { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2rem; color: var(--brand); display: block; }
+.dash-stat-label { font-size: .78rem; color: var(--muted); font-weight: 600; margin-top: .25rem; display: block; }
+
+/* ── CHARTS ─────────────────────────────────────────────────── */
+.dash-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+.dash-chart-card { background: white; border: 1.5px solid var(--gray-100); border-radius: var(--radius); padding: 1.5rem; }
+
+/* ── SECTION TITLE ──────────────────────────────────────────── */
+.dash-section-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text); margin: 2rem 0 1rem; }
+
+/* ── BADGES ─────────────────────────────────────────────────── */
+.dash-badges { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem; }
+.dash-badge-card {
+  background: white; border: 1.5px solid var(--gray-100);
+  border-radius: var(--radius); padding: 1rem 1.25rem;
+  text-align: center; min-width: 130px;
+}
+.dash-badge-icon { font-size: 2rem; display: block; margin-bottom: .5rem; }
+.dash-badge-card strong { font-size: .88rem; color: var(--text); display: block; }
+.dash-badge-card p { font-size: .75rem; color: var(--muted); margin-top: .25rem; }
+
+/* ── PREFERENCES ────────────────────────────────────────────── */
+.dash-prefs { padding: 1.5rem; margin-bottom: 2.5rem; }
+.dash-pref-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.dash-pref-label { font-weight: 600; font-size: .9rem; color: var(--text); flex: 1; }
+.dash-pref-select, .dash-pref-input {
+  padding: .5rem .85rem; border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm); font-size: .9rem; color: var(--text);
+  background: white; flex: 1.5; max-width: 300px; font-family: 'Inter', sans-serif;
+  outline: none; transition: border-color .2s;
+}
+.dash-pref-select:focus, .dash-pref-input:focus { border-color: var(--brand); }
+.dash-save-msg { color: var(--green); font-size: .85rem; font-weight: 600; margin-left: 1rem; }
+
+/* ── ACTIVITY ───────────────────────────────────────────────── */
+.dash-activity { margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: .5rem; }
+.dash-activity-row {
+  display: flex; align-items: center; gap: .85rem;
+  background: white; border: 1.5px solid var(--gray-100);
+  border-radius: var(--radius-sm); padding: .85rem 1rem;
+}
+.dash-activity-icon { font-size: 1.3rem; }
+
+/* ── DANGER ZONE ────────────────────────────────────────────── */
+.dash-danger { padding: 1.5rem; margin-bottom: 3rem; border: 1.5px solid #FCA5A5; }
+.dash-danger-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.btn-danger {
+  background: #DC2626; color: white; border: none;
+  padding: .55rem 1.25rem; border-radius: 100px;
+  font-weight: 700; cursor: pointer; transition: background .2s;
+}
+.btn-danger:hover { background: #B91C1C; }
+
+/* ── MODAL ──────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 1rem;
+}
+.modal-box {
+  background: white; border-radius: 20px;
+  padding: 2rem; max-width: 420px; width: 100%;
+  box-shadow: 0 24px 60px rgba(0,0,0,.3);
+}
+.modal-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.4rem; margin-bottom: .5rem; }
+.modal-desc  { color: var(--muted); font-size: .9rem; line-height: 1.6; }
+.modal-error { color: #DC2626; font-size: .85rem; min-height: 1.2em; }
+.modal-actions { display: flex; gap: .75rem; margin-top: 1rem; }
+
+/* ── BADGE TOAST ────────────────────────────────────────────── */
+.badge-toast {
+  position: fixed; bottom: 2rem; right: 2rem;
+  background: white; border: 2px solid var(--accent);
+  border-radius: var(--radius); padding: 1rem 1.25rem;
+  display: flex; align-items: center; gap: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  z-index: 9999; animation: slideUp .3s ease;
+  max-width: 320px;
+}
+@keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+.badge-toast-icon { font-size: 2rem; flex-shrink: 0; }
+.badge-toast strong { font-family: 'Nunito', sans-serif; font-weight: 900; display: block; }
+.badge-toast p { font-size: .82rem; color: var(--muted); margin-top: .2rem; }
+
+/* ── ADMIN TABLE ────────────────────────────────────────────── */
+.admin-table-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.admin-search { padding: .5rem 1rem; border: 1.5px solid var(--gray-200); border-radius: 100px; font-size: .88rem; outline: none; width: 260px; }
+.admin-table-wrap { overflow-x: auto; border: 1.5px solid var(--gray-100); border-radius: var(--radius); margin-bottom: 3rem; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.admin-table th { background: var(--gray-50); padding: .75rem 1rem; text-align: left; font-weight: 700; color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; }
+.admin-table td { padding: .85rem 1rem; border-top: 1px solid var(--gray-100); }
+.admin-table tr:hover td { background: var(--gray-50); }
+.admin-role-badge { font-size: .7rem; font-weight: 700; padding: .2rem .6rem; border-radius: 100px; text-transform: uppercase; letter-spacing: .06em; }
+.admin-role-student { background: var(--brand-light); color: var(--brand); }
+.admin-role-admin   { background: #FEF3C7; color: #92400E; }
+.admin-actions { display: flex; gap: .4rem; }
+.btn-admin-action { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: .2rem .4rem; border-radius: 6px; transition: background .2s; }
+.btn-admin-action:hover { background: var(--gray-100); }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dash-charts { grid-template-columns: 1fr; }
+  .dash-stats  { grid-template-columns: repeat(2, 1fr); }
+  .admin-search { width: 100%; }
+}

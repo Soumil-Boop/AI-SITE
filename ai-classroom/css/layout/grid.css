@@ -32,6 +32,8 @@
   display: flex;
   gap: 1.5rem;
   padding-bottom: 2.5rem;
+  padding-top: 4px;
+  padding-left: 4px;
   position: relative;
 }
 .tl-dot {

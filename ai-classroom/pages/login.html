@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In - The AI Classroom</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/base/variables.css"/>
+  <link rel="stylesheet" href="../css/base/reset.css"/>
+  <link rel="stylesheet" href="../css/base/typography.css"/>
+  <link rel="stylesheet" href="../css/components/buttons.css"/>
+  <link rel="stylesheet" href="../css/components/forms.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+  <script>
+    function switchTab(tab) {
+      document.getElementById('signInForm').style.display = tab === 'signin' ? 'block' : 'none';
+      document.getElementById('signUpForm').style.display = tab === 'signup' ? 'block' : 'none';
+      document.getElementById('tabSignIn').classList.toggle('active', tab === 'signin');
+      document.getElementById('tabSignUp').classList.toggle('active', tab === 'signup');
+    }
+  </script>
+</head>
+<body class="auth-page">
+
+<div class="auth-card">
+
+  <a href="../index.html" style="text-decoration:none;"><div class="auth-logo">
+    <span style="font-size:2rem;">🧠</span>
+    <span class="auth-logo-text">The <span style="color:var(--accent);">AI</span> Classroom</span>
+  </div></a>
+
+  <div class="auth-tabs">
+    <button class="auth-tab active" id="tabSignIn" onclick="switchTab('signin')">Sign In</button>
+    <button class="auth-tab" id="tabSignUp" onclick="switchTab('signup')">Sign Up</button>
+  </div>
+
+  <form id="signInForm" onsubmit="handleSignIn(event)">
+    <div class="form-group">
+      <label for="siEmail">Email</label>
+      <input type="email" id="siEmail" placeholder="you@example.com" required/>
+    </div>
+    <div class="form-group">
+      <label for="siPassword">Password</label>
+      <input type="password" id="siPassword" placeholder="Your password" required/>
+    </div>
+    <p class="auth-error" id="signInError"></p>
+    <button type="submit" class="btn btn-primary auth-submit">Sign In</button>
+  </form>
+
+  <form id="signUpForm" onsubmit="handleSignUp(event)" style="display:none;">
+    <div class="form-group">
+      <label for="suName">Your Name</label>
+      <input type="text" id="suName" placeholder="e.g. Priya Sharma" required/>
+    </div>
+    <div class="form-group">
+      <label for="suEmail">Email</label>
+      <input type="email" id="suEmail" placeholder="you@example.com" required/>
+    </div>
+    <div class="form-group">
+      <label for="suPassword">Password</label>
+      <input type="password" id="suPassword" placeholder="At least 6 characters" required minlength="6"/>
+    </div>
+    <div class="form-group">
+      <label for="suCurriculum">Your Curriculum</label>
+      <select id="suCurriculum">
+        <option value="cbse">CBSE (India)</option>
+        <option value="icse">ICSE (India)</option>
+        <option value="uk">UK National Curriculum</option>
+        <option value="us">US Common Core</option>
+        <option value="ib">IB</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="suAge">Your Age Group</label>
+      <select id="suAge">
+        <option value="5-7">Ages 5-7</option>
+        <option value="8-10">Ages 8-10</option>
+        <option value="11-13" selected>Ages 11-13</option>
+        <option value="14-16">Ages 14-16</option>
+      </select>
+    </div>
+    <p class="auth-error" id="signUpError"></p>
+    <button type="submit" class="btn btn-primary auth-submit">Create Account</button>
+  </form>
+
+  <div class="auth-divider"><span>or</span></div>
+
+  <button class="btn btn-google" onclick="handleGoogle()">
+    <svg width="18" height="18" viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+    Continue with Google
+  </button>
+
+  <button class="btn btn-ghost auth-guest" onclick="handleGuest()">Continue as Guest</button>
+
+  <p class="auth-terms">By signing up you agree to use AI responsibly. Felix is watching.</p>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+
+firebase.initializeApp({
+  apiKey: "AIzaSyDX2tV-DbdeubspGyTqd4ARkRwDV9XQREQ",
+  authDomain: "ai-classroom-ad779.firebaseapp.com",
+  projectId: "ai-classroom-ad779",
+  storageBucket: "ai-classroom-ad779.firebasestorage.app",
+  messagingSenderId: "433385304033",
+  appId: "1:433385304033:web:ab53d599b22b8bd4766ca0"
+});
+
+var auth = firebase.auth();
+var db = firebase.firestore();
+
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    // Check role before redirecting
+    db.collection('users').doc(user.uid).get().then(function(snap) {
+      if (snap.exists && snap.data().role === 'admin') {
+        // Show role selector for admins
+        } else {
+        window.location.href = 'dashboard.html';
+      }
+    }).catch(function() {
+      window.location.href = 'dashboard.html';
+    });
+  }
+});
+
+function createProfile(uid, name, email) {
+  var curriculum = 'cbse';
+  var ageGroup = '11-13';
+  var currEl = document.getElementById('suCurriculum');
+  var ageEl = document.getElementById('suAge');
+  if (currEl) curriculum = currEl.value;
+  if (ageEl) ageGroup = ageEl.value;
+
+  return db.collection('users').doc(uid).set({
+    name: name || 'Student',
+    email: email || '',
+    role: 'student',
+    curriculum: curriculum,
+    ageGroup: ageGroup,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+    totalQuestions: 0,
+    bestStreak: 0,
+    badgesEarned: []
+  }).then(function() {
+    console.log('Profile created successfully');
+  }).catch(function(e) {
+    console.error('Profile creation failed:', e.code, e.message);
+  });
+}
+
+function handleSignUp(e) {
+  e.preventDefault();
+  var name = document.getElementById('suName').value.trim();
+  var email = document.getElementById('suEmail').value.trim();
+  var password = document.getElementById('suPassword').value;
+
+  auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
+    return createProfile(cred.user.uid, name, email);
+  }).then(function() {
+    window.location.href = 'dashboard.html';
+  }).catch(function(err) {
+    document.getElementById('signUpError').textContent = friendlyError(err.code);
+  });
+}
+
+function handleSignIn(e) {
+  e.preventDefault();
+  var email = document.getElementById('siEmail').value.trim();
+  var password = document.getElementById('siPassword').value;
+  auth.signInWithEmailAndPassword(email, password).then(function(cred) {
+    return db.collection('users').doc(cred.user.uid).get();
+  }).then(function(snap) {
+    if (snap.exists && snap.data().role === 'admin') {
+      window.location.href = 'admin.html';
+    } else {
+      window.location.href = 'dashboard.html';
+    }
+  }).catch(function(err) {
+    document.getElementById('signInError').textContent = friendlyError(err.code);
+  });
+}
+
+function handleGoogle() {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).then(function(cred) {
+    return createProfile(cred.user.uid, cred.user.displayName, cred.user.email);
+  }).then(function() {
+    window.location.href = 'dashboard.html';
+  }).catch(function(err) {
+    console.error(err);
+    alert('Google sign-in failed. Please try again.');
+  });
+}
+
+function handleGuest() {
+  auth.signInAnonymously().then(function(cred) {
+    return createProfile(cred.user.uid, 'Guest', '');
+  }).then(function() {
+    window.location.href = '../index.html';
+  }).catch(function(err) {
+    console.error(err);
+  });
+}
+
+function friendlyError(code) {
+  var map = {
+    'auth/user-not-found': 'No account with that email. Try signing up.',
+    'auth/wrong-password': 'Wrong password. Please try again.',
+    'auth/email-already-in-use': 'That email is already registered. Try signing in.',
+    'auth/weak-password': 'Password must be at least 6 characters.',
+    'auth/invalid-email': 'Please enter a valid email address.',
+    'auth/too-many-requests': 'Too many attempts. Please wait a minute and try again.'
+  };
+  return map[code] || 'Something went wrong. Please try again.';
+}
+
+</script>
+
+</body>
+</html>

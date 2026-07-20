@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - The AI Classroom</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/base/variables.css"/>
+  <link rel="stylesheet" href="../css/base/reset.css"/>
+  <link rel="stylesheet" href="../css/base/typography.css"/>
+  <link rel="stylesheet" href="../css/components/buttons.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+</head>
+<body>
+
+<div id="adminGate" class="auth-gate">
+  <div class="auth-gate-inner">
+    <div class="auth-spinner"></div>
+    <p>Verifying admin access...</p>
+  </div>
+</div>
+
+
+<div style="background:#1E3A8A;padding:.65rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+  <a href="../index.html" onclick="event.preventDefault();window.location.replace('../index.html')" style="color:white;font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;text-decoration:none;">
+    ← Back to Site
+  </a>
+  <span style="color:rgba(255,255,255,.7);font-size:.85rem;">Admin Panel</span>
+  <button onclick="auth.signOut().then(function(){ window.location.replace('../index.html'); })" 
+    style="background:rgba(255,255,255,.15);color:white;border:none;border-radius:100px;padding:.35rem .9rem;font-size:.82rem;font-weight:600;cursor:pointer;">
+    Sign Out
+  </button>
+</div>
+<main id="adminMain" style="display:none;">
+  <div class="dash-hero" style="background:linear-gradient(135deg,#3D0C1F,#1A0A10);">
+    <div class="dash-hero-inner">
+      <span style="font-size:2rem;">🛡️</span>
+      <div>
+        <h1>Admin Panel</h1>
+        <p style="color:rgba(255,255,255,.6);">Manage users, view analytics, and control site content.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-inner">
+
+    <h2 class="dash-section-title">Site Analytics</h2>
+    <div class="dash-stats">
+      <div class="dash-stat-card"><span class="dash-stat-num" id="adminTotalUsers">0</span><span class="dash-stat-label">Total Students</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="adminTotalQ">0</span><span class="dash-stat-label">Total Questions Answered</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="adminGuestUsers">0</span><span class="dash-stat-label">Guest Users</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="adminActiveToday">0</span><span class="dash-stat-label">Active Today</span></div>
+    </div>
+
+    <div class="admin-table-header">
+      <h2 class="dash-section-title" style="margin:0;">All Users</h2>
+      <input type="text" id="adminSearch" class="admin-search" placeholder="Search by name or email..." oninput="filterUsers()"/>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table" id="adminUserTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Questions</th>
+            <th>Joined</th>
+            <th>Last Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminUserBody">
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">Loading users...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyDX2tV-DbdeubspGyTqd4ARkRwDV9XQREQ",
+  authDomain: "ai-classroom-ad779.firebaseapp.com",
+  projectId: "ai-classroom-ad779",
+  storageBucket: "ai-classroom-ad779.firebasestorage.app",
+  messagingSenderId: "433385304033",
+  appId: "1:433385304033:web:ab53d599b22b8bd4766ca0"
+});
+
+var auth = firebase.auth();
+var db = firebase.firestore();
+var allUsers = [];
+
+auth.onAuthStateChanged(function(user) {
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+  db.collection('users').doc(user.uid).get().then(function(snap) {
+    if (!snap.exists || snap.data().role !== 'admin') {
+      window.location.href = '../index.html';
+      return;
+    }
+    document.getElementById('adminGate').style.display = 'none';
+    document.getElementById('adminMain').style.display = 'block';
+    loadAdminData();
+  });
+});
+
+function loadAdminData() {
+  db.collection('users').get().then(function(snap) {
+    allUsers = snap.docs.map(function(d) {
+      return Object.assign({ uid: d.id }, d.data());
+    });
+
+    var students  = allUsers.filter(function(u) { return u.role === 'student'; });
+    var guests    = allUsers.filter(function(u) { return !u.email; });
+    var totalQ    = allUsers.reduce(function(s, u) { return s + (u.totalQuestions || 0); }, 0);
+    var today     = new Date().toDateString();
+    var active    = allUsers.filter(function(u) {
+      return u.lastActive && u.lastActive.toDate && u.lastActive.toDate().toDateString() === today;
+    });
+
+    document.getElementById('adminTotalUsers').textContent  = allUsers.length;
+    document.getElementById('adminTotalQ').textContent      = totalQ;
+    document.getElementById('adminGuestUsers').textContent  = guests.length;
+    document.getElementById('adminActiveToday').textContent = active.length;
+
+    renderUserTable(allUsers);
+  });
+}
+
+function renderUserTable(users) {
+  var tbody = document.getElementById('adminUserBody');
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">No users found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = users.map(function(u) {
+    var joined  = u.createdAt  && u.createdAt.toDate  ? u.createdAt.toDate().toLocaleDateString('en-GB')  : 'N/A';
+    var active  = u.lastActive && u.lastActive.toDate ? u.lastActive.toDate().toLocaleDateString('en-GB') : 'N/A';
+    return '<tr>' +
+      '<td>' + (u.name || 'Guest') + '</td>' +
+      '<td style="color:var(--muted);font-size:.88rem;">' + (u.email || 'Anonymous') + '</td>' +
+      '<td><span class="admin-role-badge admin-role-' + u.role + '">' + u.role + '</span></td>' +
+      '<td>' + (u.totalQuestions || 0) + '</td>' +
+      '<td style="font-size:.82rem;color:var(--muted);">' + joined + '</td>' +
+      '<td style="font-size:.82rem;color:var(--muted);">' + active + '</td>' +
+      '<td class="admin-actions">' +
+        '<button class="btn-admin-action" onclick="promoteUser(\'' + u.uid + '\',\'' + u.role + '\')" title="' + (u.role === 'admin' ? 'Demote' : 'Promote') + '">' + (u.role === 'admin' ? '⬇️' : '⬆️') + '</button>' +
+        '<button class="btn-admin-action" onclick="resetProgress(\'' + u.uid + '\')" title="Reset progress">🔄</button>' +
+        '<button class="btn-admin-action" onclick="deleteUser(\'' + u.uid + '\',\'' + (u.name || u.email) + '\')" title="Delete">🗑️</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function filterUsers() {
+  var q = document.getElementById('adminSearch').value.toLowerCase();
+  var filtered = allUsers.filter(function(u) {
+    return (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q);
+  });
+  renderUserTable(filtered);
+}
+
+function promoteUser(uid, currentRole) {
+  var newRole = currentRole === 'admin' ? 'student' : 'admin';
+  if (!confirm('Change this user role to ' + newRole + '?')) return;
+  db.collection('users').doc(uid).update({ role: newRole }).then(function() {
+    loadAdminData();
+  });
+}
+
+function resetProgress(uid) {
+  if (!confirm('Reset all progress for this student? This cannot be undone.')) return;
+  db.collection('users').doc(uid).update({ totalQuestions: 0, bestStreak: 0, badgesEarned: [] }).then(function() {
+    alert('Progress reset.');
+    loadAdminData();
+  });
+}
+
+function deleteUser(uid, name) {
+  if (!confirm('Permanently delete the account for "' + name + '"? This cannot be undone.')) return;
+  db.collection('users').doc(uid).delete().then(function() {
+    allUsers = allUsers.filter(function(u) { return u.uid !== uid; });
+    renderUserTable(allUsers);
+  });
+}
+</script>
+</body>
+</html>
