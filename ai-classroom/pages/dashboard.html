@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Dashboard — The AI Classroom</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../css/base/variables.css"/>
+  <link rel="stylesheet" href="../css/base/reset.css"/>
+  <link rel="stylesheet" href="../css/base/typography.css"/>
+  <link rel="stylesheet" href="../css/components/nav.css"/>
+  <link rel="stylesheet" href="../css/components/buttons.css"/>
+  <link rel="stylesheet" href="../css/components/cards.css"/>
+  <link rel="stylesheet" href="../css/layout/sections.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+</head>
+<body>
+
+<div id="authGate" class="auth-gate">
+  <div class="auth-gate-inner">
+    <div class="auth-spinner"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+</div>
+
+<main id="dashMain" style="display:none;">
+
+  <div class="dash-hero">
+    <div class="dash-hero-inner">
+      <div class="dash-avatar" id="dashAvatar">S</div>
+      <div>
+        <h1 id="dashName">Welcome back!</h1>
+        <p id="dashEmail" style="color:rgba(255,255,255,.6);font-size:.9rem;"></p>
+        <span class="dash-role-badge" id="dashRole">Student</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-inner">
+
+    <div class="dash-stats">
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statTotal">0</span><span class="dash-stat-label">Questions Answered</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statAccuracy">0%</span><span class="dash-stat-label">Overall Accuracy</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statStreak">0</span><span class="dash-stat-label">Best Streak</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statBadges">0</span><span class="dash-stat-label">Badges Earned</span></div>
+    </div>
+
+    <div class="dash-charts">
+      <div class="dash-chart-card"><h2 class="dash-section-title">Score Over Time</h2><canvas id="chartScoreTime" height="200"></canvas></div>
+      <div class="dash-chart-card"><h2 class="dash-section-title">Accuracy by Subject</h2><canvas id="chartSubjectAccuracy" height="200"></canvas></div>
+    </div>
+
+    <h2 class="dash-section-title">Your Badges</h2>
+    <div class="dash-badges" id="dashBadges">
+      <p style="color:var(--muted);">Complete quizzes and lab sessions to earn badges!</p>
+    </div>
+
+    <h2 class="dash-section-title">Your Preferences</h2>
+    <div class="dash-prefs card">
+      <div class="dash-pref-row">
+        <label class="dash-pref-label">Display Name</label>
+        <input type="text" id="prefName" class="dash-pref-input" placeholder="Your name"/>
+      </div>
+      <div class="dash-pref-row">
+        <label class="dash-pref-label">Default Curriculum</label>
+        <select id="prefCurriculum" class="dash-pref-select">
+          <option value="cbse">CBSE (India)</option>
+          <option value="icse">ICSE (India)</option>
+          <option value="uk">UK National Curriculum</option>
+          <option value="us">US Common Core</option>
+          <option value="ib">IB</option>
+        </select>
+      </div>
+      <div class="dash-pref-row">
+        <label class="dash-pref-label">Default Age Group</label>
+        <select id="prefAgeGroup" class="dash-pref-select">
+          <option value="5-7">Ages 5-7</option>
+          <option value="8-10">Ages 8-10</option>
+          <option value="11-13">Ages 11-13</option>
+          <option value="14-16">Ages 14-16</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="savePreferences()">Save Preferences</button>
+      <span class="dash-save-msg" id="prefSaveMsg"></span>
+    </div>
+
+    <h2 class="dash-section-title">Recent Activity</h2>
+    <div class="dash-activity" id="dashActivity">
+      <p style="color:var(--muted);">No activity yet. Start the Lab or take the Quiz!</p>
+    </div>
+
+    <h2 class="dash-section-title" style="color:var(--accent-dark);">Account</h2>
+    <div class="dash-danger card">
+      <div class="dash-danger-row">
+        <div>
+          <strong>Sign Out</strong>
+          <p style="color:var(--muted);font-size:.88rem;margin-top:.25rem;">Sign out of your account on this device.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="handleSignOut()">Sign Out</button>
+      </div>
+      <div class="dash-danger-row" style="margin-top:1rem;">
+        <div>
+          <strong>Delete Account</strong>
+          <p style="color:var(--muted);font-size:.88rem;margin-top:.25rem;">Permanently deletes all your progress and data.</p>
+        </div>
+        <button class="btn btn-danger" onclick="showDeleteModal()">Delete Account</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="modal-overlay" id="deleteModal" style="display:none;">
+  <div class="modal-box">
+    <h2 class="modal-title">Delete your account?</h2>
+    <p class="modal-desc">Type your email address to confirm. This cannot be undone.</p>
+    <input type="email" id="deleteConfirmEmail" class="dash-pref-input" placeholder="your@email.com" style="margin:1rem 0;width:100%;"/>
+    <p class="modal-error" id="deleteError"></p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeleteAccount()">Yes, delete everything</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey:            "AIzaSyDX2tV-DbdeubspGyTqd4ARkRwDV9XQREQ",
+  authDomain:        "ai-classroom-ad779.firebaseapp.com",
+  projectId:         "ai-classroom-ad779",
+  storageBucket:     "ai-classroom-ad779.firebasestorage.app",
+  messagingSenderId: "433385304033",
+  appId:             "1:433385304033:web:ab53d599b22b8bd4766ca0"
+});
+
+var auth = firebase.auth();
+var db   = firebase.firestore();
+var currentUid   = null;
+var currentEmail = '';
+
+var BADGES = {
+  first_quiz:    { name: 'First Step',    desc: 'Completed your first quiz',          icon: '🎯' },
+  streak_10:     { name: 'On Fire',       desc: '10 correct answers in a row',        icon: '🔥' },
+  streak_25:     { name: 'Unstoppable',   desc: '25 correct answers in a row',        icon: '⚡' },
+  streak_50:     { name: 'Legendary',     desc: '50 correct answers in a row',        icon: '👑' },
+  all_subjects:  { name: 'Polymath',      desc: 'Tried all 5 subjects in the Lab',    icon: '📚' },
+  all_exams:     { name: 'Exam Ready',    desc: 'Tried all 5 competitive exams',      icon: '🏛️' },
+  questions_100: { name: 'Century',       desc: 'Answered 100 questions in total',    icon: '💯' },
+  questions_500: { name: 'Scholar',       desc: 'Answered 500 questions in total',    icon: '🎓' },
+  perfect_quiz:  { name: 'Perfect Score', desc: 'Got 5/5 on the AI quiz',             icon: '⭐' }
+};
+
+auth.onAuthStateChanged(function(user) {
+  if (!user) {
+    window.location.href = '../index.html';
+    return;
+  }
+  currentUid   = user.uid;
+  currentEmail = user.email || '';
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('dashMain').style.display  = 'block';
+  loadDashboard(user.uid);
+});
+
+function loadDashboard(uid) {
+  db.collection('users').doc(uid).get().then(function(snap) {
+    // If no profile exists yet, create one now
+    if (!snap.exists) {
+      return db.collection('users').doc(uid).set({
+        name: auth.currentUser.displayName || auth.currentUser.email || 'Student',
+        email: auth.currentUser.email || '',
+        role: 'student',
+        curriculum: 'cbse',
+        ageGroup: '11-13',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+        totalQuestions: 0,
+        bestStreak: 0,
+        badgesEarned: []
+      }).then(function() {
+        console.log('Profile created from dashboard');
+        return db.collection('users').doc(uid).get();
+      });
+    }
+    return snap;
+  }).then(function(snap) {
+    var profile = snap.exists ? snap.data() : {};
+
+    document.getElementById('dashName').textContent  = profile.name  || 'Student';
+    var roleEl = document.getElementById('dashRole');
+    if (roleEl) roleEl.textContent = (profile.role || 'student').charAt(0).toUpperCase() + (profile.role || 'student').slice(1);
+    document.getElementById('dashEmail').textContent = profile.email || 'Guest';
+    document.getElementById('dashAvatar').textContent = (profile.name || 'S')[0].toUpperCase();
+    document.getElementById('prefName').value         = profile.name  || '';
+    document.getElementById('prefCurriculum').value   = profile.curriculum || 'cbse';
+    document.getElementById('prefAgeGroup').value     = profile.ageGroup   || '11-13';
+    document.getElementById('statTotal').textContent  = profile.totalQuestions || 0;
+    document.getElementById('statStreak').textContent = profile.bestStreak    || 0;
+    document.getElementById('statBadges').textContent = (profile.badgesEarned || []).length;
+
+    renderBadges(profile.badgesEarned || []);
+  }).catch(function(e) {
+    console.error('Failed to load profile:', e);
+  });
+
+  loadActivity(uid);
+}
+
+function loadActivity(uid) {
+  db.collection('progress').doc(uid).collection('lab')
+    .orderBy('timestamp', 'desc').limit(5).get()
+    .then(function(snap) {
+      var sessions = snap.docs.map(function(d) { return d.data(); });
+      renderActivity(sessions);
+    }).catch(function() {});
+}
+
+function renderBadges(earned) {
+  var el = document.getElementById('dashBadges');
+  if (!earned.length) return;
+  el.innerHTML = earned.map(function(id) {
+    var b = BADGES[id];
+    if (!b) return '';
+    return '<div class="dash-badge-card"><span class="dash-badge-icon">' + b.icon + '</span><strong>' + b.name + '</strong><p>' + b.desc + '</p></div>';
+  }).join('');
+}
+
+function renderActivity(sessions) {
+  var el = document.getElementById('dashActivity');
+  if (!sessions.length) return;
+  el.innerHTML = sessions.map(function(s) {
+    return '<div class="dash-activity-row"><span class="dash-activity-icon">🧪</span><div><strong>' + (s.subject || 'Lab') + '</strong><span style="color:var(--muted);font-size:.82rem;margin-left:.5rem;">' + (s.accuracy || 0) + '% accuracy</span></div></div>';
+  }).join('');
+}
+
+function savePreferences() {
+  var name       = document.getElementById('prefName').value.trim();
+  var curriculum = document.getElementById('prefCurriculum').value;
+  var ageGroup   = document.getElementById('prefAgeGroup').value;
+  db.collection('users').doc(currentUid).update({ name: name, curriculum: curriculum, ageGroup: ageGroup })
+    .then(function() {
+      var msg = document.getElementById('prefSaveMsg');
+      msg.textContent = 'Saved!';
+      setTimeout(function() { msg.textContent = ''; }, 2000);
+    });
+}
+
+function handleSignOut() {
+  auth.signOut().then(function() {
+    window.location.replace('../index.html');
+  });
+}
+
+function showDeleteModal()  { document.getElementById('deleteModal').style.display = 'flex'; }
+function closeDeleteModal() { document.getElementById('deleteModal').style.display = 'none'; }
+
+function confirmDeleteAccount() {
+  var typed = document.getElementById('deleteConfirmEmail').value.trim();
+  if (typed !== currentEmail) {
+    document.getElementById('deleteError').textContent = "Email doesn't match. Please try again.";
+    return;
+  }
+  db.collection('users').doc(currentUid).delete().then(function() {
+    return auth.currentUser.delete();
+  }).then(function() {
+    window.location.href = '../index.html';
+  }).catch(function(e) {
+    document.getElementById('deleteError').textContent = 'Please sign out and sign in again before deleting.';
+  });
+}
+</script>
+</body>
+</html>

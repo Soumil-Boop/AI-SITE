@@ -2,6 +2,9 @@
    quiz.js — Quiz Component Logic
    ============================================================ */
 
+import { saveQuizSession } from '../db/progress.js';
+import { getCurrentUser } from '../auth/auth.js';
+
 const QUIZ_QUESTIONS = [
   { q: "Who coined the term 'Artificial Intelligence'?", opts: ["Alan Turing","John McCarthy","Elon Musk","Albert Einstein"], ans: 1, fb: "Correct! John McCarthy coined the term at the 1956 Dartmouth Conference." },
   { q: "What is Machine Learning?", opts: ["A robot that can walk","AI that learns from data without being explicitly programmed","A type of computer virus","Software that fixes bugs automatically"], ans: 1, fb: "Exactly! Machine learning systems improve by learning from examples and data." },
@@ -90,6 +93,11 @@ function restartQuiz() {
   });
   document.getElementById('quizResult').style.display = 'none';
   loadQuestion();
+}
+
+const user = getCurrentUser();
+if (user) {
+  await saveQuizSession(user.uid, { score, total: 5, answers });
 }
 
 // Init
