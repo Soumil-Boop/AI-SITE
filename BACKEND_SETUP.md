@@ -1,183 +1,239 @@
 # The AI Classroom — Backend Setup Guide
 
-## Step 1: Create a Firebase project
+## Current Status (July 2026)
 
-1. Go to [console.firebase.google.com](https://console.firebase.google.com)
-2. Click **Add project** and name it `ai-classroom`
-3. Disable Google Analytics (not needed)
-4. Click **Create project**
-
----
-
-## Step 2: Enable Authentication
-
-1. In the Firebase console, click **Authentication** in the left sidebar
-2. Click **Get started**
-3. Enable these sign-in methods:
-   - **Email/Password** — toggle on
-   - **Google** — toggle on, add your project support email
-   - **Anonymous** — toggle on (this is the guest mode)
+Firebase is fully set up and working:
+- Firebase project: ai-classroom-ad779
+- Authentication: Email/Password, Google, Anonymous — all enabled
+- Firestore: Created, region asia-south2, Standard edition
+- Firestore rules: Published and working
+- login.html, dashboard.html, admin.html: All using Firebase compat SDK
+- Admin account: sharmasoumil88@gmail.com (role set to admin in Firestore)
+- Student dashboard: Working, auto-creates Firestore profile on load
+- Admin panel: Working, shows all users and analytics
 
 ---
 
-## Step 3: Create Firestore Database
+## IMPORTANT: How Firebase is Implemented
 
-1. Click **Firestore Database** in the left sidebar
-2. Click **Create database**
-3. Choose **Start in production mode**
-4. Select a region close to your users (e.g. `asia-south1` for India, `europe-west2` for UK)
-5. Click **Enable**
-
----
-
-## Step 4: Add Firestore Security Rules
-
-1. In Firestore, click the **Rules** tab
-2. Delete all existing rules
-3. Copy and paste the contents of `firestore.rules` from this folder
-4. Click **Publish**
-
----
-
-## Step 5: Get your Firebase config
-
-1. In Firebase console, click the ⚙️ gear icon > **Project Settings**
-2. Scroll down to **Your apps** and click the `</>` Web icon
-3. Register your app with the name `ai-classroom-web`
-4. Copy the `firebaseConfig` object shown
-5. Open `js/firebase-config.js` and replace all the placeholder values with yours
-
----
-
-## Step 6: Add the files to your project
-
-Copy these files into your existing `ai-classroom/` folder:
-
-```
-js/firebase-config.js      → ai-classroom/js/firebase-config.js
-js/auth/auth.js            → ai-classroom/js/auth/auth.js
-js/db/users.js             → ai-classroom/js/db/users.js
-js/db/progress.js          → ai-classroom/js/db/progress.js
-js/db/badges.js            → ai-classroom/js/db/badges.js
-pages/login.html           → ai-classroom/pages/login.html
-pages/dashboard.html       → ai-classroom/pages/dashboard.html
-pages/admin.html           → ai-classroom/pages/admin.html
-css/dashboard.css          → ai-classroom/css/dashboard.css
-```
-
----
-
-## Step 7: Add Sign In button to the nav
-
-In your `js/core/nav.js`, add a sign in link to the nav HTML:
+login.html, dashboard.html, and admin.html use the Firebase COMPAT SDK loaded via CDN script tags:
 
 ```html
-<a href="pages/login.html" id="navSignIn">Sign In</a>
-<a href="pages/dashboard.html" id="navDashboard" style="display:none;">My Dashboard</a>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 ```
 
-Then add this logic to show/hide based on auth state:
+Then initialized with:
+```js
+firebase.initializeApp({ ...config... });
+var auth = firebase.auth();
+var db = firebase.firestore();
+```
+
+DO NOT switch these to ES module imports. The modular SDK caused silent failures. The compat SDK works reliably.
+
+---
+
+## Firebase Credentials
+
+These are hardcoded in login.html, dashboard.html, and admin.html:
 
 ```js
-import { onAuthChange } from '../auth/auth.js';
-
-onAuthChange(user => {
-  document.getElementById('navSignIn').style.display    = user ? 'none'  : 'inline';
-  document.getElementById('navDashboard').style.display = user ? 'inline': 'none';
+firebase.initializeApp({
+  apiKey: "AIzaSyDX2tV-DbdeubspGyTqd4ARkRwDV9XQREQ",
+  authDomain: "ai-classroom-ad779.firebaseapp.com",
+  projectId: "ai-classroom-ad779",
+  storageBucket: "ai-classroom-ad779.firebasestorage.app",
+  messagingSenderId: "433385304033",
+  appId: "1:433385304033:web:ab53d599b22b8bd4766ca0"
 });
 ```
 
 ---
 
-## Step 8: Connect Lab and Quiz to save progress
+## Firestore Security Rules (current)
 
-In your `js/components/lab.js`, after a session ends call:
-
-```js
-import { saveLabSession } from '../db/progress.js';
-import { getCurrentUser } from '../auth/auth.js';
-
-const user = getCurrentUser();
-if (user) {
-  const newBadges = await saveLabSession(user.uid, {
-    subject, curriculum, ageGroup, topic,
-    correct: LAB.score,
-    wrong:   LAB.answered - LAB.score,
-    streak:  LAB.streak
-  });
-  // Show badge notifications if any were earned
-  newBadges?.forEach(badge => showBadgeToast(badge));
-}
 ```
-
-In your `js/components/quiz.js`, after quiz completion call:
-
-```js
-import { saveQuizSession } from '../db/progress.js';
-import { getCurrentUser } from '../auth/auth.js';
-
-const user = getCurrentUser();
-if (user) {
-  await saveQuizSession(user.uid, { score, total: 5, answers });
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null;
+    }
+    match /progress/{uid}/{type}/{sessionId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    match /analytics/{document} {
+      allow read, write: if false;
+    }
+  }
 }
 ```
 
 ---
 
-## Step 9: Make yourself an admin
+## Login Flow
 
-1. Sign up on the site with your email
-2. Go to Firebase console > Firestore > `users` collection
-3. Find your document (it will have your uid as the document ID)
-4. Click the document, find the `role` field and change it from `student` to `admin`
-5. Now visit `pages/admin.html` — you'll have full admin access
-
----
-
-## Step 10: Deploy
-
-Your Firebase files are purely client-side JS — no server needed. Just push to GitHub:
-
-```bash
-git add .
-git commit -m "Add Firebase backend"
-git push
-```
-
-GitHub Pages will serve everything automatically.
+1. User goes to pages/login.html
+2. Signs in with email/password or Google
+3. After auth, code reads their Firestore document
+4. If role == 'admin' -> redirected to admin.html
+5. If role == 'student' -> redirected to dashboard.html
+6. Guest (anonymous) -> redirected to index.html
+7. Sign out from any page -> lands on index.html (uses window.location.replace so back button works correctly)
 
 ---
 
-## File structure after setup
+## Firestore Data Structure
 
+### users/{uid}
+```js
+{
+  name: "Student Name",
+  email: "student@email.com",
+  role: "student",           // or "admin"
+  curriculum: "cbse",        // default curriculum
+  ageGroup: "11-13",         // default age group
+  createdAt: timestamp,
+  lastActive: timestamp,
+  totalQuestions: 0,
+  bestStreak: 0,
+  badgesEarned: []           // array of badge IDs
+}
 ```
-ai-classroom/
-├── js/
-│   ├── auth/
-│   │   └── auth.js           ← Sign up, sign in, sign out
-│   ├── db/
-│   │   ├── users.js          ← User profiles
-│   │   ├── progress.js       ← Quiz, Lab, Exam progress
-│   │   └── badges.js         ← Badge logic
-│   ├── firebase-config.js    ← YOUR credentials go here
-│   └── components/
-│       ├── lab.js            ← Update to call saveLabSession
-│       └── quiz.js           ← Update to call saveQuizSession
-├── pages/
-│   ├── login.html            ← Sign in / sign up page
-│   ├── dashboard.html        ← Student dashboard
-│   └── admin.html            ← Admin panel
-├── css/
-│   └── dashboard.css         ← Dashboard styles
-└── firestore.rules           ← Copy into Firebase console
+
+### progress/{uid}/lab/{sessionId}
+```js
+{
+  subject: "maths",
+  curriculum: "cbse",
+  ageGroup: "11-13",
+  topic: "Algebra Basics",
+  correct: 7,
+  wrong: 3,
+  accuracy: 70,
+  streak: 5,
+  timestamp: timestamp
+}
+```
+
+### progress/{uid}/quiz/{sessionId}
+```js
+{
+  score: 4,
+  total: 5,
+  accuracy: 80,
+  answers: [...],
+  timestamp: timestamp
+}
+```
+
+### progress/{uid}/examprep/{sessionId}
+```js
+{
+  exam: "cuet",
+  subject: "gk",
+  difficulty: "medium",
+  correct: 8,
+  wrong: 2,
+  accuracy: 80,
+  streak: 8,
+  timestamp: timestamp
+}
 ```
 
 ---
 
-## What each page does
+## Dashboard Features (pages/dashboard.html)
 
-| Page | Who sees it | What it does |
+- Reads user profile from Firestore on load
+- Auto-creates profile if document missing (safety net)
+- Shows: name, email, role badge (Admin or Student)
+- Stats cards: Questions Answered, Overall Accuracy, Best Streak, Badges Earned
+- Score Over Time: line chart using Chart.js
+- Accuracy by Subject: bar chart using Chart.js
+- Badges section: shows earned badges from badgesEarned array
+- Preferences: update name, curriculum, age group
+- Recent activity: last 5 lab sessions
+- Sign Out: goes to home page
+- Delete Account: must type email to confirm, deletes Firestore doc then Firebase Auth account
+
+---
+
+## Admin Panel Features (pages/admin.html)
+
+- Protected: checks role on load, redirects non-admins to home
+- Top bar: Back to Site link + Sign Out button
+- Analytics: Total Students, Total Questions, Guest Users, Active Today
+- All Users table with columns: Name, Email, Role, Questions, Joined, Last Active, Actions
+- Search bar to filter users by name or email
+- Actions per user:
+  - Promote/Demote (toggles between student and admin)
+  - Reset Progress (clears totalQuestions, bestStreak, badgesEarned)
+  - Delete Account (removes Firestore document)
+
+---
+
+## Role Management
+
+Roles are managed MANUALLY in Firebase console only. No UI for role changes on the site yet.
+
+To make someone an admin:
+1. Go to Firebase console -> Firestore -> users collection
+2. Find their document (document ID = their uid)
+3. Edit the role field: change "student" to "admin"
+4. They need to sign out and sign back in for the change to take effect
+
+---
+
+## Badge System (js/db/badges.js)
+
+Badges are stored in the badgesEarned array on the user document.
+
+| Badge ID | Name | Trigger |
 |---|---|---|
-| `login.html` | Everyone | Email, Google, or guest sign-in |
-| `dashboard.html` | Signed-in students | Progress charts, badges, preferences, account settings |
-| `admin.html` | Admin only | User management, analytics, progress reset |
+| first_quiz | First Step 🎯 | First quiz completed |
+| streak_10 | On Fire 🔥 | 10 correct in a row |
+| streak_25 | Unstoppable ⚡ | 25 correct in a row |
+| streak_50 | Legendary 👑 | 50 correct in a row |
+| all_subjects | Polymath 📚 | All 5 Lab subjects tried |
+| all_exams | Exam Ready 🏛️ | All 5 Exam Prep exams tried |
+| questions_100 | Century 💯 | 100 total questions |
+| questions_500 | Scholar 🎓 | 500 total questions |
+| perfect_quiz | Perfect Score ⭐ | 5/5 on AI Quiz |
+
+---
+
+## What Still Needs To Be Done
+
+1. Connect Lab to save progress after each session
+   - In lab.js, after session ends call saveLabSession() from js/db/progress.js
+   - Pass: subject, curriculum, ageGroup, topic, correct, wrong, streak
+
+2. Connect Quiz to save progress after completion
+   - In quiz.js, after quiz ends call saveQuizSession() from js/db/progress.js
+   - Pass: score, total, answers
+
+3. Connect Exam Prep to save progress
+   - After session ends call saveExamSession() from js/db/progress.js
+   - Pass: exam, subject, difficulty, correct, wrong, streak
+
+4. Add Sign In button to all individual pages (currently only on index.html nav)
+
+5. Add password reset link on login page
+
+6. Contact form email backend
+
+---
+
+## How to Start a New Chat About This Project
+
+Share this file and README.md at the start of the new chat. Then say:
+
+"I'm continuing work on The AI Classroom. Firebase project is ai-classroom-ad779.
+My admin email is sharmasoumil88@gmail.com.
+Live Server runs at http://127.0.0.1:5501/ai-classroom/
+I work on the dev branch and merge to main to deploy.
+[describe what you need help with]"
