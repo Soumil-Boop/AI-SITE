@@ -43,10 +43,10 @@
 }
 
 /* Tag colour variants */
-.tc-blue   { background: #DBEAFE; color: var(--brand); }
+.tc-blue   { background: #F1DACF; color: var(--brand); }
 .tc-coral  { background: var(--accent-light); color: var(--accent-dark); }
-.tc-purple { background: #EDE9FE; color: var(--purple); }
-.tc-green  { background: #D1FAE5; color: var(--green); }
+.tc-purple { background: #EADFE3; color: var(--purple); }
+.tc-green  { background: #E2E8DC; color: var(--green); }
 .tc-gold   { background: var(--accent-light); color: var(--accent-dark); }
 
 /* ── Ethics Cards ── */
@@ -76,7 +76,7 @@
 }
 .analogy-card:hover {
   border-color: var(--brand);
-  box-shadow: 0 4px 16px rgba(29,78,216,.1);
+  box-shadow: 0 4px 16px rgba(139,54,32,.1);
 }
 .analogy-icon { font-size: 2rem; flex-shrink: 0; }
 .analogy-card strong { display: block; font-weight: 700; margin-bottom: .2rem; }

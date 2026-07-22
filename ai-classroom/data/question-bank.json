@@ -1,0 +1,177 @@
+{
+  "_comment": "The AI Classroom local question bank. Add more items to any array to expand. Each Lab/Exam item is a 4-option MCQ; 'answer' must exactly match one of 'options'. Maths is generated algorithmically in questions-engine.js, so it is not stored here.",
+  "lab": {
+    "science": {
+      "5-7": [
+        { "topic": "Living vs Non-Living", "question": "Which of these is a living thing?", "options": ["Dog", "Rock", "Chair", "Spoon"], "answer": "Dog", "hint": "Living things grow and need food.", "explanation": "A dog grows, eats and moves, so it is living. Rocks, chairs and spoons are non-living." },
+        { "topic": "Plants & Animals", "question": "How many legs does an insect have?", "options": ["6", "4", "8", "2"], "answer": "6", "hint": "Count the legs on an ant.", "explanation": "All insects have 6 legs." },
+        { "topic": "Plants & Animals", "question": "What do plants need to make their food?", "options": ["Sunlight", "Darkness", "Toys", "Plastic"], "answer": "Sunlight", "hint": "Plants love a sunny window.", "explanation": "Plants use sunlight to make food in a process called photosynthesis." },
+        { "topic": "Weather & Seasons", "question": "Which season is usually the coldest?", "options": ["Winter", "Summer", "Spring", "Autumn"], "answer": "Winter", "hint": "It is the season with snow in many places.", "explanation": "Winter is the coldest season of the year." },
+        { "topic": "Our Body", "question": "Which body part do you use to smell?", "options": ["Nose", "Ear", "Hand", "Foot"], "answer": "Nose", "hint": "You breathe through it too.", "explanation": "We smell things using our nose." }
+      ],
+      "8-10": [
+        { "topic": "Forces & Motion", "question": "Which force pulls objects down towards the Earth?", "options": ["Gravity", "Magnetism", "Friction", "A push"], "answer": "Gravity", "hint": "It makes a ball fall when you drop it.", "explanation": "Gravity is the force that pulls objects towards the Earth." },
+        { "topic": "States of Matter", "question": "Which of these is a state of matter?", "options": ["Solid", "Loud", "Fast", "Bright"], "answer": "Solid", "hint": "Ice is an example of it.", "explanation": "The three common states of matter are solid, liquid and gas." },
+        { "topic": "Light & Shadow", "question": "A shadow forms when light is...", "options": ["Blocked by an object", "Reflected by a mirror", "Turned into sound", "Made colder"], "answer": "Blocked by an object", "hint": "Stand in the sun and block the light.", "explanation": "A shadow appears where an object blocks light from passing through." },
+        { "topic": "Food & Nutrition", "question": "Which food group is the body's main source of energy?", "options": ["Carbohydrates", "Vitamins", "Water", "Fibre"], "answer": "Carbohydrates", "hint": "Bread, rice and pasta are full of it.", "explanation": "Carbohydrates are the body's main source of quick energy." },
+        { "topic": "Simple Machines", "question": "A see-saw is an example of which simple machine?", "options": ["Lever", "Pulley", "Wheel", "Screw"], "answer": "Lever", "hint": "It balances on a pivot in the middle.", "explanation": "A see-saw is a lever, which turns around a fixed point called a pivot." }
+      ],
+      "11-13": [
+        { "topic": "Cells & Life Processes", "question": "What is the basic building block of all living things?", "options": ["Cell", "Atom", "Brick", "Organ"], "answer": "Cell", "hint": "You need a microscope to see one.", "explanation": "The cell is the smallest basic unit of life." },
+        { "topic": "Cells & Life Processes", "question": "Which part of the cell is known as its 'powerhouse'?", "options": ["Mitochondria", "Nucleus", "Ribosome", "Membrane"], "answer": "Mitochondria", "hint": "It releases energy from food.", "explanation": "Mitochondria release energy for the cell, so they are called its powerhouse." },
+        { "topic": "Chemical Reactions", "question": "Which gas is produced when a metal reacts with an acid?", "options": ["Hydrogen", "Oxygen", "Carbon dioxide", "Nitrogen"], "answer": "Hydrogen", "hint": "It makes a 'pop' with a lit splint.", "explanation": "Metal + acid reactions produce hydrogen gas, which pops when lit." },
+        { "topic": "Electricity & Circuits", "question": "Which particle in an atom carries a negative charge?", "options": ["Electron", "Proton", "Neutron", "Nucleus"], "answer": "Electron", "hint": "It orbits the outside of the atom.", "explanation": "Electrons carry a negative charge; protons are positive and neutrons have no charge." },
+        { "topic": "Genetics Basics", "question": "How many chromosomes are in a normal human body cell?", "options": ["46", "23", "48", "24"], "answer": "46", "hint": "They come in 23 pairs.", "explanation": "Human body cells contain 46 chromosomes, arranged as 23 pairs." }
+      ],
+      "14-16": [
+        { "topic": "Acids Bases & Salts", "question": "What is the pH of a neutral solution such as pure water?", "options": ["7", "0", "14", "1"], "answer": "7", "hint": "It sits in the middle of the pH scale.", "explanation": "A neutral solution has a pH of 7. Below 7 is acidic, above 7 is alkaline." },
+        { "topic": "Newton's Laws", "question": "Newton's First Law of Motion is also called the law of...", "options": ["Inertia", "Gravity", "Energy", "Acceleration"], "answer": "Inertia", "hint": "Objects resist changes to their motion.", "explanation": "Newton's First Law is the law of inertia: an object stays at rest or in uniform motion unless a force acts on it." },
+        { "topic": "Organic Chemistry", "question": "Which element forms the backbone of all organic chemistry?", "options": ["Carbon", "Oxygen", "Hydrogen", "Silicon"], "answer": "Carbon", "hint": "Diamonds and living things share it.", "explanation": "Organic chemistry is the study of carbon-based compounds." },
+        { "topic": "Evolution", "question": "Who proposed the theory of evolution by natural selection?", "options": ["Charles Darwin", "Isaac Newton", "Gregor Mendel", "Albert Einstein"], "answer": "Charles Darwin", "hint": "He sailed on HMS Beagle.", "explanation": "Charles Darwin proposed evolution by natural selection in 'On the Origin of Species'." },
+        { "topic": "Acids Bases & Salts", "question": "Acids turn blue litmus paper what colour?", "options": ["Red", "Blue", "Green", "Yellow"], "answer": "Red", "hint": "Think of a warning colour.", "explanation": "Acids turn blue litmus red; bases turn red litmus blue." }
+      ]
+    },
+    "english": {
+      "5-7": [
+        { "topic": "Basic Grammar", "question": "Which word is a naming word (a noun)?", "options": ["Dog", "Run", "Happy", "Quickly"], "answer": "Dog", "hint": "A noun names a person, place or thing.", "explanation": "'Dog' names a thing, so it is a noun." },
+        { "topic": "Punctuation", "question": "Which mark do we put at the end of a question?", "options": ["Question mark (?)", "Full stop (.)", "Comma (,)", "Exclamation mark (!)"], "answer": "Question mark (?)", "hint": "It looks like a hook.", "explanation": "Questions end with a question mark (?)." },
+        { "topic": "Phonics & Spelling", "question": "Which word rhymes with 'cat'?", "options": ["Hat", "Dog", "Sun", "Cup"], "answer": "Hat", "hint": "Say them out loud and listen to the ending.", "explanation": "'Hat' rhymes with 'cat' because they end in the same 'at' sound." },
+        { "topic": "Simple Sentences", "question": "Which is a correct sentence?", "options": ["The dog runs.", "dog the runs", "Runs dog the", "the Dog run"], "answer": "The dog runs.", "hint": "It should start with a capital and make sense.", "explanation": "'The dog runs.' has a capital letter, correct order and a full stop." },
+        { "topic": "Phonics & Spelling", "question": "Which letter is a vowel?", "options": ["A", "B", "C", "D"], "answer": "A", "hint": "The vowels are a, e, i, o, u.", "explanation": "'A' is a vowel. The vowels are a, e, i, o and u." }
+      ],
+      "8-10": [
+        { "topic": "Parts of Speech", "question": "Which word is a verb (an action word)?", "options": ["Jump", "Blue", "Table", "Slowly"], "answer": "Jump", "hint": "A verb is something you can do.", "explanation": "'Jump' is an action, so it is a verb." },
+        { "topic": "Parts of Speech", "question": "In 'the tall boy', which word is the adjective?", "options": ["Tall", "Boy", "The", "None"], "answer": "Tall", "hint": "It describes the noun.", "explanation": "'Tall' describes the boy, so it is an adjective." },
+        { "topic": "Figurative Language", "question": "'As busy as a bee' is an example of a...", "options": ["Simile", "Metaphor", "Noun", "Verb"], "answer": "Simile", "hint": "It compares using 'as'.", "explanation": "A simile compares two things using 'like' or 'as'." },
+        { "topic": "Vocabulary Building", "question": "What is the antonym (opposite) of 'happy'?", "options": ["Sad", "Glad", "Joyful", "Cheerful"], "answer": "Sad", "hint": "Look for the opposite feeling.", "explanation": "'Sad' is the opposite of 'happy'. The others all mean happy." },
+        { "topic": "Punctuation & Spelling", "question": "Which word is spelled correctly?", "options": ["Because", "Becuase", "Becouse", "Becaus"], "answer": "Because", "hint": "be-cause.", "explanation": "The correct spelling is 'because'." }
+      ],
+      "11-13": [
+        { "topic": "Literary Devices", "question": "'The wind whispered through the trees' is an example of...", "options": ["Personification", "Simile", "Onomatopoeia", "Alliteration"], "answer": "Personification", "hint": "The wind is given a human action.", "explanation": "Personification gives human qualities (whispering) to non-human things." },
+        { "topic": "Literary Devices", "question": "A comparison that does NOT use 'like' or 'as' is a...", "options": ["Metaphor", "Simile", "Hyperbole", "Pun"], "answer": "Metaphor", "hint": "'He is a lion in battle.'", "explanation": "A metaphor states one thing IS another, without 'like' or 'as'." },
+        { "topic": "Grammar & Syntax", "question": "Which word is a conjunction?", "options": ["And", "Quickly", "Happy", "Run"], "answer": "And", "hint": "It joins words or clauses.", "explanation": "'And' is a conjunction because it joins parts of a sentence." },
+        { "topic": "Literary Devices", "question": "The repetition of initial consonant sounds is called...", "options": ["Alliteration", "Assonance", "Rhyme", "Metre"], "answer": "Alliteration", "hint": "'Peter Piper picked...'", "explanation": "Alliteration is the repetition of the same sound at the start of nearby words." },
+        { "topic": "Reading Comprehension", "question": "The main idea of a paragraph is usually found in the...", "options": ["Topic sentence", "Last word", "Title only", "Footnote"], "answer": "Topic sentence", "hint": "It often comes first.", "explanation": "The topic sentence states the main idea of a paragraph." }
+      ],
+      "14-16": [
+        { "topic": "Shakespeare & Classics", "question": "Who wrote the play 'Romeo and Juliet'?", "options": ["William Shakespeare", "Charles Dickens", "Jane Austen", "Mark Twain"], "answer": "William Shakespeare", "hint": "An Elizabethan playwright.", "explanation": "'Romeo and Juliet' was written by William Shakespeare." },
+        { "topic": "Rhetoric & Argument", "question": "An appeal to the audience's emotions is called...", "options": ["Pathos", "Logos", "Ethos", "Kairos"], "answer": "Pathos", "hint": "Think 'sympathy'.", "explanation": "Pathos is a rhetorical appeal to emotion." },
+        { "topic": "Rhetoric & Argument", "question": "An appeal based on logic and reason is called...", "options": ["Logos", "Pathos", "Ethos", "Bathos"], "answer": "Logos", "hint": "Think 'logic'.", "explanation": "Logos is a rhetorical appeal to logic and evidence." },
+        { "topic": "Critical Analysis", "question": "A long speech by a character alone on stage, revealing their thoughts, is a...", "options": ["Soliloquy", "Dialogue", "Sonnet", "Stanza"], "answer": "Soliloquy", "hint": "'To be or not to be...'", "explanation": "A soliloquy is a speech a character gives while alone, sharing inner thoughts." },
+        { "topic": "Poetry Analysis", "question": "A poem of 14 lines is called a...", "options": ["Sonnet", "Haiku", "Ballad", "Ode"], "answer": "Sonnet", "hint": "Shakespeare wrote 154 of them.", "explanation": "A sonnet is a 14-line poem, often about love." }
+      ]
+    },
+    "history": {
+      "5-7": [
+        { "topic": "How We Know About the Past", "question": "What do we call a person who studies the past?", "options": ["Historian", "Doctor", "Pilot", "Chef"], "answer": "Historian", "hint": "History + person.", "explanation": "A historian is someone who studies history, the past." },
+        { "topic": "Ancient Civilisations", "question": "The famous pyramids were built in ancient...", "options": ["Egypt", "France", "Japan", "Canada"], "answer": "Egypt", "hint": "It has the River Nile.", "explanation": "The great pyramids were built in ancient Egypt." },
+        { "topic": "Timelines", "question": "A list of events in the order they happened is called a...", "options": ["Timeline", "Menu", "Map", "Recipe"], "answer": "Timeline", "hint": "It shows time from left to right.", "explanation": "A timeline shows events in the order they took place." },
+        { "topic": "How We Know About the Past", "question": "What do we call very old objects from the past kept in museums?", "options": ["Artefacts", "Robots", "Snacks", "Apps"], "answer": "Artefacts", "hint": "Old things made by people.", "explanation": "Artefacts are objects made by people long ago that help us learn about the past." }
+      ],
+      "8-10": [
+        { "topic": "Ancient Egypt & Greece", "question": "What were the rulers of ancient Egypt called?", "options": ["Pharaohs", "Presidents", "Knights", "Emperors"], "answer": "Pharaohs", "hint": "Tutankhamun was one.", "explanation": "The kings of ancient Egypt were called pharaohs." },
+        { "topic": "The Roman Empire", "question": "The ancient Romans were famous for building roads and...", "options": ["Aqueducts", "Skyscrapers", "Cars", "Aeroplanes"], "answer": "Aqueducts", "hint": "They carried water across long distances.", "explanation": "Romans built aqueducts to carry water into their cities." },
+        { "topic": "Explorers & Discoveries", "question": "Which explorer reached the Americas in 1492?", "options": ["Christopher Columbus", "Neil Armstrong", "Marco Polo", "Vasco da Gama"], "answer": "Christopher Columbus", "hint": "He sailed for Spain.", "explanation": "Christopher Columbus reached the Americas in 1492." },
+        { "topic": "The Mughal Empire", "question": "Which Mughal emperor built the Taj Mahal?", "options": ["Shah Jahan", "Akbar", "Babur", "Aurangzeb"], "answer": "Shah Jahan", "hint": "He built it for his wife.", "explanation": "Shah Jahan built the Taj Mahal in memory of his wife Mumtaz Mahal." }
+      ],
+      "11-13": [
+        { "topic": "Industrial Revolution", "question": "The Industrial Revolution began in which country?", "options": ["Britain", "India", "Japan", "Brazil"], "answer": "Britain", "hint": "It started in the 1700s in Europe.", "explanation": "The Industrial Revolution began in Britain in the 18th century." },
+        { "topic": "World War One", "question": "In which year did World War One begin?", "options": ["1914", "1939", "1900", "1945"], "answer": "1914", "hint": "It lasted until 1918.", "explanation": "World War One began in 1914 and ended in 1918." },
+        { "topic": "World War Two", "question": "In which year did World War Two end?", "options": ["1945", "1918", "1939", "1950"], "answer": "1945", "hint": "It started in 1939.", "explanation": "World War Two ended in 1945." },
+        { "topic": "Indian Independence", "question": "In which year did India gain independence?", "options": ["1947", "1950", "1935", "1942"], "answer": "1947", "hint": "15th August.", "explanation": "India became independent on 15 August 1947." },
+        { "topic": "The Cold War", "question": "The Cold War was mainly a rivalry between the USA and the...", "options": ["Soviet Union", "France", "China", "Germany"], "answer": "Soviet Union", "hint": "The USSR.", "explanation": "The Cold War was a tense rivalry between the USA and the Soviet Union (USSR)." }
+      ],
+      "14-16": [
+        { "topic": "Causes of WWI & WWII", "question": "The assassination of which figure helped trigger World War One?", "options": ["Archduke Franz Ferdinand", "Adolf Hitler", "Winston Churchill", "Tsar Nicholas II"], "answer": "Archduke Franz Ferdinand", "hint": "He was heir to Austria-Hungary.", "explanation": "The assassination of Archduke Franz Ferdinand in 1914 helped trigger WWI." },
+        { "topic": "The Russian Revolution", "question": "In which year did the Bolshevik Russian Revolution take place?", "options": ["1917", "1789", "1945", "1905"], "answer": "1917", "hint": "Led by Lenin.", "explanation": "The Bolshevik Revolution took place in 1917, led by Lenin." },
+        { "topic": "Post-War World", "question": "Which organisation was formed after World War Two to promote world peace?", "options": ["United Nations", "League of Nations", "NATO", "European Union"], "answer": "United Nations", "hint": "Founded in 1945.", "explanation": "The United Nations was founded in 1945 after WWII. (The League of Nations came after WWI.)" },
+        { "topic": "Decolonisation", "question": "The 1947 partition of British India created which two independent nations?", "options": ["India and Pakistan", "India and Bangladesh", "India and Nepal", "India and Sri Lanka"], "answer": "India and Pakistan", "hint": "Bangladesh came later, in 1971.", "explanation": "In 1947, British India was partitioned into India and Pakistan." }
+      ]
+    },
+    "geography": {
+      "5-7": [
+        { "topic": "Continents & Oceans", "question": "How many continents are there on Earth?", "options": ["7", "5", "10", "3"], "answer": "7", "hint": "Asia, Africa, Europe...", "explanation": "There are 7 continents on Earth." },
+        { "topic": "Maps & Directions", "question": "In which direction does the Sun rise?", "options": ["East", "West", "North", "South"], "answer": "East", "hint": "Opposite of where it sets.", "explanation": "The Sun rises in the east and sets in the west." },
+        { "topic": "Continents & Oceans", "question": "What do we call a very large body of salt water?", "options": ["Ocean", "Lake", "Pond", "River"], "answer": "Ocean", "hint": "The Pacific is one.", "explanation": "An ocean is a huge body of salt water." },
+        { "topic": "Maps & Directions", "question": "Which tool shows directions like North and South?", "options": ["Compass", "Clock", "Ruler", "Spoon"], "answer": "Compass", "hint": "Its needle points North.", "explanation": "A compass shows direction; its needle points north." }
+      ],
+      "8-10": [
+        { "topic": "Climate Zones", "question": "The hot climate zone found around the equator is the...", "options": ["Tropical zone", "Polar zone", "Temperate zone", "Arctic zone"], "answer": "Tropical zone", "hint": "It is warm all year.", "explanation": "The tropical zone lies around the equator and is hot all year." },
+        { "topic": "Rivers & Mountains", "question": "Which is the highest mountain above sea level on Earth?", "options": ["Mount Everest", "K2", "Mount Fuji", "Kilimanjaro"], "answer": "Mount Everest", "hint": "It is in the Himalayas.", "explanation": "Mount Everest is the highest mountain above sea level at about 8,849 m." },
+        { "topic": "Natural Disasters", "question": "A long period with very little or no rain is called a...", "options": ["Drought", "Flood", "Storm", "Tide"], "answer": "Drought", "hint": "The opposite of a flood.", "explanation": "A drought is a long period of unusually low rainfall." },
+        { "topic": "Ecosystems & Biomes", "question": "The largest hot desert in the world is the...", "options": ["Sahara", "Gobi", "Thar", "Mojave"], "answer": "Sahara", "hint": "It is in North Africa.", "explanation": "The Sahara in North Africa is the largest hot desert on Earth." }
+      ],
+      "11-13": [
+        { "topic": "Plate Tectonics", "question": "Earthquakes are mainly caused by the movement of...", "options": ["Tectonic plates", "Clouds", "Ocean tides", "The Moon"], "answer": "Tectonic plates", "hint": "Large pieces of the Earth's crust.", "explanation": "Earthquakes happen when tectonic plates move against each other." },
+        { "topic": "Water Cycle", "question": "The process where liquid water turns into water vapour is called...", "options": ["Evaporation", "Condensation", "Precipitation", "Collection"], "answer": "Evaporation", "hint": "Heat from the Sun drives it.", "explanation": "Evaporation is when water turns from liquid into vapour, usually due to heat." },
+        { "topic": "Climate Change", "question": "Which gas is a major cause of the greenhouse effect?", "options": ["Carbon dioxide", "Oxygen", "Nitrogen", "Argon"], "answer": "Carbon dioxide", "hint": "Released by burning fuels.", "explanation": "Carbon dioxide is a major greenhouse gas that traps heat in the atmosphere." },
+        { "topic": "Migration & Population", "question": "People moving from one place to another to live is called...", "options": ["Migration", "Rotation", "Erosion", "Condensation"], "answer": "Migration", "hint": "Birds do it in winter too.", "explanation": "Migration is the movement of people (or animals) from one place to settle in another." }
+      ],
+      "14-16": [
+        { "topic": "Global Trade", "question": "GDP is a measure of a country's...", "options": ["Economic output", "Population only", "Land area", "Rainfall"], "answer": "Economic output", "hint": "Gross Domestic Product.", "explanation": "GDP (Gross Domestic Product) measures the total value of goods and services a country produces." },
+        { "topic": "Sustainability", "question": "Which of these is a renewable energy source?", "options": ["Solar power", "Coal", "Oil", "Natural gas"], "answer": "Solar power", "hint": "It comes from the Sun.", "explanation": "Solar power is renewable; coal, oil and gas are finite fossil fuels." },
+        { "topic": "Coastal & River Management", "question": "The gradual wearing away of a coastline by the sea is called...", "options": ["Coastal erosion", "Deposition", "Evaporation", "Migration"], "answer": "Coastal erosion", "hint": "Waves break down the rock.", "explanation": "Coastal erosion is the wearing away of land along the coast by waves and weather." },
+        { "topic": "Climate Science", "question": "Which of these is a greenhouse gas?", "options": ["Methane", "Oxygen", "Argon", "Neon"], "answer": "Methane", "hint": "Released by livestock and landfills.", "explanation": "Methane is a potent greenhouse gas. Oxygen, argon and neon are not." }
+      ]
+    }
+  },
+  "exam": {
+    "gk": {
+      "easy": [
+        { "question": "How many days are there in a leap year?", "options": ["366", "365", "364", "360"], "answer": "366", "explanation": "A leap year has 366 days, with an extra day (29 February)." },
+        { "question": "Who is popularly known as the 'Father of the Nation' in India?", "options": ["Mahatma Gandhi", "Jawaharlal Nehru", "Sardar Patel", "Subhas Chandra Bose"], "answer": "Mahatma Gandhi", "explanation": "Mahatma Gandhi is called the Father of the Nation in India." },
+        { "question": "What is the capital of India?", "options": ["New Delhi", "Mumbai", "Kolkata", "Chennai"], "answer": "New Delhi", "explanation": "New Delhi is the capital of India." }
+      ],
+      "medium": [
+        { "question": "Which is the largest planet in our solar system?", "options": ["Jupiter", "Saturn", "Earth", "Mars"], "answer": "Jupiter", "explanation": "Jupiter is the largest planet in the solar system." },
+        { "question": "In which year was the Indian National Congress founded?", "options": ["1885", "1905", "1919", "1947"], "answer": "1885", "explanation": "The Indian National Congress was founded in 1885." }
+      ],
+      "hard": [
+        { "question": "Who was the first woman Prime Minister of India?", "options": ["Indira Gandhi", "Sonia Gandhi", "Pratibha Patil", "Sarojini Naidu"], "answer": "Indira Gandhi", "explanation": "Indira Gandhi was India's first (and so far only) woman Prime Minister." },
+        { "question": "Which Article of the Indian Constitution guarantees the Right to Equality?", "options": ["Article 14", "Article 21", "Article 19", "Article 32"], "answer": "Article 14", "explanation": "Article 14 guarantees equality before the law. (Article 21 is the right to life, Article 32 the right to constitutional remedies.)" }
+      ]
+    },
+    "aptitude": {
+      "easy": [
+        { "question": "What is 15% of 200?", "options": ["30", "20", "25", "35"], "answer": "30", "explanation": "15% of 200 = 200 × 15/100 = 30." },
+        { "question": "If one pen costs 5 rupees, how much do 6 pens cost?", "options": ["30", "25", "35", "11"], "answer": "30", "explanation": "6 × 5 = 30 rupees." }
+      ],
+      "medium": [
+        { "question": "A train travels 120 km in 2 hours. What is its speed in km/h?", "options": ["60", "40", "120", "240"], "answer": "60", "explanation": "Speed = distance ÷ time = 120 ÷ 2 = 60 km/h." },
+        { "question": "What is the average of 10, 20 and 30?", "options": ["20", "15", "25", "30"], "answer": "20", "explanation": "(10 + 20 + 30) ÷ 3 = 60 ÷ 3 = 20." }
+      ],
+      "hard": [
+        { "question": "Two numbers are in the ratio 3:5 and their sum is 40. What is the larger number?", "options": ["25", "15", "20", "30"], "answer": "25", "explanation": "3 + 5 = 8 parts. 40 ÷ 8 = 5 per part. Larger = 5 × 5 = 25." },
+        { "question": "The compound interest on 1000 rupees at 10% per annum for 2 years is:", "options": ["210", "200", "100", "220"], "answer": "210", "explanation": "Amount = 1000 × 1.1 × 1.1 = 1210, so CI = 1210 − 1000 = 210." }
+      ]
+    },
+    "reasoning": {
+      "easy": [
+        { "question": "Find the next number in the series: 2, 4, 6, 8, ?", "options": ["10", "9", "12", "7"], "answer": "10", "explanation": "The series increases by 2 each time, so the next number is 10." },
+        { "question": "Which one is the odd one out?", "options": ["Carrot", "Apple", "Banana", "Mango"], "answer": "Carrot", "explanation": "Apple, banana and mango are fruits; a carrot is a vegetable." }
+      ],
+      "medium": [
+        { "question": "If CAT is coded as 3-1-20 (using letter positions), how is DOG coded?", "options": ["4-15-7", "4-14-7", "3-15-7", "4-15-8"], "answer": "4-15-7", "explanation": "D is the 4th letter, O the 15th, G the 7th, so DOG = 4-15-7." },
+        { "question": "Pointing to a man, a woman said, 'He is my mother's only son.' Who is the man to the woman?", "options": ["Her brother", "Her father", "Her son", "Her uncle"], "answer": "Her brother", "explanation": "Her mother's only son is the woman's brother." }
+      ],
+      "hard": [
+        { "question": "Find the next number in the series: 3, 9, 27, ?", "options": ["81", "54", "72", "63"], "answer": "81", "explanation": "Each term is multiplied by 3, so 27 × 3 = 81." },
+        { "question": "In a code, each letter is shifted forward by 3 (A→D). What is the code for 'CAT'?", "options": ["FDW", "EDW", "FCW", "FDX"], "answer": "FDW", "explanation": "C→F, A→D, T→W, so CAT becomes FDW." }
+      ]
+    },
+    "english": {
+      "easy": [
+        { "question": "Choose the correctly spelled word.", "options": ["Definitely", "Definitly", "Definately", "Defintely"], "answer": "Definitely", "explanation": "The correct spelling is 'definitely'." },
+        { "question": "Choose the synonym of 'happy'.", "options": ["Joyful", "Sad", "Angry", "Tired"], "answer": "Joyful", "explanation": "'Joyful' means the same as 'happy'." }
+      ],
+      "medium": [
+        { "question": "Fill in the blank: 'He has been working here ___ 2010.'", "options": ["since", "for", "from", "at"], "answer": "since", "explanation": "'Since' is used with a point in time (2010); 'for' is used with a period of time." },
+        { "question": "Choose the meaning of the idiom 'to bite the bullet'.", "options": ["To face something difficult bravely", "To eat very quickly", "To get injured", "To stay completely silent"], "answer": "To face something difficult bravely", "explanation": "'To bite the bullet' means to face a hard or unpleasant situation with courage." }
+      ],
+      "hard": [
+        { "question": "Identify the error: 'Each of the boys have a book.'", "options": ["'have' should be 'has'", "'boys' should be 'boy'", "'Each' should be 'Every'", "No error"], "answer": "'have' should be 'has'", "explanation": "'Each' is singular, so it takes 'has': 'Each of the boys has a book.'" },
+        { "question": "Choose the word that best completes: 'Her argument was so ___ that no one could disagree.'", "options": ["cogent", "cogitate", "cognate", "coagulate"], "answer": "cogent", "explanation": "'Cogent' means clear, logical and convincing, which fits the sentence." }
+      ]
+    }
+  }
+}

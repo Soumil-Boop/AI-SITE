@@ -6,28 +6,28 @@
 :root {
   /* 60% Neutral */
   --white:       #FFFFFF;
-  --gray-50:     #F4F6F9;
-  --gray-100:    #E9EDF2;
-  --gray-200:    #D1D9E0;
-  --text:        #111827;
-  --muted:       #6B7280;
+  --gray-50:     #EFE6D8;
+  --gray-100:    #E6DBC9;
+  --gray-200:    #CBBBA5;
+  --text:        #2A1B12;
+  --muted:       #8B6E5A;
 
   /* 30% Brand Blue */
-  --brand:       #1D4ED8;
-  --brand-dark:  #1E3A8A;
-  --brand-light: #DBEAFE;
-  --brand-mid:   #3B82F6;
+  --brand:       #8B3620;
+  --brand-dark:  #46200F;
+  --brand-light: #F1DACF;
+  --brand-mid:   #B24E33;
 
   /* 10% Accent Orange */
-  --accent:      #F97316;
-  --accent-dark: #C2410C;
-  --accent-light:#FFF0E6;
+  --accent:      #C0562F;
+  --accent-dark: #9A3F1E;
+  --accent-light:#F7E3D8;
 
   /* Supporting */
-  --green:       #059669;
-  --green-light: #D1FAE5;
-  --purple:      #7C3AED;
-  --purple-light:#EDE9FE;
+  --green:       #5F7355;
+  --green-light: #E2E8DC;
+  --purple:      #6E5460;
+  --purple-light:#EADFE3;
 
   /* Shape */
   --radius:    16px;
@@ -38,4 +38,22 @@
   --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
   --shadow-md: 0 4px 24px rgba(0,0,0,.08);
   --shadow-lg: 0 16px 48px rgba(0,0,0,.12);
+}
+
+
+/* ── Sienna Parchment (Deep) surfaces + subject accents ─────── */
+:root{
+  --white:        #FBF8F2;   /* card / surface (warm near-white) */
+  --parchment:    #EFE6D8;   /* page background */
+  --cream:        #E6DBC9;   /* deeper card surface */
+  --border:       #CBBBA5;
+  --brand-light:  #F1DACF;
+  --accent-light: #F7E3D8;
+  --green-light:  #E2E8DC;
+  --purple-light: #EADFE3;
+  --maths:        #D9764E;
+  --science:      #5F7355;
+  --history:      #506274;
+  --english:      #6E5460;
+  --geography:    #AC8F62;
 }

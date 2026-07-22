@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The AI Classroom</title>
+  <title>Seek-O-Sphere</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
     /* ── TYPOGRAPHY GLOBALS ── */
     /* Nunito = headings/display, Inter = body. Applied globally below. */
-    h1,h2,h3,h4 { font-family:'Nunito',sans-serif; font-weight:800; color:var(--text,#111827); line-height:1.2; }
-    p,li,span,label,input,textarea,button { font-family:'Inter',sans-serif; color:var(--text,#111827); }
+    h1,h2,h3,h4 { font-family:'Nunito',sans-serif; font-weight:800; color:var(--text,#2A1B12); line-height:1.2; }
+    p,li,span,label,input,textarea,button { font-family:'Inter',sans-serif; color:var(--text,#2A1B12); }
     /* All eyebrow labels */
     .eyebrow { font-family:'Inter',sans-serif; font-size:.75rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:.5rem; }
     /* Muted text helper */
@@ -21,7 +22,7 @@
     /* ── RESET ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background: #fff; color: #111827; line-height: 1.6; overflow-x: hidden; }
+    body { font-family: 'Inter', sans-serif; background: var(--parchment); color: #2A1B12; line-height: 1.6; overflow-x: hidden; }
     img  { max-width: 100%; display: block; }
     a    { text-decoration: none; color: inherit; }
     button { font-family: inherit; cursor: pointer; }
@@ -29,22 +30,25 @@
 
     /* ── TOKENS ── */
     :root {
+      --white:#FBF8F2; --parchment:#EFE6D8; --cream:#E6DBC9; --border:#CBBBA5;
+      --brand-light:#F1DACF; --accent-light:#F7E3D8; --green-light:#E2E8DC; --purple-light:#EADFE3;
+      --maths:#D9764E; --science:#5F7355; --history:#506274; --english:#6E5460; --geography:#AC8F62;
       --white:       #FFFFFF;
-      --gray-50:     #F4F6F9;
-      --gray-100:    #E9EDF2;
-      --gray-200:    #D1D9E0;
-      --text:        #111827;
-      --muted:       #6B7280;
-      --brand:       #1D4ED8;
-      --brand-dark:  #1E3A8A;
-      --brand-light: #DBEAFE;
-      --brand-mid:   #3B82F6;
-      --accent:      #F97316;
-      --accent-dark: #C2410C;
-      --accent-light:#FFF0E6;
-      --green:       #059669;
-      --green-light: #D1FAE5;
-      --purple:      #7C3AED;
+      --gray-50:     #EFE6D8;
+      --gray-100:    #E6DBC9;
+      --gray-200:    #CBBBA5;
+      --text:        #2A1B12;
+      --muted:       #8B6E5A;
+      --brand:       #8B3620;
+      --brand-dark:  #46200F;
+      --brand-light: #F1DACF;
+      --brand-mid:   #B24E33;
+      --accent:      #C0562F;
+      --accent-dark: #9A3F1E;
+      --accent-light:#F7E3D8;
+      --green:       #5F7355;
+      --green-light: #E2E8DC;
+      --purple:      #6E5460;
       --radius:      16px;
       --radius-sm:   10px;
     }
@@ -55,7 +59,7 @@
       background: var(--brand-dark);
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 2rem; height: 64px;
-      box-shadow: 0 2px 20px rgba(29,78,216,.3);
+      box-shadow: 0 2px 20px rgba(139,54,32,.3);
     }
     .nav-logo { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.3rem; color:#fff; display:flex; align-items:center; gap:.6rem; white-space:nowrap; cursor:pointer; }
     .nav-logo span { color:var(--accent); }
@@ -302,7 +306,7 @@
     .btn-ghost{background:var(--gray-100);color:var(--text);}
 
     /* ── PAGE HERO BANNER ── */
-    .page-hero{background:linear-gradient(160deg,var(--brand-dark) 0%,#162C6B 100%);padding:5rem 2rem 4rem;text-align:center;}
+    .page-hero{background:linear-gradient(160deg,var(--brand-dark) 0%,#7A3A22 100%);padding:5rem 2rem 4rem;text-align:center;}
     .page-hero h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3.2rem);color:#fff;margin-bottom:1rem;}
     .page-hero p{color:rgba(255,255,255,.7);font-size:1.1rem;max-width:560px;margin:0 auto;}
     .eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.5rem;}
@@ -326,8 +330,8 @@
     .type-card h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.5rem;}
     .type-card p{font-size:.95rem;line-height:1.65;}
     .tc-tag{display:inline-block;margin-top:1rem;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:100px;}
-    .tc-blue{background:#DBEAFE;color:var(--brand);} .tc-coral{background:var(--accent-light);color:var(--accent-dark);}
-    .tc-purple{background:#EDE9FE;color:var(--purple);} .tc-green{background:#D1FAE5;color:var(--green);}
+    .tc-blue{background:#F1DACF;color:var(--brand);} .tc-coral{background:var(--accent-light);color:var(--accent-dark);}
+    .tc-purple{background:#EADFE3;color:var(--purple);} .tc-green{background:#E2E8DC;color:var(--green);}
     .tc-gold{background:var(--accent-light);color:var(--accent-dark);}
     .ethics-card{background:white;border-radius:var(--radius);padding:1.75rem;border-top:4px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:transform .25s;}
     .ethics-card:hover{transform:translateY(-3px);}
@@ -363,14 +367,14 @@
     .form-group{margin-bottom:1.25rem;}
     .form-group label{display:block;font-weight:600;font-size:.9rem;margin-bottom:.4rem;}
     .form-group input,.form-group textarea{width:100%;padding:.75rem 1rem;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:1rem;font-family:'Inter',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;}
-    .form-group input:focus,.form-group textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(29,78,216,.1);}
+    .form-group input:focus,.form-group textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(139,54,32,.1);}
     .form-group textarea{resize:vertical;min-height:120px;}
 
     /* ══════════════════════════
        HOME PAGE
     ══════════════════════════ */
     #home {
-      background: linear-gradient(160deg, var(--brand-dark) 0%, #162C6B 55%, #0F1E4A 100%);
+      background: linear-gradient(160deg, var(--brand-dark) 0%, #7A3A22 55%, #5C2D1E 100%);
       min-height: 100vh;
       flex-direction: column;
       align-items: center;
@@ -392,7 +396,7 @@
       padding: 5rem 2rem 3rem;
     }
     .home-hero-text {}
-    .hero-badge{display:inline-block;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.45);color:var(--accent);font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .9rem;border-radius:100px;margin-bottom:1.25rem;}
+    .hero-badge{display:inline-block;background:rgba(192,86,47,.15);border:1px solid rgba(192,86,47,.45);color:var(--accent);font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .9rem;border-radius:100px;margin-bottom:1.25rem;}
     .hero-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(2.2rem,4.5vw,3.6rem);color:#fff;line-height:1.12;margin-bottom:1.1rem;}
     .hero-title em{color:var(--accent);font-style:normal;}
     .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.75);max-width:500px;margin-bottom:2rem;line-height:1.75;}
@@ -466,7 +470,7 @@
 
     /* Feature highlights */
     .home-features {
-      background: rgba(0,0,0,.2);
+      background: var(--parchment);
       padding: 4rem 2rem;
     }
     .features-inner { max-width: 1100px; margin: 0 auto; }
@@ -477,18 +481,18 @@
       margin-top: 2.5rem;
     }
     .feature-card {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
+      background: var(--cream);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.75rem 1.5rem;
       text-align: center;
-      transition: background .25s, transform .25s;
+      transition: border-color .25s, transform .25s;
       cursor: pointer;
     }
-    .feature-card:hover { background: rgba(255,255,255,.11); transform: translateY(-3px); }
-    .feature-icon { font-size: 2.5rem; margin-bottom: .75rem; display: block; }
-    .feature-card h3 { font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem; color:#fff; margin-bottom:.3rem; }
-    .feature-card p  { font-size:.82rem; color:rgba(255,255,255,.55); line-height:1.5; }
+    .feature-card:hover { border-color: var(--brand); transform: translateY(-3px); }
+    .feature-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto .85rem; }
+    .feature-card h3 { font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem; color:var(--brand-dark); margin-bottom:.3rem; }
+    .feature-card p  { font-size:.82rem; color:var(--muted); line-height:1.5; }
 
     /* Mission block */
     .home-mission-block {
@@ -510,7 +514,7 @@
 
     /* Personal statement */
     .personal-statement-block {
-      background: linear-gradient(135deg, rgba(249,115,22,.12), rgba(29,78,216,.12));
+      background: linear-gradient(135deg, rgba(192,86,47,.12), rgba(139,54,32,.12));
       border: 1px solid rgba(255,255,255,.1);
       border-radius: var(--radius);
       padding: 2.5rem;
@@ -572,14 +576,14 @@
     .ep-score-lbl{font-size:.7rem;color:var(--muted);font-weight:600;}
     .ep-timer-wrap{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;background:var(--brand-dark);border-radius:var(--radius);padding:.75rem 1.25rem;}
     .ep-timer{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:white;}
-    .ep-timer.warning{color:#FCD34D;}
-    .ep-timer.danger{color:#FCA5A5;animation:timerPulse .5s ease infinite alternate;}
+    .ep-timer.warning{color:#E0B15A;}
+    .ep-timer.danger{color:#E3AE9E;animation:timerPulse .5s ease infinite alternate;}
     @keyframes timerPulse{from{opacity:1}to{opacity:.5}}
     .ep-timer-label{font-size:.78rem;color:rgba(255,255,255,.6);font-weight:600;}
     .ep-timer-bar{flex:1;height:6px;background:rgba(255,255,255,.2);border-radius:100px;overflow:hidden;}
-    .ep-timer-fill{height:100%;background:#34D399;border-radius:100px;transition:width .1s linear;}
-    .ep-timer-fill.warning{background:#FCD34D;}
-    .ep-timer-fill.danger{background:#FCA5A5;}
+    .ep-timer-fill{height:100%;background:#6E8467;border-radius:100px;transition:width .1s linear;}
+    .ep-timer-fill.warning{background:#E0B15A;}
+    .ep-timer-fill.danger{background:#E3AE9E;}
     .ep-exam-picks{display:flex;gap:.4rem;flex-wrap:wrap;}
     .ep-opt-letter{width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;color:var(--muted);}
     .lab-opt.correct .ep-opt-letter{background:var(--green);color:white;}
@@ -594,7 +598,7 @@
     .quiz-opt{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);padding:.9rem 1.2rem;color:white;font-size:.95rem;cursor:pointer;transition:all .2s;text-align:left;font-family:'Inter',sans-serif;}
     .quiz-opt:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);}
     .quiz-opt.correct{background:rgba(52,211,153,.2);border-color:var(--green);color:var(--green);}
-    .quiz-opt.wrong{background:rgba(249,115,22,.2);border-color:var(--accent);color:var(--accent);}
+    .quiz-opt.wrong{background:rgba(192,86,47,.2);border-color:var(--accent);color:var(--accent);}
     .quiz-feedback{font-size:.95rem;color:rgba(255,255,255,.7);margin-bottom:1rem;min-height:1.4em;}
     .quiz-progress{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
     .quiz-bar-bg{flex:1;height:6px;background:rgba(255,255,255,.12);border-radius:100px;}
@@ -604,7 +608,7 @@
     /* ── FINDER ── */
     .finder-input-row{display:flex;gap:.75rem;margin-bottom:1rem;}
     .finder-input{flex:1;padding:1rem 1.25rem;border:2px solid var(--gray-200);border-radius:100px;font-size:1rem;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;}
-    .finder-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(29,78,216,.1);}
+    .finder-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(139,54,32,.1);}
     .finder-chips{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-bottom:1.5rem;}
     .finder-chip-label{font-size:.82rem;color:var(--muted);font-weight:600;}
     .finder-chip{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:100px;padding:.4rem 1rem;font-size:.82rem;font-weight:600;color:var(--brand);cursor:pointer;transition:background .2s;font-family:'Inter',sans-serif;}
@@ -629,7 +633,7 @@
     /* ── LAB ── */
 
     /* ══ UPGRADED LAB CSS ══ */
-    .lab-hero{background:linear-gradient(135deg,var(--brand-dark),#162C6B);text-align:center;padding:3rem 2rem 2rem;}
+    .lab-hero{background:linear-gradient(135deg,var(--brand-dark),#7A3A22);text-align:center;padding:3rem 2rem 2rem;}
     .lab-controls-bar{display:flex;flex-wrap:wrap;gap:1rem;background:var(--gray-50);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;align-items:flex-end;}
     .lab-ctrl-group{display:flex;flex-direction:column;gap:.5rem;flex:1;min-width:160px;}
     .lab-ctrl-label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
@@ -657,9 +661,9 @@
     .lab-block{width:42px;height:42px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;box-shadow:0 3px 8px rgba(0,0,0,.15);animation: blockPop .3s cubic-bezier(.34,1.56,.64,1) both;}
     .lab-block:hover{transform:translateY(-3px) scale(1.1);}
     @keyframes blockPop{from{opacity:1;transform:scale(0)}to{opacity:1;transform:scale(1)}}
-    .lab-block-a{background:linear-gradient(135deg,#60A5FA,#3B82F6);color:white;}
-    .lab-block-b{background:linear-gradient(135deg,#F97316,#EA580C);color:white;}
-    .lab-block-c{background:linear-gradient(135deg,#34D399,#059669);color:white;}
+    .lab-block-a{background:linear-gradient(135deg,#D9764E,#B24E33);color:white;}
+    .lab-block-b{background:linear-gradient(135deg,#C0562F,#9A3F1E);color:white;}
+    .lab-block-c{background:linear-gradient(135deg,#6E8467,#5F7355);color:white;}
     .lab-block-label{font-size:.78rem;font-weight:700;color:var(--muted);}
     .lab-number-line-wrap{margin-bottom:1.5rem;overflow-x:auto;padding:.5rem 0;}
     .lab-number-line{display:flex;align-items:center;min-width:max-content;margin:0 auto;width:fit-content;}
@@ -672,7 +676,7 @@
     .lab-answer-row{display:flex;align-items:center;gap:1rem;justify-content:center;flex-wrap:wrap;}
     .lab-equation{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--text);}
     .lab-answer-input{width:90px;padding:.7rem;border:2.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:1.4rem;font-weight:800;text-align:center;font-family:'Nunito',sans-serif;outline:none;transition:border-color .2s;}
-    .lab-answer-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(29,78,216,.1);}
+    .lab-answer-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(139,54,32,.1);}
     .lab-answer-input.correct{border-color:var(--green);background:var(--green-light);}
     .lab-answer-input.wrong{border-color:var(--accent);background:var(--accent-light);animation:shake .4s ease;}
     @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
@@ -712,7 +716,7 @@
     @keyframes dotPulse{0%,80%,100%{transform:scale(0);opacity:.5}40%{transform:scale(1);opacity:1}}
     .finder-input-row{display:flex;gap:.75rem;margin-bottom:1rem;}
     .finder-input{flex:1;padding:1rem 1.25rem;border:2px solid var(--gray-200);border-radius:100px;font-size:1rem;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;}
-    .finder-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(29,78,216,.1);}
+    .finder-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(139,54,32,.1);}
     .finder-chips{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-bottom:1.5rem;}
     .finder-chip-label{font-size:.82rem;color:var(--muted);font-weight:600;}
     .finder-chip{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:100px;padding:.4rem 1rem;font-size:.82rem;font-weight:600;color:var(--brand);cursor:pointer;transition:background .2s;font-family:'Inter',sans-serif;}
@@ -755,7 +759,7 @@
     .lab-block{width:42px;height:42px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;box-shadow:0 3px 8px rgba(0,0,0,.15);animation: blockPop .3s cubic-bezier(.34,1.56,.64,1) both;}
     .lab-block:hover{transform:translateY(-3px) scale(1.1);}
     @keyframes blockPop{from{opacity:1;transform:scale(0)}to{opacity:1;transform:scale(1)}}
-    .lab-block-a{background:linear-gradient(135deg,#60A5FA,#3B82F6);color:white;} .lab-block-b{background:linear-gradient(135deg,#F97316,#EA580C);color:white;} .lab-block-c{background:linear-gradient(135deg,#34D399,#059669);color:white;}
+    .lab-block-a{background:linear-gradient(135deg,#D9764E,#B24E33);color:white;} .lab-block-b{background:linear-gradient(135deg,#C0562F,#9A3F1E);color:white;} .lab-block-c{background:linear-gradient(135deg,#6E8467,#5F7355);color:white;}
     .lab-block-label{font-size:.78rem;font-weight:700;color:var(--muted);}
     .lab-number-line-wrap{margin-bottom:1.5rem;overflow-x:auto;padding:.5rem 0;}
     .lab-number-line{display:flex;align-items:center;min-width:max-content;margin:0 auto;width:fit-content;}
@@ -767,7 +771,7 @@
     .lab-answer-row{display:flex;align-items:center;gap:1rem;justify-content:center;flex-wrap:wrap;}
     .lab-equation{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;}
     .lab-answer-input{width:90px;padding:.7rem;border:2.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:1.4rem;font-weight:800;text-align:center;font-family:'Nunito',sans-serif;outline:none;transition:border-color .2s;}
-    .lab-answer-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(29,78,216,.1);}
+    .lab-answer-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(139,54,32,.1);}
     .lab-answer-input.correct{border-color:var(--green);background:var(--green-light);} .lab-answer-input.wrong{border-color:var(--accent);background:var(--accent-light);animation:shake .4s ease;}
     @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
     .lab-feedback{text-align:center;font-weight:700;font-size:1rem;min-height:1.5em;margin-top:1rem;}
@@ -790,8 +794,8 @@
     @media(max-width:600px){.lab-controls{flex-direction:column;align-items:flex-start;}.lab-score-wrap{margin-left:0;}}
 
     /* ── FOOTER ── */
-    footer{background:var(--brand-dark);color:rgba(255,255,255,.5);text-align:center;padding:2.5rem 2rem;font-size:.88rem;}
-    footer strong{color:#fff;}
+    footer{background:var(--brand-dark);color:#EFE1D2;text-align:center;padding:2.5rem 2rem;font-size:.88rem;}
+    footer p{color:#EFE1D2;} footer strong{color:#fff;}
 
     /* Clickable heading style */
     .clickable-heading {
@@ -846,7 +850,7 @@
     .ripple {
       position: absolute;
       border-radius: 50%;
-      background: rgba(249,115,22,.25);
+      background: rgba(192,86,47,.25);
       transform: scale(0);
       pointer-events: none;
     }
@@ -874,9 +878,9 @@
 
     /* Highlight pulse on open */
     @keyframes headingPulse {
-      0%   { text-shadow: 0 0 0 rgba(249,115,22,0); }
-      50%  { text-shadow: 0 0 12px rgba(249,115,22,.4); }
-      100% { text-shadow: 0 0 0 rgba(249,115,22,0); }
+      0%   { text-shadow: 0 0 0 rgba(192,86,47,0); }
+      50%  { text-shadow: 0 0 12px rgba(192,86,47,.4); }
+      100% { text-shadow: 0 0 0 rgba(192,86,47,0); }
     }
     .clickable-heading.open { animation: headingPulse .5s ease; }
   
@@ -890,18 +894,7 @@
 <!-- NAV -->
 <nav>
   <div class="nav-logo" onclick="showPage('home')">
-    <svg class="logo-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <circle cx="20" cy="8"  r="3.2" class="logo-node logo-node-1"/>
-      <circle cx="8"  cy="22" r="3.2" class="logo-node logo-node-2"/>
-      <circle cx="32" cy="22" r="3.2" class="logo-node logo-node-3"/>
-      <circle cx="20" cy="33" r="3.2" class="logo-node logo-node-4"/>
-      <line x1="20" y1="8"  x2="8"  y2="22" class="logo-edge"/>
-      <line x1="20" y1="8"  x2="32" y2="22" class="logo-edge"/>
-      <line x1="8"  y1="22" x2="20" y2="33" class="logo-edge"/>
-      <line x1="32" y1="22" x2="20" y2="33" class="logo-edge"/>
-      <line x1="8"  y1="22" x2="32" y2="22" class="logo-edge logo-edge-center"/>
-    </svg>
-    The <span>AI</span> Classroom
+    <span>Seek</span><svg class="logo-mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="idxSosSpace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="idxSosEarth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="idxSosSun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#idxSosSpace)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#idxSosSun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#idxSosEarth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg>Sphere
   </div>
   <div class="nav-links" id="navLinks">
     <a data-page="home"      onclick="showPage('home')">Home</a>
@@ -943,63 +936,63 @@
 
     <!-- MASCOT: Byte the friendly robot -->
     <div class="mascot-wrap">
-      <svg class="mascot-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-label="Byte the AI Classroom mascot robot">
+      <svg class="mascot-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-label="Byte the Seek-O-Sphere mascot robot">
         <!-- Antenna -->
-        <line x1="100" y1="18" x2="100" y2="38" stroke="#60A5FA" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="100" cy="12" r="7" class="antenna-dot" fill="#F97316"/>
+        <line x1="100" y1="18" x2="100" y2="38" stroke="#D9764E" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="100" cy="12" r="7" class="antenna-dot" fill="#C0562F"/>
         <!-- Head -->
-        <rect x="45" y="38" width="110" height="90" rx="22" fill="#1E3A8A"/>
-        <rect x="50" y="43" width="100" height="80" rx="18" fill="#1D4ED8"/>
+        <rect x="45" y="38" width="110" height="90" rx="22" fill="#46200F"/>
+        <rect x="50" y="43" width="100" height="80" rx="18" fill="#8B3620"/>
         <!-- Screen shine -->
         <rect x="55" y="48" width="40" height="18" rx="6" fill="rgba(255,255,255,.08)"/>
         <!-- Left Eye -->
         <g class="eye-group eye-l">
-          <circle cx="76" cy="80" r="16" fill="#0F172A"/>
-          <circle cx="76" cy="80" r="11" fill="#3B82F6"/>
+          <circle cx="76" cy="80" r="16" fill="#2A1B12"/>
+          <circle cx="76" cy="80" r="11" fill="#B24E33"/>
           <circle cx="76" cy="80" r="6"  fill="#fff"/>
-          <circle cx="79" cy="77" r="2.5" fill="#0F172A"/>
+          <circle cx="79" cy="77" r="2.5" fill="#2A1B12"/>
           <circle cx="81" cy="76" r="1.2" fill="rgba(255,255,255,.7)"/>
         </g>
         <!-- Right Eye -->
         <g class="eye-group eye-r">
-          <circle cx="124" cy="80" r="16" fill="#0F172A"/>
-          <circle cx="124" cy="80" r="11" fill="#3B82F6"/>
+          <circle cx="124" cy="80" r="16" fill="#2A1B12"/>
+          <circle cx="124" cy="80" r="11" fill="#B24E33"/>
           <circle cx="124" cy="80" r="6"  fill="#fff"/>
-          <circle cx="127" cy="77" r="2.5" fill="#0F172A"/>
+          <circle cx="127" cy="77" r="2.5" fill="#2A1B12"/>
           <circle cx="129" cy="76" r="1.2" fill="rgba(255,255,255,.7)"/>
         </g>
         <!-- Mouth -->
-        <path d="M72 112 Q100 128 128 112" stroke="#60A5FA" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M72 112 Q100 128 128 112" stroke="#D9764E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
         <!-- Cheek blush -->
-        <ellipse cx="57" cy="100" rx="8" ry="5" fill="rgba(249,115,22,.25)"/>
-        <ellipse cx="143" cy="100" rx="8" ry="5" fill="rgba(249,115,22,.25)"/>
+        <ellipse cx="57" cy="100" rx="8" ry="5" fill="rgba(192,86,47,.25)"/>
+        <ellipse cx="143" cy="100" rx="8" ry="5" fill="rgba(192,86,47,.25)"/>
         <!-- Ear bolts -->
-        <rect x="36" y="68" width="12" height="24" rx="6" fill="#1E3A8A"/>
-        <rect x="152" y="68" width="12" height="24" rx="6" fill="#1E3A8A"/>
+        <rect x="36" y="68" width="12" height="24" rx="6" fill="#46200F"/>
+        <rect x="152" y="68" width="12" height="24" rx="6" fill="#46200F"/>
         <!-- Body -->
-        <rect x="55" y="132" width="90" height="65" rx="16" fill="#1E3A8A"/>
-        <rect x="60" y="137" width="80" height="55" rx="12" fill="#1D4ED8"/>
+        <rect x="55" y="132" width="90" height="65" rx="16" fill="#46200F"/>
+        <rect x="60" y="137" width="80" height="55" rx="12" fill="#8B3620"/>
         <!-- Body panel -->
-        <rect x="70" y="148" width="60" height="30" rx="8" fill="#0F172A" opacity=".5"/>
+        <rect x="70" y="148" width="60" height="30" rx="8" fill="#2A1B12" opacity=".5"/>
         <!-- Body lights -->
-        <circle cx="82"  cy="163" r="5" fill="#F97316"/>
-        <circle cx="100" cy="163" r="5" fill="#34D399"/>
-        <circle cx="118" cy="163" r="5" fill="#60A5FA"/>
+        <circle cx="82"  cy="163" r="5" fill="#C0562F"/>
+        <circle cx="100" cy="163" r="5" fill="#6E8467"/>
+        <circle cx="118" cy="163" r="5" fill="#D9764E"/>
         <!-- Arms -->
-        <rect x="22" y="135" width="36" height="16" rx="8" fill="#1E3A8A"/>
-        <rect x="142" y="135" width="36" height="16" rx="8" fill="#1E3A8A"/>
+        <rect x="22" y="135" width="36" height="16" rx="8" fill="#46200F"/>
+        <rect x="142" y="135" width="36" height="16" rx="8" fill="#46200F"/>
         <!-- Hands -->
-        <circle cx="22" cy="143" r="9" fill="#1D4ED8"/>
-        <circle cx="178" cy="143" r="9" fill="#1D4ED8"/>
+        <circle cx="22" cy="143" r="9" fill="#8B3620"/>
+        <circle cx="178" cy="143" r="9" fill="#8B3620"/>
         <!-- Legs -->
-        <rect x="68" y="196" width="24" height="18" rx="8" fill="#1E3A8A"/>
-        <rect x="108" y="196" width="24" height="18" rx="8" fill="#1E3A8A"/>
+        <rect x="68" y="196" width="24" height="18" rx="8" fill="#46200F"/>
+        <rect x="108" y="196" width="24" height="18" rx="8" fill="#46200F"/>
         <!-- Feet -->
-        <rect x="63" y="208" width="34" height="12" rx="6" fill="#1D4ED8"/>
-        <rect x="103" y="208" width="34" height="12" rx="6" fill="#1D4ED8"/>
+        <rect x="63" y="208" width="34" height="12" rx="6" fill="#8B3620"/>
+        <rect x="103" y="208" width="34" height="12" rx="6" fill="#8B3620"/>
         <!-- Name tag -->
-        <rect x="68" y="148" width="64" height="20" rx="5" fill="rgba(249,115,22,.15)" stroke="rgba(249,115,22,.4)" stroke-width="1"/>
-        <text x="100" y="162" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="800" font-size="10" fill="#F97316">BYTE</text>
+        <rect x="68" y="148" width="64" height="20" rx="5" fill="rgba(192,86,47,.15)" stroke="rgba(192,86,47,.4)" stroke-width="1"/>
+        <text x="100" y="162" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="800" font-size="10" fill="#C0562F">BYTE</text>
       </svg>
     </div>
   </div>
@@ -1040,36 +1033,36 @@
     <div class="home-features">
       <div class="features-inner">
         <span class="eyebrow">What You Will Find Here</span>
-        <h2 class="section-title" style="color:#fff;">Everything You Need to Actually Understand AI</h2>
-        <p style="color:rgba(255,255,255,.65);max-width:620px;line-height:1.7;">From the basics to the advanced , we cover it all in plain English, with interactive tools and a tutor that never loses patience.</p>
+        <h2 class="section-title" style="color:var(--brand-dark);">Everything You Need to Actually Understand AI</h2>
+        <p style="color:var(--muted);max-width:620px;line-height:1.7;">From the basics to the advanced , we cover it all in plain English, with interactive tools and a tutor that never loses patience.</p>
         <div class="features-grid">
           <div class="feature-card" onclick="showPage('what')" role="button" tabindex="0">
-            <span class="feature-icon">🧠</span>
+            <span class="feature-icon" style="background:var(--maths);">🧠</span>
             <h3>What is AI?</h3>
             <p>Start with the fundamentals , what it is, what it is not, and how it actually works.</p>
           </div>
           <div class="feature-card" onclick="showPage('history')" role="button" tabindex="0">
-            <span class="feature-icon">📜</span>
+            <span class="feature-icon" style="background:var(--history);">📜</span>
             <h3>History of AI</h3>
             <p>From Alan Turing's 1950 paper to ChatGPT , the full story in a timeline.</p>
           </div>
           <div class="feature-card" onclick="showPage('types')" role="button" tabindex="0">
-            <span class="feature-icon">🔬</span>
+            <span class="feature-icon" style="background:var(--science);">🔬</span>
             <h3>Types of AI</h3>
             <p>Machine learning, neural networks, generative AI , demystified with real examples.</p>
           </div>
           <div class="feature-card" onclick="showPage('study')" role="button" tabindex="0">
-            <span class="feature-icon">📚</span>
+            <span class="feature-icon" style="background:var(--geography);">📚</span>
             <h3>Study Tools</h3>
             <p>How to use AI for essays, coding, languages, and maths without getting it wrong.</p>
           </div>
           <div class="feature-card" onclick="showPage('lab')" role="button" tabindex="0">
-            <span class="feature-icon">🧪</span>
+            <span class="feature-icon" style="background:var(--brand-mid);">🧪</span>
             <h3>Visual Learning Lab</h3>
             <p>Interactive maths with animated blocks and Byte your AI tutor cheering you on.</p>
           </div>
           <div class="feature-card" onclick="showPage('finder')" role="button" tabindex="0">
-            <span class="feature-icon">🔍</span>
+            <span class="feature-icon" style="background:var(--english);">🔍</span>
             <h3>Find My AI Tool</h3>
             <p>Type what you need and get matched with the perfect AI tool from 129 options.</p>
           </div>
@@ -1081,7 +1074,7 @@
     <div class="home-mission-block">
       <div class="mission-inner">
         <span class="eyebrow">Our Mission</span>
-        <h2 class="section-title" style="color:#fff;margin-bottom:.5rem;">Why The AI Classroom Exists</h2>
+        <h2 class="section-title" style="color:#fff;margin-bottom:.5rem;">Why Seek-O-Sphere Exists</h2>
         <div class="mission-statement-box">
           Our mission is to make Artificial Intelligence understandable, approachable, and genuinely useful for students of every age , from a curious 8-year-old to a working adult returning to study. We believe that understanding AI is no longer optional. It is the literacy of the 21st century, and every student deserves access to it , for free, without overwhelm, and without being talked down to.
         </div>
@@ -1091,18 +1084,18 @@
           <div class="ps-header">
             <div class="ps-avatar">🎓</div>
             <div>
-              <div class="ps-name">A Message from The AI Classroom Team</div>
+              <div class="ps-name">A Message from Seek-O-Sphere Team</div>
               <div class="ps-role">Educators, builders, and lifelong learners</div>
             </div>
           </div>
           <p class="ps-text">
-            When we started building The AI Classroom, we kept hearing the same thing from students: <em style="color:rgba(255,255,255,.9)">"I know AI is important but I don't know where to start, and everything I find is either too simple or too complicated."</em>
+            When we started building Seek-O-Sphere, we kept hearing the same thing from students: <em style="color:rgba(255,255,255,.9)">"I know AI is important but I don't know where to start, and everything I find is either too simple or too complicated."</em>
             <br/><br/>
             That is exactly the gap we are trying to close. We built this site the way we wish AI had been explained to us , with honest language, real examples, and the kind of patience that a good teacher brings to a confused student. No hype, no buzzwords, no assumption that you already know what a neural network is.
             <br/><br/>
             Whether you are using our lessons to ace a school project, our Visual Learning Lab to help a younger sibling with maths, or our AI Tool Finder to figure out which chatbot suits your coursework , we built every part of this with you in mind. And we are just getting started. More subjects, smarter tools, and a full progress tracking system are coming.
             <br/><br/>
-            <strong style="color:#fff;">Welcome to The AI Classroom. Byte and the whole team are glad you are here.</strong>
+            <strong style="color:#fff;">Welcome to Seek-O-Sphere. Byte and the whole team are glad you are here.</strong>
           </p>
         </div>
 
@@ -1132,6 +1125,58 @@
       </div>
     </div>
 
+    <!-- EXPLORE BY SUBJECT -->
+    <section style="background:var(--parchment);padding:3.75rem 1.5rem;">
+      <div style="max-width:1100px;margin:0 auto;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.6rem;">
+          <span style="width:44px;height:44px;border-radius:12px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">📚</span>
+          <h2 class="section-title" style="margin:0;font-size:clamp(1.5rem,3vw,2rem);color:var(--brand-dark);">Explore by subject</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.1rem;">
+          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
+            <span style="width:46px;height:46px;border-radius:12px;background:var(--maths);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">➗</span>
+            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Maths</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;">Infinite practice questions with visual blocks and instant feedback.</p>
+          </div>
+          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
+            <span style="width:46px;height:46px;border-radius:12px;background:var(--science);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">🔬</span>
+            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Science</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;">From living things to atoms, matched to your curriculum and age.</p>
+          </div>
+          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
+            <span style="width:46px;height:46px;border-radius:12px;background:var(--history);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">🏛️</span>
+            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">History</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;">Timelines and turning points, told in a way that sticks.</p>
+          </div>
+          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
+            <span style="width:46px;height:46px;border-radius:12px;background:var(--english);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">✍️</span>
+            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">English</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;">Grammar, vocabulary and comprehension, one question at a time.</p>
+          </div>
+          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
+            <span style="width:46px;height:46px;border-radius:12px;background:var(--geography);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">🌍</span>
+            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Geography</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;">Maps, climate and the world around you.</p>
+          </div>
+          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
+            <span style="width:46px;height:46px;border-radius:12px;background:var(--brand-mid);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">🧪</span>
+            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">The Lab</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;">Hands-on practice with hints, streaks and badges.</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem;">
+          <span style="background:var(--maths);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Maths</span>
+          <span style="background:var(--science);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Science</span>
+          <span style="background:var(--history);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">History</span>
+          <span style="background:var(--english);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">English</span>
+          <span style="background:var(--geography);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Geography</span>
+        </div>
+        <div style="background:var(--cream);border:1px solid var(--border);border-left:5px solid var(--brand);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.6rem;color:var(--muted);font-size:.95rem;">
+          A quick tip: every question in the Lab comes with a <b style="color:var(--brand);">hint</b> and a full <b style="color:var(--brand);">explanation</b>, so you always learn the why, not just the answer.
+        </div>
+      </div>
+    </section>
+
     <!-- KEEP COMING BACK CTA -->
     <div class="home-cta-bar">
       <h2>Ready to Dive In?</h2>
@@ -1159,36 +1204,36 @@
         <p>Think of teaching a child what a "cat" looks like by showing them thousands of photos. AI works the same way , millions of examples, patterns spotted, behaviour learned.</p>
       </div>
       <svg class="page-illus-svg" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg" aria-label="Friendly brain with AI concept nodes">
-        <rect width="400" height="320" fill="#EFF6FF" rx="20"/>
-        <ellipse cx="160" cy="170" rx="100" ry="88" fill="#DBEAFE"/>
-        <ellipse cx="145" cy="155" rx="72" ry="70" fill="#BFDBFE"/>
-        <path d="M115 125 Q135 110 155 125 Q175 140 195 125" stroke="#93C5FD" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M108 155 Q128 143 148 155 Q168 167 188 155" stroke="#93C5FD" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M112 185 Q132 172 152 185 Q172 198 192 185" stroke="#93C5FD" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <circle cx="145" cy="162" r="8" fill="#1D4ED8"/><circle cx="176" cy="162" r="8" fill="#1D4ED8"/>
+        <rect width="400" height="320" fill="#F7ECE2" rx="20"/>
+        <ellipse cx="160" cy="170" rx="100" ry="88" fill="#F1DACF"/>
+        <ellipse cx="145" cy="155" rx="72" ry="70" fill="#EFD6C9"/>
+        <path d="M115 125 Q135 110 155 125 Q175 140 195 125" stroke="#E3A583" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M108 155 Q128 143 148 155 Q168 167 188 155" stroke="#E3A583" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M112 185 Q132 172 152 185 Q172 198 192 185" stroke="#E3A583" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="145" cy="162" r="8" fill="#8B3620"/><circle cx="176" cy="162" r="8" fill="#8B3620"/>
         <circle cx="147" cy="160" r="3" fill="white"/><circle cx="178" cy="160" r="3" fill="white"/>
-        <path d="M150 180 Q160 189 172 180" stroke="#1D4ED8" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <ellipse cx="132" cy="177" rx="9" ry="5" fill="#FCA5A5" opacity=".5"/>
-        <ellipse cx="188" cy="177" rx="9" ry="5" fill="#FCA5A5" opacity=".5"/>
-        <circle cx="300" cy="80" r="36" fill="#F97316"/>
+        <path d="M150 180 Q160 189 172 180" stroke="#8B3620" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="132" cy="177" rx="9" ry="5" fill="#E3AE9E" opacity=".5"/>
+        <ellipse cx="188" cy="177" rx="9" ry="5" fill="#E3AE9E" opacity=".5"/>
+        <circle cx="300" cy="80" r="36" fill="#C0562F"/>
         <text x="300" y="77" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">Machine</text>
         <text x="300" y="93" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">Learning</text>
-        <circle cx="340" cy="180" r="32" fill="#7C3AED"/>
+        <circle cx="340" cy="180" r="32" fill="#6E5460"/>
         <text x="340" y="177" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">Natural</text>
         <text x="340" y="191" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="white">Language</text>
-        <circle cx="285" cy="265" r="30" fill="#059669"/>
+        <circle cx="285" cy="265" r="30" fill="#5F7355"/>
         <text x="285" y="262" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">Computer</text>
         <text x="285" y="276" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="white">Vision</text>
-        <line x1="255" y1="140" x2="268" y2="95" stroke="#93C5FD" stroke-width="2" stroke-dasharray="5,4"/>
-        <line x1="258" y1="168" x2="310" y2="175" stroke="#C4B5FD" stroke-width="2" stroke-dasharray="5,4"/>
-        <line x1="252" y1="198" x2="258" y2="248" stroke="#6EE7B7" stroke-width="2" stroke-dasharray="5,4"/>
-        <circle cx="50" cy="60" r="18" fill="#FCD34D"/>
-        <circle cx="50" cy="60" r="11" fill="#FEF3C7"/>
-        <line x1="50" y1="36" x2="50" y2="28" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <line x1="66" y1="44" x2="72" y2="38" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <line x1="34" y1="44" x2="28" y2="38" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <rect x="28" y="78" width="44" height="10" rx="5" fill="#D97706"/>
-        <rect x="32" y="88" width="36" height="8" rx="4" fill="#92400E"/>
+        <line x1="255" y1="140" x2="268" y2="95" stroke="#E3A583" stroke-width="2" stroke-dasharray="5,4"/>
+        <line x1="258" y1="168" x2="310" y2="175" stroke="#CFBCC2" stroke-width="2" stroke-dasharray="5,4"/>
+        <line x1="252" y1="198" x2="258" y2="248" stroke="#A7B99E" stroke-width="2" stroke-dasharray="5,4"/>
+        <circle cx="50" cy="60" r="18" fill="#E0B15A"/>
+        <circle cx="50" cy="60" r="11" fill="#F3E7CE"/>
+        <line x1="50" y1="36" x2="50" y2="28" stroke="#E0B15A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="66" y1="44" x2="72" y2="38" stroke="#E0B15A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="34" y1="44" x2="28" y2="38" stroke="#E0B15A" stroke-width="3" stroke-linecap="round"/>
+        <rect x="28" y="78" width="44" height="10" rx="5" fill="#9A6320"/>
+        <rect x="32" y="88" width="36" height="8" rx="4" fill="#6E3A1A"/>
       </svg>
     </div>
     <div class="two-col">
@@ -1200,7 +1245,7 @@
         <div class="analogy-card"><span class="analogy-icon">📷</span><div><strong>Like face unlock on your phone</strong>Your phone's camera learned what your face looks like and recognises it every time. That is AI at work.</div></div>
       </div>
       <div style="background:linear-gradient(135deg,var(--brand-dark),var(--brand));border-radius:var(--radius);padding:2.5rem;text-align:center;">
-        <span style="font-size:7rem;display:block;filter:drop-shadow(0 0 20px rgba(249,115,22,.5))">🧠</span>
+        <span style="font-size:7rem;display:block;filter:drop-shadow(0 0 20px rgba(192,86,47,.5))">🧠</span>
         <p style="color:rgba(255,255,255,.7);margin-top:1rem;">AI combines data, algorithms, and computing power to simulate intelligent behaviour.</p>
       </div>
     </div>
@@ -1212,19 +1257,19 @@
         </div>
       </div>
       <div class="grid-3" style="margin-top:1.5rem;">
-        <div class="type-card tc-blue" style="background:#EFF6FF;" onclick="addRipple(event,this)">
+        <div class="type-card tc-blue" style="background:#F7ECE2;" onclick="addRipple(event,this)">
           <span class="tc-icon">💬</span>
           <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Language</h3>
           <div class="expandable open"><div class="expandable-inner"><p>Chatbots, translation tools, voice assistants like Siri, and AI writing tools all use natural language processing to understand and generate human language.</p></div></div>
           <span class="tc-tag tc-blue">NLP</span>
         </div>
-        <div class="type-card tc-green" style="background:#ECFDF5;" onclick="addRipple(event,this)">
+        <div class="type-card tc-green" style="background:#EBF0E5;" onclick="addRipple(event,this)">
           <span class="tc-icon">👁️</span>
           <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Vision</h3>
           <div class="expandable open"><div class="expandable-inner"><p>Face ID, Google Photos, self-driving cars, and medical imaging all use computer vision to interpret the visual world in real time.</p></div></div>
           <span class="tc-tag tc-green">Computer Vision</span>
         </div>
-        <div class="type-card tc-purple" style="background:#FAF5FF;" onclick="addRipple(event,this)">
+        <div class="type-card tc-purple" style="background:#F6EEEA;" onclick="addRipple(event,this)">
           <span class="tc-icon">🎯</span>
           <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommendations</h3>
           <div class="expandable open"><div class="expandable-inner"><p>Netflix, Spotify, YouTube, and TikTok all use AI to predict what you want to watch, listen to, or read next based on your behaviour.</p></div></div>
@@ -1247,44 +1292,44 @@
         <p>Click each milestone below to read the full story of that moment in history.</p>
       </div>
       <svg class="page-illus-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="AI history journey from 1950s to today">
-        <rect width="400" height="280" fill="#F5F3FF" rx="20"/>
-        <line x1="30" y1="230" x2="370" y2="230" stroke="#7C3AED" stroke-width="3"/>
-        <polygon points="370,225 385,230 370,235" fill="#7C3AED"/>
-        <rect x="30" y="155" width="52" height="48" rx="6" fill="#4B5563"/>
-        <rect x="36" y="161" width="40" height="28" rx="3" fill="#1F2937"/>
-        <line x1="40" y1="170" x2="72" y2="170" stroke="#34D399" stroke-width="1.5"/>
-        <line x1="40" y1="177" x2="68" y2="177" stroke="#34D399" stroke-width="1.5"/>
-        <line x1="40" y1="184" x2="70" y2="184" stroke="#34D399" stroke-width="1.5"/>
-        <text x="56" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#4B5563">1950s</text>
-        <circle cx="56" cy="230" r="6" fill="#7C3AED"/>
-        <ellipse cx="155" cy="200" rx="16" ry="6" fill="#374151"/>
-        <rect x="140" y="172" width="18" height="28" rx="3" fill="#4B5563"/>
-        <circle cx="149" cy="170" r="8" fill="#6B7280"/>
-        <circle cx="149" cy="162" r="5" fill="#9CA3AF"/>
-        <rect x="163" y="177" width="22" height="15" rx="4" fill="#F97316"/>
+        <rect width="400" height="280" fill="#F6EEEA" rx="20"/>
+        <line x1="30" y1="230" x2="370" y2="230" stroke="#6E5460" stroke-width="3"/>
+        <polygon points="370,225 385,230 370,235" fill="#6E5460"/>
+        <rect x="30" y="155" width="52" height="48" rx="6" fill="#6E5544"/>
+        <rect x="36" y="161" width="40" height="28" rx="3" fill="#3E2B1E"/>
+        <line x1="40" y1="170" x2="72" y2="170" stroke="#6E8467" stroke-width="1.5"/>
+        <line x1="40" y1="177" x2="68" y2="177" stroke="#6E8467" stroke-width="1.5"/>
+        <line x1="40" y1="184" x2="70" y2="184" stroke="#6E8467" stroke-width="1.5"/>
+        <text x="56" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5544">1950s</text>
+        <circle cx="56" cy="230" r="6" fill="#6E5460"/>
+        <ellipse cx="155" cy="200" rx="16" ry="6" fill="#4A342A"/>
+        <rect x="140" y="172" width="18" height="28" rx="3" fill="#6E5544"/>
+        <circle cx="149" cy="170" r="8" fill="#8B6E5A"/>
+        <circle cx="149" cy="162" r="5" fill="#A89A88"/>
+        <rect x="163" y="177" width="22" height="15" rx="4" fill="#C0562F"/>
         <text x="174" y="188" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="white">VS</text>
-        <text x="155" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#4B5563">1997</text>
-        <circle cx="155" cy="230" r="6" fill="#7C3AED"/>
-        <circle cx="245" cy="185" r="28" fill="#FEF3C7"/>
-        <circle cx="245" cy="185" r="20" fill="#FCD34D"/>
-        <polygon points="252,173 237,190 247,190 237,207 254,188 244,188" fill="#F97316"/>
-        <text x="245" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#4B5563">2012</text>
-        <circle cx="245" cy="230" r="6" fill="#F97316"/>
-        <rect x="312" y="150" width="60" height="52" rx="10" fill="#1E3A8A"/>
-        <polygon points="326,202 316,216 338,202" fill="#1E3A8A"/>
-        <circle cx="328" cy="170" r="6" fill="#60A5FA"/>
-        <circle cx="344" cy="170" r="6" fill="#34D399"/>
-        <rect x="320" y="182" width="44" height="5" rx="2" fill="#93C5FD" opacity=".6"/>
-        <rect x="320" y="191" width="34" height="5" rx="2" fill="#93C5FD" opacity=".4"/>
-        <text x="342" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#4B5563">Today</text>
-        <circle cx="342" cy="230" r="6" fill="#F97316"/>
-        <rect x="125" y="30" width="150" height="30" rx="10" fill="#7C3AED"/>
+        <text x="155" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5544">1997</text>
+        <circle cx="155" cy="230" r="6" fill="#6E5460"/>
+        <circle cx="245" cy="185" r="28" fill="#F3E7CE"/>
+        <circle cx="245" cy="185" r="20" fill="#E0B15A"/>
+        <polygon points="252,173 237,190 247,190 237,207 254,188 244,188" fill="#C0562F"/>
+        <text x="245" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5544">2012</text>
+        <circle cx="245" cy="230" r="6" fill="#C0562F"/>
+        <rect x="312" y="150" width="60" height="52" rx="10" fill="#46200F"/>
+        <polygon points="326,202 316,216 338,202" fill="#46200F"/>
+        <circle cx="328" cy="170" r="6" fill="#D9764E"/>
+        <circle cx="344" cy="170" r="6" fill="#6E8467"/>
+        <rect x="320" y="182" width="44" height="5" rx="2" fill="#E3A583" opacity=".6"/>
+        <rect x="320" y="191" width="34" height="5" rx="2" fill="#E3A583" opacity=".4"/>
+        <text x="342" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5544">Today</text>
+        <circle cx="342" cy="230" r="6" fill="#C0562F"/>
+        <rect x="125" y="30" width="150" height="30" rx="10" fill="#6E5460"/>
         <text x="200" y="50" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="13" fill="white">Journey of AI 🚀</text>
       </svg>
     </div>
     <div class="timeline">
-      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:#DBEAFE;color:var(--brand);box-shadow:0 0 0 3px var(--brand);">💡</div><div class="tl-body"><span class="tl-year">1950</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Alan Turing asks "Can Machines Think?"</h3><div class="expandable open"><div class="expandable-inner"><p>Turing published a landmark paper proposing the Turing Test , a way to measure whether a machine could exhibit behaviour indistinguishable from a human. It remains a foundational concept in AI philosophy today.</p></div></div></div></div>
-      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:#EDE9FE;color:var(--purple);box-shadow:0 0 0 3px var(--purple);">🎓</div><div class="tl-body"><span class="tl-year">1956</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">The Birth of "Artificial Intelligence"</h3><div class="expandable open"><div class="expandable-inner"><p>John McCarthy coined the term at the Dartmouth Conference, gathering top scientists to discuss the possibility of machines that could learn and reason. This event is widely regarded as the birth of AI as a formal field.</p></div></div></div></div>
+      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:#F1DACF;color:var(--brand);box-shadow:0 0 0 3px var(--brand);">💡</div><div class="tl-body"><span class="tl-year">1950</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Alan Turing asks "Can Machines Think?"</h3><div class="expandable open"><div class="expandable-inner"><p>Turing published a landmark paper proposing the Turing Test , a way to measure whether a machine could exhibit behaviour indistinguishable from a human. It remains a foundational concept in AI philosophy today.</p></div></div></div></div>
+      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:#EADFE3;color:var(--purple);box-shadow:0 0 0 3px var(--purple);">🎓</div><div class="tl-body"><span class="tl-year">1956</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">The Birth of "Artificial Intelligence"</h3><div class="expandable open"><div class="expandable-inner"><p>John McCarthy coined the term at the Dartmouth Conference, gathering top scientists to discuss the possibility of machines that could learn and reason. This event is widely regarded as the birth of AI as a formal field.</p></div></div></div></div>
       <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:var(--brand-light);color:var(--brand-mid);box-shadow:0 0 0 3px var(--brand-mid);">🥶</div><div class="tl-body"><span class="tl-year">1970s–80s</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">The "AI Winters"</h3><div class="expandable open"><div class="expandable-inner"><p>Progress stalled and funding dried up twice. Computers were not powerful enough, and AI could not handle real-world complexity. Researchers over-promised and under-delivered, causing governments and companies to pull investment.</p></div></div></div></div>
       <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:var(--green-light);color:var(--green);box-shadow:0 0 0 3px var(--green);">♟️</div><div class="tl-body"><span class="tl-year">1997</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Deep Blue Beats the World Chess Champion</h3><div class="expandable open"><div class="expandable-inner"><p>IBM's Deep Blue defeated Garry Kasparov, proving computers could outperform the best humans in complex strategic thinking. It was a defining cultural moment that changed public perception of AI forever.</p></div></div></div></div>
       <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:var(--accent-light);color:var(--accent);box-shadow:0 0 0 3px var(--accent);">📸</div><div class="tl-body"><span class="tl-year">2012</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Deep Learning Revolution</h3><div class="expandable open"><div class="expandable-inner"><p>AlexNet shattered records in image recognition, kicking off the modern deep learning era. Suddenly AI could see, hear, and understand the world far better than before , opening the door to everything that followed.</p></div></div></div></div>
@@ -1305,61 +1350,61 @@
         <p>Explore all six types below. Click any card to expand the details.</p>
       </div>
       <svg class="page-illus-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Six types of AI illustrated as colourful characters">
-        <rect width="400" height="300" fill="#F0FDF4" rx="20"/>
-        <rect x="20" y="40" width="60" height="110" rx="12" fill="#DBEAFE"/>
-        <circle cx="50" cy="78" r="22" fill="#1D4ED8"/>
+        <rect width="400" height="300" fill="#EBF0E5" rx="20"/>
+        <rect x="20" y="40" width="60" height="110" rx="12" fill="#F1DACF"/>
+        <circle cx="50" cy="78" r="22" fill="#8B3620"/>
         <circle cx="42" cy="74" r="5" fill="white"/><circle cx="58" cy="74" r="5" fill="white"/>
-        <circle cx="44" cy="72" r="2" fill="#1F2937"/><circle cx="60" cy="72" r="2" fill="#1F2937"/>
+        <circle cx="44" cy="72" r="2" fill="#3E2B1E"/><circle cx="60" cy="72" r="2" fill="#3E2B1E"/>
         <path d="M43 88 Q50 94 57 88" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <text x="50" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#1D4ED8">Machine</text>
-        <text x="50" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#1D4ED8">Learning</text>
-        <rect x="90" y="40" width="60" height="110" rx="12" fill="#FEF3C7"/>
-        <rect x="100" y="58" width="40" height="32" rx="8" fill="#F97316"/>
-        <polygon points="112,90 105,104 120,90" fill="#F97316"/>
+        <text x="50" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#8B3620">Machine</text>
+        <text x="50" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#8B3620">Learning</text>
+        <rect x="90" y="40" width="60" height="110" rx="12" fill="#F3E7CE"/>
+        <rect x="100" y="58" width="40" height="32" rx="8" fill="#C0562F"/>
+        <polygon points="112,90 105,104 120,90" fill="#C0562F"/>
         <rect x="106" y="64" width="28" height="4" rx="2" fill="white" opacity=".8"/>
         <rect x="106" y="72" width="22" height="4" rx="2" fill="white" opacity=".6"/>
         <rect x="106" y="80" width="25" height="4" rx="2" fill="white" opacity=".8"/>
-        <text x="120" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#D97706">Natural</text>
-        <text x="120" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#D97706">Language</text>
-        <rect x="160" y="40" width="60" height="110" rx="12" fill="#F5F3FF"/>
-        <ellipse cx="190" cy="90" rx="24" ry="20" fill="#7C3AED"/>
+        <text x="120" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A6320">Natural</text>
+        <text x="120" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A6320">Language</text>
+        <rect x="160" y="40" width="60" height="110" rx="12" fill="#F6EEEA"/>
+        <ellipse cx="190" cy="90" rx="24" ry="20" fill="#6E5460"/>
         <ellipse cx="190" cy="90" rx="16" ry="14" fill="white"/>
-        <circle cx="190" cy="90" r="10" fill="#4C1D95"/>
-        <circle cx="190" cy="90" r="5" fill="#7C3AED"/>
+        <circle cx="190" cy="90" r="10" fill="#4A2C33"/>
+        <circle cx="190" cy="90" r="5" fill="#6E5460"/>
         <circle cx="193" cy="87" r="2" fill="white"/>
-        <text x="190" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#7C3AED">Computer</text>
-        <text x="190" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#7C3AED">Vision</text>
-        <rect x="230" y="40" width="60" height="110" rx="12" fill="#FFF0E6"/>
-        <circle cx="260" cy="78" r="24" fill="#F97316"/>
+        <text x="190" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#6E5460">Computer</text>
+        <text x="190" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#6E5460">Vision</text>
+        <rect x="230" y="40" width="60" height="110" rx="12" fill="#F7E3D8"/>
+        <circle cx="260" cy="78" r="24" fill="#C0562F"/>
         <text x="260" y="85" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="20" fill="white">🎨</text>
-        <text x="260" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#C2410C">Generative</text>
-        <text x="260" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#C2410C">AI</text>
-        <rect x="300" y="40" width="60" height="110" rx="12" fill="#ECFDF5"/>
-        <circle cx="318" cy="70" r="8" fill="#059669"/><circle cx="318" cy="94" r="8" fill="#059669"/>
-        <circle cx="336" cy="82" r="8" fill="#34D399"/>
-        <circle cx="354" cy="70" r="8" fill="#059669"/><circle cx="354" cy="94" r="8" fill="#059669"/>
-        <line x1="325" y1="70" x2="330" y2="82" stroke="#6EE7B7" stroke-width="1.5"/>
-        <line x1="325" y1="94" x2="330" y2="82" stroke="#6EE7B7" stroke-width="1.5"/>
-        <line x1="342" y1="82" x2="347" y2="70" stroke="#6EE7B7" stroke-width="1.5"/>
-        <line x1="342" y1="82" x2="347" y2="94" stroke="#6EE7B7" stroke-width="1.5"/>
-        <text x="330" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#059669">Neural</text>
-        <text x="330" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#059669">Networks</text>
+        <text x="260" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A3F1E">Generative</text>
+        <text x="260" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A3F1E">AI</text>
+        <rect x="300" y="40" width="60" height="110" rx="12" fill="#EBF0E5"/>
+        <circle cx="318" cy="70" r="8" fill="#5F7355"/><circle cx="318" cy="94" r="8" fill="#5F7355"/>
+        <circle cx="336" cy="82" r="8" fill="#6E8467"/>
+        <circle cx="354" cy="70" r="8" fill="#5F7355"/><circle cx="354" cy="94" r="8" fill="#5F7355"/>
+        <line x1="325" y1="70" x2="330" y2="82" stroke="#A7B99E" stroke-width="1.5"/>
+        <line x1="325" y1="94" x2="330" y2="82" stroke="#A7B99E" stroke-width="1.5"/>
+        <line x1="342" y1="82" x2="347" y2="70" stroke="#A7B99E" stroke-width="1.5"/>
+        <line x1="342" y1="82" x2="347" y2="94" stroke="#A7B99E" stroke-width="1.5"/>
+        <text x="330" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#5F7355">Neural</text>
+        <text x="330" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#5F7355">Networks</text>
         <!-- Trophy / reinforcement at bottom centre -->
-        <ellipse cx="200" cy="265" rx="30" ry="8" fill="#FCD34D" opacity=".4"/>
-        <rect x="185" y="235" width="30" height="28" rx="4" fill="#F59E0B"/>
-        <ellipse cx="200" cy="233" rx="30" ry="22" fill="#FCD34D"/>
-        <ellipse cx="200" cy="233" rx="21" ry="15" fill="#FEF3C7"/>
-        <text x="200" y="239" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="14" fill="#F59E0B">★</text>
-        <text x="200" y="278" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#D97706">Reinforcement Learning</text>
+        <ellipse cx="200" cy="265" rx="30" ry="8" fill="#E0B15A" opacity=".4"/>
+        <rect x="185" y="235" width="30" height="28" rx="4" fill="#C98A2E"/>
+        <ellipse cx="200" cy="233" rx="30" ry="22" fill="#E0B15A"/>
+        <ellipse cx="200" cy="233" rx="21" ry="15" fill="#F3E7CE"/>
+        <text x="200" y="239" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="14" fill="#C98A2E">★</text>
+        <text x="200" y="278" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#9A6320">Reinforcement Learning</text>
       </svg>
     </div>
     <div class="grid-3">
-      <div class="type-card tc-blue" style="background:#EFF6FF;" onclick="addRipple(event,this)"><span class="tc-icon">🤖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Machine Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get , like learning to spot spam emails from millions of examples.</p></div></div><span class="tc-tag tc-blue">Learning from data</span></div>
-      <div class="type-card tc-coral" style="background:#FFF4EE;" onclick="addRipple(event,this)"><span class="tc-icon">🕸️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Neural Networks</h3><div class="expandable open"><div class="expandable-inner"><p>Inspired by the human brain, layers of connected nodes process information. They are behind face recognition, voice assistants, and the large language models powering today's chatbots.</p></div></div><span class="tc-tag tc-coral">Brain-inspired</span></div>
-      <div class="type-card tc-purple" style="background:#FAF5FF;" onclick="addRipple(event,this)"><span class="tc-icon">💬</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Natural Language Processing</h3><div class="expandable open"><div class="expandable-inner"><p>AI that understands and generates human language , powering chatbots, translation tools, voice assistants, and AI writing tools like Claude and ChatGPT.</p></div></div><span class="tc-tag tc-purple">Language and text</span></div>
-      <div class="type-card tc-green" style="background:#ECFDF5;" onclick="addRipple(event,this)"><span class="tc-icon">👁️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Computer Vision</h3><div class="expandable open"><div class="expandable-inner"><p>AI that can see and interpret images and video. Used in medical imaging to detect diseases, in self-driving cars to navigate roads, and in facial recognition systems.</p></div></div><span class="tc-tag tc-green">Seeing the world</span></div>
-      <div class="type-card tc-gold" style="background:#FFF4EE;" onclick="addRipple(event,this)"><span class="tc-icon">🎨</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Generative AI</h3><div class="expandable open"><div class="expandable-inner"><p>AI that creates new content , text, images, music, code, and video. Claude, ChatGPT, DALL·E, Midjourney, and Suno all fall into this rapidly growing category.</p></div></div><span class="tc-tag tc-gold">Creating content</span></div>
-      <div class="type-card" style="background:#F0F4FF;" onclick="addRipple(event,this)"><span class="tc-icon">♟️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Reinforcement Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI that learns by trial and error, receiving rewards for good decisions and penalties for bad ones. This is how AI learned to master chess, Go, and control robots.</p></div></div><span class="tc-tag" style="background:#DBEAFE;color:#1D4ED8;">Trial and reward</span></div>
+      <div class="type-card tc-blue" style="background:#F7ECE2;" onclick="addRipple(event,this)"><span class="tc-icon">🤖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Machine Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get , like learning to spot spam emails from millions of examples.</p></div></div><span class="tc-tag tc-blue">Learning from data</span></div>
+      <div class="type-card tc-coral" style="background:#F7E3D8;" onclick="addRipple(event,this)"><span class="tc-icon">🕸️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Neural Networks</h3><div class="expandable open"><div class="expandable-inner"><p>Inspired by the human brain, layers of connected nodes process information. They are behind face recognition, voice assistants, and the large language models powering today's chatbots.</p></div></div><span class="tc-tag tc-coral">Brain-inspired</span></div>
+      <div class="type-card tc-purple" style="background:#F6EEEA;" onclick="addRipple(event,this)"><span class="tc-icon">💬</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Natural Language Processing</h3><div class="expandable open"><div class="expandable-inner"><p>AI that understands and generates human language , powering chatbots, translation tools, voice assistants, and AI writing tools like Claude and ChatGPT.</p></div></div><span class="tc-tag tc-purple">Language and text</span></div>
+      <div class="type-card tc-green" style="background:#EBF0E5;" onclick="addRipple(event,this)"><span class="tc-icon">👁️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Computer Vision</h3><div class="expandable open"><div class="expandable-inner"><p>AI that can see and interpret images and video. Used in medical imaging to detect diseases, in self-driving cars to navigate roads, and in facial recognition systems.</p></div></div><span class="tc-tag tc-green">Seeing the world</span></div>
+      <div class="type-card tc-gold" style="background:#F7E3D8;" onclick="addRipple(event,this)"><span class="tc-icon">🎨</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Generative AI</h3><div class="expandable open"><div class="expandable-inner"><p>AI that creates new content , text, images, music, code, and video. Claude, ChatGPT, DALL·E, Midjourney, and Suno all fall into this rapidly growing category.</p></div></div><span class="tc-tag tc-gold">Creating content</span></div>
+      <div class="type-card" style="background:#F7ECE2;" onclick="addRipple(event,this)"><span class="tc-icon">♟️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Reinforcement Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI that learns by trial and error, receiving rewards for good decisions and penalties for bad ones. This is how AI learned to master chess, Go, and control robots.</p></div></div><span class="tc-tag" style="background:#F1DACF;color:#8B3620;">Trial and reward</span></div>
     </div>
   </div>
 </div>
@@ -1377,41 +1422,41 @@
         <p style="color:rgba(255,255,255,.7);">Used badly, it does your work for you and you learn nothing. The six tips below help you stay on the right side of that line.</p>
       </div>
       <svg class="page-illus-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="Students using AI tools on laptops to study">
-        <rect width="400" height="280" fill="#0F1E4A" rx="20"/>
-        <rect x="60" y="188" width="280" height="12" rx="5" fill="#1E3A8A"/>
-        <rect x="148" y="120" width="104" height="78" rx="8" fill="#1F2937"/>
-        <rect x="153" y="125" width="94" height="63" rx="5" fill="#0F172A"/>
-        <rect x="158" y="131" width="84" height="10" rx="3" fill="#1D4ED8"/>
-        <rect x="158" y="145" width="42" height="6" rx="2" fill="#F97316" opacity=".8"/>
-        <rect x="158" y="155" width="64" height="4" rx="2" fill="#60A5FA" opacity=".5"/>
-        <rect x="158" y="163" width="52" height="4" rx="2" fill="#60A5FA" opacity=".4"/>
-        <rect x="158" y="171" width="36" height="8" rx="4" fill="#059669"/>
-        <rect x="134" y="198" width="132" height="8" rx="4" fill="#374151"/>
-        <circle cx="88" cy="136" r="28" fill="#FBBF24"/>
-        <ellipse cx="88" cy="110" rx="26" ry="14" fill="#1F2937"/>
-        <circle cx="78" cy="136" r="6" fill="#1F2937"/><circle cx="98" cy="136" r="6" fill="#1F2937"/>
+        <rect width="400" height="280" fill="#2E1206" rx="20"/>
+        <rect x="60" y="188" width="280" height="12" rx="5" fill="#46200F"/>
+        <rect x="148" y="120" width="104" height="78" rx="8" fill="#3E2B1E"/>
+        <rect x="153" y="125" width="94" height="63" rx="5" fill="#2A1B12"/>
+        <rect x="158" y="131" width="84" height="10" rx="3" fill="#8B3620"/>
+        <rect x="158" y="145" width="42" height="6" rx="2" fill="#C0562F" opacity=".8"/>
+        <rect x="158" y="155" width="64" height="4" rx="2" fill="#D9764E" opacity=".5"/>
+        <rect x="158" y="163" width="52" height="4" rx="2" fill="#D9764E" opacity=".4"/>
+        <rect x="158" y="171" width="36" height="8" rx="4" fill="#5F7355"/>
+        <rect x="134" y="198" width="132" height="8" rx="4" fill="#4A342A"/>
+        <circle cx="88" cy="136" r="28" fill="#DDAE52"/>
+        <ellipse cx="88" cy="110" rx="26" ry="14" fill="#3E2B1E"/>
+        <circle cx="78" cy="136" r="6" fill="#3E2B1E"/><circle cx="98" cy="136" r="6" fill="#3E2B1E"/>
         <circle cx="80" cy="134" r="2.5" fill="white"/><circle cx="100" cy="134" r="2.5" fill="white"/>
-        <path d="M80 148 Q88 156 96 148" stroke="#92400E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="88" cy="196" rx="26" ry="16" fill="#3B82F6"/>
-        <path d="M110 166 Q128 161 144 156" stroke="#FBBF24" stroke-width="9" fill="none" stroke-linecap="round"/>
-        <circle cx="312" cy="136" r="28" fill="#F59E0B"/>
-        <ellipse cx="312" cy="110" rx="26" ry="15" fill="#7C3AED"/>
-        <circle cx="302" cy="136" r="6" fill="#1F2937"/><circle cx="322" cy="136" r="6" fill="#1F2937"/>
+        <path d="M80 148 Q88 156 96 148" stroke="#6E3A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="88" cy="196" rx="26" ry="16" fill="#B24E33"/>
+        <path d="M110 166 Q128 161 144 156" stroke="#DDAE52" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <circle cx="312" cy="136" r="28" fill="#C98A2E"/>
+        <ellipse cx="312" cy="110" rx="26" ry="15" fill="#6E5460"/>
+        <circle cx="302" cy="136" r="6" fill="#3E2B1E"/><circle cx="322" cy="136" r="6" fill="#3E2B1E"/>
         <circle cx="304" cy="134" r="2.5" fill="white"/><circle cx="324" cy="134" r="2.5" fill="white"/>
-        <path d="M304 149 Q312 158 320 149" stroke="#92400E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="312" cy="196" rx="26" ry="16" fill="#F97316"/>
-        <path d="M290 166 Q272 161 256 156" stroke="#F59E0B" stroke-width="9" fill="none" stroke-linecap="round"/>
-        <rect x="22" y="68" width="82" height="28" rx="8" fill="#34D399"/>
+        <path d="M304 149 Q312 158 320 149" stroke="#6E3A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="312" cy="196" rx="26" ry="16" fill="#C0562F"/>
+        <path d="M290 166 Q272 161 256 156" stroke="#C98A2E" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <rect x="22" y="68" width="82" height="28" rx="8" fill="#6E8467"/>
         <text x="63" y="86" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="11" fill="white">🤖 Claude</text>
-        <rect x="28" y="106" width="76" height="24" rx="8" fill="#7C3AED"/>
+        <rect x="28" y="106" width="76" height="24" rx="8" fill="#6E5460"/>
         <text x="66" y="122" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">📚 Khanmigo</text>
-        <rect x="294" y="68" width="82" height="28" rx="8" fill="#F97316"/>
+        <rect x="294" y="68" width="82" height="28" rx="8" fill="#C0562F"/>
         <text x="335" y="86" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="11" fill="white">💬 ChatGPT</text>
-        <rect x="298" y="106" width="78" height="24" rx="8" fill="#1D4ED8"/>
+        <rect x="298" y="106" width="78" height="24" rx="8" fill="#8B3620"/>
         <text x="337" y="122" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">📝 Grammarly</text>
-        <circle cx="200" cy="45" r="5" fill="#FCD34D"/>
-        <circle cx="160" cy="30" r="3" fill="#60A5FA" opacity=".6"/>
-        <circle cx="240" cy="35" r="3" fill="#F97316" opacity=".7"/>
+        <circle cx="200" cy="45" r="5" fill="#E0B15A"/>
+        <circle cx="160" cy="30" r="3" fill="#D9764E" opacity=".6"/>
+        <circle cx="240" cy="35" r="3" fill="#C0562F" opacity=".7"/>
       </svg>
     </div>
     <div class="grid-3" style="margin-bottom:3rem;">
@@ -1451,43 +1496,43 @@
           <p>The six principles below are the foundation of responsible AI use for any student.</p>
         </div>
         <svg class="page-illus-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="Balance scale representing ethical AI choices">
-          <rect width="400" height="280" fill="#FFF9F0" rx="20"/>
-          <line x1="200" y1="50" x2="200" y2="175" stroke="#92400E" stroke-width="5" stroke-linecap="round"/>
-          <circle cx="200" cy="44" r="12" fill="#F97316"/><circle cx="200" cy="44" r="6" fill="#FEF3C7"/>
-          <rect x="90" y="118" width="220" height="10" rx="5" fill="#D97706"/>
-          <circle cx="200" cy="123" r="10" fill="#F59E0B"/>
-          <line x1="110" y1="128" x2="78" y2="155" stroke="#92400E" stroke-width="3"/>
-          <ellipse cx="65" cy="168" rx="45" ry="15" fill="#34D399"/>
+          <rect width="400" height="280" fill="#FBF5EC" rx="20"/>
+          <line x1="200" y1="50" x2="200" y2="175" stroke="#6E3A1A" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="200" cy="44" r="12" fill="#C0562F"/><circle cx="200" cy="44" r="6" fill="#F3E7CE"/>
+          <rect x="90" y="118" width="220" height="10" rx="5" fill="#9A6320"/>
+          <circle cx="200" cy="123" r="10" fill="#C98A2E"/>
+          <line x1="110" y1="128" x2="78" y2="155" stroke="#6E3A1A" stroke-width="3"/>
+          <ellipse cx="65" cy="168" rx="45" ry="15" fill="#6E8467"/>
           <text x="65" y="161" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">✅ Good Use</text>
           <text x="65" y="175" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="white">Honest</text>
-          <line x1="290" y1="128" x2="322" y2="163" stroke="#92400E" stroke-width="3"/>
-          <ellipse cx="335" cy="176" rx="45" ry="15" fill="#FCA5A5"/>
-          <text x="335" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="#7F1D1D">⚠️ Risk</text>
-          <text x="335" y="183" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#7F1D1D">Cheating</text>
-          <rect x="172" y="175" width="56" height="10" rx="4" fill="#D97706"/>
-          <rect x="158" y="185" width="84" height="8" rx="4" fill="#92400E"/>
-          <circle cx="80" cy="95" r="28" fill="#FBBF24"/>
-          <ellipse cx="80" cy="70" rx="26" ry="13" fill="#1F2937"/>
-          <circle cx="70" cy="95" r="6" fill="#1F2937"/><circle cx="90" cy="95" r="6" fill="#1F2937"/>
+          <line x1="290" y1="128" x2="322" y2="163" stroke="#6E3A1A" stroke-width="3"/>
+          <ellipse cx="335" cy="176" rx="45" ry="15" fill="#E3AE9E"/>
+          <text x="335" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="#5E2018">⚠️ Risk</text>
+          <text x="335" y="183" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#5E2018">Cheating</text>
+          <rect x="172" y="175" width="56" height="10" rx="4" fill="#9A6320"/>
+          <rect x="158" y="185" width="84" height="8" rx="4" fill="#6E3A1A"/>
+          <circle cx="80" cy="95" r="28" fill="#DDAE52"/>
+          <ellipse cx="80" cy="70" rx="26" ry="13" fill="#3E2B1E"/>
+          <circle cx="70" cy="95" r="6" fill="#3E2B1E"/><circle cx="90" cy="95" r="6" fill="#3E2B1E"/>
           <circle cx="72" cy="93" r="2.5" fill="white"/><circle cx="92" cy="93" r="2.5" fill="white"/>
-          <path d="M72 107 Q80 116 88 107" stroke="#92400E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <circle cx="80" cy="48" r="14" fill="#059669"/>
+          <path d="M72 107 Q80 116 88 107" stroke="#6E3A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <circle cx="80" cy="48" r="14" fill="#5F7355"/>
           <path d="M73 48 L78 55 L90 42" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="320" cy="95" r="28" fill="#F59E0B"/>
-          <ellipse cx="320" cy="70" rx="26" ry="13" fill="#7C3AED"/>
-          <circle cx="310" cy="95" r="6" fill="#1F2937"/><circle cx="330" cy="95" r="6" fill="#1F2937"/>
+          <circle cx="320" cy="95" r="28" fill="#C98A2E"/>
+          <ellipse cx="320" cy="70" rx="26" ry="13" fill="#6E5460"/>
+          <circle cx="310" cy="95" r="6" fill="#3E2B1E"/><circle cx="330" cy="95" r="6" fill="#3E2B1E"/>
           <circle cx="312" cy="93" r="2.5" fill="white"/><circle cx="332" cy="93" r="2.5" fill="white"/>
-          <path d="M312 108 Q320 100 328 108" stroke="#92400E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <circle cx="320" cy="48" r="14" fill="#F97316"/>
+          <path d="M312 108 Q320 100 328 108" stroke="#6E3A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <circle cx="320" cy="48" r="14" fill="#C0562F"/>
           <text x="320" y="54" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="white">!</text>
-          <rect x="20" y="218" width="72" height="22" rx="8" fill="#DBEAFE"/>
-          <text x="56" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#1D4ED8">🔒 Privacy</text>
-          <rect x="100" y="218" width="64" height="22" rx="8" fill="#D1FAE5"/>
-          <text x="132" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#059669">⚖️ Fair</text>
-          <rect x="172" y="218" width="64" height="22" rx="8" fill="#EDE9FE"/>
-          <text x="204" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#7C3AED">🌱 Green</text>
-          <rect x="244" y="218" width="80" height="22" rx="8" fill="#FEF3C7"/>
-          <text x="284" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#D97706">🤝 Honest</text>
+          <rect x="20" y="218" width="72" height="22" rx="8" fill="#F1DACF"/>
+          <text x="56" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#8B3620">🔒 Privacy</text>
+          <rect x="100" y="218" width="64" height="22" rx="8" fill="#E2E8DC"/>
+          <text x="132" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#5F7355">⚖️ Fair</text>
+          <rect x="172" y="218" width="64" height="22" rx="8" fill="#EADFE3"/>
+          <text x="204" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#6E5460">🌱 Green</text>
+          <rect x="244" y="218" width="80" height="22" rx="8" fill="#F3E7CE"/>
+          <text x="284" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#9A6320">🤝 Honest</text>
         </svg>
       </div>
       <div class="grid-3">
@@ -1505,7 +1550,7 @@
 <!-- ══════════════════════════════════════ QUIZ ══════════════════════════════════════ -->
 <div id="quiz" class="panel">
   <div class="page-hero"><span class="eyebrow">Test Your Knowledge</span><h1>Quick AI Quiz</h1><p>See how much you have learned! Five questions , answer them all and see your result.</p></div>
-  <div style="background:linear-gradient(135deg,var(--brand-dark) 0%,#162C6B 100%);padding:1px 0;">
+  <div style="background:linear-gradient(135deg,var(--brand-dark) 0%,#3A1608 100%);padding:1px 0;">
     <div class="section-inner">
       <div class="page-illus-row">
         <div class="page-illus-text on-dark">
@@ -1515,31 +1560,31 @@
           <p style="color:rgba(255,255,255,.7);">Click any answer to lock it in, then hit Next to keep going.</p>
         </div>
         <svg class="page-illus-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Game show stage with quiz contestants">
-          <rect width="400" height="300" fill="#0F1E4A" rx="20"/>
-          <polygon points="60,0 10,200 110,200" fill="#FCD34D" opacity=".08"/>
-          <polygon points="200,0 140,200 260,200" fill="#60A5FA" opacity=".07"/>
-          <polygon points="340,0 280,200 400,200" fill="#FCD34D" opacity=".08"/>
-          <rect x="0" y="218" width="400" height="82" fill="#1E3A8A"/>
-          <rect x="0" y="218" width="400" height="8" fill="#2563EB"/>
-          <circle cx="60" cy="28" r="14" fill="#FCD34D"/><circle cx="60" cy="28" r="8" fill="#FEF9C3"/>
-          <circle cx="200" cy="18" r="18" fill="#FCD34D"/><circle cx="200" cy="18" r="10" fill="white"/>
-          <circle cx="340" cy="28" r="14" fill="#FCD34D"/><circle cx="340" cy="28" r="8" fill="#FEF9C3"/>
-          <circle cx="200" cy="130" r="55" fill="#F97316"/>
-          <circle cx="200" cy="130" r="40" fill="#1E3A8A"/>
-          <text x="200" y="143" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="44" fill="#FCD34D">?</text>
-          <circle cx="200" cy="130" r="58" fill="none" stroke="#FCD34D" stroke-width="3" opacity=".4"/>
-          <circle cx="80" cy="165" r="26" fill="#FBBF24"/>
-          <ellipse cx="80" cy="141" rx="24" ry="13" fill="#1F2937"/>
-          <circle cx="71" cy="165" r="5" fill="#1F2937"/><circle cx="89" cy="165" r="5" fill="#1F2937"/>
-          <path d="M73 176 Q80 184 87 176" stroke="#92400E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <rect x="52" y="208" width="48" height="18" rx="8" fill="#F97316"/>
+          <rect width="400" height="300" fill="#2E1206" rx="20"/>
+          <polygon points="60,0 10,200 110,200" fill="#E0B15A" opacity=".08"/>
+          <polygon points="200,0 140,200 260,200" fill="#D9764E" opacity=".07"/>
+          <polygon points="340,0 280,200 400,200" fill="#E0B15A" opacity=".08"/>
+          <rect x="0" y="218" width="400" height="82" fill="#46200F"/>
+          <rect x="0" y="218" width="400" height="8" fill="#A84A2C"/>
+          <circle cx="60" cy="28" r="14" fill="#E0B15A"/><circle cx="60" cy="28" r="8" fill="#F3E7CE"/>
+          <circle cx="200" cy="18" r="18" fill="#E0B15A"/><circle cx="200" cy="18" r="10" fill="white"/>
+          <circle cx="340" cy="28" r="14" fill="#E0B15A"/><circle cx="340" cy="28" r="8" fill="#F3E7CE"/>
+          <circle cx="200" cy="130" r="55" fill="#C0562F"/>
+          <circle cx="200" cy="130" r="40" fill="#46200F"/>
+          <text x="200" y="143" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="44" fill="#E0B15A">?</text>
+          <circle cx="200" cy="130" r="58" fill="none" stroke="#E0B15A" stroke-width="3" opacity=".4"/>
+          <circle cx="80" cy="165" r="26" fill="#DDAE52"/>
+          <ellipse cx="80" cy="141" rx="24" ry="13" fill="#3E2B1E"/>
+          <circle cx="71" cy="165" r="5" fill="#3E2B1E"/><circle cx="89" cy="165" r="5" fill="#3E2B1E"/>
+          <path d="M73 176 Q80 184 87 176" stroke="#6E3A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <rect x="52" y="208" width="48" height="18" rx="8" fill="#C0562F"/>
           <text x="76" y="221" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">BUZZ!</text>
-          <circle cx="320" cy="165" r="26" fill="#F59E0B"/>
-          <ellipse cx="320" cy="141" rx="24" ry="13" fill="#DC2626"/>
-          <circle cx="311" cy="165" r="5" fill="#1F2937"/><circle cx="329" cy="165" r="5" fill="#1F2937"/>
-          <path d="M313 177 Q320 186 327 177" stroke="#92400E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <rect x="292" y="120" width="56" height="24" rx="8" fill="#FCD34D"/>
-          <text x="320" y="136" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="#1F2937">4/5 ⭐</text>
+          <circle cx="320" cy="165" r="26" fill="#C98A2E"/>
+          <ellipse cx="320" cy="141" rx="24" ry="13" fill="#B23A2A"/>
+          <circle cx="311" cy="165" r="5" fill="#3E2B1E"/><circle cx="329" cy="165" r="5" fill="#3E2B1E"/>
+          <path d="M313 177 Q320 186 327 177" stroke="#6E3A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <rect x="292" y="120" width="56" height="24" rx="8" fill="#E0B15A"/>
+          <text x="320" y="136" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="#3E2B1E">4/5 ⭐</text>
         </svg>
       </div>
       <div class="quiz-box">
@@ -1585,46 +1630,46 @@
           <p>Supports CBSE, ICSE, UK National Curriculum, US Common Core and IB across Maths, Science, English, History and Geography.</p>
         </div>
         <svg class="page-illus-svg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-label="Colourful curriculum cards with Byte the tutor">
-          <rect width="400" height="260" fill="#F0FDF4" rx="20"/>
-          <rect x="20" y="30" width="68" height="80" rx="10" fill="#DBEAFE"/>
-          <text x="54" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#1D4ED8">+</text>
-          <text x="54" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#1D4ED8">Maths</text>
-          <rect x="100" y="30" width="68" height="80" rx="10" fill="#D1FAE5"/>
-          <text x="134" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#059669">?</text>
-          <text x="134" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#059669">Science</text>
-          <rect x="180" y="30" width="68" height="80" rx="10" fill="#FEF3C7"/>
-          <text x="214" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#D97706">A</text>
-          <text x="214" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#D97706">English</text>
-          <rect x="260" y="30" width="68" height="80" rx="10" fill="#EDE9FE"/>
-          <text x="294" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="20" fill="#7C3AED">Hi</text>
-          <text x="294" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#7C3AED">History</text>
-          <rect x="340" y="30" width="50" height="80" rx="10" fill="#FFF0E6"/>
-          <text x="365" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="18" fill="#C2410C">Ge</text>
-          <text x="365" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#C2410C">Geo</text>
+          <rect width="400" height="260" fill="#EBF0E5" rx="20"/>
+          <rect x="20" y="30" width="68" height="80" rx="10" fill="#F1DACF"/>
+          <text x="54" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#8B3620">+</text>
+          <text x="54" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#8B3620">Maths</text>
+          <rect x="100" y="30" width="68" height="80" rx="10" fill="#E2E8DC"/>
+          <text x="134" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#5F7355">?</text>
+          <text x="134" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#5F7355">Science</text>
+          <rect x="180" y="30" width="68" height="80" rx="10" fill="#F3E7CE"/>
+          <text x="214" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#9A6320">A</text>
+          <text x="214" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#9A6320">English</text>
+          <rect x="260" y="30" width="68" height="80" rx="10" fill="#EADFE3"/>
+          <text x="294" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="20" fill="#6E5460">Hi</text>
+          <text x="294" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5460">History</text>
+          <rect x="340" y="30" width="50" height="80" rx="10" fill="#F7E3D8"/>
+          <text x="365" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="18" fill="#9A3F1E">Ge</text>
+          <text x="365" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A3F1E">Geo</text>
           <rect x="20" y="128" width="360" height="50" rx="12" fill="white"/>
-          <rect x="20" y="128" width="360" height="50" rx="12" fill="none" stroke="#1D4ED8" stroke-width="1.5"/>
-          <text x="200" y="148" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="#1F2937">Which planet is closest to the Sun?</text>
-          <rect x="35" y="158" width="90" height="14" rx="7" fill="#DBEAFE"/>
-          <text x="80" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#1D4ED8">A. Mercury</text>
-          <rect x="135" y="158" width="75" height="14" rx="7" fill="#E5E7EB"/>
-          <text x="172" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#6B7280">B. Venus</text>
-          <rect x="220" y="158" width="70" height="14" rx="7" fill="#E5E7EB"/>
-          <text x="255" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#6B7280">C. Mars</text>
-          <rect x="300" y="155" width="36" height="20" rx="10" fill="#059669"/>
+          <rect x="20" y="128" width="360" height="50" rx="12" fill="none" stroke="#8B3620" stroke-width="1.5"/>
+          <text x="200" y="148" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="#3E2B1E">Which planet is closest to the Sun?</text>
+          <rect x="35" y="158" width="90" height="14" rx="7" fill="#F1DACF"/>
+          <text x="80" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#8B3620">A. Mercury</text>
+          <rect x="135" y="158" width="75" height="14" rx="7" fill="#DDCFBD"/>
+          <text x="172" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#8B6E5A">B. Venus</text>
+          <rect x="220" y="158" width="70" height="14" rx="7" fill="#DDCFBD"/>
+          <text x="255" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#8B6E5A">C. Mars</text>
+          <rect x="300" y="155" width="36" height="20" rx="10" fill="#5F7355"/>
           <text x="318" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="white">Check</text>
-          <rect x="240" y="196" width="66" height="42" rx="10" fill="#1E3A8A"/>
-          <circle cx="258" cy="210" r="7" fill="#0F172A"/>
-          <circle cx="258" cy="210" r="5" fill="#60A5FA"/>
+          <rect x="240" y="196" width="66" height="42" rx="10" fill="#46200F"/>
+          <circle cx="258" cy="210" r="7" fill="#2A1B12"/>
+          <circle cx="258" cy="210" r="5" fill="#D9764E"/>
           <circle cx="260" cy="208" r="2" fill="white"/>
-          <circle cx="274" cy="210" r="7" fill="#0F172A"/>
-          <circle cx="274" cy="210" r="5" fill="#60A5FA"/>
+          <circle cx="274" cy="210" r="7" fill="#2A1B12"/>
+          <circle cx="274" cy="210" r="5" fill="#D9764E"/>
           <circle cx="276" cy="208" r="2" fill="white"/>
-          <path d="M255 222 Q266 228 277 222" stroke="#60A5FA" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <circle cx="266" cy="196" r="5" fill="#F97316"/>
+          <path d="M255 222 Q266 228 277 222" stroke="#D9764E" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <circle cx="266" cy="196" r="5" fill="#C0562F"/>
           <rect x="314" y="196" width="66" height="36" rx="10" fill="white"/>
           <polygon points="314,212 304,207 304,217" fill="white"/>
-          <text x="347" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#1D4ED8">Well done!</text>
-          <text x="347" y="223" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#F97316">Mercury is right</text>
+          <text x="347" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#8B3620">Well done!</text>
+          <text x="347" y="223" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#C0562F">Mercury is right</text>
         </svg>
       </div>
 
@@ -1715,42 +1760,42 @@
           <p>Pick your exam, subject and difficulty. Byte generates a fresh question every time. You will never run out.</p>
         </div>
         <svg class="page-illus-svg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-label="Exam prep with timer and question cards">
-          <rect width="400" height="260" fill="#EFF6FF" rx="20"/>
-          <rect x="20" y="20" width="360" height="48" rx="12" fill="#1E3A8A"/>
-          <text x="40" y="40" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="#93C5FD">⏱ Time Remaining</text>
+          <rect width="400" height="260" fill="#F7ECE2" rx="20"/>
+          <rect x="20" y="20" width="360" height="48" rx="12" fill="#46200F"/>
+          <text x="40" y="40" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="#E3A583">⏱ Time Remaining</text>
           <text x="40" y="58" font-family="Nunito,sans-serif" font-weight="900" font-size="18" fill="white">42s</text>
           <rect x="110" y="50" width="220" height="6" rx="3" fill="rgba(255,255,255,.2)"/>
-          <rect x="110" y="50" width="110" height="6" rx="3" fill="#34D399"/>
-          <rect x="340" y="30" width="32" height="28" rx="6" fill="#F97316"/>
+          <rect x="110" y="50" width="110" height="6" rx="3" fill="#6E8467"/>
+          <rect x="340" y="30" width="32" height="28" rx="6" fill="#C0562F"/>
           <text x="356" y="49" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="14" fill="white">!</text>
           <rect x="20" y="82" width="360" height="90" rx="12" fill="white"/>
-          <rect x="20" y="82" width="360" height="90" rx="12" fill="none" stroke="#DBEAFE" stroke-width="1.5"/>
-          <text x="40" y="103" font-family="Nunito,sans-serif" font-weight="900" font-size="10" fill="#1F2937">Which article of the Indian Constitution deals with Right to Equality?</text>
-          <rect x="30" y="114" width="160" height="14" rx="7" fill="#DBEAFE"/>
-          <text x="110" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#1D4ED8">A. Article 14</text>
-          <rect x="200" y="114" width="160" height="14" rx="7" fill="#E5E7EB"/>
-          <text x="280" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#6B7280">B. Article 19</text>
-          <rect x="30" y="134" width="160" height="14" rx="7" fill="#D1FAE5"/>
-          <text x="110" y="145" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#059669">C. Article 21 ✓</text>
-          <rect x="200" y="134" width="160" height="14" rx="7" fill="#E5E7EB"/>
-          <text x="280" y="145" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#6B7280">D. Article 32</text>
-          <text x="40" y="165" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#059669">✅ Correct! Article 21 guarantees the Right to Life and Personal Liberty.</text>
+          <rect x="20" y="82" width="360" height="90" rx="12" fill="none" stroke="#F1DACF" stroke-width="1.5"/>
+          <text x="40" y="103" font-family="Nunito,sans-serif" font-weight="900" font-size="10" fill="#3E2B1E">Which article of the Indian Constitution deals with Right to Equality?</text>
+          <rect x="30" y="114" width="160" height="14" rx="7" fill="#F1DACF"/>
+          <text x="110" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#8B3620">A. Article 14</text>
+          <rect x="200" y="114" width="160" height="14" rx="7" fill="#DDCFBD"/>
+          <text x="280" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#8B6E5A">B. Article 19</text>
+          <rect x="30" y="134" width="160" height="14" rx="7" fill="#E2E8DC"/>
+          <text x="110" y="145" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#5F7355">C. Article 21 ✓</text>
+          <rect x="200" y="134" width="160" height="14" rx="7" fill="#DDCFBD"/>
+          <text x="280" y="145" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#8B6E5A">D. Article 32</text>
+          <text x="40" y="165" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#5F7355">✅ Correct! Article 21 guarantees the Right to Life and Personal Liberty.</text>
           <rect x="20" y="186" width="80" height="60" rx="10" fill="white"/>
-          <rect x="20" y="186" width="80" height="60" rx="10" fill="none" stroke="#E5E7EB" stroke-width="1"/>
-          <text x="60" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="#059669">7</text>
-          <text x="60" y="236" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#6B7280">Correct</text>
+          <rect x="20" y="186" width="80" height="60" rx="10" fill="none" stroke="#DDCFBD" stroke-width="1"/>
+          <text x="60" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="#5F7355">7</text>
+          <text x="60" y="236" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#8B6E5A">Correct</text>
           <rect x="110" y="186" width="80" height="60" rx="10" fill="white"/>
-          <rect x="110" y="186" width="80" height="60" rx="10" fill="none" stroke="#E5E7EB" stroke-width="1"/>
-          <text x="150" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="#F97316">2</text>
-          <text x="150" y="236" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#6B7280">Wrong</text>
+          <rect x="110" y="186" width="80" height="60" rx="10" fill="none" stroke="#DDCFBD" stroke-width="1"/>
+          <text x="150" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="#C0562F">2</text>
+          <text x="150" y="236" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#8B6E5A">Wrong</text>
           <rect x="200" y="186" width="80" height="60" rx="10" fill="white"/>
-          <rect x="200" y="186" width="80" height="60" rx="10" fill="none" stroke="#E5E7EB" stroke-width="1"/>
-          <text x="240" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="#1D4ED8">78%</text>
-          <text x="240" y="236" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#6B7280">Accuracy</text>
+          <rect x="200" y="186" width="80" height="60" rx="10" fill="none" stroke="#DDCFBD" stroke-width="1"/>
+          <text x="240" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="#8B3620">78%</text>
+          <text x="240" y="236" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#8B6E5A">Accuracy</text>
           <rect x="290" y="186" width="90" height="60" rx="10" fill="white"/>
-          <rect x="290" y="186" width="90" height="60" rx="10" fill="none" stroke="#E5E7EB" stroke-width="1"/>
-          <text x="335" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="#F97316">5 🔥</text>
-          <text x="335" y="236" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#6B7280">Streak</text>
+          <rect x="290" y="186" width="90" height="60" rx="10" fill="none" stroke="#DDCFBD" stroke-width="1"/>
+          <text x="335" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="#C0562F">5 🔥</text>
+          <text x="335" y="236" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#8B6E5A">Streak</text>
         </svg>
       </div>
 
@@ -1881,34 +1926,34 @@
         <p>Unlike a basic search bar, this finder uses Claude AI to understand what you actually mean. Filter by curriculum, age and subject to get recommendations right for your stage of learning.</p>
       </div>
       <svg class="page-illus-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" aria-label="AI search bar with result cards">
-        <rect width="400" height="200" fill="#EFF6FF" rx="20"/>
+        <rect width="400" height="200" fill="#F7ECE2" rx="20"/>
         <rect x="20" y="20" width="260" height="44" rx="22" fill="white"/>
-        <rect x="20" y="20" width="260" height="44" rx="22" fill="none" stroke="#1D4ED8" stroke-width="2"/>
-        <circle cx="50" cy="42" r="12" fill="none" stroke="#9CA3AF" stroke-width="2"/>
-        <line x1="58" y1="50" x2="66" y2="58" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
-        <rect x="75" y="34" width="120" height="7" rx="3" fill="#E5E7EB"/>
-        <rect x="288" y="27" width="80" height="30" rx="15" fill="#F97316"/>
+        <rect x="20" y="20" width="260" height="44" rx="22" fill="none" stroke="#8B3620" stroke-width="2"/>
+        <circle cx="50" cy="42" r="12" fill="none" stroke="#A89A88" stroke-width="2"/>
+        <line x1="58" y1="50" x2="66" y2="58" stroke="#A89A88" stroke-width="2" stroke-linecap="round"/>
+        <rect x="75" y="34" width="120" height="7" rx="3" fill="#DDCFBD"/>
+        <rect x="288" y="27" width="80" height="30" rx="15" fill="#C0562F"/>
         <text x="328" y="46" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="11" fill="white">Search</text>
         <rect x="20" y="82" width="110" height="90" rx="10" fill="white"/>
-        <rect x="20" y="82" width="110" height="90" rx="10" fill="none" stroke="#F97316" stroke-width="2"/>
-        <rect x="20" y="82" width="66" height="16" rx="6" fill="#F97316"/>
+        <rect x="20" y="82" width="110" height="90" rx="10" fill="none" stroke="#C0562F" stroke-width="2"/>
+        <rect x="20" y="82" width="66" height="16" rx="6" fill="#C0562F"/>
         <text x="53" y="93" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="8" fill="white">Best Match</text>
         <text x="40" y="115" text-anchor="middle" font-size="18">🤖</text>
-        <text x="85" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#1F2937">Claude</text>
-        <rect x="28" y="140" width="44" height="12" rx="6" fill="#D1FAE5"/>
-        <text x="50" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#059669">Free</text>
+        <text x="85" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#3E2B1E">Claude</text>
+        <rect x="28" y="140" width="44" height="12" rx="6" fill="#E2E8DC"/>
+        <text x="50" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#5F7355">Free</text>
         <rect x="145" y="82" width="100" height="90" rx="10" fill="white"/>
-        <rect x="145" y="82" width="100" height="90" rx="10" fill="none" stroke="#E5E7EB" stroke-width="1.5"/>
+        <rect x="145" y="82" width="100" height="90" rx="10" fill="none" stroke="#DDCFBD" stroke-width="1.5"/>
         <text x="165" y="115" text-anchor="middle" font-size="18">📚</text>
-        <text x="205" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#1F2937">Khanmigo</text>
-        <rect x="153" y="140" width="44" height="12" rx="6" fill="#D1FAE5"/>
-        <text x="175" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#059669">Free</text>
+        <text x="205" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#3E2B1E">Khanmigo</text>
+        <rect x="153" y="140" width="44" height="12" rx="6" fill="#E2E8DC"/>
+        <text x="175" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#5F7355">Free</text>
         <rect x="260" y="82" width="120" height="90" rx="10" fill="white"/>
-        <rect x="260" y="82" width="120" height="90" rx="10" fill="none" stroke="#E5E7EB" stroke-width="1.5"/>
+        <rect x="260" y="82" width="120" height="90" rx="10" fill="none" stroke="#DDCFBD" stroke-width="1.5"/>
         <text x="280" y="115" text-anchor="middle" font-size="18">✨</text>
-        <text x="320" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#1F2937">Gemini</text>
-        <rect x="268" y="140" width="44" height="12" rx="6" fill="#D1FAE5"/>
-        <text x="290" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#059669">Free</text>
+        <text x="320" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#3E2B1E">Gemini</text>
+        <rect x="268" y="140" width="44" height="12" rx="6" fill="#E2E8DC"/>
+        <text x="290" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="#5F7355">Free</text>
       </svg>
     </div>
 
@@ -1981,37 +2026,37 @@
         <p>Click any card heading below to expand its full recommendation.</p>
       </div>
       <svg class="page-illus-svg" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" aria-label="Stack of colourful resource cards">
-        <rect width="400" height="240" fill="#F5F3FF" rx="20"/>
-        <rect x="20" y="20" width="72" height="195" rx="10" fill="#7C3AED"/>
-        <rect x="27" y="27" width="58" height="181" rx="6" fill="#8B5CF6"/>
+        <rect width="400" height="240" fill="#F6EEEA" rx="20"/>
+        <rect x="20" y="20" width="72" height="195" rx="10" fill="#6E5460"/>
+        <rect x="27" y="27" width="58" height="181" rx="6" fill="#7C5E6A"/>
         <rect x="34" y="40" width="44" height="7" rx="3" fill="white" opacity=".8"/>
         <rect x="34" y="52" width="34" height="5" rx="2" fill="white" opacity=".5"/>
         <text x="56" y="195" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">📖 Books</text>
-        <rect x="104" y="30" width="72" height="175" rx="10" fill="#F97316"/>
-        <rect x="111" y="37" width="58" height="161" rx="6" fill="#FB923C"/>
-        <circle cx="140" cy="108" r="26" fill="#FED7AA"/>
-        <polygon points="131,97 131,119 151,108" fill="#F97316"/>
+        <rect x="104" y="30" width="72" height="175" rx="10" fill="#C0562F"/>
+        <rect x="111" y="37" width="58" height="161" rx="6" fill="#D9764E"/>
+        <circle cx="140" cy="108" r="26" fill="#EBC9AE"/>
+        <polygon points="131,97 131,119 151,108" fill="#C0562F"/>
         <text x="140" y="178" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">📺 Videos</text>
-        <rect x="188" y="20" width="72" height="195" rx="10" fill="#059669"/>
-        <rect x="195" y="27" width="58" height="181" rx="6" fill="#10B981"/>
+        <rect x="188" y="20" width="72" height="195" rx="10" fill="#5F7355"/>
+        <rect x="195" y="27" width="58" height="181" rx="6" fill="#5F7355"/>
         <text x="224" y="195" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">🏫 Courses</text>
-        <rect x="272" y="30" width="72" height="175" rx="10" fill="#1D4ED8"/>
-        <rect x="279" y="37" width="58" height="161" rx="6" fill="#3B82F6"/>
+        <rect x="272" y="30" width="72" height="175" rx="10" fill="#8B3620"/>
+        <rect x="279" y="37" width="58" height="161" rx="6" fill="#B24E33"/>
         <text x="308" y="178" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">🛠️ Tools</text>
-        <rect x="356" y="20" width="30" height="195" rx="8" fill="#F59E0B" opacity=".6"/>
+        <rect x="356" y="20" width="30" height="195" rx="8" fill="#C98A2E" opacity=".6"/>
       </svg>
     </div>
     <div class="definition-box"><p><strong>New to AI?</strong> Start with "What is AI?" and "History" in the menu above, then take the quiz to test what you have learned.</p></div>
     <div class="grid-3" style="margin-top:2rem;">
-      <div class="type-card tc-blue" style="background:#EFF6FF;" onclick="addRipple(event,this)"><span class="tc-icon">📺</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Videos</h3><div class="expandable open"><div class="expandable-inner"><p>3Blue1Brown's neural network series and Crash Course AI , both free , are excellent video explainers. Search for them on YouTube and start with whichever topic interests you most.</p></div></div></div>
-      <div class="type-card tc-green" style="background:#ECFDF5;" onclick="addRipple(event,this)"><span class="tc-icon">📖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Reading</h3><div class="expandable open"><div class="expandable-inner"><p>"AI Superpowers" by Kai-Fu Lee and "Life 3.0" by Max Tegmark are two of the most accessible books on the topic for students and curious adults.</p></div></div></div>
-      <div class="type-card tc-purple" style="background:#FAF5FF;" onclick="addRipple(event,this)"><span class="tc-icon">🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Free Online Courses</h3><div class="expandable open"><div class="expandable-inner"><p>Khan Academy, Coursera's "AI For Everyone" by Andrew Ng, and Google's "AI Essentials" are all free, beginner-friendly and take just a few hours to complete.</p></div></div></div>
-      <div class="type-card tc-coral" style="background:#FFF4EE;" onclick="addRipple(event,this)"><span class="tc-icon">🛠️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Troubleshooting AI Tools</h3><div class="expandable open"><div class="expandable-inner"><p>Getting strange answers? Try being more specific, breaking your question into smaller parts, or giving an example of the kind of answer you want.</p></div></div></div>
-      <div class="type-card" style="background:#F0F4FF;" onclick="addRipple(event,this)"><span class="tc-icon">🗂️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Glossary of AI Terms</h3><div class="expandable open"><div class="expandable-inner"><p>Confused by "token", "parameter", "fine-tuning" or "embedding"? Send us a message on the Contact page and we will explain it clearly.</p></div></div></div>
-      <div class="type-card tc-green" style="background:#ECFDF5;" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">For Teachers and Parents</h3><div class="expandable open"><div class="expandable-inner"><p>We have collected age-appropriate talking points, lesson hooks and discussion questions for introducing AI at home or in the classroom. Contact us to request the full educator guide.</p></div></div></div>
-      <div class="type-card tc-purple" style="background:#FAF5FF;" onclick="addRipple(event,this)"><span class="tc-icon">💼</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">AI Tools for Job Hunting</h3><div class="expandable open"><div class="expandable-inner"><p>Use Claude or ChatGPT to polish your resume and cover letter, Yoodli to practice interview answers, and LinkedIn AI to improve your profile.</p></div></div></div>
-      <div class="type-card tc-blue" style="background:#EFF6FF;" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍💻</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Community and Forums</h3><div class="expandable open"><div class="expandable-inner"><p>Reddit's r/artificial and r/MachineLearning plus Hugging Face's community forums are friendly spaces for AI questions. Most people are welcoming to beginners.</p></div></div></div>
-      <div class="type-card tc-gold" style="background:#FFF4EE;" onclick="addRipple(event,this)"><span class="tc-icon">❓</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Frequently Asked Questions</h3><div class="expandable open"><div class="expandable-inner"><p>Wondering if AI will take over jobs, or whether it is conscious? Visit our Contact page and ask , we love these questions and answer every one.</p></div></div></div>
+      <div class="type-card tc-blue" style="background:#F7ECE2;" onclick="addRipple(event,this)"><span class="tc-icon">📺</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Videos</h3><div class="expandable open"><div class="expandable-inner"><p>3Blue1Brown's neural network series and Crash Course AI , both free , are excellent video explainers. Search for them on YouTube and start with whichever topic interests you most.</p></div></div></div>
+      <div class="type-card tc-green" style="background:#EBF0E5;" onclick="addRipple(event,this)"><span class="tc-icon">📖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Reading</h3><div class="expandable open"><div class="expandable-inner"><p>"AI Superpowers" by Kai-Fu Lee and "Life 3.0" by Max Tegmark are two of the most accessible books on the topic for students and curious adults.</p></div></div></div>
+      <div class="type-card tc-purple" style="background:#F6EEEA;" onclick="addRipple(event,this)"><span class="tc-icon">🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Free Online Courses</h3><div class="expandable open"><div class="expandable-inner"><p>Khan Academy, Coursera's "AI For Everyone" by Andrew Ng, and Google's "AI Essentials" are all free, beginner-friendly and take just a few hours to complete.</p></div></div></div>
+      <div class="type-card tc-coral" style="background:#F7E3D8;" onclick="addRipple(event,this)"><span class="tc-icon">🛠️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Troubleshooting AI Tools</h3><div class="expandable open"><div class="expandable-inner"><p>Getting strange answers? Try being more specific, breaking your question into smaller parts, or giving an example of the kind of answer you want.</p></div></div></div>
+      <div class="type-card" style="background:#F7ECE2;" onclick="addRipple(event,this)"><span class="tc-icon">🗂️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Glossary of AI Terms</h3><div class="expandable open"><div class="expandable-inner"><p>Confused by "token", "parameter", "fine-tuning" or "embedding"? Send us a message on the Contact page and we will explain it clearly.</p></div></div></div>
+      <div class="type-card tc-green" style="background:#EBF0E5;" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">For Teachers and Parents</h3><div class="expandable open"><div class="expandable-inner"><p>We have collected age-appropriate talking points, lesson hooks and discussion questions for introducing AI at home or in the classroom. Contact us to request the full educator guide.</p></div></div></div>
+      <div class="type-card tc-purple" style="background:#F6EEEA;" onclick="addRipple(event,this)"><span class="tc-icon">💼</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">AI Tools for Job Hunting</h3><div class="expandable open"><div class="expandable-inner"><p>Use Claude or ChatGPT to polish your resume and cover letter, Yoodli to practice interview answers, and LinkedIn AI to improve your profile.</p></div></div></div>
+      <div class="type-card tc-blue" style="background:#F7ECE2;" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍💻</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Community and Forums</h3><div class="expandable open"><div class="expandable-inner"><p>Reddit's r/artificial and r/MachineLearning plus Hugging Face's community forums are friendly spaces for AI questions. Most people are welcoming to beginners.</p></div></div></div>
+      <div class="type-card tc-gold" style="background:#F7E3D8;" onclick="addRipple(event,this)"><span class="tc-icon">❓</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Frequently Asked Questions</h3><div class="expandable open"><div class="expandable-inner"><p>Wondering if AI will take over jobs, or whether it is conscious? Visit our Contact page and ask , we love these questions and answer every one.</p></div></div></div>
     </div>
   </div>
 </div>
@@ -2028,23 +2073,23 @@
         <p>Teachers and parents are especially welcome , ask about bringing these lessons into the classroom.</p>
       </div>
       <svg class="page-illus-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="Friendly envelope with a message flying out">
-        <rect width="400" height="280" fill="#EFF6FF" rx="20"/>
-        <rect x="60" y="90" width="280" height="180" rx="14" fill="#1D4ED8"/>
-        <polygon points="60,90 200,185 340,90" fill="#1E3A8A"/>
-        <polygon points="60,270 130,190 60,90" fill="#162C6B"/>
-        <polygon points="340,270 270,190 340,90" fill="#162C6B"/>
-        <polygon points="60,270 340,270 270,190 130,190" fill="#2563EB"/>
-        <circle cx="200" cy="224" r="22" fill="#F97316"/>
+        <rect width="400" height="280" fill="#F7ECE2" rx="20"/>
+        <rect x="60" y="90" width="280" height="180" rx="14" fill="#8B3620"/>
+        <polygon points="60,90 200,185 340,90" fill="#46200F"/>
+        <polygon points="60,270 130,190 60,90" fill="#3A1608"/>
+        <polygon points="340,270 270,190 340,90" fill="#3A1608"/>
+        <polygon points="60,270 340,270 270,190 130,190" fill="#A84A2C"/>
+        <circle cx="200" cy="224" r="22" fill="#C0562F"/>
         <text x="200" y="231" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="white">AI</text>
         <rect x="148" y="28" width="104" height="80" rx="8" fill="white"/>
-        <rect x="156" y="38" width="88" height="7" rx="3" fill="#E5E7EB"/>
-        <rect x="156" y="50" width="70" height="5" rx="2" fill="#E5E7EB"/>
-        <rect x="156" y="60" width="80" height="5" rx="2" fill="#E5E7EB"/>
-        <rect x="156" y="70" width="65" height="5" rx="2" fill="#E5E7EB"/>
-        <rect x="156" y="82" width="40" height="14" rx="7" fill="#F97316"/>
+        <rect x="156" y="38" width="88" height="7" rx="3" fill="#DDCFBD"/>
+        <rect x="156" y="50" width="70" height="5" rx="2" fill="#DDCFBD"/>
+        <rect x="156" y="60" width="80" height="5" rx="2" fill="#DDCFBD"/>
+        <rect x="156" y="70" width="65" height="5" rx="2" fill="#DDCFBD"/>
+        <rect x="156" y="82" width="40" height="14" rx="7" fill="#C0562F"/>
         <text x="176" y="93" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="white">Send →</text>
-        <circle cx="48" cy="48" r="6" fill="#FCD34D"/>
-        <circle cx="358" cy="60" r="5" fill="#F97316" opacity=".7"/>
+        <circle cx="48" cy="48" r="6" fill="#E0B15A"/>
+        <circle cx="358" cy="60" r="5" fill="#C0562F" opacity=".7"/>
       </svg>
     </div>
     <div class="two-col">
@@ -2076,9 +2121,12 @@
 </div>
 
 <footer>
-  <p>Made with ❤️ for curious learners everywhere. <strong>The AI Classroom</strong></p>
+  <p>Made with ❤️ for curious learners everywhere. <strong style="display:inline-flex;align-items:center;gap:.12em;">Seek<svg viewBox="0 0 64 64" width="18" height="18" aria-hidden="true" style="vertical-align:-4px;"><defs><radialGradient id="footSosSpace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="footSosEarth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="footSosSun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#footSosSpace)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#footSosSun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#footSosEarth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg>Sphere</strong></p>
   <p style="margin-top:.5rem;">AI is a tool. <em>You</em> are the thinker. Byte agrees. 🤖</p>
 </footer>
+
+<!-- Local question engine (algorithmic maths + JSON bank, with optional Claude-API mode) -->
+<script src="js/questions-engine.js"></script>
 
 <script>
 /* ══════════════════════════════════════
@@ -2386,19 +2434,13 @@ ${usesMCQ ? `{
 }`}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 600,
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const q = await provideLabQuestion({
+      subject: LAB.subject,
+      curriculum: LAB.curriculum,
+      age: LAB.age,
+      topic: LAB.topic,
+      recent: LAB.recentQuestions
     });
-
-    const data = await res.json();
-    const raw = (data.content?.[0]?.text || '').replace(/```json|```/g, '').trim();
-    const q = JSON.parse(raw);
 
     LAB.current = q;
     LAB.recentQuestions.push(q.question);
@@ -2780,19 +2822,12 @@ Respond ONLY with this exact JSON (no markdown, no extra text):
 }`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 700,
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const q = await provideExamQuestion({
+      exam: EP.exam,
+      subject: EP.subject,
+      difficulty: EP.difficulty,
+      recent: EP.recentQuestions
     });
-
-    const data = await res.json();
-    const raw = (data.content?.[0]?.text || '').replace(/```json|```/g, '').trim();
-    const q = JSON.parse(raw);
 
     EP.current = q;
     EP.recentQuestions.push(q.question);

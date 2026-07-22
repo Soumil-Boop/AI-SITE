@@ -15,7 +15,8 @@ A free, interactive educational website that teaches Artificial Intelligence to 
 | Styling | Vanilla CSS with custom design system |
 | Scripting | Vanilla JavaScript (ES6+) |
 | Fonts | Google Fonts — Nunito + Inter |
-| AI Questions | Anthropic Claude API (claude-sonnet-4-6) |
+| Lab & Exam questions | Local engine by default: algorithmic maths + JSON question bank (free, offline). Optional Claude Sonnet 4.6 via a Cloudflare Worker proxy. |
+| API proxy (optional) | Cloudflare Worker — `ai-classroom-proxy.aiteachingsite.workers.dev` |
 | Auth | Firebase Authentication |
 | Database | Firebase Firestore |
 | Hosting | GitHub Pages |
@@ -26,11 +27,11 @@ A free, interactive educational website that teaches Artificial Intelligence to 
 ## Project Structure
 
 ```
-AI SITE/
-└── ai-classroom/               <- Live Server root
-    ├── index.html              <- Home page with nav
-    ├── README.md
-    ├── BACKEND_SETUP.md
+AI SITE/                            <- git root (README, BACKEND_SETUP, .git live here)
+├── README.md
+├── BACKEND_SETUP.md
+└── ai-classroom/                   <- Live Server root
+    ├── index.html                  <- Home page + Lab + Exam Prep (all inline)
     ├── pages/
     │   ├── what-is-ai.html
     │   ├── history.html
@@ -39,13 +40,13 @@ AI SITE/
     │   ├── more-study.html
     │   ├── ethics.html
     │   ├── quiz.html
-    │   ├── lab.html
+    │   ├── lab.html                <- Standalone visual maths lab (Axon tutor)
     │   ├── finder.html
     │   ├── resources.html
     │   ├── contact.html
-    │   ├── login.html          <- Firebase compat SDK auth page
-    │   ├── dashboard.html      <- Student dashboard
-    │   └── admin.html          <- Admin panel (admin role only)
+    │   ├── login.html              <- Firebase compat SDK auth page
+    │   ├── dashboard.html          <- Student dashboard
+    │   └── admin.html              <- Admin panel (admin role only)
     ├── css/
     │   ├── base/
     │   │   ├── variables.css
@@ -57,27 +58,30 @@ AI SITE/
     │   │   ├── cards.css
     │   │   └── forms.css
     │   ├── layout/
-    │   │   ├── grid.css
+    │   │   ├── grid.css            <- Timeline lives here (dots centred on the line)
     │   │   └── sections.css
-    │   └── dashboard.css       <- Login, dashboard, admin styles
+    │   ├── pages/                  <- hero, lab, quiz, finder, study page styles
+    │   └── dashboard.css           <- Login, dashboard, admin styles
     ├── js/
     │   ├── core/
-    │   │   ├── nav.js          <- mountNav() shared nav function
-    │   │   └── utils.js
+    │   │   ├── nav.js              <- mountNav() shared nav function
+    │   │   └── utils.js            <- global helpers (rnd, pick, debounce...)
     │   ├── components/
-    │   │   ├── lab.js
+    │   │   ├── lab.js              <- Standalone maths lab logic (plain script)
     │   │   ├── finder.js
     │   │   ├── quiz.js
     │   │   └── contact.js
     │   ├── auth/
-    │   │   └── auth.js         <- Firebase ES module (future use)
+    │   │   └── auth.js             <- Firebase ES module (future use)
     │   ├── db/
     │   │   ├── users.js
     │   │   ├── progress.js
     │   │   └── badges.js
+    │   ├── questions-engine.js     <- NEW: swappable question engine for Lab + Exam Prep
     │   └── firebase-config.js
     └── data/
-        └── tools-data.js
+        ├── tools-data.js
+        └── question-bank.json      <- NEW: 98+ verified MCQs for concept subjects + exam prep
 ```
 
 ---
@@ -103,6 +107,47 @@ git checkout dev
 
 ---
 
+## Lab & Exam Question Engine (NEW)
+
+The Curriculum Lab and Exam Prep on `index.html` no longer call the Claude API directly. Browsers cannot call `api.anthropic.com` from a web page (CORS blocks it), and the API also costs money per question. Both now run through a **swappable question engine** in `js/questions-engine.js`.
+
+### The switch
+
+At the top of `js/questions-engine.js`:
+
+```js
+const QUESTION_SOURCE = 'json';   // 'json' = free local questions · 'api' = live Claude via Worker
+```
+
+- **`'json'` (default, free):**
+  - **Maths** is generated algorithmically in the browser — infinite unique questions, always correct, scaled by age band and topic. Covers addition, subtraction, multiplication, division, fractions, decimals, percentages, ratio, algebra, geometry, perimeter/area, time, money, statistics and more.
+  - **Concept subjects** (Science, English, History, Geography) and **Exam Prep** (GK, Aptitude, Reasoning, English) pull from `data/question-bank.json` — a curated bank of verified multiple-choice questions. If a topic has no exact match, it falls back to another question in the same age band rather than breaking.
+  - Works offline, costs nothing, has no rate limits — suitable for any number of students.
+
+- **`'api'` (optional, paid):**
+  - Sends prompts to Claude Sonnet 4.6 through the Cloudflare Worker proxy, for live AI-generated questions.
+  - The JSON bank stays as an **automatic fallback** if the API errors or runs out of credit. Maths always stays local (cheaper and always correct).
+
+### Expanding the bank
+
+Add entries to `data/question-bank.json`. Each item is a 4-option MCQ; the `answer` string must exactly match one of the four `options`. Structure:
+
+```
+lab.<subject>.<age>[]      subjects: science, english, history, geography · ages: 5-7, 8-10, 11-13, 14-16
+exam.<subject>.<difficulty>[]   subjects: gk, aptitude, reasoning, english · difficulty: easy, medium, hard
+```
+
+Maths is NOT stored here — it is generated in `questions-engine.js`.
+
+### Cloudflare Worker proxy (for `'api'` mode)
+
+- URL: `https://ai-classroom-proxy.aiteachingsite.workers.dev`
+- Forwards POST requests to the Claude API with the API key attached server-side, and adds CORS headers.
+- The Anthropic API key is stored as a Worker **secret** named `ANTHROPIC_API_KEY` (never in the site code).
+- Free tier: 100,000 requests/day. The only cost is Anthropic API usage (roughly half a cent to one cent per question on Sonnet 4.6).
+
+---
+
 ## Design System
 
 ### Colours
@@ -125,7 +170,7 @@ git checkout dev
 ### Content Rules
 - No em dashes anywhere in display content
 - Contractions used throughout for friendly tone
-- Mascot name is Felix (robot SVG with floating animation)
+- Home page mascot is **Felix** (robot SVG with floating animation). The in-Lab / Exam Prep tutor bubble is named **Byte**; the standalone maths lab (`pages/lab.html`) uses **Axon**.
 
 ---
 
@@ -135,29 +180,33 @@ git checkout dev
 - Felix mascot with float animation and blinking eyes
 - Neural network canvas animation
 - Quote carousel, stats bar, feature cards
+- Hosts the Curriculum Lab and Exam Prep (see below)
 
 ### History (pages/history.html)
 - Timeline from 1950 to today (6 milestones)
-- Dots use `outline` not `box-shadow` to prevent clipping
-- Timeline has `padding-left: 10px` and `overflow: visible`
+- Dot styles and the vertical line live in `css/layout/grid.css`
+- The line is centred on the dots via `.timeline::before { left: 32.5px }` (24.5px on mobile), so it runs through the middle of every circle
 
-### Lab (pages/lab.html)
-Two tabs:
+### Lab (index.html — two tabs)
 
 **Curriculum Lab**
-- Claude API questions (claude-sonnet-4-6)
+- Local engine questions by default (free); optional Claude via Worker
 - 5 curricula: CBSE, ICSE, UK, US, IB
 - 4 age groups: 5-7, 8-10, 11-13, 14-16
-- 5 subjects: Maths, Science, English, History, Geography
-- Felix tutor bubble, hints, streak tracker
+- 5 subjects: Maths (numeric, with block visuals for young ages), Science, English, History, Geography (MCQ)
+- Byte tutor bubble, hints, explanations, streak tracker
 
 **Exam Prep**
-- Claude API exam-pattern questions
+- Local engine questions by default (free); optional Claude via Worker
 - 5 exams: CUET, Railways, Bank PO, SSC, UPSC
 - 4 subjects: GK, Aptitude, Reasoning, English
 - Difficulty: Easy, Medium, Hard
 - Timer: 30s, 60s, 90s, 2 minutes
 - Scoreboard: Correct, Wrong, Accuracy, Streak
+
+### Standalone Maths Lab (pages/lab.html)
+- Separate, fully offline visual maths lab (addition/subtraction/multiplication/counting) generated in `js/components/lab.js`
+- Loaded as a plain script (no ES-module imports)
 
 ### Quiz (pages/quiz.html)
 - 5 questions, instant feedback
@@ -261,11 +310,15 @@ Firebase credentials are hardcoded directly in each of these three files.
 ---
 
 ## Known Issues / TODO
-- Lab and Quiz do not yet save progress to Firestore (wiring pending)
+- Lab and Exam Prep now generate questions for free, offline (local engine). ✅
+- History timeline circles are now centred on the vertical line. ✅
+- Standalone maths lab (`pages/lab.html`) now runs (removed broken ES-module imports). ✅
+- Progress saving still pending: Lab, Quiz and Exam Prep do not yet write sessions to Firestore. Wiring needs a compat-SDK save path called at end of session.
 - Contact form has no email backend
 - No password reset on login page
 - Nav Sign In button only on index.html, not on individual pages
 - Dashboard shows email as name if no display name set
+- Tutor/mascot naming is inconsistent across pages (Felix / Byte / Axon)
 
 ---
 
@@ -275,6 +328,8 @@ Firebase credentials are hardcoded directly in each of these three files.
 - Login: http://127.0.0.1:5501/ai-classroom/pages/login.html
 - Dashboard: http://127.0.0.1:5501/ai-classroom/pages/dashboard.html
 - Admin: http://127.0.0.1:5501/ai-classroom/pages/admin.html
+
+Note: the question bank loads via `fetch('data/question-bank.json')`, so the Lab must be served over http (Live Server), not opened as a `file://` path.
 
 ---
 

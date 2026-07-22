@@ -21,7 +21,7 @@
 /* ── AUTH PAGE ──────────────────────────────────────────────── */
 .auth-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--brand-dark), #162C6B);
+  background: linear-gradient(135deg, var(--brand-dark), #3A1608);
   display: flex; align-items: center; justify-content: center;
   padding: 2rem;
 }
@@ -62,7 +62,7 @@
 
 /* ── DASHBOARD HERO ─────────────────────────────────────────── */
 .dash-hero {
-  background: linear-gradient(135deg, var(--brand-dark), #162C6B);
+  background: linear-gradient(135deg, var(--brand-dark), #3A1608);
   padding: 3rem 2rem 2.5rem;
 }
 .dash-hero-inner {
@@ -138,14 +138,14 @@
 .dash-activity-icon { font-size: 1.3rem; }
 
 /* ── DANGER ZONE ────────────────────────────────────────────── */
-.dash-danger { padding: 1.5rem; margin-bottom: 3rem; border: 1.5px solid #FCA5A5; }
+.dash-danger { padding: 1.5rem; margin-bottom: 3rem; border: 1.5px solid #E3AE9E; }
 .dash-danger-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .btn-danger {
-  background: #DC2626; color: white; border: none;
+  background: #B23A2A; color: white; border: none;
   padding: .55rem 1.25rem; border-radius: 100px;
   font-weight: 700; cursor: pointer; transition: background .2s;
 }
-.btn-danger:hover { background: #B91C1C; }
+.btn-danger:hover { background: #8B2E22; }
 
 /* ── MODAL ──────────────────────────────────────────────────── */
 .modal-overlay {
@@ -160,7 +160,7 @@
 }
 .modal-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.4rem; margin-bottom: .5rem; }
 .modal-desc  { color: var(--muted); font-size: .9rem; line-height: 1.6; }
-.modal-error { color: #DC2626; font-size: .85rem; min-height: 1.2em; }
+.modal-error { color: #B23A2A; font-size: .85rem; min-height: 1.2em; }
 .modal-actions { display: flex; gap: .75rem; margin-top: 1rem; }
 
 /* ── BADGE TOAST ────────────────────────────────────────────── */
@@ -188,7 +188,7 @@
 .admin-table tr:hover td { background: var(--gray-50); }
 .admin-role-badge { font-size: .7rem; font-weight: 700; padding: .2rem .6rem; border-radius: 100px; text-transform: uppercase; letter-spacing: .06em; }
 .admin-role-student { background: var(--brand-light); color: var(--brand); }
-.admin-role-admin   { background: #FEF3C7; color: #92400E; }
+.admin-role-admin   { background: #F3E7CE; color: #6E3A1A; }
 .admin-actions { display: flex; gap: .4rem; }
 .btn-admin-action { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: .2rem .4rem; border-radius: 6px; transition: background .2s; }
 .btn-admin-action:hover { background: var(--gray-100); }
