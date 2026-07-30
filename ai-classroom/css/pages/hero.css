@@ -2,7 +2,7 @@
    hero.css — Home Page Hero Section
    ============================================================ */
 #hero {
-  background: linear-gradient(160deg, var(--brand-dark) 0%, #162C6B 60%, #0F1E4A 100%);
+  background: linear-gradient(160deg, var(--brand-dark) 0%, #3A1608 60%, #2E1206 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -36,8 +36,8 @@
 
 .hero-badge {
   display: inline-block;
-  background: rgba(249,115,22,.15);
-  border: 1px solid rgba(249,115,22,.45);
+  background: rgba(192,86,47,.15);
+  border: 1px solid rgba(192,86,47,.45);
   color: var(--accent);
   font-size: .8rem;
   font-weight: 700;
@@ -90,7 +90,7 @@
 .hero-photo-glow {
   position: absolute;
   inset: 10% 5%;
-  background: radial-gradient(circle, rgba(249,115,22,.35), transparent 70%);
+  background: radial-gradient(circle, rgba(192,86,47,.35), transparent 70%);
   z-index: 1;
   filter: blur(20px);
 }

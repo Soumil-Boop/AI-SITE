@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account Settings — Seek-O-Sphere</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/base/variables.css"/>
+  <link rel="stylesheet" href="../css/base/reset.css"/>
+  <link rel="stylesheet" href="../css/base/typography.css"/>
+  <link rel="stylesheet" href="../css/components/nav.css"/>
+  <link rel="stylesheet" href="../css/components/buttons.css"/>
+  <link rel="stylesheet" href="../css/components/forms.css"/>
+  <style>
+    .set-wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    .set-wrap h1 { font-family:'Nunito'; font-weight:900; color:var(--brand-dark); font-size:1.8rem; margin:0 0 1.5rem; }
+    .set-card { background:#FBF8F2; border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.4rem; }
+    .set-card h2 { font-family:'Nunito'; font-weight:800; color:var(--brand-dark); font-size:1.15rem; margin:0 0 1rem; }
+    .set-row { display:flex; gap:.6rem; }
+    .set-row .form-group { flex:1; }
+    .set-msg { font-size:.85rem; margin-top:.6rem; min-height:1.1em; }
+    .set-msg.ok { color:var(--green); } .set-msg.err { color:var(--accent-dark); }
+    .type-opt { display:flex; align-items:center; justify-content:center; gap:.4rem; padding:.7rem; border:1.5px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; font-weight:600; }
+    .exam-chip { display:flex; align-items:center; gap:.35rem; padding:.45rem .7rem; border:1.5px solid var(--border); border-radius:100px; cursor:pointer; }
+    .set-actions { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:.5rem; }
+  </style>
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<main class="set-wrap">
+  <h1>Account Settings</h1>
+
+  <!-- NAME -->
+  <div class="set-card">
+    <h2>👤 Name</h2>
+    <div class="form-group"><label for="sName">Display name</label><input type="text" id="sName" placeholder="e.g. Priya Sharma"/></div>
+    <button class="btn btn--primary btn--sm" onclick="saveName()">Save Name</button>
+    <p class="set-msg" id="nameMsg"></p>
+  </div>
+
+  <!-- ADDRESS -->
+  <div class="set-card">
+    <h2>📍 Address</h2>
+    <div class="form-group">
+      <label for="sCountry">Country</label>
+      <select id="sCountry" onchange="GEO.renderState('sStateWrap','sState',this.value)"></select>
+    </div>
+    <div class="set-row">
+      <div class="form-group" style="flex:2;"><label for="sCity">City</label><input type="text" id="sCity"/></div>
+      <div class="form-group" style="flex:1.4;"><label for="sState">State</label><div id="sStateWrap"><input type="text" id="sState"/></div></div>
+      <div class="form-group"><label for="sZip">Zip</label><input type="text" id="sZip"/></div>
+    </div>
+    <button class="btn btn--primary btn--sm" onclick="saveAddress()">Save Address</button>
+    <p class="set-msg" id="addrMsg"></p>
+  </div>
+
+  <!-- LEARNING / GRADE -->
+  <div class="set-card">
+    <h2>🎓 Learning</h2>
+    <div class="form-group">
+      <label>I am a...</label>
+      <div style="display:flex;gap:.6rem;margin-top:.25rem;">
+        <label class="type-opt" style="flex:1;"><input type="radio" name="sType" value="student" onchange="setToggleType()"/> Student</label>
+        <label class="type-opt" style="flex:1;"><input type="radio" name="sType" value="examprep" onchange="setToggleType()"/> Exam Prep</label>
+      </div>
+    </div>
+    <div id="sStudentFields">
+      <div class="form-group">
+        <label for="sGrade">Your Grade</label>
+        <select id="sGrade">
+          <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option>
+          <option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option>
+          <option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
+          <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option>
+          <option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option>
+          <option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="sCurriculum">Your Curriculum</label>
+        <select id="sCurriculum">
+          <option value="cbse">CBSE (India)</option><option value="icse">ICSE (India)</option>
+          <option value="uk">UK National Curriculum</option><option value="us">US Common Core</option>
+          <option value="ib">IB</option>
+        </select>
+      </div>
+    </div>
+    <div id="sExamFields" style="display:none;">
+      <div class="form-group">
+        <label>Which exams are you preparing for?</label>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.25rem;">
+          <label class="exam-chip"><input type="checkbox" class="s-exam" value="CUET"/> CUET</label>
+          <label class="exam-chip"><input type="checkbox" class="s-exam" value="Railways"/> Railways</label>
+          <label class="exam-chip"><input type="checkbox" class="s-exam" value="Bank PO"/> Bank PO</label>
+          <label class="exam-chip"><input type="checkbox" class="s-exam" value="SSC"/> SSC</label>
+          <label class="exam-chip"><input type="checkbox" class="s-exam" value="UPSC"/> UPSC</label>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn--primary btn--sm" onclick="saveLearning()">Save Learning</button>
+    <p class="set-msg" id="learnMsg"></p>
+  </div>
+
+  <!-- PASSWORD -->
+  <div class="set-card">
+    <h2>🔒 Password</h2>
+    <div class="form-group"><label for="sCurrentPw">Current password</label><input type="password" id="sCurrentPw" placeholder="Your current password"/></div>
+    <div class="form-group"><label for="sNewPw">New password</label><input type="password" id="sNewPw" placeholder="At least 6 characters"/></div>
+    <button class="btn btn--primary btn--sm" onclick="savePassword()">Change Password</button>
+    <p class="set-msg" id="pwMsg"></p>
+  </div>
+
+  <div class="set-actions">
+    <a href="dashboard.html" class="btn btn--secondary">My Dashboard</a>
+    <a href="../index.html" class="btn btn--ghost">Back to Site</a>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="../js/geo-data.js"></script>
+<script src="../js/core/utils.js"></script>
+<script src="../js/core/nav.js"></script>
+<script>mountNav('account-settings.html');</script>
+<script src="../js/session.js"></script>
+<script>
+  var CURRENT_USER = null;
+
+  function setToggleType(){
+    var t = (document.querySelector('input[name="sType"]:checked') || {}).value || 'student';
+    document.getElementById('sStudentFields').style.display = (t === 'student') ? 'block' : 'none';
+    document.getElementById('sExamFields').style.display = (t === 'examprep') ? 'block' : 'none';
+  }
+  function setMsg(id, text, ok){
+    var el = document.getElementById(id);
+    el.textContent = text; el.className = 'set-msg ' + (ok ? 'ok' : 'err');
+  }
+
+  SOS.onSession(function(user, profile){
+    if (!user) { window.location.replace('login.html'); return; }
+    CURRENT_USER = user;
+    var p = profile || {};
+    document.getElementById('sName').value  = p.name  || '';
+    document.getElementById('sCity').value  = p.city  || '';
+    var country = p.country || 'India';
+    if (window.GEO) {
+      GEO.populateCountries('sCountry', country);
+      GEO.renderState('sStateWrap', 'sState', country, p.state || '');
+    } else {
+      document.getElementById('sState').value = p.state || '';
+    }
+    document.getElementById('sZip').value   = p.zip   || '';
+    var type = p.type === 'examprep' ? 'examprep' : 'student';
+    var radio = document.querySelector('input[name="sType"][value="' + type + '"]');
+    if (radio) radio.checked = true;
+    if (p.grade) document.getElementById('sGrade').value = p.grade;
+    if (p.curriculum) document.getElementById('sCurriculum').value = p.curriculum;
+    (p.exams || []).forEach(function(ex){
+      var cb = document.querySelector('.s-exam[value="' + ex + '"]'); if (cb) cb.checked = true;
+    });
+    setToggleType();
+  });
+
+  function saveName(){
+    if (!CURRENT_USER) return;
+    var name = document.getElementById('sName').value.trim();
+    if (!name) { setMsg('nameMsg', 'Please enter a name.', false); return; }
+    SOS.db.collection('users').doc(CURRENT_USER.uid).set({ name: name }, { merge: true })
+      .then(function(){
+        try { localStorage.setItem('sos_name', name); } catch(e){}
+        setMsg('nameMsg', 'Name saved!', true);
+      })
+      .catch(function(e){ setMsg('nameMsg', 'Could not save: ' + e.message, false); });
+  }
+
+  function saveAddress(){
+    if (!CURRENT_USER) return;
+    SOS.db.collection('users').doc(CURRENT_USER.uid).set({
+      country: (document.getElementById('sCountry') || {}).value || '',
+      city: document.getElementById('sCity').value.trim(),
+      state: ((document.getElementById('sState') || {}).value || '').trim(),
+      zip: document.getElementById('sZip').value.trim()
+    }, { merge: true })
+    .then(function(){ setMsg('addrMsg', 'Address saved!', true); })
+    .catch(function(e){ setMsg('addrMsg', 'Could not save: ' + e.message, false); });
+  }
+
+  // Map a school grade (e.g. "Grade 8") to the Lab's age-group buckets.
+  function gradeToAge(grade){
+    var n = parseInt(String(grade).replace(/[^0-9]/g, ''), 10) || 6;
+    if (n <= 2) return '5-7';
+    if (n <= 5) return '8-10';
+    if (n <= 8) return '11-13';
+    return '14-16';
+  }
+
+  function saveLearning(){
+    if (!CURRENT_USER) return;
+    var type = (document.querySelector('input[name="sType"]:checked') || {}).value || 'student';
+    var data = { type: type };
+    if (type === 'student') {
+      data.grade = document.getElementById('sGrade').value;
+      data.curriculum = document.getElementById('sCurriculum').value;
+      data.ageGroup = gradeToAge(data.grade);
+      data.exams = [];
+    } else {
+      var exams = [];
+      document.querySelectorAll('.s-exam:checked').forEach(function(c){ exams.push(c.value); });
+      data.exams = exams; data.grade = ''; data.curriculum = '';
+    }
+    SOS.db.collection('users').doc(CURRENT_USER.uid).set(data, { merge: true })
+      .then(function(){
+        // Cache so the Lab auto-loads these without another Firestore read.
+        try {
+          if (data.curriculum) localStorage.setItem('sos_curriculum', data.curriculum);
+          if (data.grade)      localStorage.setItem('sos_grade', data.grade);
+          if (data.ageGroup)   localStorage.setItem('sos_age', data.ageGroup);
+        } catch(e){}
+        setMsg('learnMsg', 'Learning preferences saved!', true);
+      })
+      .catch(function(e){ setMsg('learnMsg', 'Could not save: ' + e.message, false); });
+  }
+
+  function savePassword(){
+    if (!CURRENT_USER) return;
+    var cur = document.getElementById('sCurrentPw').value;
+    var neu = document.getElementById('sNewPw').value;
+    if (neu.length < 6) { setMsg('pwMsg', 'New password must be at least 6 characters.', false); return; }
+    if (!CURRENT_USER.email) { setMsg('pwMsg', 'Password change is only available for email accounts.', false); return; }
+    var cred = firebase.auth.EmailAuthProvider.credential(CURRENT_USER.email, cur);
+    CURRENT_USER.reauthenticateWithCredential(cred).then(function(){
+      return CURRENT_USER.updatePassword(neu);
+    }).then(function(){
+      setMsg('pwMsg', 'Password changed successfully!', true);
+      document.getElementById('sCurrentPw').value = ''; document.getElementById('sNewPw').value = '';
+    }).catch(function(e){
+      var msg = e.code === 'auth/wrong-password' ? 'Your current password is incorrect.' :
+                e.code === 'auth/weak-password' ? 'New password is too weak.' :
+                'Could not change password: ' + e.message;
+      setMsg('pwMsg', msg, false);
+    });
+  }
+</script>
+</body>
+</html>

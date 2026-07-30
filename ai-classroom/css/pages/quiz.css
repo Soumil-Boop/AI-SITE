@@ -31,7 +31,7 @@
 }
 .quiz-opt:hover  { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
 .quiz-opt.correct { background: rgba(52,211,153,.2);  border-color: var(--green);  color: var(--green); }
-.quiz-opt.wrong   { background: rgba(249,115,22,.2);  border-color: var(--accent); color: var(--accent); }
+.quiz-opt.wrong   { background: rgba(192,86,47,.2);  border-color: var(--accent); color: var(--accent); }
 .quiz-feedback { font-size: .95rem; color: rgba(255,255,255,.7); margin-bottom: 1rem; min-height: 1.4em; }
 .quiz-progress { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
 .quiz-bar-bg   { flex: 1; height: 6px; background: rgba(255,255,255,.12); border-radius: 100px; }

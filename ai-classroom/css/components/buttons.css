@@ -44,3 +44,9 @@
 
 /* Full width */
 .btn--full { width: 100%; justify-content: center; }
+
+/* ── Single-dash aliases (login/dashboard/admin/index markup use these) ── */
+.btn-primary   { background: var(--accent); color:#fff; }
+.btn-primary:hover   { background: var(--accent-dark); }
+.btn-secondary { background: var(--brand); color:#fff; }
+.btn-secondary:hover { background: var(--brand-dark); }

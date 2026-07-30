@@ -24,7 +24,8 @@
 .timeline::before {
   content: '';
   position: absolute;
-  left: 28px; top: 0; bottom: 0;
+  /* Centered on the dots: dot center = tl-item padding-left(4) + dot width(60)/2 = 34px */
+  left: 32.5px; top: 0; bottom: 0;
   width: 3px;
   background: linear-gradient(to bottom, var(--brand), var(--brand-mid), var(--accent));
 }
@@ -56,6 +57,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .two-col { grid-template-columns: 1fr; }
-  .timeline::before { left: 20px; }
+  /* Centered on the smaller dots: padding-left(4) + 44/2 = 26px */
+  .timeline::before { left: 24.5px; }
   .tl-dot { width: 44px; height: 44px; font-size: 1rem; }
 }

@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - The AI Classroom</title>
+  <title>Admin Panel - Seek-O-Sphere</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
   <link rel="stylesheet" href="../css/base/typography.css"/>
   <link rel="stylesheet" href="../css/components/buttons.css"/>
+  <link rel="stylesheet" href="../css/components/nav.css"/>
   <link rel="stylesheet" href="../css/dashboard.css"/>
 </head>
 <body>
+<div id="nav-mount"></div>
 
 <div id="adminGate" class="auth-gate">
   <div class="auth-gate-inner">
@@ -20,19 +23,8 @@
   </div>
 </div>
 
-
-<div style="background:#1E3A8A;padding:.65rem 2rem;display:flex;align-items:center;justify-content:space-between;">
-  <a href="../index.html" onclick="event.preventDefault();window.location.replace('../index.html')" style="color:white;font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;text-decoration:none;">
-    ← Back to Site
-  </a>
-  <span style="color:rgba(255,255,255,.7);font-size:.85rem;">Admin Panel</span>
-  <button onclick="auth.signOut().then(function(){ window.location.replace('../index.html'); })" 
-    style="background:rgba(255,255,255,.15);color:white;border:none;border-radius:100px;padding:.35rem .9rem;font-size:.82rem;font-weight:600;cursor:pointer;">
-    Sign Out
-  </button>
-</div>
 <main id="adminMain" style="display:none;">
-  <div class="dash-hero" style="background:linear-gradient(135deg,#3D0C1F,#1A0A10);">
+  <div class="dash-hero" style="background:linear-gradient(135deg,#3A1608,#17100A);">
     <div class="dash-hero-inner">
       <span style="font-size:2rem;">🛡️</span>
       <div>
@@ -193,5 +185,9 @@ function deleteUser(uid, name) {
   });
 }
 </script>
+<script src="../js/core/utils.js"></script>
+<script src="../js/core/nav.js"></script>
+<script>mountNav('admin.html');</script>
+<script src="../js/session.js"></script>
 </body>
 </html>

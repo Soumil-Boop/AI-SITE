@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Dashboard — The AI Classroom</title>
+  <title>My Dashboard — Seek-O-Sphere</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="../css/base/variables.css"/>
@@ -16,6 +17,7 @@
   <link rel="stylesheet" href="../css/dashboard.css"/>
 </head>
 <body>
+<div id="nav-mount"></div>
 
 <div id="authGate" class="auth-gate">
   <div class="auth-gate-inner">
@@ -171,11 +173,15 @@ function loadDashboard(uid) {
   db.collection('users').doc(uid).get().then(function(snap) {
     // If no profile exists yet, create one now
     if (!snap.exists) {
+      var u = auth.currentUser;
       return db.collection('users').doc(uid).set({
-        name: auth.currentUser.displayName || auth.currentUser.email || 'Student',
-        email: auth.currentUser.email || '',
+        name: u.displayName || '',
+        email: u.email || '',
         role: 'student',
-        curriculum: 'cbse',
+        type: 'student',
+        country: '', city: '', state: '', zip: '',
+        grade: '', curriculum: 'cbse',
+        exams: [],
         ageGroup: '11-13',
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         lastActive: firebase.firestore.FieldValue.serverTimestamp(),
@@ -274,5 +280,9 @@ function confirmDeleteAccount() {
   });
 }
 </script>
+<script src="../js/core/utils.js"></script>
+<script src="../js/core/nav.js"></script>
+<script>mountNav('dashboard.html', { homeLinks: true });</script>
+<script src="../js/session.js"></script>
 </body>
 </html>
