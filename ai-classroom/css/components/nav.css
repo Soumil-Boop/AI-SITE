@@ -106,3 +106,61 @@ nav {
   .nav-links.open { display: flex; }
   .hamburger { display: flex; }
 }
+
+/* ── 3-row header: utility bar (row 1) + brand banner (row 3) ── */
+.topbar {
+  background: #2E1206;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.5rem;
+  padding: .4rem 2rem;
+  font-size: .8rem;
+}
+.topbar a { color: rgba(255,255,255,.7); text-decoration: none; font-weight: 600; transition: color .2s; }
+.topbar a:hover { color: var(--accent); }
+.topbar .topbar-auth { color: var(--accent); }
+.topbar .topbar-auth:hover { color: #fff; }
+
+.brand-banner {
+  background: linear-gradient(160deg, #5C2D1E 0%, #7A3A22 100%);
+  text-align: center;
+  padding: 1.15rem 1rem;
+  border-bottom: 3px solid var(--accent);
+}
+.brand-banner-inner { display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+.bb-word {
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.9rem; color: #fff;
+  display: inline-flex; align-items: center; gap: .12em; line-height: 1;
+}
+.bb-word > span { color: var(--accent); }
+.bb-word .logo-mark { width: 34px; height: 34px; }
+.bb-tag { color: rgba(255,255,255,.72); font-size: .72rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+
+@media (max-width: 900px) {
+  .topbar { padding: .35rem 1rem; gap: 1rem; }
+  .bb-word { font-size: 1.5rem; }
+}
+
+/* ── Account menu (Hi, Name + hover dropdown) ── */
+.acct-wrap { position: relative; display: inline-flex; }
+.acct-trigger {
+  background: none; border: none; color: var(--accent); font-weight: 700; font-size: .8rem;
+  font-family: 'Inter', sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: .35rem; padding: .1rem 0;
+}
+.acct-trigger:hover { color: #fff; }
+.acct-drop {
+  position: absolute; top: 100%; right: 0;
+  background: #FBF8F2; border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(0,0,0,.28); min-width: 200px; padding: .4rem;
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity .18s ease, transform .18s ease, visibility .18s; z-index: 300;
+}
+.acct-wrap:hover .acct-drop, .acct-wrap:focus-within .acct-drop { opacity: 1; visibility: visible; transform: translateY(0); }
+.acct-drop a {
+  display: block; padding: .55rem .8rem; color: var(--brand-dark); font-size: .85rem; font-weight: 600;
+  border-radius: 8px; text-decoration: none; white-space: nowrap;
+}
+.acct-drop a:hover { background: var(--brand-light); color: var(--brand); }
+.acct-drop .acct-logout { color: var(--accent-dark); border-top: 1px solid var(--border); margin-top: .25rem; padding-top: .55rem; border-radius: 0 0 8px 8px; }
+.acct-drop .acct-logout:hover { background: var(--accent-light); color: var(--accent-dark); }

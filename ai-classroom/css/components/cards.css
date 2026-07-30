@@ -45,7 +45,7 @@
 /* Tag colour variants */
 .tc-blue   { background: #F1DACF; color: var(--brand); }
 .tc-coral  { background: var(--accent-light); color: var(--accent-dark); }
-.tc-purple { background: #EADFE3; color: var(--purple); }
+.tc-purple { background: #E6DBC9; color: var(--purple); }
 .tc-green  { background: #E2E8DC; color: var(--green); }
 .tc-gold   { background: var(--accent-light); color: var(--accent-dark); }
 

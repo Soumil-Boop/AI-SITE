@@ -5,11 +5,11 @@
    ============================================================ */
 :root {
   /* 60% Neutral */
-  --white:       #FFFFFF;
-  --gray-50:     #EFE6D8;
-  --gray-100:    #E6DBC9;
-  --gray-200:    #CBBBA5;
-  --text:        #2A1B12;
+  --white:       #FBF8F2;
+  --gray-50:     #F7ECE2;
+  --gray-100:    #F1E7DA;
+  --gray-200:    #E6DBC9;
+  --text:        #3E2B1E;
   --muted:       #8B6E5A;
 
   /* 30% Brand Blue */

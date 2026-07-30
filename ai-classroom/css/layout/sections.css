@@ -26,8 +26,8 @@ section { padding: 5rem 2rem; }
 
 /* Page Hero Banner (top of each inner page) */
 .page-hero {
-  background: linear-gradient(160deg, var(--brand-dark) 0%, #7A3A22 100%);
-  padding: 5rem 2rem 4rem;
+  background: linear-gradient(160deg, var(--brand-dark) 0%, #B24E33 100%);
+  padding: 2.25rem 2rem 1.75rem;
   text-align: center;
 }
 .page-hero h1 {
@@ -48,12 +48,12 @@ section { padding: 5rem 2rem; }
 /* Footer */
 footer {
   background: var(--brand-dark);
-  color: #EFE1D2;
+  color: #E6DBC9;
   text-align: center;
   padding: 2.5rem 2rem;
   font-size: .88rem;
 }
-footer p { color: #EFE1D2; }
+footer p { color: #E6DBC9; }
 footer strong { color: #fff; }
 footer a { color: var(--accent); text-decoration: none; }
 footer a:hover { text-decoration: underline; }
