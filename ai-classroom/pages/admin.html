@@ -18,8 +18,8 @@
 
 <div id="adminGate" class="auth-gate">
   <div class="auth-gate-inner">
-    <div class="auth-spinner"></div>
-    <p>Verifying admin access...</p>
+    <div class="dash-loader"><div class="ring"></div><div class="ring r2"></div><div class="core"></div><div class="sat"></div></div>
+    <p>Verifying admin access…</p>
   </div>
 </div>
 
@@ -57,19 +57,34 @@
             <th>Email</th>
             <th>Role</th>
             <th>Questions</th>
-            <th>Joined</th>
+            <th>Accuracy</th>
+            <th>Best Streak</th>
             <th>Last Active</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="adminUserBody">
-          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">Loading users...</td></tr>
+          <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;">Loading users…</td></tr>
         </tbody>
       </table>
     </div>
 
   </div>
 </main>
+
+<!-- Per-user progress detail -->
+<div class="modal-overlay" id="userModal" style="display:none;">
+  <div class="modal-box um-box">
+    <div class="um-head">
+      <div>
+        <h2 class="modal-title" id="umName">User</h2>
+        <p class="modal-desc" id="umEmail" style="margin:0;"></p>
+      </div>
+      <button class="um-close" onclick="closeUserModal()" aria-label="Close">&times;</button>
+    </div>
+    <div id="umBody"><p style="color:var(--muted);padding:1rem 0;">Loading progress…</p></div>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -87,23 +102,28 @@ firebase.initializeApp({
 
 var auth = firebase.auth();
 var db = firebase.firestore();
+try { db.enablePersistence({ synchronizeTabs: true }).catch(function(){}); } catch(e){}
 var allUsers = [];
 
 auth.onAuthStateChanged(function(user) {
-  if (!user) {
-    window.location.href = 'login.html';
-    return;
-  }
+  if (!user) { window.location.href = 'login.html'; return; }
+  // Fast-path: a returning admin sees the panel instantly; the read below just confirms.
+  var cached = null; try { cached = localStorage.getItem('sos_role'); } catch(e){}
+  if (cached === 'admin') showAdmin();
   db.collection('users').doc(user.uid).get().then(function(snap) {
-    if (!snap.exists || snap.data().role !== 'admin') {
-      window.location.href = '../index.html';
-      return;
-    }
-    document.getElementById('adminGate').style.display = 'none';
-    document.getElementById('adminMain').style.display = 'block';
-    loadAdminData();
+    var isAdmin = snap.exists && snap.data().role === 'admin';
+    try { localStorage.setItem('sos_role', (snap.exists && snap.data().role) || 'student'); } catch(e){}
+    if (!isAdmin) { window.location.replace('../index.html'); return; }
+    showAdmin();
   });
 });
+
+function showAdmin() {
+  if (showAdmin.done) return; showAdmin.done = true;
+  document.getElementById('adminGate').style.display = 'none';
+  document.getElementById('adminMain').style.display = 'block';
+  loadAdminData();
+}
 
 function loadAdminData() {
   db.collection('users').get().then(function(snap) {
@@ -125,26 +145,37 @@ function loadAdminData() {
     document.getElementById('adminActiveToday').textContent = active.length;
 
     renderUserTable(allUsers);
+  }).catch(function(err) {
+    console.error('Failed to load users:', err && err.code, err && err.message);
+    var denied = err && err.code === 'permission-denied';
+    document.getElementById('adminUserBody').innerHTML =
+      '<tr><td colspan="8" style="text-align:center;color:var(--accent-dark);padding:2rem;">' +
+      (denied
+        ? 'Access blocked by Firestore rules. An admin needs permission to read all users — update your Firestore security rules (see the rules file provided).'
+        : 'Could not load users: ' + ((err && err.message) || 'unknown error')) +
+      '</td></tr>';
   });
 }
 
 function renderUserTable(users) {
   var tbody = document.getElementById('adminUserBody');
   if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">No users found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;">No users found.</td></tr>';
     return;
   }
   tbody.innerHTML = users.map(function(u) {
-    var joined  = u.createdAt  && u.createdAt.toDate  ? u.createdAt.toDate().toLocaleDateString('en-GB')  : 'N/A';
     var active  = u.lastActive && u.lastActive.toDate ? u.lastActive.toDate().toLocaleDateString('en-GB') : 'N/A';
+    var acc = (u.totalQuestions && u.correctTotal != null) ? Math.round(u.correctTotal / u.totalQuestions * 100) + '%' : '—';
     return '<tr>' +
       '<td>' + (u.name || 'Guest') + '</td>' +
       '<td style="color:var(--muted);font-size:.88rem;">' + (u.email || 'Anonymous') + '</td>' +
       '<td><span class="admin-role-badge admin-role-' + u.role + '">' + u.role + '</span></td>' +
       '<td>' + (u.totalQuestions || 0) + '</td>' +
-      '<td style="font-size:.82rem;color:var(--muted);">' + joined + '</td>' +
+      '<td>' + acc + '</td>' +
+      '<td>' + (u.bestStreak || 0) + '</td>' +
       '<td style="font-size:.82rem;color:var(--muted);">' + active + '</td>' +
       '<td class="admin-actions">' +
+        '<button class="btn-admin-action" onclick="viewUser(\'' + u.uid + '\')" title="View progress">👁️</button>' +
         '<button class="btn-admin-action" onclick="promoteUser(\'' + u.uid + '\',\'' + u.role + '\')" title="' + (u.role === 'admin' ? 'Demote' : 'Promote') + '">' + (u.role === 'admin' ? '⬇️' : '⬆️') + '</button>' +
         '<button class="btn-admin-action" onclick="resetProgress(\'' + u.uid + '\')" title="Reset progress">🔄</button>' +
         '<button class="btn-admin-action" onclick="deleteUser(\'' + u.uid + '\',\'' + (u.name || u.email) + '\')" title="Delete">🗑️</button>' +
@@ -183,6 +214,64 @@ function deleteUser(uid, name) {
     allUsers = allUsers.filter(function(u) { return u.uid !== uid; });
     renderUserTable(allUsers);
   });
+}
+
+/* ── Per-user progress detail ── */
+var PROG_CACHE = {};
+var UM_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function umEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function umDate(d){ if(!d) return '—'; var p=String(d).split('-'); if(p.length!==3) return d; return UM_MON[parseInt(p[1],10)-1]+' '+parseInt(p[2],10); }
+function umDonut(pct,color){ var size=58,st=8,r=(size-st)/2,c=2*Math.PI*r,cx=size/2; pct=Math.max(0,Math.min(100,pct)); var g=pct/100*c;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="#EFE1CD" stroke-width="'+st+'"/><circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="'+st+'" stroke-linecap="round" stroke-dasharray="'+g.toFixed(1)+' '+(c-g).toFixed(1)+'" transform="rotate(-90 '+cx+' '+cx+')"/><text x="'+cx+'" y="'+(cx+4)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="14" fill="#2B2016">'+Math.round(pct)+'%</text></svg>'; }
+
+function viewUser(uid){
+  var u = allUsers.filter(function(x){ return x.uid===uid; })[0] || {};
+  document.getElementById('umName').textContent  = u.name  || 'Guest';
+  document.getElementById('umEmail').textContent = u.email || 'Anonymous';
+  document.getElementById('umBody').innerHTML = '<p style="color:var(--muted);padding:1rem 0;">Loading progress…</p>';
+  document.getElementById('userModal').style.display = 'flex';
+  if (PROG_CACHE[uid]) { renderUserDetail(u, PROG_CACHE[uid]); return; }
+  db.collection('progress').doc(uid).collection('daily').get().then(function(snap){
+    var rows=[]; snap.forEach(function(d){ var x=d.data()||{}; if(x.date) rows.push(x); });
+    PROG_CACHE[uid]=rows; renderUserDetail(u, rows);
+  }).catch(function(){ document.getElementById('umBody').innerHTML='<p style="color:var(--muted);padding:1rem 0;">Could not load progress.</p>'; });
+}
+function closeUserModal(){ document.getElementById('userModal').style.display='none'; }
+
+function renderUserDetail(u, rows){
+  var body = document.getElementById('umBody');
+  var totalQ = rows.reduce(function(s,r){ return s+(r.questions||0); },0);
+  if (!rows.length || !totalQ) { body.innerHTML = '<div class="um-empty">This user hasn\'t practised yet — no scores to show.</div>'; return; }
+  var totalC = rows.reduce(function(s,r){ return s+(r.correct||0); },0);
+  var acc = Math.round(totalC/totalQ*100);
+  var byDate={}; rows.forEach(function(r){ byDate[r.date]=1; });
+  var activeDays = Object.keys(byDate).length;
+
+  var bySubj={}; rows.forEach(function(r){ var k=(r.mode||'curriculum')+'|'+(r.label||r.subject);
+    var e=bySubj[k]||(bySubj[k]={label:(r.label||r.subject),mode:r.mode||'curriculum',q:0,c:0,sessions:0,last:''});
+    e.q+=(r.questions||0); e.c+=(r.correct||0); e.sessions+=1; if(r.date>e.last)e.last=r.date; });
+  var subjects=Object.keys(bySubj).map(function(k){return bySubj[k];}).sort(function(a,b){return b.q-a.q;});
+  var icons={'Math':'➕','Science':'🔬','English':'📖','History':'📜','Geography':'🌍'};
+  var subjHTML = subjects.map(function(s){ var a=s.q?Math.round(s.c/s.q*100):0; var cls=a>=75?'good':(a>=50?'ok':'low'); var ic=icons[s.label]||(s.mode==='exam'?'🏛️':'📘');
+    return '<div class="dash-subj-row"><div class="dash-subj-donut">'+umDonut(a,cls==='good'?'#5F7355':(cls==='ok'?'#C0562F':'#B24E33'))+'</div>'
+      +'<div class="dash-subj-head"><span class="dash-subj-ic">'+ic+'</span><div class="dash-subj-name"><strong>'+umEsc(s.label)+'</strong><span>'+(s.mode==='exam'?'Exam prep':'Curriculum')+' · Last '+umDate(s.last)+'</span></div></div>'
+      +'<div class="dash-subj-nums"><div><b>'+s.q+'</b><span>questions</span></div><div><b class="good">'+s.c+'</b><span>correct</span></div><div><b>'+s.sessions+'</b><span>sessions</span></div></div>'
+      +'<div class="dash-subj-track"><span class="'+cls+'" style="width:'+a+'%"></span></div></div>';
+  }).join('');
+  var sessions = rows.slice().sort(function(a,b){ return (b.date+(b.mode||'')).localeCompare(a.date+(a.mode||'')); }).slice(0,8);
+  var sessHTML = sessions.map(function(s){ var a=s.questions?Math.round(s.correct/s.questions*100):0; var ac=a>=75?'good':(a>=50?'ok':'low');
+    return '<tr><td>'+umDate(s.date)+'</td><td>'+umEsc(s.label||s.subject)+'</td><td><span class="dash-tag '+(s.mode==='exam'?'tag-exam':'tag-curr')+'">'+(s.mode==='exam'?'Exam':'Curriculum')+'</span></td><td>'+(s.questions||0)+'</td><td><span class="dash-acc '+ac+'">'+a+'%</span></td></tr>';
+  }).join('');
+
+  body.innerHTML =
+    '<div class="um-summary">'
+    + '<div class="um-stat"><span class="um-num">'+totalQ+'</span><span class="um-lbl">Questions</span></div>'
+    + '<div class="um-stat um-donut">'+umDonut(acc,'#5F7355')+'<div><span class="um-num">'+acc+'%</span><span class="um-lbl">Accuracy</span></div></div>'
+    + '<div class="um-stat"><span class="um-num">'+(u.bestStreak||0)+'</span><span class="um-lbl">Best Streak</span></div>'
+    + '<div class="um-stat"><span class="um-num">'+activeDays+'</span><span class="um-lbl">Active Days</span></div>'
+    + '</div>'
+    + '<h3 class="um-h">Progress by Subject</h3><div class="dash-subj-list">'+subjHTML+'</div>'
+    + '<h3 class="um-h">Recent Sessions</h3><div class="dash-table-wrap"><table class="dash-table"><thead><tr><th>Date</th><th>Subject</th><th>Type</th><th>Questions</th><th>Accuracy</th></tr></thead><tbody>'+sessHTML+'</tbody></table></div>';
 }
 </script>
 <script src="../js/core/utils.js"></script>

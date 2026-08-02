@@ -9,7 +9,7 @@
   <style>
     /* ── TYPOGRAPHY GLOBALS ── */
     /* Nunito = headings/display, Inter = body. Applied globally below. */
-    h1,h2,h3,h4 { font-family:'Nunito',sans-serif; font-weight:800; color:var(--text,#3E2B1E); line-height:1.2; }
+    h1,h2,h3,h4 { font-family:'Nunito',sans-serif; font-weight:900; color:var(--text,#3E2B1E); line-height:1.15; letter-spacing:-.015em; }
     p,li,span,label,input,textarea,button { font-family:'Inter',sans-serif; color:var(--text,#3E2B1E); }
     /* All eyebrow labels */
     .eyebrow { font-family:'Inter',sans-serif; font-size:.75rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:.5rem; }
@@ -22,7 +22,9 @@
     /* ── RESET ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background: var(--parchment); color: #3E2B1E; line-height: 1.6; overflow-x: hidden; }
+    body { font-family: 'Inter', sans-serif; background: var(--parchment); color: #3E2B1E; line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+    ::selection { background: var(--brand-light); color: var(--brand-dark); }
     img  { max-width: 100%; display: block; }
     a    { text-decoration: none; color: inherit; }
     button { font-family: inherit; cursor: pointer; }
@@ -49,33 +51,34 @@
       --green:       #5F7355;
       --green-light: #E2E8DC;
       --purple:      #6E5460;
-      --radius:      16px;
+      --radius:      14px;
       --radius-sm:   10px;
     }
 
     /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 100;
-      background: var(--brand-dark);
+      background: linear-gradient(180deg,#4A2110 0%,#3C1B0D 100%);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem; height: 64px;
-      box-shadow: 0 2px 20px rgba(139,54,32,.3);
+      padding: 0 2.25rem; height: 66px;
+      border-bottom: 1px solid rgba(192,86,47,.42);
+      box-shadow: 0 10px 30px -14px rgba(20,8,3,.75);
     }
-    .nav-logo { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.3rem; color:#fff; display:flex; align-items:center; gap:.6rem; white-space:nowrap; cursor:pointer; }
+    .nav-logo { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.34rem; letter-spacing:-.01em; color:#fff; display:flex; align-items:center; gap:.5rem; white-space:nowrap; cursor:pointer; }
     .nav-logo span { color:var(--accent); }
-    .logo-mark { width:30px; height:30px; flex-shrink:0; }
+    .logo-mark { width:32px; height:32px; flex-shrink:0; filter:drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
     .logo-node { fill:var(--accent); transform-origin:center; animation:logoPulse 3s ease-in-out infinite; }
     .logo-node-1{animation-delay:0s;} .logo-node-2{animation-delay:.5s;fill:var(--brand-mid);} .logo-node-3{animation-delay:1s;fill:var(--brand-mid);} .logo-node-4{animation-delay:1.5s;}
     .logo-edge{stroke:rgba(255,255,255,.35);stroke-width:1.4;fill:none;} .logo-edge-center{stroke:rgba(255,255,255,.2);fill:none;}
     @keyframes logoPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.7}}
-    .nav-links{display:flex;align-items:center;gap:.2rem;flex-wrap:wrap;}
-    .nav-links a{color:rgba(255,255,255,.75);font-size:.82rem;font-weight:500;padding:.35rem .7rem;border-radius:8px;transition:background .2s,color .2s;white-space:nowrap;cursor:pointer;}
-    .nav-links a:hover,.nav-links a.active{background:rgba(255,255,255,.15);color:#fff;}
-    .nav-links a.active{background:var(--accent);}
+    .nav-links{display:flex;align-items:center;gap:.15rem;flex-wrap:wrap;}
+    .nav-links a{color:rgba(255,255,255,.78);font-size:.83rem;font-weight:600;padding:.42rem .78rem;border-radius:9px;transition:background .2s,color .2s,box-shadow .2s;white-space:nowrap;cursor:pointer;}
+    .nav-links a:hover{background:rgba(255,255,255,.12);color:#fff;}
+    .nav-links a.active{background:var(--accent);color:#fff;box-shadow:0 4px 12px -3px rgba(192,86,47,.75);}
     .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:.25rem;}
     .hamburger span{width:24px;height:2px;background:white;border-radius:2px;display:block;}
     @media(max-width:900px){
-      .nav-links{display:none;flex-direction:column;position:absolute;top:64px;left:0;right:0;background:var(--brand-dark);padding:1rem;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.3);}
+      .nav-links{display:none;flex-direction:column;position:absolute;top:66px;left:0;right:0;background:var(--brand-dark);padding:1rem;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.3);}
       .nav-links.open{display:flex;} .hamburger{display:flex;}
     }
 
@@ -298,7 +301,8 @@
 
 
     /* ── BUTTONS ── */
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.75rem;border-radius:100px;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;font-family:'Inter',sans-serif;}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.75rem;border-radius:100px;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;font-family:'Inter',sans-serif;}
+    .btn:hover{transform:translateY(-1px);} .btn:active{transform:translateY(0);}
     .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2);}
     .btn-primary{background:var(--accent);color:#fff;} .btn-primary:hover{background:var(--accent-dark);}
     .btn-secondary{background:var(--brand);color:#fff;} .btn-secondary:hover{background:var(--brand-dark);}
@@ -420,11 +424,24 @@
 
     /* ── MASCOT SVG ── */
     .mascot-wrap {
-      width: 220px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
+      width: 330px; flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem;
     }
     @keyframes mascotFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
-    .mascot-svg { width: 200px; height: 200px; }
+    .mascot-svg { width: 300px; height: auto; overflow: visible; animation: mascotFloat 5.5s ease-in-out infinite; }
+    .eu-tentacles { transform-box: fill-box; transform-origin: center top; animation: euWiggle 4s ease-in-out infinite; }
+    @keyframes euWiggle { 0%,100%{ transform: rotate(-1.4deg); } 50%{ transform: rotate(1.4deg); } }
+    .mascot-wrap:hover .eu-tentacles { animation-duration: 1.3s; }
+    .eu-lid { transform-box: fill-box; transform-origin: center top; transform: scaleY(0); animation: euBlink 5s ease-in-out infinite; }
+    @keyframes euBlink { 0%,93%,100%{ transform: scaleY(0); } 96.5%{ transform: scaleY(1); } }
+    .eu-bulb { transform-box: fill-box; transform-origin: center; animation: euPulse 2.4s ease-in-out infinite; }
+    @keyframes euPulse { 0%,100%{ transform: scale(1); opacity:1; } 50%{ transform: scale(1.18); opacity:.82; } }
+    .eulid-pupil { transition: transform .1s ease-out; }
+    .mascot-name {
+      font-family:'Nunito',sans-serif; font-weight:900; font-size:1.15rem; letter-spacing:.14em;
+      color:#fff; text-transform:uppercase; display:inline-flex; align-items:center; gap:.55rem;
+    }
+    .mascot-name::before, .mascot-name::after { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); }
     /* Blink animation for eyes */
     @keyframes blink {
       0%,90%,100% { transform: scaleY(1); }
@@ -441,8 +458,8 @@
 
     @media(max-width:768px){
       .home-hero-wrap { grid-template-columns:1fr; padding:3rem 1.5rem 2rem; }
-      .mascot-wrap { width:140px; margin:0 auto; }
-      .mascot-svg { width:140px; height:140px; }
+      .mascot-wrap { width:230px; margin:0 auto; }
+      .mascot-svg { width:220px; height:auto; }
       .home-stats { flex-wrap:wrap; }
       .stat-item { min-width:50%; border-right:none; border-bottom:1px solid rgba(255,255,255,.1); }
     }
@@ -552,7 +569,27 @@
     }
     .page-illus-row.flip { direction: rtl; }
     .page-illus-row.flip > * { direction: ltr; }
-    .page-illus-svg { width:100%; border-radius:20px; display:block; box-shadow:0 8px 32px rgba(0,0,0,.12); }
+    .page-illus-svg { width:100%; border-radius:18px; display:block; box-shadow:var(--shadow-md); border:1px solid var(--border); }
+    /* ── Real-photo slot: glossy glass-card treatment ── */
+    .page-illus-photo { position:relative; border-radius:18px; }
+    .page-illus-photo img.page-illus-svg { display:block; width:100%; height:100%; object-fit:cover; aspect-ratio:400/280; }
+    .page-illus-photo::after { /* gloss sweep + inner edge light */
+      content:""; position:absolute; inset:0; border-radius:18px; pointer-events:none;
+      background:
+        linear-gradient(125deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,.10) 22%, rgba(255,255,255,0) 42%),
+        linear-gradient(0deg, rgba(62,43,30,.16) 0%, rgba(62,43,30,0) 30%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 0 0 1px rgba(255,255,255,.10);
+    }
+    .page-illus-photo .illus-caption { position:absolute; left:14px; bottom:12px; z-index:3;
+      display:inline-flex; align-items:center; gap:.4rem; padding:.32rem .7rem; border-radius:100px;
+      background:rgba(46,18,6,.55); backdrop-filter:blur(6px); color:#fff;
+      font-family:'Nunito',sans-serif; font-weight:800; font-size:.72rem; letter-spacing:.02em; }
+    /* ── Mini-Eulid woven beside a photo/illustration ── */
+    .illus-eulid { position:absolute; z-index:4; width:80px; height:auto;
+      filter:drop-shadow(0 6px 10px rgba(62,43,30,.30)); animation:mascotFloat 5s ease-in-out infinite; }
+    .illus-eulid.corner-br { right:-14px; bottom:-14px; }
+    .illus-eulid.corner-tr { right:-12px; top:-14px; }
+    @media(max-width:768px){ .illus-eulid { width:60px; right:-6px; } }
     .page-illus-text h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:clamp(1.6rem,3vw,2.2rem); color:var(--text); margin-bottom:.75rem; line-height:1.2; }
     .page-illus-text p  { font-family:'Inter',sans-serif; font-size:1rem; color:var(--muted); line-height:1.75; margin-bottom:1rem; }
     .page-illus-text.on-dark h2 { color:#fff; }
@@ -889,18 +926,20 @@
     .lab-celebration.show { opacity: 1 !important; }
 
     /* ── 3-row header ── */
-    .topbar { background:#2E1206; display:flex; justify-content:flex-end; align-items:center; gap:1.5rem; padding:.4rem 2rem; font-size:.8rem; }
+    .topbar { background:#2A1206; display:flex; justify-content:flex-end; align-items:center; gap:1.4rem; padding:.42rem 2.25rem; font-size:.78rem; letter-spacing:.01em; border-bottom:1px solid rgba(255,255,255,.05); }
     .topbar a { color:rgba(255,255,255,.7); text-decoration:none; font-weight:600; cursor:pointer; transition:color .2s; }
     .topbar a:hover { color:var(--accent); }
     .topbar .topbar-auth { color:var(--accent); }
     .topbar .topbar-auth:hover { color:#fff; }
-    .brand-banner { background:linear-gradient(160deg,#5C2D1E 0%,#7A3A22 100%); text-align:center; padding:1.15rem 1rem; border-bottom:3px solid var(--accent); }
-    .brand-banner-inner { display:flex; flex-direction:column; align-items:center; gap:.25rem; }
-    .bb-word { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.9rem; color:#fff; display:inline-flex; align-items:center; gap:.12em; line-height:1; cursor:pointer; }
-    .bb-word > span { color:var(--accent); }
-    .bb-word .logo-mark { width:34px; height:34px; }
-    .bb-tag { color:rgba(255,255,255,.72); font-size:.72rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase; }
-    @media (max-width:900px){ .topbar{ padding:.35rem 1rem; gap:1rem; } .bb-word{ font-size:1.5rem; } }
+    /* Infinite scrolling brand marquee */
+    .brand-marquee { overflow:hidden; background:linear-gradient(90deg,#5C2D1E 0%,#7A3A22 50%,#5C2D1E 100%); border-bottom:3px solid var(--accent); }
+    .marquee-track { display:inline-flex; align-items:center; white-space:nowrap; animation:marqueeScroll 30s linear infinite; will-change:transform; }
+    .marquee-group { display:inline-flex; align-items:center; }
+    .marquee-group span { color:#fff; font-family:'Nunito',sans-serif; font-weight:800; font-size:.82rem; letter-spacing:.22em; text-transform:uppercase; padding:.6rem 1.5rem; }
+    .marquee-group i { color:var(--accent); font-style:normal; font-size:.7rem; }
+    @keyframes marqueeScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+    @media (prefers-reduced-motion:reduce){ .marquee-track{ animation:none; } }
+    @media (max-width:900px){ .topbar{ padding:.35rem 1rem; gap:1rem; } .marquee-group span{ font-size:.72rem; letter-spacing:.16em; } }
     /* account menu */
     nav { position: sticky; top: 0; z-index: 100; }
     .acct-wrap { position:relative; display:inline-flex; }
@@ -939,9 +978,25 @@
 </head>
 <body>
 
+<!-- ══ Shared illustration gradients / filters (referenced by every .page-illus-svg) ══ -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute" focusable="false"><defs>
+  <linearGradient id="ilCream" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FCF6EC"/><stop offset="1" stop-color="#EFE2CE"/></linearGradient>
+  <linearGradient id="ilBlush" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBEEE6"/><stop offset="1" stop-color="#F3DBCC"/></linearGradient>
+  <linearGradient id="ilSage" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEE7D6"/><stop offset="1" stop-color="#DCD0B9"/></linearGradient>
+  <linearGradient id="ilDusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2E9EC"/><stop offset="1" stop-color="#E4D3D9"/></linearGradient>
+  <linearGradient id="ilNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A1B0D"/><stop offset="1" stop-color="#20100A"/></linearGradient>
+  <linearGradient id="ilTerra" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D3733F"/><stop offset="1" stop-color="#B24E33"/></linearGradient>
+  <linearGradient id="ilTerraSoft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E38A5A"/><stop offset="1" stop-color="#C0562F"/></linearGradient>
+  <linearGradient id="ilGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7E9670"/><stop offset="1" stop-color="#5F7355"/></linearGradient>
+  <linearGradient id="ilPlum" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#836372"/><stop offset="1" stop-color="#6E5460"/></linearGradient>
+  <radialGradient id="ilGloss" cx="34%" cy="24%" r="80%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="45%" stop-color="#fff" stop-opacity=".08"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <filter id="ilShadow" x="-25%" y="-25%" width="150%" height="160%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#3E2B1E" flood-opacity=".22"/></filter>
+  <filter id="ilShadowSm" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#3E2B1E" flood-opacity=".20"/></filter>
+</defs></svg>
+
 <!-- NAV -->
 <div class="topbar">
-  <a onclick="showPage('resources')">Help</a>
+  <a onclick="showPage('help')">Help</a>
   <div id="acctMenu"><a href="pages/login.html" class="topbar-auth">Sign In</a></div>
 </div>
 <nav>
@@ -955,7 +1010,6 @@
     <a data-page="types"     onclick="showPage('types')">Types</a>
     <a data-page="study"     onclick="showPage('study')">Study Tools</a>
     <a data-page="ethics"    onclick="showPage('ethics')">Ethics</a>
-    <a data-page="quiz"      onclick="showPage('quiz')">Quiz</a>
     <a data-page="lab"       onclick="showPage('lab')">🧪 Lab</a>
     <a data-page="finder"    onclick="showPage('finder')">Find My AI Tool</a>
     <a data-page="resources" onclick="showPage('resources')">Resources</a>
@@ -965,10 +1019,14 @@
     <span></span><span></span><span></span>
   </button>
 </nav>
-<div class="brand-banner">
-  <div class="brand-banner-inner">
-    <span class="bb-word" onclick="showPage('home')"><span>Seek-</span><svg class="logo-mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="idxBanSpace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="idxBanEarth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="idxBanSun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#idxBanSpace)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#idxBanSun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#idxBanEarth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg>-Sphere</span>
-    <span class="bb-tag">Explore &middot; Learn &middot; Discover</span>
+<div class="brand-marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-group">
+      <span>Explore</span><i>✦</i><span>Learn</span><i>✦</i><span>Discover</span><i>✦</i><span>AI Made Simple</span><i>✦</i><span>For Ages 8 to 80</span><i>✦</i><span>Free for Students</span><i>✦</i><span>Learn by Doing</span><i>✦</i>
+    </div>
+    <div class="marquee-group">
+      <span>Explore</span><i>✦</i><span>Learn</span><i>✦</i><span>Discover</span><i>✦</i><span>AI Made Simple</span><i>✦</i><span>For Ages 8 to 80</span><i>✦</i><span>Free for Students</span><i>✦</i><span>Learn by Doing</span><i>✦</i>
+    </div>
   </div>
 </div>
 
@@ -983,73 +1041,48 @@
     <div class="home-hero-text">
       <div class="hero-badge">✨ Free for Students of All Ages</div>
       <h1 class="hero-title">The Friendliest Way to Learn <em>Artificial Intelligence</em></h1>
-      <p class="hero-sub">No jargon. No confusion. Just clear lessons, real tools, and a robot tutor named Axon who actually wants you to succeed , whether you are 8 or 80.</p>
+      <p class="hero-sub">No jargon. No confusion. Just clear lessons, real tools, and a friendly alien named Eulid who actually wants you to succeed , whether you are 8 or 80.</p>
       <div class="hero-ctas">
         <button class="btn btn-primary" onclick="showPage('what')">🚀 Start Learning Now</button>
         <button class="btn btn-outline" onclick="showPage('finder')">🔍 Find My AI Tool</button>
       </div>
     </div>
 
-    <!-- MASCOT: Byte the friendly robot -->
+    <!-- MASCOT: Eulid the friendly robot -->
     <div class="mascot-wrap">
-      <svg class="mascot-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-label="Byte the Seek-O-Sphere mascot robot">
-1002	        <!-- Antenna -->
-1003	        <line x1="100" y1="18" x2="100" y2="38" stroke="#D9764E" stroke-width="3" stroke-linecap="round"/>
-1004	        <circle cx="100" cy="12" r="7" class="antenna-dot" fill="#C0562F"/>
-1005	        <!-- Head -->
-1006	        <rect x="45" y="38" width="110" height="90" rx="22" fill="#46200F"/>
-1007	        <rect x="50" y="43" width="100" height="80" rx="18" fill="#8B3620"/>
-1008	        <!-- Screen shine -->
-1009	        <rect x="55" y="48" width="40" height="18" rx="6" fill="rgba(255,255,255,.08)"/>
-1010	        <!-- Left Eye -->
-1011	        <g class="eye-group eye-l">
-1012	          <circle cx="76" cy="80" r="16" fill="#2A1B12"/>
-1013	          <circle cx="76" cy="80" r="11" fill="#B24E33"/>
-1014	          <circle cx="76" cy="80" r="6"  fill="#fff"/>
-1015	          <circle cx="79" cy="77" r="2.5" fill="#2A1B12"/>
-1016	          <circle cx="81" cy="76" r="1.2" fill="rgba(255,255,255,.7)"/>
-1017	        </g>
-1018	        <!-- Right Eye -->
-1019	        <g class="eye-group eye-r">
-1020	          <circle cx="124" cy="80" r="16" fill="#2A1B12"/>
-1021	          <circle cx="124" cy="80" r="11" fill="#B24E33"/>
-1022	          <circle cx="124" cy="80" r="6"  fill="#fff"/>
-1023	          <circle cx="127" cy="77" r="2.5" fill="#2A1B12"/>
-1024	          <circle cx="129" cy="76" r="1.2" fill="rgba(255,255,255,.7)"/>
-1025	        </g>
-1026	        <!-- Mouth -->
-1027	        <path d="M72 112 Q100 128 128 112" stroke="#D9764E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-1028	        <!-- Cheek blush -->
-1029	        <ellipse cx="57" cy="100" rx="8" ry="5" fill="rgba(192,86,47,.25)"/>
-1030	        <ellipse cx="143" cy="100" rx="8" ry="5" fill="rgba(192,86,47,.25)"/>
-1031	        <!-- Ear bolts -->
-1032	        <rect x="36" y="68" width="12" height="24" rx="6" fill="#46200F"/>
-1033	        <rect x="152" y="68" width="12" height="24" rx="6" fill="#46200F"/>
-1034	        <!-- Body -->
-1035	        <rect x="55" y="132" width="90" height="65" rx="16" fill="#46200F"/>
-1036	        <rect x="60" y="137" width="80" height="55" rx="12" fill="#8B3620"/>
-1037	        <!-- Body panel -->
-1038	        <rect x="70" y="148" width="60" height="30" rx="8" fill="#2A1B12" opacity=".5"/>
-1039	        <!-- Body lights -->
-1040	        <circle cx="82"  cy="163" r="5" fill="#C0562F"/>
-1041	        <circle cx="100" cy="163" r="5" fill="#6E8467"/>
-1042	        <circle cx="118" cy="163" r="5" fill="#D9764E"/>
-1043	        <!-- Arms -->
-1044	        <rect x="22" y="135" width="36" height="16" rx="8" fill="#46200F"/>
-1045	        <rect x="142" y="135" width="36" height="16" rx="8" fill="#46200F"/>
-1046	        <!-- Hands -->
-1047	        <circle cx="22" cy="143" r="9" fill="#8B3620"/>
-1048	        <circle cx="178" cy="143" r="9" fill="#8B3620"/>
-1049	        <!-- Legs -->
-1050	        <rect x="68" y="196" width="24" height="18" rx="8" fill="#46200F"/>
-1051	        <rect x="108" y="196" width="24" height="18" rx="8" fill="#46200F"/>
-1052	        <!-- Feet -->
-1053	        <rect x="63" y="208" width="34" height="12" rx="6" fill="#8B3620"/>
-1054	        <rect x="103" y="208" width="34" height="12" rx="6" fill="#8B3620"/>
-1055	        <!-- Name tag -->
-1056	        <rect x="68" y="148" width="64" height="20" rx="5" fill="rgba(192,86,47,.15)" stroke="rgba(192,86,47,.4)" stroke-width="1"/>
-1057	        <text x="100" y="162" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="800" font-size="10" fill="#C0562F">BYTE</text>
-1058	      </svg>
+      <svg class="mascot-svg" viewBox="0 0 240 260" xmlns="http://www.w3.org/2000/svg" aria-label="Eulid, the Seek-O-Sphere alien mascot">
+        <defs>
+          <radialGradient id="euBody" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#9BBA82"/><stop offset="1" stop-color="#586B4E"/></radialGradient>
+          <radialGradient id="euEye" cx="50%" cy="38%" r="72%"><stop offset="0" stop-color="#FBF3E4"/><stop offset="1" stop-color="#ECDBC0"/></radialGradient>
+          <linearGradient id="euDome" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".26"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".04"/></linearGradient>
+        </defs>
+        <ellipse cx="120" cy="248" rx="70" ry="10" fill="#3E2B1E" opacity=".16"/>
+        <g class="eu-tentacles">
+          <path fill="url(#euBody)" d="M84 152 q-42 18 -56 66 q-5 17 10 20 q15 3 18 -14 q7 -42 38 -56 z"/>
+          <path fill="url(#euBody)" d="M156 152 q42 18 56 66 q5 17 -10 20 q-15 3 -18 -14 q-7 -42 -38 -56 z"/>
+          <path fill="url(#euBody)" d="M102 160 q-30 34 -40 64 q-6 17 9 21 q14 4 17 -12 q6 -36 30 -60 z"/>
+          <path fill="url(#euBody)" d="M138 160 q30 34 40 64 q6 17 -9 21 q-14 4 -17 -12 q-6 -36 -30 -60 z"/>
+          <path fill="url(#euBody)" d="M120 164 q-14 40 -12 78 q1 17 15 16 q13 -1 12 -18 q-3 -40 8 -72 z"/>
+          <g fill="#3E5C4A" opacity=".45">
+            <circle cx="52" cy="212" r="3.6"/><circle cx="63" cy="224" r="3"/>
+            <circle cx="188" cy="212" r="3.6"/><circle cx="177" cy="224" r="3"/>
+            <circle cx="118" cy="224" r="3.6"/><circle cx="127" cy="234" r="3"/>
+          </g>
+        </g>
+        <circle cx="120" cy="104" r="88" fill="url(#euDome)" stroke="rgba(255,255,255,.42)" stroke-width="2"/>
+        <path d="M58 76 q-18 -18 -8 -36 q20 6 24 32 z" fill="url(#euBody)"/>
+        <path d="M182 76 q18 -18 8 -36 q-20 6 -24 32 z" fill="url(#euBody)"/>
+        <circle cx="120" cy="104" r="66" fill="url(#euBody)"/>
+        <ellipse cx="68" cy="122" rx="10" ry="6.5" fill="#C0562F" opacity=".22"/>
+        <ellipse cx="172" cy="122" rx="10" ry="6.5" fill="#C0562F" opacity=".22"/>
+        <ellipse cx="120" cy="98" rx="34" ry="39" fill="url(#euEye)"/>
+        <g class="eulid-pupil"><ellipse cx="120" cy="102" rx="15" ry="23" fill="#26324C"/><circle cx="127" cy="90" r="5.5" fill="#fff"/><circle cx="114" cy="112" r="2.6" fill="#fff" opacity=".6"/></g>
+        <ellipse class="eu-lid" cx="120" cy="98" rx="35" ry="40" fill="url(#euBody)"/>
+        <path d="M104 148 q16 15 32 0" stroke="#3E2B1E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M120 40 q0 -18 10 -24" stroke="#586B4E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <circle class="eu-bulb" cx="131" cy="14" r="6.5" fill="#C0562F"/>
+      </svg>
+      <div class="mascot-name">Eulid</div>
     </div>
   </div>
 
@@ -1115,7 +1148,7 @@
           <div class="feature-card" onclick="showPage('lab')" role="button" tabindex="0">
             <span class="feature-icon" style="background:var(--brand-mid);">🧪</span>
             <h3>Visual Learning Lab</h3>
-            <p>Interactive maths with animated blocks and Byte your AI tutor cheering you on.</p>
+            <p>Interactive maths with animated blocks and Eulid your AI tutor cheering you on.</p>
           </div>
           <div class="feature-card" onclick="showPage('finder')" role="button" tabindex="0">
             <span class="feature-icon" style="background:var(--english);">🔍</span>
@@ -1151,7 +1184,7 @@
             <br/><br/>
             Whether you are using our lessons to ace a school project, our Visual Learning Lab to help a younger sibling with maths, or our AI Tool Finder to figure out which chatbot suits your coursework , we built every part of this with you in mind. And we are just getting started. More subjects, smarter tools, and a full progress tracking system are coming.
             <br/><br/>
-            <strong style="color:#fff;">Welcome to Seek-O-Sphere. Byte and the whole team are glad you are here.</strong>
+            <strong style="color:#fff;">Welcome to Seek-O-Sphere. Eulid and the whole team are glad you are here.</strong>
           </p>
         </div>
 
@@ -1191,7 +1224,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.1rem;">
           <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
             <span style="width:46px;height:46px;border-radius:12px;background:var(--maths);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">➗</span>
-            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Maths</h3>
+            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Math</h3>
             <p style="color:var(--muted);font-size:.9rem;margin:0;">Infinite practice questions with visual blocks and instant feedback.</p>
           </div>
           <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
@@ -1221,7 +1254,7 @@
           </div>
         </div>
         <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem;">
-          <span style="background:var(--maths);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Maths</span>
+          <span style="background:var(--maths);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Math</span>
           <span style="background:var(--science);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Science</span>
           <span style="background:var(--history);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">History</span>
           <span style="background:var(--english);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">English</span>
@@ -1236,10 +1269,10 @@
     <!-- KEEP COMING BACK CTA -->
     <div class="home-cta-bar">
       <h2>Ready to Dive In?</h2>
-      <p>Start with the basics, test yourself with the quiz, or search for the perfect AI tool for your next project.</p>
+      <p>Start with the basics, try the interactive Lab, or search for the perfect AI tool for your next project.</p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
         <button class="btn" onclick="showPage('what')">📖 Start with What is AI?</button>
-        <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;" onclick="showPage('quiz')">🎯 Take the Quiz</button>
+        <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;" onclick="showPage('lab')">🧪 Try the Lab</button>
       </div>
     </div>
 
@@ -1250,7 +1283,7 @@
      WHAT IS AI
 ══════════════════════════════════════ -->
 <div id="what" class="panel">
-<div class="page-hero"><span class="eyebrow">Chapter 1</span><h1>What Is Artificial Intelligence?</h1><p>AI is not magic , it is maths, data, and computing power working together to make machines seem smart.</p></div>
+<div class="page-hero"><h1>What Is Artificial Intelligence?</h1><p>AI is not magic , it is maths, data, and computing power working together to make machines seem smart.</p></div>
   <div class="section-inner">
     <div class="page-illus-row">
       <div class="page-illus-text">
@@ -1259,38 +1292,7 @@
         <p>Artificial Intelligence is when a computer learns to do things that normally need a human brain , like recognising faces, understanding language, or making decisions. It learns from examples, not rules someone typed in.</p>
         <p>Think of teaching a child what a "cat" looks like by showing them thousands of photos. AI works the same way , millions of examples, patterns spotted, behaviour learned.</p>
       </div>
-      <svg class="page-illus-svg" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg" aria-label="Friendly brain with AI concept nodes">
-        <rect width="400" height="320" fill="#EFE6D8" rx="20"/>
-        <ellipse cx="160" cy="170" rx="100" ry="88" fill="#F1DACF"/>
-        <ellipse cx="145" cy="155" rx="72" ry="70" fill="#EFD6C9"/>
-        <path d="M115 125 Q135 110 155 125 Q175 140 195 125" stroke="#E3A583" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M108 155 Q128 143 148 155 Q168 167 188 155" stroke="#E3A583" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M112 185 Q132 172 152 185 Q172 198 192 185" stroke="#E3A583" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <circle cx="145" cy="162" r="8" fill="#C0562F"/><circle cx="176" cy="162" r="8" fill="#C0562F"/>
-        <circle cx="147" cy="160" r="3" fill="white"/><circle cx="178" cy="160" r="3" fill="white"/>
-        <path d="M150 180 Q160 189 172 180" stroke="#C0562F" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <ellipse cx="132" cy="177" rx="9" ry="5" fill="#E3AE9E" opacity=".5"/>
-        <ellipse cx="188" cy="177" rx="9" ry="5" fill="#E3AE9E" opacity=".5"/>
-        <circle cx="300" cy="80" r="36" fill="#C0562F"/>
-        <text x="300" y="77" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">Machine</text>
-        <text x="300" y="93" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">Learning</text>
-        <circle cx="340" cy="180" r="32" fill="#6E5460"/>
-        <text x="340" y="177" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">Natural</text>
-        <text x="340" y="191" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="white">Language</text>
-        <circle cx="285" cy="265" r="30" fill="#5F7355"/>
-        <text x="285" y="262" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">Computer</text>
-        <text x="285" y="276" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="white">Vision</text>
-        <line x1="255" y1="140" x2="268" y2="95" stroke="#E3A583" stroke-width="2" stroke-dasharray="5,4"/>
-        <line x1="258" y1="168" x2="310" y2="175" stroke="#CFBCC2" stroke-width="2" stroke-dasharray="5,4"/>
-        <line x1="252" y1="198" x2="258" y2="248" stroke="#A7B99E" stroke-width="2" stroke-dasharray="5,4"/>
-        <circle cx="50" cy="60" r="18" fill="#B24E33"/>
-        <circle cx="50" cy="60" r="11" fill="#F3E7CE"/>
-        <line x1="50" y1="36" x2="50" y2="28" stroke="#B24E33" stroke-width="3" stroke-linecap="round"/>
-        <line x1="66" y1="44" x2="72" y2="38" stroke="#B24E33" stroke-width="3" stroke-linecap="round"/>
-        <line x1="34" y1="44" x2="28" y2="38" stroke="#B24E33" stroke-width="3" stroke-linecap="round"/>
-        <rect x="28" y="78" width="44" height="10" rx="5" fill="#9A6320"/>
-        <rect x="32" y="88" width="36" height="8" rx="4" fill="#9A3F1E"/>
-      </svg>
+      <img class="page-illus-svg" src="assets/images/what-is-ai/what-is-ai_1.png" alt="An AI robot explaining concepts to a student, with brain, globe and growth icons"/>
     </div>
     <div class="two-col">
       <div>
@@ -1338,121 +1340,323 @@
 
 <!-- ══════════════════════════════════════ HISTORY ══════════════════════════════════════ -->
 <div id="history" class="panel">
-<div class="page-hero"><span class="eyebrow">Chapter 2</span><h1>The History of AI</h1><p>Built by brilliant minds over decades of discovery, setbacks, and breakthroughs.</p></div>
-  <div class="section-inner">
-    <div class="page-illus-row flip">
-      <div class="page-illus-text">
-        <span class="eyebrow">70 Years of Discovery</span>
-        <h2>Where did AI come from?</h2>
-        <p>AI did not appear overnight. It took decades of brilliant ideas, frustrating dead ends, funding crises called "AI winters," and finally an explosion of computing power that made everything possible.</p>
-        <p>Click each milestone below to read the full story of that moment in history.</p>
-      </div>
-      <svg class="page-illus-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="AI history journey from 1950s to today">
-        <rect width="400" height="280" fill="#F6EEEA" rx="20"/>
-        <line x1="30" y1="230" x2="370" y2="230" stroke="#6E5460" stroke-width="3"/>
-        <polygon points="370,225 385,230 370,235" fill="#6E5460"/>
-        <rect x="30" y="155" width="52" height="48" rx="6" fill="#6E5544"/>
-        <rect x="36" y="161" width="40" height="28" rx="3" fill="#3E2B1E"/>
-        <line x1="40" y1="170" x2="72" y2="170" stroke="#6E8467" stroke-width="1.5"/>
-        <line x1="40" y1="177" x2="68" y2="177" stroke="#6E8467" stroke-width="1.5"/>
-        <line x1="40" y1="184" x2="70" y2="184" stroke="#6E8467" stroke-width="1.5"/>
-        <text x="56" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5544">1950s</text>
-        <circle cx="56" cy="230" r="6" fill="#6E5460"/>
-        <ellipse cx="155" cy="200" rx="16" ry="6" fill="#4A342A"/>
-        <rect x="140" y="172" width="18" height="28" rx="3" fill="#6E5544"/>
-        <circle cx="149" cy="170" r="8" fill="#8B6E5A"/>
-        <circle cx="149" cy="162" r="5" fill="#A89A88"/>
-        <rect x="163" y="177" width="22" height="15" rx="4" fill="#C0562F"/>
-        <text x="174" y="188" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="white">VS</text>
-        <text x="155" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5544">1997</text>
-        <circle cx="155" cy="230" r="6" fill="#6E5460"/>
-        <circle cx="245" cy="185" r="28" fill="#F3E7CE"/>
-        <circle cx="245" cy="185" r="20" fill="#B24E33"/>
-        <polygon points="252,173 237,190 247,190 237,207 254,188 244,188" fill="#C0562F"/>
-        <text x="245" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5544">2012</text>
-        <circle cx="245" cy="230" r="6" fill="#C0562F"/>
-        <rect x="312" y="150" width="60" height="52" rx="10" fill="#46200F"/>
-        <polygon points="326,202 316,216 338,202" fill="#46200F"/>
-        <circle cx="328" cy="170" r="6" fill="#C0562F"/>
-        <circle cx="344" cy="170" r="6" fill="#6E8467"/>
-        <rect x="320" y="182" width="44" height="5" rx="2" fill="#E3A583" opacity=".6"/>
-        <rect x="320" y="191" width="34" height="5" rx="2" fill="#E3A583" opacity=".4"/>
-        <text x="342" y="224" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5544">Today</text>
-        <circle cx="342" cy="230" r="6" fill="#C0562F"/>
-        <rect x="125" y="30" width="150" height="30" rx="10" fill="#6E5460"/>
-        <text x="200" y="50" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="13" fill="white">Journey of AI 🚀</text>
-      </svg>
+<div class="page-hero"><h1>The History of AI</h1><p>Built by brilliant minds over decades of discovery, setbacks, and breakthroughs.</p></div>
+  <div class="hist-stage">
+   <div class="hist-atmos" aria-hidden="true"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span><span class="orb o4"></span></div>
+   <div class="section-inner">
+<style>
+.hist-stage .section-inner{max-width:none;padding-left:2rem;padding-right:2rem;}
+.hist-wrap{max-width:1720px;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;position:relative;z-index:1;}
+.hist-card{background:#fff;border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);}
+.panel.active .hist-wrap>*{animation:histRise .7s cubic-bezier(.22,.68,0,1.1) both;}
+.panel.active .hist-wrap>*:nth-child(2){animation-delay:.08s;}
+.panel.active .hist-wrap>*:nth-child(3){animation-delay:.16s;}
+.panel.active .hist-wrap>*:nth-child(4){animation-delay:.24s;}
+@keyframes histRise{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+.hx{padding:1.5rem 1.6rem;}
+.hx-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.hx-micro{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.35rem;}
+.hx-headline{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.15rem;color:var(--text);line-height:1.25;}
+.hx-yearctrl{display:flex;align-items:center;gap:.55rem;flex-shrink:0;}
+.hx-year{font-family:'Nunito',sans-serif;font-weight:900;font-size:44px;line-height:1;color:var(--accent);min-width:2.6ch;text-align:center;}
+.hx-step{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gray-200);background:#fff;color:var(--accent);font-size:1.35rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,color .2s;}
+.hx-step:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:#fff;}
+.hx-step:disabled{opacity:.35;cursor:default;}
+.hx-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:var(--gray-200);margin:1.4rem 0 .45rem;outline:none;}
+.hx-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:var(--shadow-sm);cursor:pointer;}
+.hx-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid #fff;cursor:pointer;}
+.hx-ticks{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);font-weight:600;}
+.hx-divider{height:1px;background:var(--gray-100);margin:1.25rem 0;}
+.hx-lm-label{font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.65rem;}
+.hx-chips{display:flex;flex-wrap:wrap;gap:.4rem;}
+.hx-chip{position:relative;border:1.5px solid var(--gray-200);background:#fff;color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;padding:.32rem .72rem;border-radius:100px;cursor:pointer;transition:background .25s,border-color .25s,color .25s;}
+.hx-chip:hover{border-color:var(--accent);}
+.hx-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.hx-chip[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#3E2B1E;color:#fff;font-size:.7rem;font-weight:600;white-space:nowrap;padding:.35rem .55rem;border-radius:8px;z-index:5;box-shadow:var(--shadow-md);pointer-events:none;}
+.hf{background:linear-gradient(160deg,#3A1B0D,#2A1206);border:1.5px solid #7A4A2E;color:#F3E7D3;padding:1.6rem 1.7rem;}
+.hf-top{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap;}
+.hf-pill{background:var(--accent);color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;padding:.25rem .8rem;border-radius:100px;}
+.hf-badge{background:rgba(224,169,63,.18);color:#F0C36A;border:1px solid rgba(224,169,63,.4);font-weight:800;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:.24rem .6rem;border-radius:100px;}
+.hf-counter{margin-left:auto;font-size:.76rem;color:rgba(243,231,211,.6);font-weight:600;}
+.hf-headline{font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;line-height:1.25;color:#fff;margin-bottom:.5rem;}
+.hf-summary{font-size:1rem;line-height:1.6;color:rgba(243,231,211,.85);}
+.hf-thennow{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.1rem;}
+.hf-tn{border-radius:var(--radius);padding:.9rem 1rem;}
+.hf-tn span{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;}
+.hf-tn p{font-size:.9rem;line-height:1.5;}
+.hf-then{background:rgba(230,219,201,.12);}
+.hf-then span{color:#CDB79E;} .hf-then p{color:rgba(243,231,211,.8);}
+.hf-now{background:var(--accent);} .hf-now span{color:rgba(255,255,255,.85);} .hf-now p{color:#fff;}
+.hf-actions{display:flex;align-items:center;gap:1.1rem;margin-top:1.2rem;flex-wrap:wrap;}
+.hf-readmore{background:var(--accent);color:#fff;border:none;font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;padding:.6rem 1.2rem;border-radius:100px;cursor:pointer;transition:background .2s;}
+.hf-readmore:hover{background:var(--accent-dark);}
+.hf-nextlink{color:rgba(243,231,211,.72);font-weight:600;font-size:.88rem;cursor:pointer;text-decoration:none;}
+.hf-nextlink:hover{color:#fff;}
+.hf-detail-inner{margin-top:1rem;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1rem 1.15rem;font-size:.95rem;line-height:1.65;color:rgba(243,231,211,.92);animation:hfRise .24s ease both;}
+@keyframes hfRise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.hq{padding:1.5rem 1.6rem;}
+.hq-head{display:flex;align-items:center;gap:.8rem;margin-bottom:1.1rem;}
+.hq-trophy{font-size:1.8rem;}
+.hq-head h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.15rem;color:var(--text);}
+.hq-score{font-size:.8rem;color:var(--muted);font-weight:600;}
+.hq-q{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text);margin-bottom:1rem;line-height:1.4;}
+.hq-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;}
+.hq-opt{border:1.5px solid var(--gray-200);background:#fff;color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;padding:.7rem;border-radius:100px;cursor:pointer;transition:background .2s,border-color .2s,color .2s;}
+.hq-opt:hover:not(:disabled){border-color:var(--accent);}
+.hq-opt:disabled{cursor:default;}
+.hq-opt.correct{background:var(--green);border-color:var(--green);color:#fff;}
+.hq-opt.wrong{background:#B24E33;border-color:#B24E33;color:#fff;}
+.hq-explain{margin-top:1rem;font-size:.92rem;line-height:1.55;color:var(--muted);}
+.hq-next{margin-top:1rem;background:var(--accent);color:#fff;border:none;font-family:'Inter',sans-serif;font-weight:600;padding:.6rem 1.3rem;border-radius:100px;cursor:pointer;}
+.hq-next:hover{background:var(--accent-dark);}
+@media(max-width:600px){.hx-year{font-size:34px;}.hf-thennow{grid-template-columns:1fr;}.hq-opts{grid-template-columns:1fr;}}
+
+/* immersive stage + atmosphere */
+.hist-stage{position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% -8%,#F5EAD7 0%,#EFE6D8 55%,#E8DBC4 100%);padding:2.4rem 0 3.2rem;}
+.hist-atmos{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.hist-atmos .orb{position:absolute;border-radius:50%;filter:blur(48px);}
+.hist-atmos .o1{width:340px;height:340px;background:#E9B48F;top:-70px;left:-90px;opacity:.34;}
+.hist-atmos .o2{width:260px;height:260px;background:#B98FA6;top:240px;right:-70px;opacity:.26;}
+.hist-atmos .o3{width:300px;height:300px;background:#9DBB80;bottom:-90px;left:8%;opacity:.22;}
+.hist-atmos .o4{width:220px;height:220px;background:#E0B15A;bottom:140px;right:14%;opacity:.20;}
+/* intro hero */
+.hist-intro{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:1.6rem 2.2rem;background:rgba(255,255,255,.6);backdrop-filter:blur(5px);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1.7rem 2.2rem;box-shadow:var(--shadow-sm);}
+.hist-intro-eulid{width:100px;flex-shrink:0;}
+.hist-intro-eulid svg{width:100px;height:auto;filter:drop-shadow(0 6px 12px rgba(62,43,30,.22));animation:histFloat 5.5s ease-in-out infinite;}
+@keyframes histFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.hist-eyebrow{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.3rem;}
+.hist-intro-text h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--text);line-height:1.2;margin-bottom:.4rem;}
+.hist-intro-text p{color:var(--muted);font-size:1rem;line-height:1.6;margin-bottom:0;max-width:70ch;}
+.hist-stats{display:flex;flex-direction:column;gap:1rem;padding-left:2rem;border-left:1.5px solid var(--border);}
+.hist-stat b{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--accent);display:block;line-height:1;}
+.hist-stat span{font-size:.74rem;color:var(--muted);font-weight:600;}
+/* era ribbon (timeline spine) */
+.hist-era{display:flex;gap:0;background:#fff;border:1.5px solid var(--gray-100);border-radius:100px;padding:.4rem;box-shadow:var(--shadow-sm);}
+.hist-era .era{flex:1;border:none;background:none;cursor:pointer;padding:.55rem .5rem;border-radius:100px;text-align:center;transition:background .25s,color .25s;}
+.hist-era .era b{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--text);line-height:1.15;}
+.hist-era .era span{font-size:.66rem;color:var(--muted);font-weight:600;}
+.hist-era .era:hover{background:var(--gray-50);}
+.hist-era .era.active{background:var(--accent);}
+.hist-era .era.active b{color:#fff;} .hist-era .era.active span{color:rgba(255,255,255,.82);}
+/* two-column lower */
+.hist-lower{display:grid;grid-template-columns:1.55fr 1fr;gap:1.5rem;align-items:start;}
+@media(max-width:860px){.hist-lower{grid-template-columns:1fr;}.hist-intro{grid-template-columns:1fr;text-align:center;justify-items:center;}.hist-intro-text p{margin-left:auto;margin-right:auto;}.hist-stats{flex-direction:row;justify-content:center;border-left:none;padding-left:0;gap:1.8rem;}.hist-era{flex-wrap:wrap;border-radius:var(--radius-lg);}.hist-era .era{flex:1 1 45%;}}
+</style>
+<div class="hist-wrap">
+  <div class="hist-intro">
+    <div class="hist-intro-eulid"><svg viewBox="0 0 96 112" xmlns="http://www.w3.org/2000/svg" aria-label="Eulid"><defs><radialGradient id="hEuB" cx="42%" cy="32%" r="72%"><stop offset="0" stop-color="#B4CE95"/><stop offset="1" stop-color="#6E8A5A"/></radialGradient><radialGradient id="hEuD" cx="40%" cy="26%" r="78%"><stop offset="0" stop-color="#EDF7FF" stop-opacity=".55"/><stop offset="1" stop-color="#BFE0EC" stop-opacity=".10"/></radialGradient><radialGradient id="hEuE" cx="42%" cy="36%" r="70%"><stop offset="0" stop-color="#FFFEF8"/><stop offset="1" stop-color="#F3E7CE"/></radialGradient></defs><g fill="#7E9E63"><path d="M35 80 q-9 14 -4 26 q3 5 7 0 q-4 -13 5 -24 Z"/><path d="M49 84 q0 17 0 24 q0 5 4 1 q3 -13 1 -25 Z"/><path d="M63 80 q10 12 6 26 q-2 6 -7 1 q3 -14 -5 -24 Z"/></g><ellipse cx="19" cy="47" rx="7.5" ry="12" fill="#7E9E63"/><ellipse cx="79" cy="47" rx="7.5" ry="12" fill="#7E9E63"/><circle cx="49" cy="47" r="31" fill="url(#hEuB)"/><ellipse cx="30" cy="56" rx="6.4" ry="4.2" fill="#E58A56" opacity=".55"/><ellipse cx="68" cy="56" rx="6.4" ry="4.2" fill="#E58A56" opacity=".55"/><ellipse cx="49" cy="45" rx="15.5" ry="16.5" fill="url(#hEuE)"/><circle cx="51" cy="47" r="7.8" fill="#26324C"/><circle cx="54" cy="44" r="2.7" fill="#fff"/><circle cx="46" cy="50" r="1.4" fill="#fff" opacity=".85"/><path d="M42 63 q7 6 14 0" stroke="#4A5C39" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="49" cy="46" r="34" fill="url(#hEuD)" stroke="#EDF7FF" stroke-opacity=".35" stroke-width="1.5"/><path d="M49 13 q-2 -6 3 -9" stroke="#6E8A5A" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="53" cy="3.6" r="4.4" fill="#C0562F"/><circle cx="51.5" cy="2.4" r="1.5" fill="#F3C9A0"/></svg></div>
+    <div class="hist-intro-text">
+      <span class="hist-eyebrow">A guided journey</span>
+      <h2>Travel through 77 years of AI with Eulid</h2>
+      <p>From Alan Turing&#39;s 1950 question to the models you use today &mdash; step through the milestones one year at a time, or jump to a landmark.</p>
     </div>
-    <div class="timeline">
-      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:#F1DACF;color:var(--brand);box-shadow:0 0 0 3px var(--brand);">💡</div><div class="tl-body"><span class="tl-year">1950</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Alan Turing asks "Can Machines Think?"</h3><div class="expandable open"><div class="expandable-inner"><p>Turing published a landmark paper proposing the Turing Test , a way to measure whether a machine could exhibit behaviour indistinguishable from a human. It remains a foundational concept in AI philosophy today.</p></div></div></div></div>
-      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:#E6DBC9;color:var(--purple);box-shadow:0 0 0 3px var(--purple);">🎓</div><div class="tl-body"><span class="tl-year">1956</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">The Birth of "Artificial Intelligence"</h3><div class="expandable open"><div class="expandable-inner"><p>John McCarthy coined the term at the Dartmouth Conference, gathering top scientists to discuss the possibility of machines that could learn and reason. This event is widely regarded as the birth of AI as a formal field.</p></div></div></div></div>
-      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:var(--brand-light);color:var(--brand-mid);box-shadow:0 0 0 3px var(--brand-mid);">🥶</div><div class="tl-body"><span class="tl-year">1970s–80s</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">The "AI Winters"</h3><div class="expandable open"><div class="expandable-inner"><p>Progress stalled and funding dried up twice. Computers were not powerful enough, and AI could not handle real-world complexity. Researchers over-promised and under-delivered, causing governments and companies to pull investment.</p></div></div></div></div>
-      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:var(--green-light);color:var(--green);box-shadow:0 0 0 3px var(--green);">♟️</div><div class="tl-body"><span class="tl-year">1997</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Deep Blue Beats the World Chess Champion</h3><div class="expandable open"><div class="expandable-inner"><p>IBM's Deep Blue defeated Garry Kasparov, proving computers could outperform the best humans in complex strategic thinking. It was a defining cultural moment that changed public perception of AI forever.</p></div></div></div></div>
-      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:var(--accent-light);color:var(--accent);box-shadow:0 0 0 3px var(--accent);">📸</div><div class="tl-body"><span class="tl-year">2012</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Deep Learning Revolution</h3><div class="expandable open"><div class="expandable-inner"><p>AlexNet shattered records in image recognition, kicking off the modern deep learning era. Suddenly AI could see, hear, and understand the world far better than before , opening the door to everything that followed.</p></div></div></div></div>
-      <div class="tl-item" onclick="addRipple(event,this)"><div class="tl-dot" style="background:var(--accent-light);color:var(--accent-dark);box-shadow:0 0 0 3px var(--accent-dark);">💬</div><div class="tl-body"><span class="tl-year">2022–Today</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">The Age of Generative AI</h3><div class="expandable open"><div class="expandable-inner"><p>ChatGPT launched in November 2022 and reached 100 million users in just 5 days , the fastest-growing product in history. Claude, DALL·E, and other tools followed, making AI a daily reality for hundreds of millions of people.</p></div></div></div></div>
+    <div class="hist-stats"><div class="hist-stat"><b>77</b><span>years, 1950&ndash;2026</span></div><div class="hist-stat"><b>12</b><span>landmark moments</span></div><div class="hist-stat"><b>1</b><span>year at a time</span></div></div>
+  </div>
+  <div class="hist-era" id="histEra">
+    <button class="era" data-a="1950" data-b="1968" data-go="1956"><b>Foundations</b><span>1950&ndash;1968</span></button>
+    <button class="era" data-a="1969" data-b="1993" data-go="1973"><b>The AI Winters</b><span>1969&ndash;1993</span></button>
+    <button class="era" data-a="1994" data-b="2011" data-go="1997"><b>Machine Learning</b><span>1994&ndash;2011</span></button>
+    <button class="era" data-a="2012" data-b="2019" data-go="2012"><b>Deep Learning</b><span>2012&ndash;2019</span></button>
+    <button class="era" data-a="2020" data-b="2026" data-go="2022"><b>Generative Era</b><span>2020&ndash;2026</span></button>
+  </div>
+  <div class="hist-card hx">
+    <div class="hx-top">
+      <div><span class="hx-micro">One year at a time &middot; 1950 to 2026</span><h2 class="hx-headline" id="hxHeadline">&nbsp;</h2></div>
+      <div class="hx-yearctrl"><button class="hx-step" id="hxPrev" aria-label="Previous year">&lsaquo;</button><span class="hx-year" id="hxYear">1950</span><button class="hx-step" id="hxNext" aria-label="Next year">&rsaquo;</button></div>
     </div>
+    <input type="range" min="1950" max="2026" step="1" value="1950" id="hxSlider" class="hx-slider" aria-label="Year"/>
+    <div class="hx-ticks"><span>1950</span><span>1965</span><span>1980</span><span>1995</span><span>2010</span><span>2026</span></div>
+    <div class="hx-divider"></div>
+    <div class="hx-lm-label">Landmarks</div>
+    <div class="hx-chips" id="hxChips"></div>
+  </div>
+  <div class="hist-lower">
+  <div class="hist-card hf" id="histFocus"></div>
+  <div class="hist-card hq">
+    <div class="hq-head"><span class="hq-trophy">&#127942;</span><div><h3>Guess the Year</h3><span class="hq-score" id="hqScore">0 correct out of 0</span></div></div>
+    <div class="hq-q" id="hqQ"></div>
+    <div class="hq-opts" id="hqOpts"></div>
+    <div class="hq-explain" id="hqExplain"></div>
+    <button class="hq-next" id="hqNext" style="display:none;">Next question &rarr;</button>
+  </div>
+  </div>
+</div>
+<script>
+(function(){
+  var MIN=1950,MAX=2026,year=1950;
+  var LM=[1950,1956,1973,1986,1997,2006,2012,2016,2017,2020,2022,2024];
+  var TIP={1950:"Turing Test",1956:"Dartmouth: AI named",1973:"Lighthill Report",1986:"Backpropagation",1997:"Deep Blue beats Kasparov",2006:"Deep learning reborn",2012:"AlexNet",2016:"AlphaGo",2017:"The Transformer",2020:"GPT-3",2022:"ChatGPT",2024:"AI Act & Nobel Prizes"};
+  var HIST={
+1950:{h:"Turing asks: can machines think?",s:"Alan Turing publishes 'Computing Machinery and Intelligence' and proposes the Turing Test.",then:"A 'thinking machine' was pure philosophy — no computer had ever held a conversation.",now:"You can chat with an AI that answers in fluent sentences from the phone in your pocket.",full:"British mathematician Alan Turing, at the University of Manchester, published 'Computing Machinery and Intelligence' in the journal Mind. Instead of the slippery question 'can machines think?', he proposed the Imitation Game — now the Turing Test — where a machine passes if a human judge cannot tell it from a person in conversation. It reframed intelligence as observable behaviour and set the agenda for the entire field."},
+1951:{h:"The first neural-network machine",s:"Marvin Minsky and Dean Edmonds build SNARC, a 40-neuron machine that learns like a rat in a maze."},
+1952:{h:"A computer learns to play checkers",s:"IBM's Arthur Samuel starts a checkers program that improves itself from its own experience."},
+1953:{h:"Turing's paper chess player",s:"Turing and colleagues design Turochamp, a chess algorithm run by hand — strategy before machines could run it."},
+1954:{h:"Machine translation goes public",s:"The Georgetown–IBM experiment translates 60 Russian sentences to English, sparking huge optimism."},
+1955:{h:"The Logic Theorist is born",s:"Newell, Simon and Shaw build a program that proves mathematical theorems — arguably the first AI program."},
+1956:{h:"AI gets its name",s:"The Dartmouth Summer Workshop coins the term 'Artificial Intelligence' and launches the field.",then:"Scientists studying 'thinking machines' had no shared name or community.",now:"'AI' is a household word and a global industry worth hundreds of billions.",full:"Over the summer of 1956, John McCarthy, Marvin Minsky, Claude Shannon and Nathaniel Rochester gathered a small group at Dartmouth College in New Hampshire. McCarthy coined the phrase 'artificial intelligence' in the funding proposal. The workshop did not solve intelligence, but it united researchers under one banner and is universally regarded as the founding moment of AI as a discipline."},
+1957:{h:"The Perceptron and the GPS",s:"Frank Rosenblatt designs the Perceptron; Newell and Simon unveil the General Problem Solver."},
+1958:{h:"LISP, the language of AI",s:"John McCarthy creates LISP, the programming language that powered AI research for decades."},
+1959:{h:"'Machine learning' gets its name",s:"Arthur Samuel coins 'machine learning'; McCarthy and Minsky found the MIT AI Lab."},
+1960:{h:"Teaching machines with error",s:"Widrow and Hoff's ADALINE learns by minimising error — an ancestor of modern training."},
+1961:{h:"Robots enter the factory",s:"Unimate, the first industrial robot, starts work on a General Motors assembly line."},
+1962:{h:"Foundations of neural nets",s:"Rosenblatt publishes 'Principles of Neurodynamics', formalising how perceptrons learn."},
+1963:{h:"AI gets serious funding",s:"ARPA funds MIT's Project MAC, pouring resources into early AI research."},
+1964:{h:"Talking to computers in English",s:"Bobrow's STUDENT solves algebra word problems written in plain English."},
+1965:{h:"ELIZA, the first chatbot",s:"Joseph Weizenbaum's ELIZA mimics a therapist so well that users pour out their feelings to it."},
+1966:{h:"The first language-AI winter",s:"The ALPAC report declares machine translation a failure, cutting US funding for years."},
+1967:{h:"Expert reasoning begins",s:"Work starts on DENDRAL at Stanford — AI that reasons about chemistry like a human expert."},
+1968:{h:"AI on the big screen",s:"HAL 9000 in '2001: A Space Odyssey' fixes AI in the public imagination."},
+1969:{h:"A famous setback for neural nets",s:"Minsky and Papert's 'Perceptrons' exposes the limits of simple networks; SRI's Shakey robot debuts."},
+1970:{h:"A computer that understands blocks",s:"Winograd's SHRDLU converses about a world of blocks, understanding and following instructions."},
+1971:{h:"Encoding human knowledge",s:"Early expert systems take shape as researchers turn human know-how into computer rules."},
+1972:{h:"MYCIN and Prolog",s:"Stanford's MYCIN diagnoses infections; Colmerauer creates Prolog, the logic-programming language."},
+1973:{h:"The Lighthill Report freezes AI",s:"A damning UK government report triggers the first 'AI winter' of slashed funding.",then:"Governments had poured money into grand promises of human-level machines.",now:"AI ships real products every day, funded by the biggest companies on Earth.",full:"Sir James Lighthill's report to the British Science Research Council concluded that AI had failed to deliver on its bold promises and that its methods would not scale to real problems. Its central critique was the 'combinatorial explosion' — the way possibilities multiply beyond any computer's reach. UK funding was gutted, the pessimism spread internationally, and the first AI winter set in."},
+1974:{h:"The winter deepens",s:"Funding dries up on both sides of the Atlantic as early promises go unmet."},
+1975:{h:"Frames for common sense",s:"Minsky proposes 'frames' — structured knowledge — to give machines everyday understanding."},
+1976:{h:"Machines that discover",s:"Lenat's AM rediscovers mathematical concepts on its own; computers help prove the four-colour theorem."},
+1977:{h:"Knowledge is power",s:"Feigenbaum argues that expert knowledge, not clever search, is the key to capable AI."},
+1978:{h:"A Nobel for how we decide",s:"AI pioneer Herbert Simon wins the Nobel in Economics for his work on bounded rationality."},
+1979:{h:"A car drives itself across a room",s:"The Stanford Cart navigates a cluttered room autonomously — slowly — using vision."},
+1980:{h:"The expert-systems boom",s:"The first AAAI conference meets as businesses rush to deploy rule-based expert systems."},
+1981:{h:"Japan bets big on AI",s:"Japan launches the ambitious Fifth Generation Computer project, spurring a global race."},
+1982:{h:"Networks that remember",s:"John Hopfield shows how simple connected units can store and recall patterns."},
+1983:{h:"Rules go commercial",s:"Expert systems like XCON save companies millions, fuelling a young AI industry."},
+1984:{h:"'AI winter' gets its name",s:"Researchers warn at AAAI of a coming bust; Lenat begins Cyc to hand-code common sense."},
+1985:{h:"Neural nets learn to read aloud",s:"Sejnowski's NETtalk learns to pronounce English text, reviving interest in neural networks."},
+1986:{h:"Backpropagation revives neural nets",s:"Rumelhart, Hinton and Williams show how multi-layer networks can learn — the engine of deep learning.",then:"Neural networks were a dead end — no one knew how to train the useful multi-layer kind.",now:"Backpropagation trains billion-parameter models that see, talk and create.",full:"In a 1986 Nature paper, David Rumelhart, Geoffrey Hinton and Ronald Williams popularised backpropagation — an efficient way to adjust every weight in a multi-layer network by sending errors backward from the output. Though the idea had earlier roots, their clear demonstration reignited neural-network research after the 'Perceptrons' slump. It remains the fundamental algorithm behind virtually every deep-learning model today."},
+1987:{h:"The second AI winter",s:"The market for specialised Lisp machines collapses and AI funding contracts again."},
+1988:{h:"AI learns from statistics",s:"IBM's Candide applies probability to translation; Judea Pearl formalises reasoning under uncertainty."},
+1989:{h:"Neural nets read your mail",s:"Yann LeCun trains a convolutional network to read handwritten ZIP codes for the postal service."},
+1990:{h:"Learning by reward",s:"Reinforcement learning matures — agents learn from trial, error and reward."},
+1991:{h:"Intelligence as behaviour",s:"Rodney Brooks argues intelligence emerges from embodied action, not just abstract symbols."},
+1992:{h:"A champion at backgammon",s:"Tesauro's TD-Gammon teaches itself to play backgammon at world-class level."},
+1993:{h:"Robots leave the lab",s:"Mobile, behaviour-based robots start moving into messy real-world settings."},
+1994:{h:"Checkers, essentially solved",s:"Chinook becomes the first program to win a human world championship in a board game."},
+1995:{h:"The support vector machine",s:"Cortes and Vapnik's SVMs give machine learning a powerful, reliable new tool."},
+1996:{h:"Kasparov wins — this time",s:"IBM's Deep Blue loses its first match to world chess champion Garry Kasparov."},
+1997:{h:"Deep Blue beats the world champion",s:"IBM's Deep Blue defeats Garry Kasparov; Hochreiter and Schmidhuber invent the LSTM.",then:"Beating the human chess champion needed a one-tonne, room-sized IBM supercomputer.",now:"A stronger chess engine runs instantly inside a browser tab on your phone.",full:"In May 1997, IBM's Deep Blue defeated reigning world champion Garry Kasparov 3½–2½ in New York — the first time a computer beat a world champion under tournament conditions. The same year, Sepp Hochreiter and Jürgen Schmidhuber published the LSTM, a network that could remember information across long sequences and would later power translation and speech recognition. One event made headlines; the other quietly shaped the next two decades."},
+1998:{h:"The blueprint for modern vision",s:"LeCun's LeNet-5 sets the template for the convolutional networks that now dominate image AI."},
+1999:{h:"The GPU arrives",s:"NVIDIA ships the first GPU — graphics hardware that would later supercharge deep learning."},
+2000:{h:"Humanoid robots walk",s:"Honda's ASIMO shows off steady bipedal walking, hinting at robots among us."},
+2001:{h:"AI in the culture",s:"Spielberg's 'A.I.' reflects growing fascination as the web floods AI with data."},
+2002:{h:"AI vacuums your floor",s:"iRobot's Roomba brings autonomous robots into millions of ordinary homes."},
+2003:{h:"Data at web scale",s:"The explosion of online data quietly sets the stage for learning-based AI."},
+2004:{h:"The self-driving challenge",s:"DARPA's Grand Challenge sends robot cars into the desert — none finish, but the race is on."},
+2005:{h:"A robot car finishes the race",s:"Stanford's 'Stanley' completes the DARPA Grand Challenge, proving self-driving is possible."},
+2006:{h:"Deep learning is reborn",s:"Geoffrey Hinton shows how to train deep networks, coining the modern 'deep learning' era.",then:"Deep neural networks were considered too hard to train to be useful.",now:"Deep learning powers search, translation, chatbots and image generators worldwide.",full:"In 2006, Geoffrey Hinton and colleagues published work on 'deep belief networks', showing deep neural networks could be trained layer by layer and actually work. It rebranded and revived the field as 'deep learning'. Combined with more data and faster GPUs, this insight set off the chain of breakthroughs that would explode a few years later — the quiet turning point before the storm."},
+2007:{h:"The data to learn from",s:"Fei-Fei Li begins ImageNet, and NVIDIA's CUDA lets researchers harness GPUs for AI."},
+2008:{h:"AI starts to listen",s:"Statistical speech recognition improves sharply, reaching phones and call centres."},
+2009:{h:"ImageNet opens the floodgates",s:"A dataset of millions of labelled images is released, fuelling the coming vision revolution."},
+2010:{h:"Progress becomes a sport",s:"The ImageNet challenge and the founding of Kaggle make AI progress measurable and competitive."},
+2011:{h:"Watson wins Jeopardy!, Siri arrives",s:"IBM Watson beats human Jeopardy! champions; Apple's Siri puts a talking assistant in every pocket."},
+2012:{h:"AlexNet ignites the revolution",s:"A deep network crushes the ImageNet contest and modern AI takes off.",then:"Computer vision limped along with hand-crafted features and modest accuracy.",now:"AI recognises faces, tumours and street signs better than people can.",full:"At the 2012 ImageNet competition, AlexNet — built by Alex Krizhevsky, Ilya Sutskever and Geoffrey Hinton and trained on two GPUs — cut the image-recognition error rate almost in half, leaving traditional methods far behind. The result was so decisive that within a couple of years nearly every vision system switched to deep learning. It is widely seen as the spark of the modern AI boom."},
+2013:{h:"Words become math",s:"Google's word2vec turns language into vectors; DeepMind's agents learn Atari games from raw pixels."},
+2014:{h:"Machines that imagine",s:"Ian Goodfellow invents GANs, letting AI generate realistic images; Google acquires DeepMind."},
+2015:{h:"Open tools, open research",s:"Google releases TensorFlow, OpenAI is founded, and ResNet makes very deep networks trainable."},
+2016:{h:"AlphaGo beats a Go legend",s:"DeepMind's AlphaGo defeats Lee Sedol at Go — a milestone thought to be decades away.",then:"Go's astronomical complexity was seen as a stronghold of human intuition.",now:"Self-taught AI surpasses the best humans at Go, chess and shogi alike.",full:"In March 2016, DeepMind's AlphaGo beat 18-time world champion Lee Sedol 4–1 in Seoul. Go has more possible positions than there are atoms in the universe, so brute force is hopeless; AlphaGo combined deep neural networks with search and learned partly by playing itself. Its move 37 in game two — alien yet brilliant — stunned experts and showed AI could be genuinely creative, not merely fast."},
+2017:{h:"The Transformer changes everything",s:"Google's 'Attention Is All You Need' introduces the architecture behind modern AI.",then:"Language models read word by word and forgot the start of long passages.",now:"Transformers read whole documents at once and power every major chatbot.",full:"In 2017, eight researchers at Google published 'Attention Is All You Need', introducing the Transformer. By using 'attention' to weigh every word against every other in parallel, it dropped the slow, sequential processing of older networks and scaled beautifully with data and compute. Every headline model since — GPT, BERT, Claude, Gemini — is a Transformer. Few papers have reshaped a field so completely."},
+2018:{h:"Pretraining takes over",s:"Google's BERT and OpenAI's GPT show that models pretrained on vast text transfer to almost any task."},
+2019:{h:"Bigger, more fluent language",s:"GPT-2 writes eerily coherent paragraphs, raising both excitement and safety concerns."},
+2020:{h:"GPT-3 stuns the world",s:"OpenAI's 175-billion-parameter model writes essays, code and poetry from a prompt.",then:"Language AI needed retraining for each new task it was asked to do.",now:"One model handles email, code, translation and tutoring from plain instructions.",full:"In 2020 OpenAI released GPT-3, with 175 billion parameters trained on much of the public internet. Its leap was 'few-shot' learning: give it a couple of examples in the prompt and it adapts on the fly, no retraining required. The same year, DeepMind's AlphaFold 2 essentially solved protein-structure prediction, a 50-year biology grand challenge. AI had become general-purpose and scientifically serious at once."},
+2021:{h:"AI learns to draw and code",s:"DALL·E turns text into images and GitHub Copilot writes code alongside programmers."},
+2022:{h:"ChatGPT puts AI in everyone's hands",s:"A free chatbot reaches 100 million users in two months and changes daily life.",then:"Powerful AI lived in research papers and developer APIs, out of public reach.",now:"Anyone can ask an AI to explain, write or plan — for free, in seconds.",full:"OpenAI launched ChatGPT in November 2022 as a free research preview. Built on the GPT-3.5 line and refined with human feedback, it could hold a natural conversation, write essays and debug code — and it reached an estimated 100 million users within two months, the fastest-growing consumer app in history. Alongside image generators like Stable Diffusion and Midjourney, 2022 turned generative AI from a niche into a cultural moment."},
+2023:{h:"The generative-AI gold rush",s:"GPT-4, Claude, LLaMA and a wave of new tools push AI into work, school and search."},
+2024:{h:"Regulation and a Nobel Prize",s:"The EU passes the first major AI law, and AI pioneers win Nobel Prizes.",then:"AI raced ahead with almost no laws and little mainstream scientific recognition.",now:"Governments now regulate AI and the Nobel committee honours its founders.",full:"In 2024 the European Union approved the AI Act, the world's first comprehensive law governing artificial intelligence by risk level. The same year, the Nobel Prizes recognised AI's scientific impact: Geoffrey Hinton and John Hopfield won the Physics prize for foundational work on neural networks, while Demis Hassabis and John Jumper (with David Baker) won the Chemistry prize for AlphaFold's protein-structure breakthrough. AI had arrived as both a regulated technology and mainstream science."},
+2025:{h:"The age of reasoning and agents",s:"AI models learn to reason step by step and act on their own as software agents."},
+2026:{h:"Your turn",s:"Seventy-seven years of ideas led to this moment — the next milestone could be one you build."}
+  };
+
+  var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});};
+  var $=function(id){return document.getElementById(id);};
+  var elYear=$("hxYear"),elHead=$("hxHeadline"),elSlider=$("hxSlider"),elPrev=$("hxPrev"),elNext=$("hxNext"),chipsWrap=$("hxChips"),focus=$("histFocus"),eraWrap=$("histEra");
+
+  LM.forEach(function(y){
+    var c=document.createElement("button");
+    c.className="hx-chip"; c.textContent=y; c.setAttribute("data-y",y); c.setAttribute("data-tip",TIP[y]||"");
+    c.addEventListener("click",function(){render(y);});
+    chipsWrap.appendChild(c);
+  });
+  [].forEach.call(eraWrap.children,function(bt){ bt.addEventListener("click",function(){ render(+bt.getAttribute("data-go")); }); });
+
+  function render(y){
+    y=Math.max(MIN,Math.min(MAX,y)); year=y;
+    var d=HIST[y]||{h:"",s:""}, isLM=LM.indexOf(y)!==-1, n=y-MIN+1;
+    elYear.textContent=y; elSlider.value=y; elHead.textContent=d.h||"";
+    elPrev.disabled=(y<=MIN); elNext.disabled=(y>=MAX);
+    var kids=chipsWrap.children;
+    for(var i=0;i<kids.length;i++){ kids[i].classList.toggle("active", +kids[i].getAttribute("data-y")===y); }
+    var eras=eraWrap.children; for(var j=0;j<eras.length;j++){ var ea=+eras[j].getAttribute("data-a"),eb=+eras[j].getAttribute("data-b"); eras[j].classList.toggle("active", y>=ea&&y<=eb); }
+    var html='<div class="hf-top"><span class="hf-pill">'+y+'</span>'
+      + (isLM?'<span class="hf-badge">Landmark moment</span>':'')
+      + '<span class="hf-counter">Year '+n+' of 77</span></div>'
+      + '<h3 class="hf-headline">'+esc(d.h)+'</h3>'
+      + '<p class="hf-summary">'+esc(d.s)+'</p>';
+    if(isLM && d.then){
+      html+='<div class="hf-thennow"><div class="hf-tn hf-then"><span>Then</span><p>'+esc(d.then)+'</p></div>'
+          + '<div class="hf-tn hf-now"><span>Now</span><p>'+esc(d.now)+'</p></div></div>';
+    }
+    html+='<div class="hf-actions">';
+    if(d.full){ html+='<button class="hf-readmore" type="button">Read the full explanation</button>'; }
+    html+='<a class="hf-nextlink">Next year &rarr;</a></div><div id="hfDetail"></div>';
+    focus.innerHTML=html;
+    var rm=focus.querySelector(".hf-readmore"), nl=focus.querySelector(".hf-nextlink"), det=$("hfDetail");
+    if(rm){ rm.addEventListener("click",function(){
+      if(det.innerHTML){ det.innerHTML=""; rm.textContent="Read the full explanation"; }
+      else { det.innerHTML='<div class="hf-detail-inner">'+esc(d.full)+'</div>'; rm.textContent="Hide explanation"; }
+    }); }
+    nl.addEventListener("click",function(){ render(year+1); });
+  }
+
+  elSlider.addEventListener("input",function(){ render(+elSlider.value); });
+  elPrev.addEventListener("click",function(){ render(year-1); });
+  elNext.addEventListener("click",function(){ render(year+1); });
+
+  /* Guess the Year */
+  var QUIZ=[
+    {q:"When did IBM's Deep Blue first defeat world chess champion Garry Kasparov in a match?",opts:[1991,1997,2004,2011],a:1997,e:"May 1997, in New York — the first time a computer beat a reigning world champion under tournament rules."},
+    {q:"Which year gave Artificial Intelligence its name, at the Dartmouth workshop?",opts:[1950,1956,1969,1974],a:1956,e:"John McCarthy coined 'artificial intelligence' in the proposal for the 1956 Dartmouth Summer Workshop."},
+    {q:"AlexNet kicked off the deep-learning revolution by winning ImageNet in…",opts:[2006,2012,2016,2020],a:2012,e:"AlexNet nearly halved the image-recognition error rate at the 2012 ImageNet competition."},
+    {q:"ChatGPT launched to the public in…",opts:[2018,2020,2022,2024],a:2022,e:"OpenAI released ChatGPT in November 2022; it reached 100 million users within two months."}
+  ];
+  var qi=0,correct=0,answered=0;
+  var hqQ=$("hqQ"),hqOpts=$("hqOpts"),hqExplain=$("hqExplain"),hqNext=$("hqNext"),hqScore=$("hqScore");
+  function renderQ(){
+    var it=QUIZ[qi];
+    hqQ.textContent=it.q; hqExplain.textContent=""; hqNext.style.display="none"; hqOpts.innerHTML="";
+    it.opts.forEach(function(o){
+      var b=document.createElement("button"); b.className="hq-opt"; b.textContent=o;
+      b.addEventListener("click",function(){ answer(o,b,it); });
+      hqOpts.appendChild(b);
+    });
+    hqScore.textContent=correct+" correct out of "+answered;
+  }
+  function answer(o,btn,it){
+    var kids=hqOpts.children;
+    for(var i=0;i<kids.length;i++){ kids[i].disabled=true; if(+kids[i].textContent===it.a) kids[i].classList.add("correct"); }
+    answered++; if(o===it.a){ correct++; } else { btn.classList.add("wrong"); }
+    hqExplain.textContent=it.e; hqScore.textContent=correct+" correct out of "+answered;
+    hqNext.style.display="inline-flex";
+  }
+  hqNext.addEventListener("click",function(){ qi=(qi+1)%QUIZ.length; renderQ(); });
+
+  render(1950); renderQ();
+})();
+</script>
+   </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════ TYPES ══════════════════════════════════════ -->
 <div id="types" class="panel">
-<div class="page-hero"><span class="eyebrow">Chapter 3</span><h1>Types of AI</h1><p>AI is not one thing. It is a whole family of technologies, each with its own strengths.</p></div>
+<div class="page-hero"><h1>Types of AI</h1><p>AI is not one thing. It is a whole family of technologies, each with its own strengths.</p></div>
   <div class="section-inner">
     <div class="page-illus-row" style="margin-bottom:2rem;">
       <div class="page-illus-text">
-        <span class="eyebrow">Chapter 3</span>
         <h2>AI is not one thing , it is a whole family</h2>
         <p>When people say "AI" they might mean a system that recognises your face, a chatbot that writes essays, or a robot that learns to walk by falling over thousands of times. These are all AI , but very different types.</p>
         <p>Explore all six types below. Click any card to expand the details.</p>
       </div>
-      <svg class="page-illus-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Six types of AI illustrated as colourful characters">
-        <rect width="400" height="300" fill="#E6DBC9" rx="20"/>
-        <rect x="20" y="40" width="60" height="110" rx="12" fill="#F1DACF"/>
-        <circle cx="50" cy="78" r="22" fill="#C0562F"/>
-        <circle cx="42" cy="74" r="5" fill="white"/><circle cx="58" cy="74" r="5" fill="white"/>
-        <circle cx="44" cy="72" r="2" fill="#3E2B1E"/><circle cx="60" cy="72" r="2" fill="#3E2B1E"/>
-        <path d="M43 88 Q50 94 57 88" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <text x="50" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#C0562F">Machine</text>
-        <text x="50" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#C0562F">Learning</text>
-        <rect x="90" y="40" width="60" height="110" rx="12" fill="#F3E7CE"/>
-        <rect x="100" y="58" width="40" height="32" rx="8" fill="#C0562F"/>
-        <polygon points="112,90 105,104 120,90" fill="#C0562F"/>
-        <rect x="106" y="64" width="28" height="4" rx="2" fill="white" opacity=".8"/>
-        <rect x="106" y="72" width="22" height="4" rx="2" fill="white" opacity=".6"/>
-        <rect x="106" y="80" width="25" height="4" rx="2" fill="white" opacity=".8"/>
-        <text x="120" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A6320">Natural</text>
-        <text x="120" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A6320">Language</text>
-        <rect x="160" y="40" width="60" height="110" rx="12" fill="#F6EEEA"/>
-        <ellipse cx="190" cy="90" rx="24" ry="20" fill="#6E5460"/>
-        <ellipse cx="190" cy="90" rx="16" ry="14" fill="white"/>
-        <circle cx="190" cy="90" r="10" fill="#4A2C33"/>
-        <circle cx="190" cy="90" r="5" fill="#6E5460"/>
-        <circle cx="193" cy="87" r="2" fill="white"/>
-        <text x="190" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#6E5460">Computer</text>
-        <text x="190" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#6E5460">Vision</text>
-        <rect x="230" y="40" width="60" height="110" rx="12" fill="#F7E3D8"/>
-        <circle cx="260" cy="78" r="24" fill="#C0562F"/>
-        <text x="260" y="85" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="20" fill="white">🎨</text>
-        <text x="260" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A3F1E">Generative</text>
-        <text x="260" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A3F1E">AI</text>
-        <rect x="300" y="40" width="60" height="110" rx="12" fill="#E6DBC9"/>
-        <circle cx="318" cy="70" r="8" fill="#5F7355"/><circle cx="318" cy="94" r="8" fill="#5F7355"/>
-        <circle cx="336" cy="82" r="8" fill="#6E8467"/>
-        <circle cx="354" cy="70" r="8" fill="#5F7355"/><circle cx="354" cy="94" r="8" fill="#5F7355"/>
-        <line x1="325" y1="70" x2="330" y2="82" stroke="#A7B99E" stroke-width="1.5"/>
-        <line x1="325" y1="94" x2="330" y2="82" stroke="#A7B99E" stroke-width="1.5"/>
-        <line x1="342" y1="82" x2="347" y2="70" stroke="#A7B99E" stroke-width="1.5"/>
-        <line x1="342" y1="82" x2="347" y2="94" stroke="#A7B99E" stroke-width="1.5"/>
-        <text x="330" y="125" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#5F7355">Neural</text>
-        <text x="330" y="137" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#5F7355">Networks</text>
-        <!-- Trophy / reinforcement at bottom centre -->
-        <ellipse cx="200" cy="265" rx="30" ry="8" fill="#B24E33" opacity=".4"/>
-        <rect x="185" y="235" width="30" height="28" rx="4" fill="#B24E33"/>
-        <ellipse cx="200" cy="233" rx="30" ry="22" fill="#B24E33"/>
-        <ellipse cx="200" cy="233" rx="21" ry="15" fill="#F3E7CE"/>
-        <text x="200" y="239" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="14" fill="#B24E33">★</text>
-        <text x="200" y="278" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#9A6320">Reinforcement Learning</text>
-      </svg>
+      <img class="page-illus-svg" src="assets/images/types/types_1.png" alt="Narrow AI, General AI and Super AI shown as three illustrated panels"/>
     </div>
     <div class="grid-3">
       <div class="type-card tc-blue" style="background:#EFE6D8;" onclick="addRipple(event,this)"><span class="tc-icon">🤖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Machine Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get , like learning to spot spam emails from millions of examples.</p></div></div><span class="tc-tag tc-blue">Learning from data</span></div>
@@ -1467,58 +1671,21 @@
 
 <!-- ══════════════════════════════════════ STUDY TOOLS ══════════════════════════════════════ -->
 <div id="study" class="panel">
-<div class="page-hero"><span class="eyebrow">Chapter 4</span><h1>How to Use AI in Your Studies</h1><p>AI is one of the most powerful tools a student has ever had. Here is how to use it responsibly.</p></div>
+<div class="page-hero"><h1>How to Use AI in Your Studies</h1><p>AI is one of the most powerful tools a student has ever had. Here is how to use it responsibly.</p></div>
   <div style="background:var(--brand-dark);padding:1px 0;">
     <div class="section-inner">
       <div class="page-illus-row" style="margin-bottom:2.5rem;">
       <div class="page-illus-text on-dark">
-        <span class="eyebrow">Chapter 4</span>
         <h2 style="color:#fff;">AI is the most powerful study tool students have ever had</h2>
-        <p style="color:rgba(255,255,255,.7);">Used well, AI can explain anything, quiz you on any topic, give feedback on your writing, walk you through maths problems, and practise a foreign language with you , all at your pace, any time of day.</p>
+        <p style="color:rgba(255,255,255,.7);">Used well, AI can explain anything, quiz you on any topic, give feedback on your writing, walk you through math problems, and practise a foreign language with you , all at your pace, any time of day.</p>
         <p style="color:rgba(255,255,255,.7);">Used badly, it does your work for you and you learn nothing. The six tips below help you stay on the right side of that line.</p>
       </div>
-      <svg class="page-illus-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="Students using AI tools on laptops to study">
-        <rect width="400" height="280" fill="#2E1206" rx="20"/>
-        <rect x="60" y="188" width="280" height="12" rx="5" fill="#46200F"/>
-        <rect x="148" y="120" width="104" height="78" rx="8" fill="#3E2B1E"/>
-        <rect x="153" y="125" width="94" height="63" rx="5" fill="#3E2B1E"/>
-        <rect x="158" y="131" width="84" height="10" rx="3" fill="#C0562F"/>
-        <rect x="158" y="145" width="42" height="6" rx="2" fill="#C0562F" opacity=".8"/>
-        <rect x="158" y="155" width="64" height="4" rx="2" fill="#C0562F" opacity=".5"/>
-        <rect x="158" y="163" width="52" height="4" rx="2" fill="#C0562F" opacity=".4"/>
-        <rect x="158" y="171" width="36" height="8" rx="4" fill="#5F7355"/>
-        <rect x="134" y="198" width="132" height="8" rx="4" fill="#4A342A"/>
-        <circle cx="88" cy="136" r="28" fill="#B24E33"/>
-        <ellipse cx="88" cy="110" rx="26" ry="14" fill="#3E2B1E"/>
-        <circle cx="78" cy="136" r="6" fill="#3E2B1E"/><circle cx="98" cy="136" r="6" fill="#3E2B1E"/>
-        <circle cx="80" cy="134" r="2.5" fill="white"/><circle cx="100" cy="134" r="2.5" fill="white"/>
-        <path d="M80 148 Q88 156 96 148" stroke="#9A3F1E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="88" cy="196" rx="26" ry="16" fill="#B24E33"/>
-        <path d="M110 166 Q128 161 144 156" stroke="#B24E33" stroke-width="9" fill="none" stroke-linecap="round"/>
-        <circle cx="312" cy="136" r="28" fill="#B24E33"/>
-        <ellipse cx="312" cy="110" rx="26" ry="15" fill="#6E5460"/>
-        <circle cx="302" cy="136" r="6" fill="#3E2B1E"/><circle cx="322" cy="136" r="6" fill="#3E2B1E"/>
-        <circle cx="304" cy="134" r="2.5" fill="white"/><circle cx="324" cy="134" r="2.5" fill="white"/>
-        <path d="M304 149 Q312 158 320 149" stroke="#9A3F1E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="312" cy="196" rx="26" ry="16" fill="#C0562F"/>
-        <path d="M290 166 Q272 161 256 156" stroke="#B24E33" stroke-width="9" fill="none" stroke-linecap="round"/>
-        <rect x="22" y="68" width="82" height="28" rx="8" fill="#6E8467"/>
-        <text x="63" y="86" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="11" fill="white">🤖 Claude</text>
-        <rect x="28" y="106" width="76" height="24" rx="8" fill="#6E5460"/>
-        <text x="66" y="122" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">📚 Khanmigo</text>
-        <rect x="294" y="68" width="82" height="28" rx="8" fill="#C0562F"/>
-        <text x="335" y="86" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="11" fill="white">💬 ChatGPT</text>
-        <rect x="298" y="106" width="78" height="24" rx="8" fill="#C0562F"/>
-        <text x="337" y="122" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">📝 Grammarly</text>
-        <circle cx="200" cy="45" r="5" fill="#B24E33"/>
-        <circle cx="160" cy="30" r="3" fill="#C0562F" opacity=".6"/>
-        <circle cx="240" cy="35" r="3" fill="#C0562F" opacity=".7"/>
-      </svg>
+      <img class="page-illus-svg" src="assets/images/study-tools/study-tools_1.png" alt="A student studying with AI tools — tutor, notes, flashcards, quizzes and a planner"/>
     </div>
     <div class="grid-3" style="margin-bottom:3rem;">
         <div class="study-card"><span class="sc-num">01</span><h3>Research and Summarising</h3><p>Ask AI to explain complex topics in simple terms, summarise long articles, or give you a quick overview before you dive deeper.</p></div>
         <div class="study-card"><span class="sc-num">02</span><h3>Writing and Feedback</h3><p>Get feedback on essays, check grammar, brainstorm ideas, or understand how to improve your arguments , then rewrite in your own words.</p></div>
-        <div class="study-card"><span class="sc-num">03</span><h3>Maths and Problem Solving</h3><p>AI can walk you through maths problems step by step, explain where you went wrong, or generate practice problems to sharpen your skills.</p></div>
+        <div class="study-card"><span class="sc-num">03</span><h3>Math and Problem Solving</h3><p>AI can walk you through math problems step by step, explain where you went wrong, or generate practice problems to sharpen your skills.</p></div>
         <div class="study-card"><span class="sc-num">04</span><h3>Learning New Languages</h3><p>Chat with AI in a foreign language to practice conversation, ask for translations, or get grammar explained clearly.</p></div>
         <div class="study-card"><span class="sc-num">05</span><h3>Coding and Technology</h3><p>AI is an incredible coding tutor. It can explain code line by line, help you debug errors, and generate starter code to learn from.</p></div>
         <div class="study-card"><span class="sc-num">06</span><h3>Creative Projects</h3><p>Generate ideas for stories, artwork, music lyrics, and presentations. Use AI as a creative collaborator, not a replacement for your own voice.</p></div>
@@ -1541,55 +1708,45 @@
 
 <!-- ══════════════════════════════════════ ETHICS ══════════════════════════════════════ -->
 <div id="ethics" class="panel">
-  <div class="page-hero"><span class="eyebrow">Chapter 5</span><h1>Using AI Responsibly</h1><p>AI is a powerful tool, and like all powerful tools, it comes with responsibilities.</p></div>
+  <div class="page-hero"><h1>Using AI Responsibly</h1><p>AI is a powerful tool, and like all powerful tools, it comes with responsibilities.</p></div>
   <div style="background:var(--gray-50);padding:1px 0;">
     <div class="section-inner">
       <div class="page-illus-row flip" style="margin-bottom:2rem;">
         <div class="page-illus-text">
-          <span class="eyebrow">Chapter 5</span>
           <h2>Using AI the right way matters</h2>
           <p>AI is powerful , and that means using it carelessly can have real consequences, from academic dishonesty to spreading misinformation. The good news is that being a responsible AI user is not complicated. It just takes a little awareness.</p>
           <p>The six principles below are the foundation of responsible AI use for any student.</p>
         </div>
-        <svg class="page-illus-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="Balance scale representing ethical AI choices">
-          <rect width="400" height="280" fill="#FBF5EC" rx="20"/>
-          <line x1="200" y1="50" x2="200" y2="175" stroke="#9A3F1E" stroke-width="5" stroke-linecap="round"/>
-          <circle cx="200" cy="44" r="12" fill="#C0562F"/><circle cx="200" cy="44" r="6" fill="#F3E7CE"/>
-          <rect x="90" y="118" width="220" height="10" rx="5" fill="#9A6320"/>
-          <circle cx="200" cy="123" r="10" fill="#B24E33"/>
-          <line x1="110" y1="128" x2="78" y2="155" stroke="#9A3F1E" stroke-width="3"/>
-          <ellipse cx="65" cy="168" rx="45" ry="15" fill="#6E8467"/>
-          <text x="65" y="161" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="white">✅ Good Use</text>
-          <text x="65" y="175" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="white">Honest</text>
-          <line x1="290" y1="128" x2="322" y2="163" stroke="#9A3F1E" stroke-width="3"/>
-          <ellipse cx="335" cy="176" rx="45" ry="15" fill="#E3AE9E"/>
-          <text x="335" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="#5E2018">⚠️ Risk</text>
-          <text x="335" y="183" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#5E2018">Cheating</text>
-          <rect x="172" y="175" width="56" height="10" rx="4" fill="#9A6320"/>
-          <rect x="158" y="185" width="84" height="8" rx="4" fill="#9A3F1E"/>
-          <circle cx="80" cy="95" r="28" fill="#B24E33"/>
-          <ellipse cx="80" cy="70" rx="26" ry="13" fill="#3E2B1E"/>
-          <circle cx="70" cy="95" r="6" fill="#3E2B1E"/><circle cx="90" cy="95" r="6" fill="#3E2B1E"/>
-          <circle cx="72" cy="93" r="2.5" fill="white"/><circle cx="92" cy="93" r="2.5" fill="white"/>
-          <path d="M72 107 Q80 116 88 107" stroke="#9A3F1E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <circle cx="80" cy="48" r="14" fill="#5F7355"/>
-          <path d="M73 48 L78 55 L90 42" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="320" cy="95" r="28" fill="#B24E33"/>
-          <ellipse cx="320" cy="70" rx="26" ry="13" fill="#6E5460"/>
-          <circle cx="310" cy="95" r="6" fill="#3E2B1E"/><circle cx="330" cy="95" r="6" fill="#3E2B1E"/>
-          <circle cx="312" cy="93" r="2.5" fill="white"/><circle cx="332" cy="93" r="2.5" fill="white"/>
-          <path d="M312 108 Q320 100 328 108" stroke="#9A3F1E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <circle cx="320" cy="48" r="14" fill="#C0562F"/>
-          <text x="320" y="54" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="white">!</text>
-          <rect x="20" y="218" width="72" height="22" rx="8" fill="#F1DACF"/>
-          <text x="56" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#C0562F">🔒 Privacy</text>
-          <rect x="100" y="218" width="64" height="22" rx="8" fill="#E2E8DC"/>
-          <text x="132" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#5F7355">⚖️ Fair</text>
-          <rect x="172" y="218" width="64" height="22" rx="8" fill="#E6DBC9"/>
-          <text x="204" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#6E5460">🌱 Green</text>
-          <rect x="244" y="218" width="80" height="22" rx="8" fill="#F3E7CE"/>
-          <text x="284" y="233" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="10" fill="#9A6320">🤝 Honest</text>
-        </svg>
+        <div class="page-illus-photo">
+          <img class="page-illus-svg" src="assets/images/ethics/ethics_1.jpg" alt="Scales of justice beside a laptop — using AI responsibly and fairly"/>
+          <span class="illus-caption">⚖️ Fairness, honesty &amp; privacy</span>
+          <svg class="illus-eulid corner-br" viewBox="0 0 96 108" xmlns="http://www.w3.org/2000/svg" aria-label="Eulid the alien tutor">
+            <defs>
+              <radialGradient id="euMBody" cx="42%" cy="34%" r="70%"><stop offset="0" stop-color="#AEC98F"/><stop offset="1" stop-color="#6E8A5A"/></radialGradient>
+              <radialGradient id="euMDome" cx="40%" cy="28%" r="75%"><stop offset="0" stop-color="#EAF6FF" stop-opacity=".55"/><stop offset="1" stop-color="#BFE0EC" stop-opacity=".12"/></radialGradient>
+              <radialGradient id="euMEye" cx="42%" cy="36%" r="70%"><stop offset="0" stop-color="#FFFDF6"/><stop offset="1" stop-color="#F3E7CE"/></radialGradient>
+            </defs>
+            <g fill="#7E9E63">
+              <path d="M36 78 q-8 14 -3 24 q3 5 6 0 q-3 -12 4 -22 Z"/>
+              <path d="M49 82 q0 16 0 22 q0 5 4 1 q2 -12 1 -23 Z"/>
+              <path d="M62 78 q9 12 5 24 q-2 5 -6 1 q2 -13 -4 -22 Z"/>
+            </g>
+            <ellipse cx="20" cy="46" rx="7" ry="11" fill="#7E9E63"/>
+            <ellipse cx="78" cy="46" rx="7" ry="11" fill="#7E9E63"/>
+            <circle cx="49" cy="46" r="30" fill="url(#euMBody)"/>
+            <ellipse cx="30" cy="55" rx="6" ry="4" fill="#E08A5A" opacity=".55"/>
+            <ellipse cx="68" cy="55" rx="6" ry="4" fill="#E08A5A" opacity=".55"/>
+            <ellipse cx="49" cy="44" rx="15" ry="16" fill="url(#euMEye)"/>
+            <circle cx="51" cy="46" r="7.5" fill="#26324C"/>
+            <circle cx="54" cy="43" r="2.6" fill="#fff"/>
+            <circle cx="46" cy="49" r="1.3" fill="#fff" opacity=".85"/>
+            <path d="M42 62 q7 6 14 0" stroke="#4A5C39" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <circle cx="49" cy="45" r="33" fill="url(#euMDome)" stroke="#EAF6FF" stroke-opacity=".35" stroke-width="1.5"/>
+            <path d="M49 13 q-2 -6 3 -9" stroke="#6E8A5A" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <circle cx="53" cy="3.5" r="4.2" fill="#C0562F"/>
+            <circle cx="51.6" cy="2.4" r="1.4" fill="#F3C9A0"/>
+          </svg>
+        </div>
       </div>
       <div class="grid-3">
         <div class="ethics-card" style="border-top-color:var(--accent);" onclick="addRipple(event,this)"><span class="ec-icon">🎓</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Academic Integrity</h3><div class="expandable open"><div class="expandable-inner"><p>Using AI to do your work and submitting it as your own is dishonest. Use AI to help you learn, not to replace your thinking. Always check your school's AI policy before using it for assignments.</p></div></div></div>
@@ -1604,62 +1761,6 @@
 </div>
 
 <!-- ══════════════════════════════════════ QUIZ ══════════════════════════════════════ -->
-<div id="quiz" class="panel">
-  <div class="page-hero"><span class="eyebrow">Test Your Knowledge</span><h1>Quick AI Quiz</h1><p>See how much you have learned! Five questions , answer them all and see your result.</p></div>
-  <div style="background:linear-gradient(135deg,var(--brand-dark) 0%,#3A1608 100%);padding:1px 0;">
-    <div class="section-inner">
-      <div class="page-illus-row">
-        <div class="page-illus-text on-dark">
-          <span class="eyebrow">Test Your Knowledge</span>
-          <h2 style="color:#fff;">How much do you know about AI?</h2>
-          <p style="color:rgba(255,255,255,.7);">Five questions covering AI history, how it works, where it goes wrong, and how to use it well. See which tier you land in , and use the lessons to fill any gaps.</p>
-          <p style="color:rgba(255,255,255,.7);">Click any answer to lock it in, then hit Next to keep going.</p>
-        </div>
-        <svg class="page-illus-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Game show stage with quiz contestants">
-          <rect width="400" height="300" fill="#2E1206" rx="20"/>
-          <polygon points="60,0 10,200 110,200" fill="#B24E33" opacity=".08"/>
-          <polygon points="200,0 140,200 260,200" fill="#C0562F" opacity=".07"/>
-          <polygon points="340,0 280,200 400,200" fill="#B24E33" opacity=".08"/>
-          <rect x="0" y="218" width="400" height="82" fill="#46200F"/>
-          <rect x="0" y="218" width="400" height="8" fill="#C0562F"/>
-          <circle cx="60" cy="28" r="14" fill="#B24E33"/><circle cx="60" cy="28" r="8" fill="#F3E7CE"/>
-          <circle cx="200" cy="18" r="18" fill="#B24E33"/><circle cx="200" cy="18" r="10" fill="white"/>
-          <circle cx="340" cy="28" r="14" fill="#B24E33"/><circle cx="340" cy="28" r="8" fill="#F3E7CE"/>
-          <circle cx="200" cy="130" r="55" fill="#C0562F"/>
-          <circle cx="200" cy="130" r="40" fill="#46200F"/>
-          <text x="200" y="143" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="44" fill="#B24E33">?</text>
-          <circle cx="200" cy="130" r="58" fill="none" stroke="#B24E33" stroke-width="3" opacity=".4"/>
-          <circle cx="80" cy="165" r="26" fill="#B24E33"/>
-          <ellipse cx="80" cy="141" rx="24" ry="13" fill="#3E2B1E"/>
-          <circle cx="71" cy="165" r="5" fill="#3E2B1E"/><circle cx="89" cy="165" r="5" fill="#3E2B1E"/>
-          <path d="M73 176 Q80 184 87 176" stroke="#9A3F1E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <rect x="52" y="208" width="48" height="18" rx="8" fill="#C0562F"/>
-          <text x="76" y="221" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">BUZZ!</text>
-          <circle cx="320" cy="165" r="26" fill="#B24E33"/>
-          <ellipse cx="320" cy="141" rx="24" ry="13" fill="#C0562F"/>
-          <circle cx="311" cy="165" r="5" fill="#3E2B1E"/><circle cx="329" cy="165" r="5" fill="#3E2B1E"/>
-          <path d="M313 177 Q320 186 327 177" stroke="#9A3F1E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <rect x="292" y="120" width="56" height="24" rx="8" fill="#B24E33"/>
-          <text x="320" y="136" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="#3E2B1E">4/5 ⭐</text>
-        </svg>
-      </div>
-      <div class="quiz-box">
-        <div class="quiz-progress"><div class="quiz-bar-bg"><div class="quiz-bar-fill" id="quizBar" style="width:0%"></div></div><span class="quiz-score" id="quizScore">0 / 5</span></div>
-        <div class="quiz-q" id="quizQ"><span id="quizNum">Q1.</span> <span id="quizText"></span></div>
-        <div class="quiz-options" id="quizOptions"></div>
-        <div class="quiz-feedback" id="quizFeedback"></div>
-        <button class="btn btn-primary" id="quizNext" onclick="nextQuestion()" style="display:none;">Next Question →</button>
-        <div id="quizResult" style="display:none;text-align:center;padding-top:1rem;">
-          <div style="font-size:3rem;margin-bottom:.75rem;" id="resultEmoji">🎉</div>
-          <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.8rem;color:white;" id="resultTitle"></div>
-          <div style="color:rgba(255,255,255,.6);margin:.5rem 0 1.5rem;" id="resultDesc"></div>
-          <button class="btn btn-primary" onclick="restartQuiz()">Try Again 🔄</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ══════════════════════════════════════ LAB ══════════════════════════════════════ -->
 <div id="lab" class="panel">
   <div class="lab-hero">
@@ -1682,51 +1783,10 @@
         <div class="page-illus-text">
           <span class="eyebrow">Learn by doing</span>
           <h2>Questions built for your curriculum</h2>
-          <p>Choose your curriculum and age group and the lab automatically loads questions matched to what you are actually studying. Byte gives you hints, explains every answer, and tracks your streak.</p>
-          <p>Supports CBSE, ICSE, UK National Curriculum, US Common Core and IB across Maths, Science, English, History and Geography.</p>
+          <p>Choose your curriculum and age group and the lab automatically loads questions matched to what you are actually studying. Eulid gives you hints, explains every answer, and tracks your streak.</p>
+          <p>Supports CBSE, ICSE, UK National Curriculum, US Common Core and IB across Math, Science, English, History and Geography.</p>
         </div>
-        <svg class="page-illus-svg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-label="Colourful curriculum cards with Byte the tutor">
-          <rect width="400" height="260" fill="#E6DBC9" rx="20"/>
-          <rect x="20" y="30" width="68" height="80" rx="10" fill="#F1DACF"/>
-          <text x="54" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#C0562F">+</text>
-          <text x="54" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#C0562F">Maths</text>
-          <rect x="100" y="30" width="68" height="80" rx="10" fill="#E2E8DC"/>
-          <text x="134" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#5F7355">?</text>
-          <text x="134" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#5F7355">Science</text>
-          <rect x="180" y="30" width="68" height="80" rx="10" fill="#F3E7CE"/>
-          <text x="214" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="24" fill="#9A6320">A</text>
-          <text x="214" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#9A6320">English</text>
-          <rect x="260" y="30" width="68" height="80" rx="10" fill="#E6DBC9"/>
-          <text x="294" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="20" fill="#6E5460">Hi</text>
-          <text x="294" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#6E5460">History</text>
-          <rect x="340" y="30" width="50" height="80" rx="10" fill="#F7E3D8"/>
-          <text x="365" y="68" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="18" fill="#9A3F1E">Ge</text>
-          <text x="365" y="100" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="#9A3F1E">Geo</text>
-          <rect x="20" y="128" width="360" height="50" rx="12" fill="white"/>
-          <rect x="20" y="128" width="360" height="50" rx="12" fill="none" stroke="#C0562F" stroke-width="1.5"/>
-          <text x="200" y="148" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="#3E2B1E">Which planet is closest to the Sun?</text>
-          <rect x="35" y="158" width="90" height="14" rx="7" fill="#F1DACF"/>
-          <text x="80" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#C0562F">A. Mercury</text>
-          <rect x="135" y="158" width="75" height="14" rx="7" fill="#DDCFBD"/>
-          <text x="172" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#8B6E5A">B. Venus</text>
-          <rect x="220" y="158" width="70" height="14" rx="7" fill="#DDCFBD"/>
-          <text x="255" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#8B6E5A">C. Mars</text>
-          <rect x="300" y="155" width="36" height="20" rx="10" fill="#5F7355"/>
-          <text x="318" y="169" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="9" fill="white">Check</text>
-          <rect x="240" y="196" width="66" height="42" rx="10" fill="#46200F"/>
-          <circle cx="258" cy="210" r="7" fill="#3E2B1E"/>
-          <circle cx="258" cy="210" r="5" fill="#C0562F"/>
-          <circle cx="260" cy="208" r="2" fill="white"/>
-          <circle cx="274" cy="210" r="7" fill="#3E2B1E"/>
-          <circle cx="274" cy="210" r="5" fill="#C0562F"/>
-          <circle cx="276" cy="208" r="2" fill="white"/>
-          <path d="M255 222 Q266 228 277 222" stroke="#C0562F" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <circle cx="266" cy="196" r="5" fill="#C0562F"/>
-          <rect x="314" y="196" width="66" height="36" rx="10" fill="white"/>
-          <polygon points="314,212 304,207 304,217" fill="white"/>
-          <text x="347" y="210" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="#C0562F">Well done!</text>
-          <text x="347" y="223" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="#C0562F">Mercury is right</text>
-        </svg>
+        <img class="page-illus-svg" src="assets/images/lab/curriculum_1.png" alt="A student at a laptop surrounded by subject icons — maths, science, history, English and geography"/>
       </div>
 
       <div class="lab-controls-bar">
@@ -1752,9 +1812,9 @@
         <div class="lab-ctrl-group">
           <span class="lab-ctrl-label">📚 Subjects</span>
           <div class="lab-multi" id="labSubjectMulti">
-            <button type="button" class="lab-multi-toggle" id="labSubjectToggle" onclick="labToggleSubjectMenu(event)">Maths <span style="opacity:.6;">▾</span></button>
+            <button type="button" class="lab-multi-toggle" id="labSubjectToggle" onclick="labToggleSubjectMenu(event)">Math <span style="opacity:.6;">▾</span></button>
             <div class="lab-multi-menu" id="labSubjectMenu">
-              <label><input type="checkbox" class="lab-subj" value="maths" checked onchange="labOnSubjectChange()"/> ➕ Maths</label>
+              <label><input type="checkbox" class="lab-subj" value="maths" checked onchange="labOnSubjectChange()"/> ➕ Math</label>
               <label><input type="checkbox" class="lab-subj" value="science" onchange="labOnSubjectChange()"/> 🔬 Science</label>
               <label><input type="checkbox" class="lab-subj" value="english" onchange="labOnSubjectChange()"/> 📖 English</label>
               <label><input type="checkbox" class="lab-subj" value="history" onchange="labOnSubjectChange()"/> 📜 History</label>
@@ -1788,7 +1848,7 @@
 
       <div class="tutor-wrap">
         <div class="tutor-avatar">🤖</div>
-        <div class="tutor-bubble" id="tutorBubble">Hi! I am Byte. Choose your curriculum and subject above, then hit <strong>New Question</strong> to begin!</div>
+        <div class="tutor-bubble" id="tutorBubble">Hi! I am Eulid. Choose your curriculum and subject above, then hit <strong>New Question</strong> to begin!</div>
       </div>
 
       <div class="lab-question-card" id="labQuestionCard" style="display:none;">
@@ -1834,7 +1894,7 @@
           <span class="eyebrow">Competitive Exam Practice</span>
           <h2>Prepare for CUET, Railways, Bank PO, SSC and UPSC</h2>
           <p>AI-generated questions that match the exact pattern and difficulty of real competitive exams. Timed practice, instant explanations, and a live accuracy tracker , all free.</p>
-          <p>Pick your exam, subject and difficulty. Byte generates a fresh question every time. You will never run out.</p>
+          <p>Pick your exam, subject and difficulty. Eulid generates a fresh question every time. You will never run out.</p>
         </div>
         <svg class="page-illus-svg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-label="Exam prep with timer and question cards">
           <rect width="400" height="260" fill="#EFE6D8" rx="20"/>
@@ -1920,7 +1980,7 @@
       <!-- BYTE TUTOR — same as lab -->
       <div class="tutor-wrap">
         <div class="tutor-avatar">🤖</div>
-        <div class="tutor-bubble" id="epTutorBubble">Hi! I am Byte. Pick your exam and subject above, then hit <strong>New Question</strong> to begin!</div>
+        <div class="tutor-bubble" id="epTutorBubble">Hi! I am Eulid. Pick your exam and subject above, then hit <strong>New Question</strong> to begin!</div>
       </div>
 
       <!-- LOADING STATE -->
@@ -2067,7 +2127,7 @@
         <span class="finder-filter-label">📚 Subject</span>
         <select class="finder-filter-select" id="finderSubject">
           <option value="any">Any subject</option>
-          <option value="maths">Maths</option>
+          <option value="maths">Math</option>
           <option value="science">Science</option>
           <option value="english">English</option>
           <option value="history">History</option>
@@ -2108,26 +2168,7 @@
         <p>Whether you want to watch a video, read a book, take a free course, or just understand what a confusing AI term means , we have rounded up the best free resources for students at every level.</p>
         <p>Click any card heading below to expand its full recommendation.</p>
       </div>
-      <svg class="page-illus-svg" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" aria-label="Stack of colourful resource cards">
-        <rect width="400" height="240" fill="#F6EEEA" rx="20"/>
-        <rect x="20" y="20" width="72" height="195" rx="10" fill="#6E5460"/>
-        <rect x="27" y="27" width="58" height="181" rx="6" fill="#7C5E6A"/>
-        <rect x="34" y="40" width="44" height="7" rx="3" fill="white" opacity=".8"/>
-        <rect x="34" y="52" width="34" height="5" rx="2" fill="white" opacity=".5"/>
-        <text x="56" y="195" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">📖 Books</text>
-        <rect x="104" y="30" width="72" height="175" rx="10" fill="#C0562F"/>
-        <rect x="111" y="37" width="58" height="161" rx="6" fill="#C0562F"/>
-        <circle cx="140" cy="108" r="26" fill="#EBC9AE"/>
-        <polygon points="131,97 131,119 151,108" fill="#C0562F"/>
-        <text x="140" y="178" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">📺 Videos</text>
-        <rect x="188" y="20" width="72" height="195" rx="10" fill="#5F7355"/>
-        <rect x="195" y="27" width="58" height="181" rx="6" fill="#5F7355"/>
-        <text x="224" y="195" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">🏫 Courses</text>
-        <rect x="272" y="30" width="72" height="175" rx="10" fill="#C0562F"/>
-        <rect x="279" y="37" width="58" height="161" rx="6" fill="#B24E33"/>
-        <text x="308" y="178" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="white">🛠️ Tools</text>
-        <rect x="356" y="20" width="30" height="195" rx="8" fill="#B24E33" opacity=".6"/>
-      </svg>
+      <img class="page-illus-svg" src="assets/images/resources/resources_1.png" alt="Four resource categories — Books, Videos, Courses and Tools — shown as illustrated cards"/>
     </div>
     <div class="definition-box"><p><strong>New to AI?</strong> Start with "What is AI?" and "History" in the menu above, then take the quiz to test what you have learned.</p></div>
     <div class="grid-3" style="margin-top:2rem;">
@@ -2145,6 +2186,163 @@
 </div>
 
 <!-- ══════════════════════════════════════ CONTACT ══════════════════════════════════════ -->
+<div id="help" class="panel">
+<div class="page-hero"><h1>Help Centre</h1><p>Search for an answer, or pick a topic below.</p></div>
+  <div class="section-inner">
+<style>
+.help-wrap{max-width:1040px;margin:0 auto;}
+.help-search{position:relative;max-width:640px;margin:0 auto 2rem;}
+.help-search svg{position:absolute;left:1.05rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+.help-search input{width:100%;padding:.95rem 1.1rem .95rem 2.95rem;border:1.5px solid var(--gray-200);border-radius:100px;font-family:'Inter',sans-serif;font-size:1rem;color:var(--text);background:#fff;outline:none;box-shadow:var(--shadow-sm);transition:border-color .2s;}
+.help-search input:focus{border-color:var(--accent);}
+/* topic landing */
+.help-topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.15rem;}
+.help-topic{display:flex;flex-direction:column;align-items:flex-start;gap:.25rem;text-align:left;background:#fff;border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);padding:1.35rem 1.45rem;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
+.help-topic:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--accent);}
+.ht-ic{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.55rem;margin-bottom:.55rem;}
+.help-topic b{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.06rem;color:var(--text);}
+.help-topic small{color:var(--muted);font-size:.86rem;line-height:1.45;}
+.help-topic em{margin-top:.45rem;font-style:normal;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);}
+/* detail view */
+.help-back{background:none;border:none;color:var(--accent);font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;cursor:pointer;padding:.3rem .1rem;margin-bottom:1.1rem;display:inline-flex;align-items:center;gap:.4rem;}
+.help-back:hover{color:var(--accent-dark);}
+.help-cats{display:flex;flex-direction:column;gap:1.4rem;}
+.help-cat{background:#fff;border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:1.2rem 1.6rem;}
+.help-cat h2{display:flex;align-items:center;gap:.6rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;color:var(--text);margin-bottom:.3rem;}
+.help-cat h2 span{font-size:1.4rem;}
+.help-item{border-top:1px solid var(--gray-100);}
+.help-item:first-of-type{border-top:none;}
+.help-q{width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;color:var(--text);padding:.95rem 2.2rem .95rem 0;position:relative;}
+.help-q:hover{color:var(--accent);}
+.help-q::after{content:'+';position:absolute;right:.35rem;top:50%;transform:translateY(-50%);color:var(--accent);font-size:1.25rem;font-weight:700;}
+.help-item.open>.help-q::after{content:'\2013';}
+.help-a{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.help-item.open>.help-a{max-height:560px;}
+.help-a p{color:var(--muted);font-size:.94rem;line-height:1.65;padding:0 0 1rem;}
+.help-a a{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:none;}
+.help-a a:hover{text-decoration:underline;}
+.help-none{text-align:center;color:var(--muted);padding:1.5rem;font-weight:600;background:#fff;border:1.5px dashed var(--border);border-radius:var(--radius);}
+.help-none a{color:var(--accent);cursor:pointer;}
+@media(max-width:560px){.help-topics{grid-template-columns:1fr;}}
+</style>
+<div class="help-wrap">
+  <div class="help-search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+    <input type="text" id="helpSearch" placeholder="Search help… e.g. &quot;save progress&quot;, &quot;profile picture&quot;"/>
+  </div>
+
+  <div class="help-topics" id="helpTopics">
+    <button class="help-topic" data-cat="0"><span class="ht-ic" style="background:var(--brand-light);">&#128640;</span><b>Getting started</b><small>New here? What the site is and where to begin.</small><em>4 answers</em></button>
+    <button class="help-topic" data-cat="1"><span class="ht-ic" style="background:var(--green-light);">&#129514;</span><b>Using the Lab</b><small>Practise questions, subjects, timer and hints.</small><em>5 answers</em></button>
+    <button class="help-topic" data-cat="2"><span class="ht-ic" style="background:var(--purple-light);">&#128100;</span><b>Accounts &amp; sign-in</b><small>Sign up, sign in, profile picture and settings.</small><em>5 answers</em></button>
+    <button class="help-topic" data-cat="3"><span class="ht-ic" style="background:var(--accent-light);">&#128202;</span><b>Dashboard &amp; progress</b><small>What your stats and graphs actually mean.</small><em>4 answers</em></button>
+    <button class="help-topic" data-cat="4"><span class="ht-ic" style="background:#EFE1CD;">&#128295;</span><b>Troubleshooting</b><small>Quick fixes for the most common problems.</small><em>5 answers</em></button>
+    <button class="help-topic" data-cat="5"><span class="ht-ic" style="background:var(--green-light);">&#128737;</span><b>Safety &amp; responsible use</b><small>Privacy, young learners and using AI well.</small><em>3 answers</em></button>
+    <button class="help-topic" data-cat="6"><span class="ht-ic" style="background:var(--brand-light);">&#128172;</span><b>Still need help?</b><small>Reach the team directly.</small><em>1 answer</em></button>
+  </div>
+
+  <div class="help-none" id="helpNoResults" style="display:none;">No results &mdash; try different words, or <a onclick="showPage('contact')">contact us</a>.</div>
+
+  <div class="help-detail" id="helpDetail" style="display:none;">
+    <button class="help-back" id="helpBack">&larr; All topics</button>
+    <div class="help-cats" id="helpCats">
+
+      <section class="help-cat"><h2><span>&#128640;</span>Getting started</h2>
+        <div class="help-item"><button class="help-q">What is Seek-O-Sphere?</button><div class="help-a"><p>Seek-O-Sphere is a free site that teaches artificial intelligence to everyone, ages 8 to 80. Read the chapters (What is AI?, History, Types, Ethics), practise in the interactive Lab, test yourself with quizzes, and use "Find My AI Tool" to pick the right tool for a task.</p></div></div>
+        <div class="help-item"><button class="help-q">I'm brand new — where should I start?</button><div class="help-a"><p>Start with <a onclick="showPage('what')">What is AI?</a> for the basics, then try a few questions in the <a onclick="showPage('lab')">Lab</a>. Create a free account so the Lab can save your progress, streaks and per-subject scores to your Dashboard.</p></div></div>
+        <div class="help-item"><button class="help-q">Do I need an account to use the site?</button><div class="help-a"><p>No — you can browse and learn without one. An account is only needed if you want the Lab to save your progress and show it on your Dashboard across devices.</p></div></div>
+        <div class="help-item"><button class="help-q">Is it really free?</button><div class="help-a"><p>Yes. Seek-O-Sphere is free for students of all ages — no payment or subscription.</p></div></div>
+      </section>
+
+      <section class="help-cat"><h2><span>&#129514;</span>Using the Lab</h2>
+        <div class="help-item"><button class="help-q">How do I start practising?</button><div class="help-a"><p>Open the <a onclick="showPage('lab')">Lab</a>, choose your curriculum (CBSE, ICSE, UK, US or IB), your age group and one or more subjects, then press New Question. Type or tap your answer and hit Check.</p></div></div>
+        <div class="help-item"><button class="help-q">What's the difference between Curriculum Lab and Exam Prep?</button><div class="help-a"><p>The Curriculum Lab gives questions matched to your school syllabus. Exam Prep gives competitive-exam-style questions for CUET, Railways, Bank PO, SSC and UPSC. Switch between them using the tabs at the top of the Lab.</p></div></div>
+        <div class="help-item"><button class="help-q">How does the session timer work?</button><div class="help-a"><p>It's an optional countdown so you can practise under time pressure. Pick a preset (15, 30, 45 or 60 minutes) or set a custom length — or leave it on "No timer" to go at your own pace.</p></div></div>
+        <div class="help-item"><button class="help-q">How do hints and explanations work?</button><div class="help-a"><p>Tap "Give me a Hint" for a nudge before you answer. After you answer, "Read the explanation" shows why the correct answer is right, so you actually learn from each question.</p></div></div>
+        <div class="help-item"><button class="help-q">Is my practice saved?</button><div class="help-a"><p>Yes, if you're signed in. Every question you answer is recorded and shown on your <a href="pages/dashboard.html">Dashboard</a> by subject and by date.</p></div></div>
+      </section>
+
+      <section class="help-cat"><h2><span>&#128100;</span>Accounts &amp; sign-in</h2>
+        <div class="help-item"><button class="help-q">How do I sign up or sign in?</button><div class="help-a"><p>Click Sign In at the top right, then use your email and a password, or sign in with Google. Creating an account is free and takes a few seconds.</p></div></div>
+        <div class="help-item"><button class="help-q">How do I add or change my profile picture?</button><div class="help-a"><p>On your Dashboard, click the small camera button on your avatar and choose an image. It's cropped and saved automatically. Click the ✕ button to remove it and go back to your initial.</p></div></div>
+        <div class="help-item"><button class="help-q">Where do I change my name, curriculum or age group?</button><div class="help-a"><p>Open the account menu at the top right and choose Account Settings. You can update your display name, default curriculum, age group and address there.</p></div></div>
+        <div class="help-item"><button class="help-q">I forgot my password.</button><div class="help-a"><p>On the Sign In screen, click "Forgot password?" and follow the link sent to your email to set a new one.</p></div></div>
+        <div class="help-item"><button class="help-q">What's the difference between a guest and an account?</button><div class="help-a"><p>A guest can browse and learn from everything, but progress isn't saved. A full account saves your progress, streaks and scores so they follow you on any device.</p></div></div>
+      </section>
+
+      <section class="help-cat"><h2><span>&#128202;</span>Dashboard &amp; progress</h2>
+        <div class="help-item"><button class="help-q">What do the stats mean?</button><div class="help-a"><p>Overall Accuracy is your correct answers divided by total questions. Best Streak is your longest run of correct answers in a row. Active Days counts the days you've practised.</p></div></div>
+        <div class="help-item"><button class="help-q">How is my per-subject progress worked out?</button><div class="help-a"><p>Every answer in the Lab is tallied by subject, so each subject card shows your accuracy, total questions, correct answers and number of sessions — with the ones you practise most at the top.</p></div></div>
+        <div class="help-item"><button class="help-q">My dashboard is empty or shows zeros.</button><div class="help-a"><p>Progress only starts recording from your next Lab session after you sign in. Answer a few questions in the Lab and your graphs, subjects and streaks will fill in automatically.</p></div></div>
+        <div class="help-item"><button class="help-q">What is the Progress Report chart?</button><div class="help-a"><p>It plots how many questions you answered each day. Use the Last 7 Days / Last Month / Lifetime menu to change the range, and hover over a point to see that day's questions and accuracy.</p></div></div>
+      </section>
+
+      <section class="help-cat"><h2><span>&#128295;</span>Troubleshooting</h2>
+        <div class="help-item"><button class="help-q">My progress isn't saving.</button><div class="help-a"><p>Make sure you're signed in — progress isn't saved for guests. If you were offline, your answers are stored locally and sync to your account the moment you reconnect.</p></div></div>
+        <div class="help-item"><button class="help-q">The site feels slow or looks stuck.</button><div class="help-a"><p>Try a hard refresh of the page. Your name and progress load from a fast local cache first and then update in the background, so a brief pause on a brand-new device is normal.</p></div></div>
+        <div class="help-item"><button class="help-q">I can't sign in.</button><div class="help-a"><p>Double-check your email and password, or use "Forgot password?". Google sign-in needs pop-ups allowed in your browser.</p></div></div>
+        <div class="help-item"><button class="help-q">I'm an admin but I see the student dashboard.</button><div class="help-a"><p>Sign out and sign back in — admins are sent straight to the Admin Panel. If it still happens, check that your account's role is set to "admin".</p></div></div>
+        <div class="help-item"><button class="help-q">It works offline but doesn't seem to update.</button><div class="help-a"><p>The site caches your data so it keeps working without internet. Any changes you make sync automatically once you're back online.</p></div></div>
+      </section>
+
+      <section class="help-cat"><h2><span>&#128737;</span>Safety &amp; responsible use</h2>
+        <div class="help-item"><button class="help-q">Is my data safe?</button><div class="help-a"><p>We store only what's needed to run your account and show your progress. As a rule, never share passwords or personal details with any AI tool, here or elsewhere.</p></div></div>
+        <div class="help-item"><button class="help-q">Is this suitable for children?</button><div class="help-a"><p>Yes — everything is written to be friendly and age-appropriate for ages 8 to 80. Parents and teachers can read the "For Teachers and Parents" section on the <a onclick="showPage('resources')">Resources</a> page.</p></div></div>
+        <div class="help-item"><button class="help-q">How do I use AI responsibly?</button><div class="help-a"><p>See the <a onclick="showPage('ethics')">Using AI Responsibly</a> chapter — it covers academic honesty, fact-checking AI, privacy, bias and knowing AI's limits.</p></div></div>
+      </section>
+
+      <section class="help-cat"><h2><span>&#128172;</span>Still need help?</h2>
+        <div class="help-item"><button class="help-q">How do I contact the team?</button><div class="help-a"><p>Head to the <a onclick="showPage('contact')">Contact</a> page to send us a message or feedback — we read everything and use it to improve the site.</p></div></div>
+      </section>
+
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var topics=document.getElementById('helpTopics'),
+      detail=document.getElementById('helpDetail'),
+      cats=document.getElementById('helpCats'),
+      back=document.getElementById('helpBack'),
+      search=document.getElementById('helpSearch'),
+      none=document.getElementById('helpNoResults');
+  if(!topics||!cats) return;
+  var catList=cats.querySelectorAll('.help-cat');
+
+  function showTopics(){ topics.style.display=''; detail.style.display='none'; none.style.display='none'; }
+  function showCategory(i){
+    topics.style.display='none'; none.style.display='none'; detail.style.display='block'; back.style.display='';
+    for(var k=0;k<catList.length;k++){
+      catList[k].style.display=(k===i)?'':'none';
+      var items=catList[k].querySelectorAll('.help-item');
+      for(var m=0;m<items.length;m++){ items[m].style.display=''; items[m].classList.remove('open'); }
+    }
+  }
+  [].forEach.call(topics.children,function(t){ t.addEventListener('click',function(){ showCategory(+t.getAttribute('data-cat')); }); });
+  back.addEventListener('click',showTopics);
+  cats.addEventListener('click',function(e){ var q=e.target.closest('.help-q'); if(!q) return; q.parentNode.classList.toggle('open'); });
+
+  search.addEventListener('input',function(){
+    var t=search.value.trim().toLowerCase();
+    if(!t){ showTopics(); return; }
+    topics.style.display='none'; detail.style.display='block'; back.style.display='none';
+    var any=false;
+    for(var k=0;k<catList.length;k++){
+      var catAny=false, items=catList[k].querySelectorAll('.help-item');
+      for(var m=0;m<items.length;m++){
+        var show=items[m].textContent.toLowerCase().indexOf(t)!==-1;
+        items[m].style.display=show?'':'none';
+        if(show){ catAny=true; any=true; items[m].classList.add('open'); } else { items[m].classList.remove('open'); }
+      }
+      catList[k].style.display=catAny?'':'none';
+    }
+    none.style.display=any?'none':'block';
+  });
+})();
+</script>
+  </div>
+</div>
+
 <div id="contact" class="panel">
   <div class="page-hero"><span class="eyebrow">We Would Love to Hear From You</span><h1>Get in Touch</h1><p>Questions, feedback, or ideas for new topics? Send us a message below.</p></div>
   <div class="section-inner">
@@ -2155,25 +2353,7 @@
         <p>Whether you are a student with a question, a teacher interested in this resource, or you spotted something that needs fixing , we want to hear from you.</p>
         <p>Teachers and parents are especially welcome , ask about bringing these lessons into the classroom.</p>
       </div>
-      <svg class="page-illus-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="Friendly envelope with a message flying out">
-        <rect width="400" height="280" fill="#EFE6D8" rx="20"/>
-        <rect x="60" y="90" width="280" height="180" rx="14" fill="#C0562F"/>
-        <polygon points="60,90 200,185 340,90" fill="#46200F"/>
-        <polygon points="60,270 130,190 60,90" fill="#3A1608"/>
-        <polygon points="340,270 270,190 340,90" fill="#3A1608"/>
-        <polygon points="60,270 340,270 270,190 130,190" fill="#C0562F"/>
-        <circle cx="200" cy="224" r="22" fill="#C0562F"/>
-        <text x="200" y="231" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="16" fill="white">AI</text>
-        <rect x="148" y="28" width="104" height="80" rx="8" fill="white"/>
-        <rect x="156" y="38" width="88" height="7" rx="3" fill="#DDCFBD"/>
-        <rect x="156" y="50" width="70" height="5" rx="2" fill="#DDCFBD"/>
-        <rect x="156" y="60" width="80" height="5" rx="2" fill="#DDCFBD"/>
-        <rect x="156" y="70" width="65" height="5" rx="2" fill="#DDCFBD"/>
-        <rect x="156" y="82" width="40" height="14" rx="7" fill="#C0562F"/>
-        <text x="176" y="93" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="9" fill="white">Send →</text>
-        <circle cx="48" cy="48" r="6" fill="#B24E33"/>
-        <circle cx="358" cy="60" r="5" fill="#C0562F" opacity=".7"/>
-      </svg>
+      <img class="page-illus-svg" src="assets/images/contact/contact_1.png" alt="An open envelope with a letter and a paper plane — send us a message"/>
     </div>
     <div class="two-col">
       <div>
@@ -2205,7 +2385,7 @@
 
 <footer>
   <p>Made with ❤️ for curious learners everywhere. <strong style="display:inline-flex;align-items:center;gap:.12em;">Seek-<svg viewBox="0 0 64 64" width="18" height="18" aria-hidden="true" style="vertical-align:-4px;"><defs><radialGradient id="rL1_Space" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="rL1_Earth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="rL1_Sun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#rL1_Space)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#rL1_Sun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#rL1_Earth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg>-Sphere</strong></p>
-  <p style="margin-top:.5rem;">AI is a tool. <em>You</em> are the thinker. Byte agrees. 🤖</p>
+  <p style="margin-top:.5rem;">AI is a tool. <em>You</em> are the thinker. Eulid agrees. 🤖</p>
 </footer>
 
 <!-- Local question engine (algorithmic maths + JSON bank, with optional Claude-API mode) -->
@@ -2215,7 +2395,7 @@
 /* ══════════════════════════════════════
    PAGE NAVIGATION WITH ENTRANCE ANIMATIONS
 ══════════════════════════════════════ */
-const ALL_PAGES = ['home','what','history','types','study','ethics','quiz','lab','finder','resources','contact'];
+const ALL_PAGES = ['home','what','history','types','study','ethics','lab','finder','resources','help','contact'];
 
 function showPage(id) {
   const current = document.querySelector('.panel.active');
@@ -2237,6 +2417,7 @@ function showPage(id) {
   });
   document.getElementById('navLinks').classList.remove('open');
   window.scrollTo({ top: 0, behavior: 'instant' });
+  try { if (window.demoGateOnShow) demoGateOnShow(id); } catch(e){}
 }
 
 /* Open a section when the page is loaded with a #hash (e.g. ../index.html#types
@@ -2248,6 +2429,32 @@ function openFromHash() {
 window.addEventListener('hashchange', openFromHash);
 openFromHash();
 
+/* Eulid mascot — pupils follow the cursor */
+(function(){
+  var pupils = document.querySelectorAll('.eulid-pupil');
+  var svg = document.querySelector('.mascot-svg');
+  if (!svg || !pupils.length) return;
+  var rect = null, mx = 0, my = 0, pending = false;
+  function refresh(){ rect = svg.getBoundingClientRect(); }
+  refresh();
+  window.addEventListener('resize', refresh, { passive: true });
+  window.addEventListener('scroll', refresh, { passive: true });
+  document.addEventListener('mousemove', function(e){
+    mx = e.clientX; my = e.clientY;
+    if (pending || document.hidden) return;
+    pending = true;
+    requestAnimationFrame(function(){
+      pending = false;
+      if (!rect) return;
+      var cx = rect.left + rect.width * 0.5, cy = rect.top + rect.height * 0.40;
+      var a = Math.atan2(my - cy, mx - cx);
+      var d = Math.min(Math.hypot(mx - cx, my - cy) / 45, 6);
+      var tx = (Math.cos(a) * d).toFixed(1), ty = (Math.sin(a) * d).toFixed(1);
+      pupils.forEach(function(p){ p.setAttribute('transform', 'translate(' + tx + ' ' + ty + ')'); });
+    });
+  }, { passive: true });
+})();
+
 /* ══════════════════════════════════════
    NEURAL CANVAS
 ══════════════════════════════════════ */
@@ -2258,28 +2465,31 @@ if (canvas) {
   function resizeCanvas() {
     canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
     nodes = [];
-    const count = Math.floor((canvas.width * canvas.height) / 18000);
-    for (let i = 0; i < count; i++) nodes.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2.5+1.5,pulse:Math.random()*Math.PI*2});
+    const count = Math.min(36, Math.floor((canvas.width * canvas.height) / 26000));
+    for (let i = 0; i < count; i++) nodes.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*2.2+1.4,pulse:Math.random()*Math.PI*2});
   }
   function drawCanvas() {
+    requestAnimationFrame(drawCanvas);
+    // Skip all work when the tab is hidden or the home panel isn't visible.
+    if (document.hidden) return;
+    const home = document.getElementById('home');
+    if (!home || !home.classList.contains('active') || !canvas.width) return;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     const t = Date.now()*.001;
-    nodes.forEach(n => {
+    for (let k=0;k<nodes.length;k++){ const n=nodes[k];
       n.x+=n.vx; n.y+=n.vy;
       if(n.x<0||n.x>canvas.width)n.vx*=-1; if(n.y<0||n.y>canvas.height)n.vy*=-1;
       const g=.5+.5*Math.sin(t*1.5+n.pulse);
       ctx.beginPath(); ctx.arc(n.x,n.y,n.r*(1+.3*g),0,Math.PI*2);
-      ctx.fillStyle=`rgba(96,165,250,${.5+.5*g})`; ctx.fill();
-    });
-    nodes.forEach((a,i) => {
-      for(let j=i+1;j<nodes.length;j++){
-        const b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
-        if(d<150){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(147,197,253,${(1-d/150)*.4})`;ctx.lineWidth=.8;ctx.stroke();}
+      ctx.fillStyle=`rgba(192,86,47,${.42+.42*g})`; ctx.fill();
+    }
+    for (let i=0;i<nodes.length;i++){ const a=nodes[i];
+      for(let j=i+1;j<nodes.length;j++){ const b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy;
+        if(d2<22500){const d=Math.sqrt(d2);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(210,118,78,${(1-d/150)*.35})`;ctx.lineWidth=.8;ctx.stroke();}
       }
-    });
-    requestAnimationFrame(drawCanvas);
+    }
   }
-  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('resize', resizeCanvas, { passive:true });
   resizeCanvas(); drawCanvas();
 }
 
@@ -2307,28 +2517,13 @@ function scrollQuotes(dir){const s=document.getElementById('quoteScroller');if(s
 /* ══════════════════════════════════════
    QUIZ
 ══════════════════════════════════════ */
-const QUIZ_QS=[
-  {q:"Who coined the term 'Artificial Intelligence'?",opts:["Alan Turing","John McCarthy","Elon Musk","Albert Einstein"],ans:1,fb:"Correct! John McCarthy coined the term at the 1956 Dartmouth Conference."},
-  {q:"What is Machine Learning?",opts:["A robot that can walk","AI that learns from data without being explicitly programmed","A type of computer virus","Software that fixes bugs automatically"],ans:1,fb:"Exactly! Machine learning systems improve by learning from examples and data."},
-  {q:"What is it called when an AI confidently states something false?",opts:["A glitch","A hallucination","A bug","An error 404"],ans:1,fb:"Right! AI hallucinations are when a model generates convincing but incorrect information."},
-  {q:"Which of these is an example of AI you probably use every day?",opts:["A light switch","A bicycle","Music recommendations on Spotify","A printed book"],ans:2,fb:"Spot on! Music recommendation engines use AI to predict what you will enjoy."},
-  {q:"What is the best way to use AI for your homework?",opts:["Copy its answer word for word","Use it to help you understand the topic, then write in your own words","Ask it to do the entire assignment for you","Only use it during tests"],ans:1,fb:"Perfect! AI is most valuable as a learning tool, not a shortcut."},
-];
-let qC=0,qS=0,qA=false;
-function loadQuestion(){const q=QUIZ_QS[qC];document.getElementById('quizNum').textContent=`Q${qC+1}.`;document.getElementById('quizText').textContent=q.q;document.getElementById('quizFeedback').textContent='';document.getElementById('quizNext').style.display='none';qA=false;const opts=document.getElementById('quizOptions');opts.innerHTML='';q.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='quiz-opt';b.textContent=o;b.onclick=()=>selectAnswer(i);opts.appendChild(b);});updateQP();}
-function selectAnswer(i){if(qA)return;qA=true;const q=QUIZ_QS[qC];document.querySelectorAll('.quiz-opt').forEach((b,j)=>{if(j===q.ans)b.classList.add('correct');else if(j===i)b.classList.add('wrong');});if(i===q.ans)qS++;document.getElementById('quizFeedback').textContent=i===q.ans?q.fb:`Not quite. The answer was: "${q.opts[q.ans]}"`;const nb=document.getElementById('quizNext');nb.style.display='inline-flex';if(qC===QUIZ_QS.length-1)nb.textContent='See Results 🎉';updateQP();}
-function nextQuestion(){qC++;if(qC>=QUIZ_QS.length){showQR();return;}loadQuestion();}
-function updateQP(){document.getElementById('quizBar').style.width=(qC/QUIZ_QS.length*100)+'%';document.getElementById('quizScore').textContent=`${qS} / ${QUIZ_QS.length}`;}
-function showQR(){['quizQ','quizOptions','quizFeedback','quizNext'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});document.getElementById('quizResult').style.display='block';document.getElementById('quizBar').style.width='100%';document.getElementById('quizScore').textContent=`${qS} / ${QUIZ_QS.length}`;const p=qS/QUIZ_QS.length;const[e,t,d]=p===1?['🏆','Perfect Score!',"You're an AI expert!"]:p>=.8?['🌟','Amazing Job!','You really know your AI.']:p>=.6?['👍','Good Work!','Solid understanding. Review the sections you missed.']:['💪','Keep Going!',"AI takes time to learn. You've got this!"];document.getElementById('resultEmoji').textContent=e;document.getElementById('resultTitle').textContent=t;document.getElementById('resultDesc').textContent=d;}
-function restartQuiz(){qC=0;qS=0;qA=false;['quizQ','quizOptions','quizFeedback'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='';});document.getElementById('quizResult').style.display='none';loadQuestion();}
-loadQuestion();
 
 /* ══════════════════════════════════════
    VISUAL LEARNING LAB — AI GENERATED QUESTIONS
    Every question is freshly generated by Claude API
    Students will never run out of questions
    Supports: CBSE, ICSE, UK, US Common Core, IB
-   Subjects: Maths, Science, English, History, Geography
+   Subjects: Math, Science, English, History, Geography
    Ages: 5-7, 8-10, 11-13, 14-16
 ══════════════════════════════════════ */
 
@@ -2422,7 +2617,7 @@ function labUpdateSubjects(){
 }
 
 /* Subjects are a multi-select checklist now. */
-const LAB_SUBJ_LABEL = { maths:'Maths', science:'Science', english:'English', history:'History', geography:'Geography' };
+const LAB_SUBJ_LABEL = { maths:'Math', science:'Science', english:'English', history:'History', geography:'Geography' };
 
 function labSelectedSubjects(){
   const arr = [];
@@ -2663,6 +2858,33 @@ function labCheckMCQ(choice, btn){
   document.getElementById('labExplainBtn').style.display = 'inline-flex';
 }
 
+/* Record one answered question to Firestore (signed-in students only).
+   Aggregated per day + per subject so the dashboard can chart trends,
+   per-subject mastery, an activity calendar and a session log. */
+function recordProgress(mode, subject, label, isCorrect, streak){
+  try {
+    if (!(window.SOS && SOS.user && SOS.db)) return;
+    var db = SOS.db, uid = SOS.user.uid, FV = firebase.firestore.FieldValue;
+    var d = new Date();
+    var date = d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+    var id = date + '__' + mode + '__' + subject;
+    db.collection('progress').doc(uid).collection('daily').doc(id).set({
+      date: date, mode: mode, subject: subject, label: label,
+      questions: FV.increment(1), correct: FV.increment(isCorrect ? 1 : 0),
+      lastTs: FV.serverTimestamp()
+    }, { merge: true }).catch(function(){});
+    db.collection('users').doc(uid).set({
+      totalQuestions: FV.increment(1), correctTotal: FV.increment(isCorrect ? 1 : 0),
+      lastActive: FV.serverTimestamp()
+    }, { merge: true }).catch(function(){});
+    var best = 0; try { best = parseInt(localStorage.getItem('sos_beststreak')||'0',10) || 0; } catch(e){}
+    if (streak && streak > best) {
+      try { localStorage.setItem('sos_beststreak', String(streak)); } catch(e){}
+      db.collection('users').doc(uid).set({ bestStreak: streak }, { merge: true }).catch(function(){});
+    }
+  } catch(e){}
+}
+
 function labCheckAnswer(){
   if (!LAB.current) return;
   const inp = document.getElementById('labAnswerInput');
@@ -2689,6 +2911,7 @@ function labCheckAnswer(){
 
 function labOnCorrect(){
   LAB.score++; LAB.streak++; LAB.answered++;
+  recordProgress('curriculum', LAB.subject, (LAB_SUBJ_LABEL[LAB.subject]||LAB.subject), true, LAB.streak);
   let msg = rPick(TUTOR_MSG.correct);
   if (LAB.streak === 3)  msg = rPick(TUTOR_MSG.streak3);
   if (LAB.streak === 5)  msg = rPick(TUTOR_MSG.streak5);
@@ -2703,6 +2926,7 @@ function labOnCorrect(){
 
 function labOnWrong(){
   LAB.streak = 0; LAB.answered++;
+  recordProgress('curriculum', LAB.subject, (LAB_SUBJ_LABEL[LAB.subject]||LAB.subject), false, 0);
   document.getElementById('labFeedback').style.color = 'var(--accent-dark)';
   document.getElementById('labFeedback').textContent = `❌ Not quite — the answer was: ${LAB.current.answer}`;
   labSetTutor(rPick(TUTOR_MSG.wrong));
@@ -2923,7 +3147,7 @@ const EP_SUBJECT_NAMES = {
 
 const EP_EXAM_CONTEXT = {
   cuet:     'CUET (Common University Entrance Test) for undergraduate admissions in India. Questions follow NTA CUET pattern.',
-  railways: 'Indian Railways RRB NTPC / Group D recruitment exam. Questions follow RRB pattern including GK, Maths and Reasoning.',
+  railways: 'Indian Railways RRB NTPC / Group D recruitment exam. Questions follow RRB pattern including GK, Math and Reasoning.',
   bankpo:   'Bank PO (IBPS PO / SBI PO) recruitment exam. Questions follow banking sector patterns including data interpretation.',
   ssc:      'SSC CGL/CHSL/MTS exam by Staff Selection Commission India. Questions follow SSC pattern.',
   upsc:     'UPSC Civil Services Preliminary Examination GS Paper I. Questions follow UPSC standard — analytical and conceptual.',
@@ -3109,6 +3333,7 @@ function epCheckAnswer(choice, btn) {
   if (isRight) {
     btn.classList.add('correct');
     EP.correct++; EP.streak++;
+    recordProgress('exam', EP.subject, (EP_SUBJECT_NAMES[EP.subject]||EP.subject), true, EP.streak);
     document.getElementById('epFeedback').style.color = 'var(--green)';
     document.getElementById('epFeedback').textContent = EP.streak >= 5
       ? '🔥 Correct! ' + EP.streak + ' in a row!'
@@ -3119,6 +3344,7 @@ function epCheckAnswer(choice, btn) {
   } else {
     btn.classList.add('wrong');
     EP.wrong++; EP.streak = 0;
+    recordProgress('exam', EP.subject, (EP_SUBJECT_NAMES[EP.subject]||EP.subject), false, 0);
     document.getElementById('epFeedback').style.color = 'var(--accent-dark)';
     document.getElementById('epFeedback').textContent = '❌ Wrong — the correct answer is highlighted above.';
     epUpdateScores();
@@ -3168,7 +3394,7 @@ function epReset() {
   document.getElementById('epExplainBtn').style.display = 'none';
   document.getElementById('epFeedback').textContent = '';
   const tb = document.getElementById('epTutorBubble');
-  if(tb) tb.innerHTML = 'Hi! I am Byte. Pick your exam and subject above, then hit <strong>New Question</strong> to begin!';
+  if(tb) tb.innerHTML = 'Hi! I am Eulid. Pick your exam and subject above, then hit <strong>New Question</strong> to begin!';
 }
 
 
@@ -3224,5 +3450,110 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="js/session.js"></script>
+
+<!-- ══════════════════ Members-only demo gate (Lab & History) ══════════════════ -->
+<style>
+.demo-banner{display:none;align-items:center;justify-content:center;gap:.55rem;flex-wrap:wrap;background:linear-gradient(90deg,#C0562F,#B24E33);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;line-height:1.35;padding:.6rem 1.1rem;text-align:center;}
+.demo-banner.show{display:flex;}
+.demo-banner a{color:#fff;text-decoration:underline;font-weight:900;cursor:pointer;}
+.demo-banner .db-count{background:rgba(255,255,255,.22);border-radius:100px;padding:.08rem .6rem;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.demo-gate{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:1.5rem;background:rgba(26,14,8,.74);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);}
+.demo-gate.show{display:flex;animation:dgFade .25s ease both;}
+@keyframes dgFade{from{opacity:0}to{opacity:1}}
+.demo-gate-box{background:#fff;border-radius:24px;max-width:460px;width:100%;padding:2.4rem 2.2rem;text-align:center;box-shadow:0 30px 80px -18px rgba(0,0,0,.55);animation:dgPop .38s cubic-bezier(.34,1.5,.64,1) both;}
+@keyframes dgPop{from{opacity:0;transform:translateY(18px) scale(.95)}to{opacity:1;transform:none}}
+.demo-gate-box .dg-mark{width:66px;height:66px;margin:0 auto 1rem;}
+.demo-gate-box .dg-mark svg{width:100%;height:100%;display:block;}
+.demo-gate-box h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--text);margin-bottom:.6rem;}
+.demo-gate-box p{color:var(--muted);font-size:.98rem;line-height:1.65;margin-bottom:1.5rem;}
+.demo-gate-box .dg-actions{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1rem;}
+.demo-gate-box .dg-actions .btn{width:100%;justify-content:center;}
+.demo-gate-box small{color:var(--muted);font-size:.82rem;}
+</style>
+<script>
+(function(){
+  var GATED={lab:1,history:1};
+  var DEMO_MS=60000;
+  var demoAuthed=false, demoUsed=false, demoTicking=false, demoRemain=0, demoInterval=null;
+  try{ demoAuthed = !!localStorage.getItem('sos_name'); }catch(e){}
+  var MARK='<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="dgSpace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="dgEarth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="dgSun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#dgSpace)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#dgSun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#dgEarth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg>';
+
+  function el(id){ return document.getElementById(id); }
+  function showGate(){ var g=el('demoGate'); if(g) g.classList.add('show'); }
+  function hideGate(){ var g=el('demoGate'); if(g) g.classList.remove('show'); }
+  function showBanner(){ var b=el('demoBanner'); if(b) b.classList.add('show'); }
+  function hideBanner(){ var b=el('demoBanner'); if(b) b.classList.remove('show'); }
+  function paintCount(){ var c=el('demoCount'); if(c) c.textContent=demoRemain+'s'; }
+
+  function startCountdown(){
+    if(demoTicking||demoUsed||demoAuthed) return;
+    demoTicking=true; demoRemain=Math.ceil(DEMO_MS/1000); paintCount();
+    demoInterval=setInterval(function(){
+      demoRemain--; paintCount();
+      if(demoRemain<=0) endDemo();
+    },1000);
+  }
+  function endDemo(){
+    if(demoInterval){ clearInterval(demoInterval); demoInterval=null; }
+    demoTicking=false; demoUsed=true; hideBanner();
+    var cur=document.querySelector('.panel.active');
+    if(cur && GATED[cur.id] && !demoAuthed) showGate();
+  }
+  function grant(){
+    demoAuthed=true;
+    if(demoInterval){ clearInterval(demoInterval); demoInterval=null; }
+    demoTicking=false; hideBanner(); hideGate();
+  }
+
+  window.demoGateOnShow=function(id){
+    if(!GATED[id]){ hideBanner(); hideGate(); return; }
+    if(demoAuthed){ hideBanner(); hideGate(); return; }
+    if(demoUsed){ hideBanner(); showGate(); return; }
+    startCountdown(); showBanner();
+  };
+  window.demoGateHome=function(){ hideGate(); if(window.showPage) showPage('home'); };
+
+  function inject(){
+    var firstPanel=document.querySelector('.panel');
+    if(firstPanel && !el('demoBanner')){
+      var b=document.createElement('div');
+      b.id='demoBanner'; b.className='demo-banner';
+      b.innerHTML='&#128064; You\'re in demo mode &mdash; <a href="pages/login.html">sign in free</a> for unlimited Lab &amp; History. <span class="db-count"><span id="demoCount">60s</span> left</span>';
+      firstPanel.parentNode.insertBefore(b, firstPanel);
+    }
+    if(!el('demoGate')){
+      var g=document.createElement('div');
+      g.id='demoGate'; g.className='demo-gate';
+      g.addEventListener('click',function(ev){ if(ev.target===g) window.demoGateHome(); });
+      g.innerHTML='<div class="demo-gate-box"><div class="dg-mark">'+MARK+'</div>'+
+        '<h2>Keep going &mdash; it\'s free &#128640;</h2>'+
+        '<p>The Lab and History are a members feature. Create your free account to keep practising, save your progress, and pick up right where you left off.</p>'+
+        '<div class="dg-actions"><a class="btn btn-primary" href="pages/login.html">Sign in / Create free account</a>'+
+        '<button class="btn btn-secondary" type="button" onclick="demoGateHome()">Back to home</button></div>'+
+        '<small>Free forever &mdash; it takes about 20 seconds.</small></div>';
+      document.body.appendChild(g);
+    }
+  }
+
+  function boot(){
+    inject();
+    if(window.SOS && typeof SOS.onSession==='function'){
+      SOS.onSession(function(user){
+        if(user && !user.isAnonymous){ grant(); }
+        else {
+          demoAuthed=false;
+          var cur=document.querySelector('.panel.active');
+          if(cur && GATED[cur.id]) window.demoGateOnShow(cur.id);
+        }
+      });
+    }
+    var cur=document.querySelector('.panel.active');
+    if(cur) window.demoGateOnShow(cur.id);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+  else boot();
+})();
+</script>
+
 </body>
 </html>

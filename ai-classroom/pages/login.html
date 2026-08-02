@@ -168,6 +168,7 @@ firebase.initializeApp({
 
 var auth = firebase.auth();
 var db = firebase.firestore();
+try { db.enablePersistence({ synchronizeTabs: true }).catch(function(){}); } catch(e){}
 
 // Populate the Country dropdown and its dependent State control.
 if (window.GEO) {
@@ -175,19 +176,32 @@ if (window.GEO) {
   GEO.renderState('suStateWrap', 'suState', 'India');
 }
 
+// True while an explicit sign-in/up/guest handler is routing, so the
+// auth-state listener below doesn't race it to the wrong page.
+var SIGNING_IN = false;
+
+// Verify the role from the freshly-read profile, cache it, and go straight
+// to the correct panel — admins never touch the student dashboard.
+function routeByRole(snap) {
+  var data = snap && snap.exists ? snap.data() : {};
+  var role = data.role || 'student';
+  try {
+    localStorage.setItem('sos_role', role);
+    if (data.name)       localStorage.setItem('sos_name', data.name);
+    if (data.curriculum) localStorage.setItem('sos_curriculum', data.curriculum);
+    if (data.ageGroup)   localStorage.setItem('sos_age', data.ageGroup);
+    if (data.photo)      localStorage.setItem('sos_photo', data.photo);
+  } catch (e) {}
+  window.location.replace(role === 'admin' ? 'admin.html' : 'dashboard.html');
+}
+
 auth.onAuthStateChanged(function(user) {
-  if (user) {
-    // Check role before redirecting
-    db.collection('users').doc(user.uid).get().then(function(snap) {
-      if (snap.exists && snap.data().role === 'admin') {
-        // Show role selector for admins
-        } else {
-        window.location.href = 'dashboard.html';
-      }
-    }).catch(function() {
-      window.location.href = 'dashboard.html';
-    });
-  }
+  // Ignore guests and any in-progress handler (they route themselves).
+  if (!user || user.isAnonymous || SIGNING_IN) return;
+  // Already-signed-in visitor on the login page → verify role once, then route.
+  db.collection('users').doc(user.uid).get()
+    .then(routeByRole)
+    .catch(function(){ window.location.replace('dashboard.html'); });
 });
 
 function toggleType() {
@@ -242,6 +256,7 @@ function createProfile(uid, name, email) {
     if (curriculum) localStorage.setItem('sos_curriculum', curriculum);
     if (grade)      localStorage.setItem('sos_grade', grade);
     localStorage.setItem('sos_age', gradeToAge(grade));
+    localStorage.setItem('sos_role', 'student');
   } catch(e){}
 
   // Write directly with merge — NO get() gate, and errors propagate to the caller
@@ -256,6 +271,7 @@ function handleSignUp(e) {
   var password = document.getElementById('suPassword').value;
   var errEl = document.getElementById('signUpError');
   errEl.textContent = '';
+  SIGNING_IN = true;
 
   auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
     return createProfile(cred.user.uid, name, email);
@@ -270,22 +286,20 @@ function handleSignUp(e) {
 
 function handleSignIn(e) {
   e.preventDefault();
+  SIGNING_IN = true;                       // claim routing so the listener stays out
   var email = document.getElementById('siEmail').value.trim();
   var password = document.getElementById('siPassword').value;
   auth.signInWithEmailAndPassword(email, password).then(function(cred) {
+    // Verify the role ONCE, then go straight to the right panel — no student flash.
     return db.collection('users').doc(cred.user.uid).get();
-  }).then(function(snap) {
-    if (snap.exists && snap.data().role === 'admin') {
-      window.location.href = 'admin.html';
-    } else {
-      window.location.href = 'dashboard.html';
-    }
-  }).catch(function(err) {
+  }).then(routeByRole).catch(function(err) {
+    SIGNING_IN = false;
     document.getElementById('signInError').textContent = friendlyError(err.code);
   });
 }
 
 function handleGoogle() {
+  SIGNING_IN = true;
   var provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).then(function(cred) {
     return createProfile(cred.user.uid, cred.user.displayName, cred.user.email);

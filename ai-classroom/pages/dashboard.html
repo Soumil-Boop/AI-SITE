@@ -21,8 +21,13 @@
 
 <div id="authGate" class="auth-gate">
   <div class="auth-gate-inner">
-    <div class="auth-spinner"></div>
-    <p>Loading your dashboard...</p>
+    <div class="dash-loader">
+      <div class="ring"></div>
+      <div class="ring r2"></div>
+      <div class="core"></div>
+      <div class="sat"></div>
+    </div>
+    <p>Setting up your space…</p>
   </div>
 </div>
 
@@ -30,10 +35,16 @@
 
   <div class="dash-hero">
     <div class="dash-hero-inner">
-      <div class="dash-avatar" id="dashAvatar">S</div>
+      <div class="dash-avatar-wrap">
+        <div class="dash-avatar" id="dashAvatar">S</div>
+        <button type="button" class="dash-avatar-edit" title="Change photo" aria-label="Change profile picture" onclick="document.getElementById('avatarInput').click()">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </button>
+        <button type="button" class="dash-avatar-remove" title="Remove photo" aria-label="Remove profile picture" onclick="removeAvatar()">&times;</button>
+        <input type="file" id="avatarInput" accept="image/*" hidden onchange="handleAvatarUpload(event)"/>
+      </div>
       <div>
         <h1 id="dashName">Welcome back!</h1>
-        <p id="dashEmail" style="color:rgba(255,255,255,.6);font-size:.9rem;"></p>
         <span class="dash-role-badge" id="dashRole">Student</span>
       </div>
     </div>
@@ -42,89 +53,70 @@
   <div class="section-inner">
 
     <div class="dash-stats">
-      <div class="dash-stat-card"><span class="dash-stat-num" id="statTotal">0</span><span class="dash-stat-label">Questions Answered</span></div>
       <div class="dash-stat-card"><span class="dash-stat-num" id="statAccuracy">0%</span><span class="dash-stat-label">Overall Accuracy</span></div>
       <div class="dash-stat-card"><span class="dash-stat-num" id="statStreak">0</span><span class="dash-stat-label">Best Streak</span></div>
-      <div class="dash-stat-card"><span class="dash-stat-num" id="statBadges">0</span><span class="dash-stat-label">Badges Earned</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statDays">0</span><span class="dash-stat-label">Active Days</span></div>
     </div>
 
-    <div class="dash-charts">
-      <div class="dash-chart-card"><h2 class="dash-section-title">Score Over Time</h2><canvas id="chartScoreTime" height="200"></canvas></div>
-      <div class="dash-chart-card"><h2 class="dash-section-title">Accuracy by Subject</h2><canvas id="chartSubjectAccuracy" height="200"></canvas></div>
+    <!-- Empty state (shown until the student has practised) -->
+    <div class="dash-empty" id="dashEmpty" style="display:none;">
+      <div class="dash-empty-emoji">📊</div>
+      <strong>No practice yet</strong>
+      <p>Head to the Lab and answer a few questions — your graphs, per-subject progress, streaks and session history will appear here automatically.</p>
+      <a class="btn btn-primary" href="../index.html#lab">Go to the Lab →</a>
     </div>
 
-    <h2 class="dash-section-title">Your Badges</h2>
-    <div class="dash-badges" id="dashBadges">
-      <p style="color:var(--muted);">Complete quizzes and lab sessions to earn badges!</p>
-    </div>
+    <div id="dashProgress" style="display:none;">
 
-    <h2 class="dash-section-title">Your Preferences</h2>
-    <div class="dash-prefs card">
-      <div class="dash-pref-row">
-        <label class="dash-pref-label">Display Name</label>
-        <input type="text" id="prefName" class="dash-pref-input" placeholder="Your name"/>
-      </div>
-      <div class="dash-pref-row">
-        <label class="dash-pref-label">Default Curriculum</label>
-        <select id="prefCurriculum" class="dash-pref-select">
-          <option value="cbse">CBSE (India)</option>
-          <option value="icse">ICSE (India)</option>
-          <option value="uk">UK National Curriculum</option>
-          <option value="us">US Common Core</option>
-          <option value="ib">IB</option>
-        </select>
-      </div>
-      <div class="dash-pref-row">
-        <label class="dash-pref-label">Default Age Group</label>
-        <select id="prefAgeGroup" class="dash-pref-select">
-          <option value="5-7">Ages 5-7</option>
-          <option value="8-10">Ages 8-10</option>
-          <option value="11-13">Ages 11-13</option>
-          <option value="14-16">Ages 14-16</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" onclick="savePreferences()">Save Preferences</button>
-      <span class="dash-save-msg" id="prefSaveMsg"></span>
-    </div>
-
-    <h2 class="dash-section-title">Recent Activity</h2>
-    <div class="dash-activity" id="dashActivity">
-      <p style="color:var(--muted);">No activity yet. Start the Lab or take the Quiz!</p>
-    </div>
-
-    <h2 class="dash-section-title" style="color:var(--accent-dark);">Account</h2>
-    <div class="dash-danger card">
-      <div class="dash-danger-row">
-        <div>
-          <strong>Sign Out</strong>
-          <p style="color:var(--muted);font-size:.88rem;margin-top:.25rem;">Sign out of your account on this device.</p>
+      <!-- Progress Report -->
+      <div class="dash-report">
+        <div class="dash-report-head">
+          <h3>Progress Report</h3>
+          <div class="dash-range" id="dashRange">
+            <button type="button" class="dash-range-btn" id="rangeBtn" onclick="toggleRange(event)">Last 7 Days <span aria-hidden="true">▾</span></button>
+            <div class="dash-range-menu" id="rangeMenu">
+              <a onclick="setRange(7,'Last 7 Days')">Last 7 Days</a>
+              <a onclick="setRange(30,'Last Month')">Last Month</a>
+              <a onclick="setRange(0,'Lifetime')">Lifetime</a>
+            </div>
+          </div>
         </div>
-        <button class="btn btn-secondary" onclick="handleSignOut()">Sign Out</button>
-      </div>
-      <div class="dash-danger-row" style="margin-top:1rem;">
-        <div>
-          <strong>Delete Account</strong>
-          <p style="color:var(--muted);font-size:.88rem;margin-top:.25rem;">Permanently deletes all your progress and data.</p>
+        <div class="dash-report-chart" id="reportChart"></div>
+        <div class="dash-report-cards">
+          <div class="dash-mini"><span class="dash-mini-label">Total Questions</span><span class="dash-mini-val" id="miTotal">0</span></div>
+          <div class="dash-mini"><span class="dash-mini-label">Correct Answers</span><span class="dash-mini-val" id="miCorrect">0</span></div>
+          <div class="dash-mini has-donut"><div class="dash-donut" id="miAccDonut"></div><div class="dash-mini-txt"><span class="dash-mini-label">Accuracy</span><span class="dash-mini-val" id="miAcc">0%</span></div></div>
+          <div class="dash-mini has-donut"><div class="dash-donut" id="miDaysDonut"></div><div class="dash-mini-txt"><span class="dash-mini-label">Active Days</span><span class="dash-mini-val" id="miDays">0</span></div></div>
         </div>
-        <button class="btn btn-danger" onclick="showDeleteModal()">Delete Account</button>
+      </div>
+
+      <!-- Progress by subject (detail rows with donuts) -->
+      <div class="dash-panel">
+        <div class="dash-panel-head"><h3>Progress by Subject</h3><span class="dash-panel-sub" id="subjLbl"></span></div>
+        <div class="dash-subj-list" id="dashSubjects"></div>
+      </div>
+
+      <!-- Activity heatmap -->
+      <div class="dash-panel">
+        <div class="dash-panel-head"><h3>Practice Activity</h3><span class="dash-panel-sub" id="heatLbl"></span></div>
+        <div class="dash-heatmap" id="dashHeatmap"></div>
+        <div class="dash-heat-legend"><span>Less</span><i class="hl0"></i><i class="hl1"></i><i class="hl2"></i><i class="hl3"></i><i class="hl4"></i><span>More</span></div>
+      </div>
+
+      <!-- Recent sessions -->
+      <div class="dash-panel">
+        <div class="dash-panel-head"><h3>Recent Sessions</h3></div>
+        <div class="dash-table-wrap">
+          <table class="dash-table">
+            <thead><tr><th>Date</th><th>Subject</th><th>Type</th><th>Questions</th><th>Accuracy</th></tr></thead>
+            <tbody id="dashSessions"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
   </div>
 </main>
-
-<div class="modal-overlay" id="deleteModal" style="display:none;">
-  <div class="modal-box">
-    <h2 class="modal-title">Delete your account?</h2>
-    <p class="modal-desc">Type your email address to confirm. This cannot be undone.</p>
-    <input type="email" id="deleteConfirmEmail" class="dash-pref-input" placeholder="your@email.com" style="margin:1rem 0;width:100%;"/>
-    <p class="modal-error" id="deleteError"></p>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-      <button class="btn btn-danger" onclick="confirmDeleteAccount()">Yes, delete everything</button>
-    </div>
-  </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -157,16 +149,42 @@ var BADGES = {
   perfect_quiz:  { name: 'Perfect Score', desc: 'Got 5/5 on the AI quiz',             icon: '⭐' }
 };
 
+var DASH_T0 = (window.performance && performance.now) ? performance.now() : 0;
+// Reveal the dashboard with a brief branded loader, then a staggered cascade.
+function revealDashboard() {
+  var now = (window.performance && performance.now) ? performance.now() : 0;
+  var wait = Math.max(0, 500 - (now - DASH_T0));   // let the loader breathe a moment
+  setTimeout(function() {
+    var gate = document.getElementById('authGate');
+    var main = document.getElementById('dashMain');
+    main.style.display = 'block';
+    requestAnimationFrame(function() { main.classList.add('dash-in'); });
+    gate.classList.add('hide');
+    setTimeout(function() { gate.style.display = 'none'; }, 650);
+  }, wait);
+}
+
 auth.onAuthStateChanged(function(user) {
   if (!user) {
     window.location.href = '../index.html';
     return;
   }
+  // Admins belong on the admin panel — fast-path from cache so there's no student-dashboard flash.
+  try { if (localStorage.getItem('sos_role') === 'admin') { window.location.replace('admin.html'); return; } } catch (e) {}
   currentUid   = user.uid;
   currentEmail = user.email || '';
-  document.getElementById('authGate').style.display = 'none';
-  document.getElementById('dashMain').style.display  = 'block';
+  // Instant paint from cache so the name + photo are ready before the reveal.
+  try {
+    var cn = localStorage.getItem('sos_name');
+    if (cn) {
+      document.getElementById('dashName').textContent   = cn;
+      document.getElementById('dashAvatar').textContent = cn[0].toUpperCase();
+    }
+    var cp = localStorage.getItem('sos_photo');
+    if (cp) setAvatarPhoto(cp);
+  } catch (e) {}
   loadDashboard(user.uid);
+  revealDashboard();
 });
 
 function loadDashboard(uid) {
@@ -197,33 +215,249 @@ function loadDashboard(uid) {
   }).then(function(snap) {
     var profile = snap.exists ? snap.data() : {};
 
+    // Remember the role and bounce admins to the admin panel.
+    try { localStorage.setItem('sos_role', profile.role || 'student'); } catch (e) {}
+    if (profile.role === 'admin') { window.location.replace('admin.html'); return; }
+
     document.getElementById('dashName').textContent  = profile.name  || 'Student';
     var roleEl = document.getElementById('dashRole');
     if (roleEl) roleEl.textContent = (profile.role || 'student').charAt(0).toUpperCase() + (profile.role || 'student').slice(1);
-    document.getElementById('dashEmail').textContent = profile.email || 'Guest';
     document.getElementById('dashAvatar').textContent = (profile.name || 'S')[0].toUpperCase();
-    document.getElementById('prefName').value         = profile.name  || '';
-    document.getElementById('prefCurriculum').value   = profile.curriculum || 'cbse';
-    document.getElementById('prefAgeGroup').value     = profile.ageGroup   || '11-13';
-    document.getElementById('statTotal').textContent  = profile.totalQuestions || 0;
-    document.getElementById('statStreak').textContent = profile.bestStreak    || 0;
-    document.getElementById('statBadges').textContent = (profile.badgesEarned || []).length;
-
-    renderBadges(profile.badgesEarned || []);
+    var photo = profile.photo || (function(){ try { return localStorage.getItem('sos_photo'); } catch(e){ return null; } })();
+    setAvatarPhoto(photo || '');
+    document.getElementById('statStreak').textContent = profile.bestStreak || 0;
   }).catch(function(e) {
     console.error('Failed to load profile:', e);
   });
 
-  loadActivity(uid);
+  loadProgress(uid);
 }
 
-function loadActivity(uid) {
-  db.collection('progress').doc(uid).collection('lab')
-    .orderBy('timestamp', 'desc').limit(5).get()
-    .then(function(snap) {
-      var sessions = snap.docs.map(function(d) { return d.data(); });
-      renderActivity(sessions);
-    }).catch(function() {});
+/* ── Progress: read the per-day/per-subject records and render everything ── */
+function loadProgress(uid) {
+  db.collection('progress').doc(uid).collection('daily').get().then(function(snap) {
+    var rows = [];
+    snap.forEach(function(doc) { var d = doc.data() || {}; if (d.date) rows.push(d); });
+    renderProgress(rows);
+  }).catch(function(e) { console.error('progress load failed', e); renderProgress([]); });
+}
+
+function escH(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+var DASH_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtDate(d){ if(!d) return '—'; var p=String(d).split('-'); if(p.length!==3) return d; return DASH_MON[parseInt(p[1],10)-1] + ' ' + parseInt(p[2],10); }
+
+var PROGRESS = { byDate:{}, range:7 };
+
+function renderProgress(rows) {
+  var empty = document.getElementById('dashEmpty');
+  var wrap  = document.getElementById('dashProgress');
+  var totalQ = rows.reduce(function(s,r){ return s + (r.questions||0); }, 0);
+  if (!rows.length || !totalQ) {
+    empty.style.display = 'block'; wrap.style.display = 'none';
+    document.getElementById('statAccuracy').textContent = '0%';
+    document.getElementById('statDays').textContent = 0;
+    return;
+  }
+  empty.style.display = 'none'; wrap.style.display = 'block';
+  var totalC = rows.reduce(function(s,r){ return s + (r.correct||0); }, 0);
+  var acc = Math.round(totalC/totalQ*100);
+
+  // Group by date
+  var byDate = {};
+  rows.forEach(function(r){ var e = byDate[r.date] || (byDate[r.date] = {q:0,c:0}); e.q += (r.questions||0); e.c += (r.correct||0); });
+  var activeDays = Object.keys(byDate).length;
+  PROGRESS.byDate = byDate;
+
+  // Headline stats + mini cards
+  document.getElementById('statAccuracy').textContent = acc + '%';
+  document.getElementById('statDays').textContent     = activeDays;
+  document.getElementById('miTotal').textContent   = totalQ;
+  document.getElementById('miCorrect').textContent = totalC;
+  document.getElementById('miAcc').textContent     = acc + '%';
+  document.getElementById('miDays').textContent    = activeDays;
+  document.getElementById('miAccDonut').innerHTML  = donut(acc, '#5F7355');
+  var consist = Math.min(100, Math.round(activeDays/30*100));
+  document.getElementById('miDaysDonut').innerHTML = donut(consist, '#C0562F');
+
+  // Progress report chart (respects the current range)
+  renderReportChart(PROGRESS.range);
+
+  // Per subject
+  var bySubj = {};
+  rows.forEach(function(r){
+    var key = (r.mode||'curriculum') + '|' + (r.label || r.subject);
+    var e = bySubj[key] || (bySubj[key] = { label:(r.label||r.subject), mode:r.mode||'curriculum', q:0, c:0, sessions:0, last:'' });
+    e.q += (r.questions||0); e.c += (r.correct||0); e.sessions += 1;
+    if (r.date > e.last) e.last = r.date;
+  });
+  var subjects = Object.keys(bySubj).map(function(k){return bySubj[k];}).sort(function(a,b){return b.q-a.q;});
+  document.getElementById('subjLbl').textContent = subjects.length + ' subject' + (subjects.length===1?'':'s') + ' practised';
+  renderSubjects(subjects);
+
+  renderHeatmap(byDate);
+
+  var sessions = rows.slice().sort(function(a,b){ return (b.date+(b.mode||'')).localeCompare(a.date+(a.mode||'')); }).slice(0,12);
+  renderSessions(sessions);
+}
+
+/* Donut ring with a % in the centre */
+function donut(pct, color) {
+  var size=58, stroke=8, r=(size-stroke)/2, c=2*Math.PI*r, cx=size/2;
+  pct = Math.max(0, Math.min(100, pct));
+  var g = pct/100*c;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">'
+    + '<circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="#EFE1CD" stroke-width="'+stroke+'"/>'
+    + '<circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="'+stroke+'" stroke-linecap="round" stroke-dasharray="'+g.toFixed(1)+' '+(c-g).toFixed(1)+'" transform="rotate(-90 '+cx+' '+cx+')"/>'
+    + '<text x="'+cx+'" y="'+(cx+4)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="14" fill="#2B2016">'+Math.round(pct)+'%</text></svg>';
+}
+
+/* Date-range dropdown */
+function toggleRange(e){ e.stopPropagation(); document.getElementById('rangeMenu').classList.toggle('open'); }
+document.addEventListener('click', function(){ var m=document.getElementById('rangeMenu'); if(m) m.classList.remove('open'); });
+function setRange(days, label){
+  PROGRESS.range = days;
+  document.getElementById('rangeBtn').innerHTML = label + ' <span aria-hidden="true">▾</span>';
+  document.getElementById('rangeMenu').classList.remove('open');
+  renderReportChart(days);
+}
+
+function renderReportChart(days){
+  var byDate = PROGRESS.byDate;
+  var all = Object.keys(byDate).sort();
+  var keep = all;
+  if (days > 0) {
+    var cut = new Date(); cut.setHours(0,0,0,0); cut.setDate(cut.getDate() - (days-1));
+    var cy=cut.getFullYear(), cm=('0'+(cut.getMonth()+1)).slice(-2), cd=('0'+cut.getDate()).slice(-2);
+    var cutStr = cy+'-'+cm+'-'+cd;
+    keep = all.filter(function(d){ return d >= cutStr; });
+  }
+  var series = keep.map(function(d){
+    var e = byDate[d];
+    return { date:d, q:e.q, acc: e.q ? Math.round(e.c/e.q*100) : 0 };
+  });
+  drawAreaChart('reportChart', series);
+}
+
+/* Smooth area chart with hover tooltip */
+var CHART_PTS = {};
+function drawAreaChart(elId, series) {
+  var el = document.getElementById(elId); if (!el) return;
+  if (!series.length) { el.innerHTML = '<div class="dash-chart-empty">No practice in this range yet.</div>'; return; }
+  var W=900, H=300, padL=44, padR=20, padT=22, padB=42, n=series.length;
+  var maxY = Math.max(1, Math.ceil(Math.max.apply(null, series.map(function(p){return p.q;}))*1.2));
+  function xAt(i){ return padL + (n<=1 ? (W-padL-padR)/2 : (i/(n-1))*(W-padL-padR)); }
+  function yAt(v){ return padT + (1 - v/maxY)*(H-padT-padB); }
+  var pts = series.map(function(p,i){ return { x:xAt(i), y:yAt(p.q) }; });
+  // smooth path (Catmull-Rom -> bezier)
+  function smooth(P){
+    if (P.length < 2) return 'M'+P[0].x.toFixed(1)+' '+P[0].y.toFixed(1);
+    var d='M'+P[0].x.toFixed(1)+' '+P[0].y.toFixed(1);
+    for (var i=0;i<P.length-1;i++){
+      var p0=P[i-1]||P[i], p1=P[i], p2=P[i+1], p3=P[i+2]||p2;
+      var c1x=p1.x+(p2.x-p0.x)/6, c1y=p1.y+(p2.y-p0.y)/6;
+      var c2x=p2.x-(p3.x-p1.x)/6, c2y=p2.y-(p3.y-p1.y)/6;
+      d+=' C'+c1x.toFixed(1)+' '+c1y.toFixed(1)+' '+c2x.toFixed(1)+' '+c2y.toFixed(1)+' '+p2.x.toFixed(1)+' '+p2.y.toFixed(1);
+    }
+    return d;
+  }
+  var line = smooth(pts);
+  var area = line + ' L'+pts[n-1].x.toFixed(1)+' '+(H-padB)+' L'+pts[0].x.toFixed(1)+' '+(H-padB)+' Z';
+  var grid='', ylab='';
+  for (var g=0; g<=4; g++){ var gy=padT+(g/4)*(H-padT-padB); var gv=Math.round(maxY*(1-g/4));
+    grid += '<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="#EEE3D2" stroke-width="1"/>';
+    ylab += '<text x="'+(padL-8)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="12" fill="#9C8B79">'+gv+'</text>';
+  }
+  function md(d){ var p=String(d).split('-'); return p.length===3 ? (DASH_MON[parseInt(p[1],10)-1]+' '+parseInt(p[2],10)) : d; }
+  var idxs = n<=8 ? series.map(function(_,i){return i;}) : [0, Math.round((n-1)/3), Math.round(2*(n-1)/3), n-1];
+  var xl=''; idxs.forEach(function(i){ xl += '<text x="'+xAt(i).toFixed(1)+'" y="'+(H-14)+'" text-anchor="middle" font-size="12" fill="#9C8B79">'+md(series[i].date)+'</text>'; });
+  var dots = pts.map(function(p){ return '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="3.5" fill="#fff" stroke="#C0562F" stroke-width="2.5"/>'; }).join('');
+
+  el.innerHTML =
+    '<svg viewBox="0 0 '+W+' '+H+'" class="dash-svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="progress report chart">'
+    + '<defs><linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C0562F" stop-opacity=".28"/><stop offset="1" stop-color="#C0562F" stop-opacity="0"/></linearGradient></defs>'
+    + grid + ylab
+    + '<path d="'+area+'" fill="url(#areaFill)"/>'
+    + '<path d="'+line+'" fill="none" stroke="#C0562F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'
+    + dots + xl + '</svg>'
+    + '<div class="chart-guide"></div><div class="chart-marker"></div><div class="chart-tip"></div>';
+
+  // store % positions for hover
+  CHART_PTS[elId] = pts.map(function(p,i){ return { left:p.x/W*100, top:p.y/H*100, date:series[i].date, q:series[i].q, acc:series[i].acc }; });
+  var guide=el.querySelector('.chart-guide'), mk=el.querySelector('.chart-marker'), tip=el.querySelector('.chart-tip');
+  function show(i){
+    var d=CHART_PTS[elId][i]; if(!d) return;
+    guide.style.left=d.left+'%'; guide.style.display='block';
+    mk.style.left=d.left+'%'; mk.style.top=d.top+'%'; mk.style.display='block';
+    tip.innerHTML='<strong>'+md(d.date)+'</strong>'+d.q+' questions · '+d.acc+'% correct';
+    tip.style.left=d.left+'%'; tip.style.top=d.top+'%'; tip.style.display='block';
+  }
+  function hide(){ guide.style.display='none'; mk.style.display='none'; tip.style.display='none'; }
+  el.onmousemove = function(ev){
+    var r=el.getBoundingClientRect(); var fx=(ev.clientX-r.left)/r.width;
+    var best=0, bd=9; CHART_PTS[elId].forEach(function(p,i){ var dd=Math.abs(p.left/100-fx); if(dd<bd){bd=dd;best=i;} });
+    show(best);
+  };
+  el.onmouseleave = hide;
+}
+
+function renderSubjects(subjects) {
+  var el = document.getElementById('dashSubjects');
+  var icons = { 'Math':'➕','Science':'🔬','English':'📖','History':'📜','Geography':'🌍' };
+  el.innerHTML = subjects.map(function(s){
+    var acc = s.q ? Math.round(s.c/s.q*100) : 0;
+    var wrong = s.q - s.c;
+    var ic = icons[s.label] || (s.mode==='exam' ? '🏛️' : '📘');
+    var cls = acc>=75 ? 'good' : (acc>=50 ? 'ok' : 'low');
+    return '<div class="dash-subj-row">'
+      + '<div class="dash-subj-donut">'+donut(acc, cls==='good'?'#5F7355':(cls==='ok'?'#C0562F':'#B24E33'))+'</div>'
+      + '<div class="dash-subj-head"><span class="dash-subj-ic">'+ic+'</span>'
+      + '<div class="dash-subj-name"><strong>'+escH(s.label)+'</strong><span>'+(s.mode==='exam'?'Exam prep':'Curriculum')+' · Last '+fmtDate(s.last)+'</span></div></div>'
+      + '<div class="dash-subj-nums">'
+      +   '<div><b>'+s.q+'</b><span>questions</span></div>'
+      +   '<div><b class="good">'+s.c+'</b><span>correct</span></div>'
+      +   '<div><b class="low">'+wrong+'</b><span>to review</span></div>'
+      +   '<div><b>'+s.sessions+'</b><span>session'+(s.sessions===1?'':'s')+'</span></div>'
+      + '</div>'
+      + '<div class="dash-subj-track"><span class="'+cls+'" style="width:'+acc+'%"></span></div>'
+      + '</div>';
+  }).join('');
+}
+
+function renderHeatmap(byDate) {
+  var el = document.getElementById('dashHeatmap');
+  var weeks = 18;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var vals = Object.keys(byDate).map(function(d){ return byDate[d].q; });
+  var maxv = Math.max.apply(null, vals.concat([1]));
+  function lvl(v){ if(!v) return 0; var r=v/maxv; if(r<=.25) return 1; if(r<=.5) return 2; if(r<=.75) return 3; return 4; }
+  var start = new Date(today); start.setDate(start.getDate() - (weeks*7 - 1)); start.setDate(start.getDate() - start.getDay());
+  var cursor = new Date(start), cols = [], activeDays = 0;
+  while (cursor <= today) {
+    var col = '';
+    for (var dr = 0; dr < 7; dr++) {
+      if (cursor > today) { col += '<i class="hcell hpad"></i>'; }
+      else {
+        var ds = cursor.getFullYear()+'-'+('0'+(cursor.getMonth()+1)).slice(-2)+'-'+('0'+cursor.getDate()).slice(-2);
+        var v = byDate[ds] ? byDate[ds].q : 0; if (v) activeDays++;
+        col += '<i class="hcell hl'+lvl(v)+'" title="'+ds+' — '+v+' questions"></i>';
+      }
+      cursor.setDate(cursor.getDate()+1);
+    }
+    cols.push('<div class="hcol">'+col+'</div>');
+  }
+  el.innerHTML = cols.join('');
+  document.getElementById('heatLbl').textContent = activeDays + ' active day' + (activeDays===1?'':'s');
+}
+
+function renderSessions(list) {
+  var tb = document.getElementById('dashSessions');
+  tb.innerHTML = list.map(function(s){
+    var acc = s.questions ? Math.round(s.correct/s.questions*100) : 0;
+    var ac = acc>=75 ? 'good' : (acc>=50 ? 'ok' : 'low');
+    return '<tr><td>'+fmtDate(s.date)+'</td><td>'+escH(s.label||s.subject)+'</td>'
+      + '<td><span class="dash-tag '+(s.mode==='exam'?'tag-exam':'tag-curr')+'">'+(s.mode==='exam'?'Exam':'Curriculum')+'</span></td>'
+      + '<td>'+(s.questions||0)+'</td><td><span class="dash-acc '+ac+'">'+acc+'%</span></td></tr>';
+  }).join('');
 }
 
 function renderBadges(earned) {
@@ -236,24 +470,77 @@ function renderBadges(earned) {
   }).join('');
 }
 
-function renderActivity(sessions) {
-  var el = document.getElementById('dashActivity');
-  if (!sessions.length) return;
-  el.innerHTML = sessions.map(function(s) {
-    return '<div class="dash-activity-row"><span class="dash-activity-icon">🧪</span><div><strong>' + (s.subject || 'Lab') + '</strong><span style="color:var(--muted);font-size:.82rem;margin-left:.5rem;">' + (s.accuracy || 0) + '% accuracy</span></div></div>';
-  }).join('');
-}
-
 function savePreferences() {
   var name       = document.getElementById('prefName').value.trim();
   var curriculum = document.getElementById('prefCurriculum').value;
   var ageGroup   = document.getElementById('prefAgeGroup').value;
+  var msg = document.getElementById('prefSaveMsg');
+
+  // Optimistic: reflect the change instantly (cache + header) without waiting on the network.
+  try {
+    if (name) localStorage.setItem('sos_name', name);
+    localStorage.setItem('sos_curriculum', curriculum);
+    localStorage.setItem('sos_age', ageGroup);
+  } catch (e) {}
+  if (name) {
+    document.getElementById('dashName').textContent = name;
+    document.getElementById('dashAvatar').textContent = name[0].toUpperCase();
+  }
+  msg.textContent = 'Saved!';
+  setTimeout(function() { msg.textContent = ''; }, 2000);
+
+  // Persist in the background (local-first thanks to offline persistence).
   db.collection('users').doc(currentUid).update({ name: name, curriculum: curriculum, ageGroup: ageGroup })
-    .then(function() {
-      var msg = document.getElementById('prefSaveMsg');
-      msg.textContent = 'Saved!';
-      setTimeout(function() { msg.textContent = ''; }, 2000);
-    });
+    .catch(function() { msg.textContent = 'Saved — will sync when online'; setTimeout(function(){ msg.textContent=''; }, 2500); });
+}
+
+/* ── Profile picture ── */
+function setAvatarPhoto(url) {
+  var av = document.getElementById('dashAvatar');
+  var wrap = document.querySelector('.dash-avatar-wrap');
+  if (url) {
+    av.style.backgroundImage = 'url("' + url + '")';
+    av.classList.add('has-photo');
+    if (wrap) wrap.classList.add('has-photo');
+  } else {
+    av.style.backgroundImage = '';
+    av.classList.remove('has-photo');
+    if (wrap) wrap.classList.remove('has-photo');
+  }
+}
+
+function handleAvatarUpload(ev) {
+  var file = ev.target.files && ev.target.files[0];
+  ev.target.value = '';                       // allow re-picking the same file later
+  if (!file || !/^image\//.test(file.type)) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      // Resize + centre-crop to a small 256px square so it stays tiny to store.
+      var size = 256, c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      var ctx = c.getContext('2d');
+      var s = Math.min(img.width, img.height);
+      ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+      var dataUrl = c.toDataURL('image/jpeg', 0.82);
+      setAvatarPhoto(dataUrl);                 // instant preview
+      try { localStorage.setItem('sos_photo', dataUrl); } catch (e) {}
+      if (currentUid && db) {
+        db.collection('users').doc(currentUid).set({ photo: dataUrl }, { merge: true }).catch(function(){});
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeAvatar() {
+  setAvatarPhoto('');
+  try { localStorage.removeItem('sos_photo'); } catch (e) {}
+  if (currentUid && db) {
+    db.collection('users').doc(currentUid).set({ photo: '' }, { merge: true }).catch(function(){});
+  }
 }
 
 function handleSignOut() {

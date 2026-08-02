@@ -1,10 +1,10 @@
 /* ============================================================
    sections.css — Page Section Layout & Shared Section Styles
    ============================================================ */
-section { padding: 5rem 2rem; }
+section { padding: 6rem 2rem; }
 
 .section-inner {
-  max-width: 1100px;
+  max-width: 1120px;
   margin: 0 auto;
 }
 
@@ -50,8 +50,9 @@ footer {
   background: var(--brand-dark);
   color: #E6DBC9;
   text-align: center;
-  padding: 2.5rem 2rem;
+  padding: 3.25rem 2rem;
   font-size: .88rem;
+  border-top: 3px solid var(--accent);
 }
 footer p { color: #E6DBC9; }
 footer strong { color: #fff; }

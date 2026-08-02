@@ -13,18 +13,19 @@
   text-decoration: none;
   border: none;
   cursor: pointer;
-  transition: transform .2s, box-shadow .2s, background .2s;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
+.btn:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
 
 /* Variants */
-.btn--primary  { background: var(--accent);      color: #fff; }
+.btn--primary  { background: var(--accent);      color: #fff; box-shadow: var(--shadow-sm); }
 .btn--primary:hover  { background: var(--accent-dark); }
 
-.btn--secondary { background: var(--brand);       color: #fff; }
+.btn--secondary { background: var(--brand);       color: #fff; box-shadow: var(--shadow-sm); }
 .btn--secondary:hover { background: var(--brand-dark); }
 
 .btn--outline {
@@ -46,7 +47,7 @@
 .btn--full { width: 100%; justify-content: center; }
 
 /* ── Single-dash aliases (login/dashboard/admin/index markup use these) ── */
-.btn-primary   { background: var(--accent); color:#fff; }
+.btn-primary   { background: var(--accent); color:#fff; box-shadow: var(--shadow-sm); }
 .btn-primary:hover   { background: var(--accent-dark); }
-.btn-secondary { background: var(--brand); color:#fff; }
+.btn-secondary { background: var(--brand); color:#fff; box-shadow: var(--shadow-sm); }
 .btn-secondary:hover { background: var(--brand-dark); }
