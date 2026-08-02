@@ -32,6 +32,13 @@
   var auth = firebase.auth();
   var db   = (typeof firebase.firestore === 'function') ? firebase.firestore() : null;  // may be absent on light pages
 
+  // Offline persistence: serve reads from a local cache and commit writes
+  // locally first (they sync in the background). This removes the network
+  // round-trip that made the dashboard / account settings feel laggy.
+  if (db && db.enablePersistence) {
+    try { db.enablePersistence({ synchronizeTabs: true }).catch(function(){}); } catch (e) {}
+  }
+
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
@@ -52,11 +59,14 @@
     var el = document.getElementById('acctMenu');
     if (!el) return;
     if (!user) { el.innerHTML = '<a href="' + P + 'login.html" class="topbar-auth">Sign In</a>'; return; }
+    var isAdmin = (profile && profile.role === 'admin') || read('sos_role') === 'admin';
+    var dashHref  = P + (isAdmin ? 'admin.html' : 'dashboard.html');
+    var dashLabel = isAdmin ? 'Admin Panel' : 'My Dashboard';
     el.innerHTML =
       '<div class="acct-wrap">' +
         '<button class="acct-trigger" type="button">Hi, ' + esc(firstName(profile, user)) + ' ' + userIcon() + '</button>' +
         '<div class="acct-drop">' +
-          '<a href="' + P + 'dashboard.html">My Dashboard</a>' +
+          '<a href="' + dashHref + '">' + dashLabel + '</a>' +
           '<a href="' + P + 'account-settings.html">Account Settings</a>' +
           '<a href="#" class="acct-logout" onclick="SOS.signOut();return false;">Log Out</a>' +
         '</div>' +
@@ -69,20 +79,27 @@
     auth: auth, db: db, P: P, HOME: HOME, user: null, profile: null,
     onSession: function(cb){ callbacks.push(cb); },
     signOut: function(){
-      store('sos_name', null);
+      store('sos_name', null); store('sos_role', null);
       auth.signOut().then(function(){ window.location.replace(HOME); })
                     .catch(function(){ window.location.replace(HOME); });
     }
   };
 
+  // Optimistic paint: show the cached name the instant the page loads, before
+  // auth/Firestore resolve. A cached name only exists while signed in (sign-out
+  // clears it), so this reconciles cleanly once auth confirms.
+  if (read('sos_name')) render({ displayName: read('sos_name') }, { name: read('sos_name') });
+
   auth.onAuthStateChanged(function(user){
     SOS.user = user;
     if (!user) {
-      SOS.profile = null; store('sos_name', null);
+      SOS.profile = null; store('sos_name', null); store('sos_photo', null); store('sos_role', null);
       render(null, null);
       callbacks.forEach(function(cb){ try { cb(null, null); } catch(e){} });
       return;
     }
+    // Paint from cache immediately so the name doesn't wait on the network read.
+    render(user, { name: read('sos_name') });
     if (db) {
       db.collection('users').doc(user.uid).get().then(function(snap){
         var profile = (snap && snap.exists) ? snap.data() : null;
@@ -92,6 +109,8 @@
           if (profile.curriculum) store('sos_curriculum', profile.curriculum);
           if (profile.grade)      store('sos_grade', profile.grade);
           if (profile.ageGroup)   store('sos_age', profile.ageGroup);
+          store('sos_photo', profile.photo || null);
+          store('sos_role', profile.role || 'student');
         }
         render(user, profile);
         callbacks.forEach(function(cb){ try { cb(user, profile); } catch(e){} });

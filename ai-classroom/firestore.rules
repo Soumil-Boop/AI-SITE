@@ -1,0 +1,40 @@
+rules_version = '2';
+
+// ============================================================
+// Seek-O-Sphere — Firestore Security Rules
+// Paste this into: Firebase Console → Firestore Database → Rules → Publish
+// ============================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // True when the SIGNED-IN user's own profile has role == 'admin'.
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ── User profiles ─────────────────────────────────────────
+    // A user can read/edit their own profile. An admin can read ALL
+    // profiles (needed for the admin panel's user list), change roles,
+    // and delete accounts.
+    match /users/{uid} {
+      allow read:   if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ── Practice progress (per user → per day/subject) ────────
+    // Each user reads/writes only their own progress. Admins can read
+    // everyone's progress so the "View" panel can show their scores.
+    match /progress/{uid}/{document=**} {
+      allow read:  if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if isSignedIn() && request.auth.uid == uid;
+    }
+  }
+}

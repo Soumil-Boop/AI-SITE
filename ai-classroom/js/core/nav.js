@@ -13,7 +13,6 @@ const NAV_LINKS = [
   { href: 'types.html',               label: 'Types' },
   { href: 'study-tools.html',         label: 'Study Tools' },
   { href: 'ethics.html',              label: 'Ethics' },
-  { href: 'quiz.html',                label: 'Quiz' },
   { href: 'lab.html',                 label: '🧪 Visual Learning Lab' },
   { href: 'finder.html',              label: 'Find My AI Tool' },
   { href: 'more-study.html',          label: 'More Study Material' },
@@ -31,7 +30,6 @@ const HOME_NAV_LINKS = [
   { hash: 'types',     label: 'Types' },
   { hash: 'study',     label: 'Study Tools' },
   { hash: 'ethics',    label: 'Ethics' },
-  { hash: 'quiz',      label: 'Quiz' },
   { hash: 'lab',       label: '🧪 Lab' },
   { hash: 'finder',    label: 'Find My AI Tool' },
   { hash: 'resources', label: 'Resources' },
@@ -45,7 +43,7 @@ function sosMark(pfx) {
 
 /**
  * Mount the shared 3-row header into #nav-mount.
- * @param {string} activePage - current filename e.g. 'quiz.html'
+ * @param {string} activePage - current filename e.g. 'lab.html'
  */
 function mountNav(activePage, opts) {
   opts = opts || {};

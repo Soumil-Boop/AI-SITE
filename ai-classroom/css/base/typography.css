@@ -6,16 +6,17 @@
 h1, h2, h3, h4 {
   font-family: 'Nunito', sans-serif;
   font-weight: 900;
-  line-height: 1.2;
+  line-height: 1.15;
+  letter-spacing: -.015em;
   color: var(--text);
 }
-h1 { font-size: clamp(2rem,  5vw,  3.4rem); }
-h2 { font-size: clamp(1.7rem, 3.5vw, 2.5rem); }
-h3 { font-size: clamp(1.2rem, 2vw,  1.4rem); }
+h1 { font-size: clamp(2.1rem, 5vw,  3.4rem); }
+h2 { font-size: clamp(1.7rem, 3.5vw, 2.4rem); }
+h3 { font-size: clamp(1.15rem, 2vw, 1.35rem); letter-spacing: -.01em; }
 
 p {
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: 1.02rem;
+  line-height: 1.65;
   color: var(--text);
 }
 
@@ -32,12 +33,12 @@ p {
 
 /* Eyebrow label above headings */
 .eyebrow {
-  font-size: .78rem;
+  font-size: .75rem;
   font-weight: 700;
-  letter-spacing: .12em;
+  letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--brand);
-  margin-bottom: .5rem;
+  margin-bottom: .6rem;
   display: block;
 }
 .eyebrow--accent { color: var(--accent); }
