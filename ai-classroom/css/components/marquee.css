@@ -1,0 +1,42 @@
+/* ============================================================
+   marquee.css — Infinite scrolling brand strip
+   Shared by index.html and every page that mounts the nav.
+   The markup and the sizing logic live in js/components/marquee.js.
+   ============================================================ */
+.brand-marquee {
+  overflow: hidden;
+  background: linear-gradient(90deg, #5C2D1E 0%, #7A3A22 50%, #5C2D1E 100%);
+  border-bottom: 3px solid var(--accent);
+}
+.marquee-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  /* Duration is set per-page by marquee.js so the speed stays constant
+     however many copies are needed to fill the screen. */
+  animation: marqueeScroll var(--marquee-dur, 30s) linear infinite;
+  will-change: transform;
+}
+.marquee-group { display: inline-flex; align-items: center; }
+.marquee-group span {
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: .82rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  padding: .6rem 1.5rem;
+}
+.marquee-group i { color: var(--accent); font-style: normal; font-size: .7rem; }
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+@media (max-width: 900px) {
+  .marquee-group span { font-size: .72rem; letter-spacing: .16em; }
+}
