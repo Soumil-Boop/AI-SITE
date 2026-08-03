@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../css/base/typography.css"/>
   <link rel="stylesheet" href="../css/components/buttons.css"/>
   <link rel="stylesheet" href="../css/components/nav.css"/>
+  <link rel="stylesheet" href="../css/components/marquee.css"/>
   <link rel="stylesheet" href="../css/dashboard.css"/>
 </head>
 <body>
@@ -275,8 +276,9 @@ function renderUserDetail(u, rows){
 }
 </script>
 <script src="../js/core/utils.js"></script>
+<script src="../js/components/marquee.js"></script>
 <script src="../js/core/nav.js"></script>
-<script>mountNav('admin.html');</script>
+<script>mountNav('admin.html', { noBanner: true });</script>
 <script src="../js/session.js"></script>
 </body>
 </html>

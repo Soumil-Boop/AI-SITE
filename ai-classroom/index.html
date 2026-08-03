@@ -6,6 +6,7 @@
   <title>Seek-O-Sphere</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/components/marquee.css"/>
   <style>
     /* ── TYPOGRAPHY GLOBALS ── */
     /* Nunito = headings/display, Inter = body. Applied globally below. */
@@ -931,15 +932,9 @@
     .topbar a:hover { color:var(--accent); }
     .topbar .topbar-auth { color:var(--accent); }
     .topbar .topbar-auth:hover { color:#fff; }
-    /* Infinite scrolling brand marquee */
-    .brand-marquee { overflow:hidden; background:linear-gradient(90deg,#5C2D1E 0%,#7A3A22 50%,#5C2D1E 100%); border-bottom:3px solid var(--accent); }
-    .marquee-track { display:inline-flex; align-items:center; white-space:nowrap; animation:marqueeScroll 30s linear infinite; will-change:transform; }
-    .marquee-group { display:inline-flex; align-items:center; }
-    .marquee-group span { color:#fff; font-family:'Nunito',sans-serif; font-weight:800; font-size:.82rem; letter-spacing:.22em; text-transform:uppercase; padding:.6rem 1.5rem; }
-    .marquee-group i { color:var(--accent); font-style:normal; font-size:.7rem; }
-    @keyframes marqueeScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-    @media (prefers-reduced-motion:reduce){ .marquee-track{ animation:none; } }
-    @media (max-width:900px){ .topbar{ padding:.35rem 1rem; gap:1rem; } .marquee-group span{ font-size:.72rem; letter-spacing:.16em; } }
+    /* Brand marquee styles now live in css/components/marquee.css, shared with
+       every page that mounts the nav. */
+    @media (max-width:900px){ .topbar{ padding:.35rem 1rem; gap:1rem; } }
     /* account menu */
     nav { position: sticky; top: 0; z-index: 100; }
     .acct-wrap { position:relative; display:inline-flex; }
@@ -1579,7 +1574,10 @@
   [].forEach.call(eraWrap.children,function(bt){ bt.addEventListener("click",function(){ render(+bt.getAttribute("data-go")); }); });
 
   function render(y){
-    y=Math.max(MIN,Math.min(MAX,y)); year=y;
+    y=Math.max(MIN,Math.min(MAX,y));
+    // Guests may open a limited number of distinct years; the gate vetoes the rest.
+    if(window.demoHistoryGate && !window.demoHistoryGate(y)) return;
+    year=y;
     var d=HIST[y]||{h:"",s:""}, isLM=LM.indexOf(y)!==-1, n=y-MIN+1;
     elYear.textContent=y; elSlider.value=y; elHead.textContent=d.h||"";
     elPrev.disabled=(y<=MIN); elNext.disabled=(y>=MAX);
@@ -3472,62 +3470,473 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 <script>
 (function(){
-  var GATED={lab:1,history:1};
-  var DEMO_MS=60000;
-  var demoAuthed=false, demoUsed=false, demoTicking=false, demoRemain=0, demoInterval=null;
-  try{ demoAuthed = !!localStorage.getItem('sos_name'); }catch(e){}
+  /* ── Demo gating for signed-out visitors ─────────────────────────────
+     Guests get a fixed set of Lab questions and a few History years.
+     Both allowances are stored in localStorage, so a refresh does not
+     hand out a fresh batch. Signing in clears the limits entirely.     */
+  var GATED   = { lab:1, history:1 };
+  var LAB_MAX = 5;      // Lab questions a guest may see
+  var HIST_MAX= 3;      // distinct History years a guest may open
+  var K_LAB   = 'sos_demo_lab_used';
+  var K_SUBJ  = 'sos_demo_lab_subject';   // guests commit to one subject for the demo
+  var EXAM_MAX= 5;                        // Exam Prep gets its own separate allowance
+  var K_EX    = 'sos_demo_exam_used';
+  var K_EXAM  = 'sos_demo_exam';          // ...and its own one-time exam choice
+  var K_HIST  = 'sos_demo_hist_years';
+
+  var demoAuthed = false;
+  try { demoAuthed = !!localStorage.getItem('sos_name'); } catch(e){}
+
+  /* The demo question bank: five fixed questions per subject, in a fixed
+     order, so every guest who picks a subject sees the same five however
+     many times they reload. Maths uses the numeric answer path (no
+     options); the rest are multiple choice, matching the real Lab.      */
+  var GUEST_Q = {
+    maths: [
+      { question:"14 + 27 = ?", answer:41,
+        hint:"Add the tens first, then the ones.",
+        explanation:"10 + 20 = 30, and 4 + 7 = 11. So 30 + 11 = 41." },
+      { question:"What is 25% of 80?", answer:20,
+        hint:"25% is the same as one quarter.",
+        explanation:"25% means 25 out of 100, which is a quarter. A quarter of 80 is 80 divided by 4, which is 20." },
+      { question:"A rectangle is 7 cm by 4 cm. What is its area in square centimetres?", answer:28,
+        hint:"Area of a rectangle is length times width.",
+        explanation:"Area = length x width = 7 x 4 = 28 square centimetres." },
+      { question:"What number comes next: 3, 6, 12, 24, ?", answer:48,
+        hint:"Look at what happens from one number to the next.",
+        explanation:"Each number is double the one before it. 24 doubled is 48." },
+      { question:"How many degrees do the three angles inside a triangle add up to?", answer:180,
+        hint:"It is the same as a straight line.",
+        explanation:"The angles inside any triangle always total 180 degrees, no matter what shape the triangle is." }
+    ],
+    science: [
+      { question:"Which gas do plants take in from the air during photosynthesis?",
+        options:["Carbon dioxide","Oxygen","Nitrogen","Hydrogen"], answer:"Carbon dioxide",
+        hint:"It is the gas we breathe out.",
+        explanation:"Plants take in carbon dioxide and water, and use energy from sunlight to make food, releasing oxygen as a by-product." },
+      { question:"Which planet is closest to the Sun?",
+        options:["Mercury","Venus","Earth","Mars"], answer:"Mercury",
+        hint:"It is also the smallest planet in the Solar System.",
+        explanation:"Mercury orbits nearest the Sun, at an average distance of about 58 million kilometres." },
+      { question:"Which part of an animal cell holds most of its DNA?",
+        options:["The nucleus","The cell membrane","The cytoplasm","The ribosome"], answer:"The nucleus",
+        hint:"It is often called the control centre of the cell.",
+        explanation:"The nucleus stores the cell's chromosomes, which carry the DNA instructions the cell needs to work and divide." },
+      { question:"At sea level, at what temperature does water boil?",
+        options:["100 degrees Celsius","50 degrees Celsius","0 degrees Celsius","212 degrees Celsius"], answer:"100 degrees Celsius",
+        hint:"Think about the Celsius scale, not Fahrenheit.",
+        explanation:"Water boils at 100 degrees Celsius at sea level. That is 212 degrees Fahrenheit, which is the same temperature on a different scale." },
+      { question:"What force keeps the planets in orbit around the Sun?",
+        options:["Gravity","Magnetism","Friction","Electricity"], answer:"Gravity",
+        hint:"It is the same force that makes things fall.",
+        explanation:"Gravity is the attraction between objects with mass. The Sun's enormous mass keeps every planet curving around it instead of flying off." }
+    ],
+    english: [
+      { question:"Which word is the adjective in this sentence: \"The curious student asked a question\"?",
+        options:["curious","student","asked","question"], answer:"curious",
+        hint:"An adjective describes a noun.",
+        explanation:"'Curious' describes what kind of student, so it is an adjective. 'Student' and 'question' are nouns, and 'asked' is a verb." },
+      { question:"What is the past tense of the verb \"run\"?",
+        options:["ran","runned","running","runs"], answer:"ran",
+        hint:"It is an irregular verb, so it does not simply add -ed.",
+        explanation:"'Run' is irregular: the past tense is 'ran' (I ran yesterday) and the past participle is 'run' (I have run)." },
+      { question:"Which sentence uses the apostrophe correctly?",
+        options:["The dog's bowl is empty.","The dogs' bowl is empty for one dog.","The dog's are hungry.","The dogs bowl's are empty."], answer:"The dog's bowl is empty.",
+        hint:"An apostrophe before the s shows one owner.",
+        explanation:"'The dog's bowl' means the bowl belonging to one dog. Apostrophes show possession or missing letters, never a simple plural." },
+      { question:"Which phrase is a simile?",
+        options:["as brave as a lion","a heart of stone","the wind whispered","time is a thief"], answer:"as brave as a lion",
+        hint:"A simile uses 'like' or 'as'.",
+        explanation:"A simile compares two things using 'like' or 'as'. The others are a metaphor, personification and another metaphor." },
+      { question:"What does the word \"brief\" most nearly mean?",
+        options:["short","loud","difficult","clever"], answer:"short",
+        hint:"Think of a brief pause, or a brief message.",
+        explanation:"'Brief' means lasting a short time or using few words, as in a brief meeting or a brief summary." }
+    ],
+    history: [
+      { question:"In which year did the Second World War end?",
+        options:["1945","1939","1918","1950"], answer:"1945",
+        hint:"It ended in the same decade it began.",
+        explanation:"The war in Europe ended in May 1945 and the war in the Pacific ended that September, after six years of fighting that began in 1939." },
+      { question:"Who was the first Prime Minister of India?",
+        options:["Jawaharlal Nehru","Mahatma Gandhi","Sardar Patel","Indira Gandhi"], answer:"Jawaharlal Nehru",
+        hint:"He took office when India became independent in 1947.",
+        explanation:"Jawaharlal Nehru became India's first Prime Minister in August 1947 and held the office until 1964." },
+      { question:"The Indus Valley Civilisation is best known for which achievement?",
+        options:["Carefully planned cities with drainage systems","Building the first pyramids","Inventing gunpowder","Creating the first printing press"], answer:"Carefully planned cities with drainage systems",
+        hint:"Think about Mohenjo-daro and Harappa.",
+        explanation:"Cities such as Mohenjo-daro and Harappa were laid out on grids with brick houses, public baths and covered drains, remarkably advanced for over 4,000 years ago." },
+      { question:"Which ancient civilisation built the pyramids at Giza?",
+        options:["Ancient Egypt","Ancient Greece","The Roman Empire","The Maya"], answer:"Ancient Egypt",
+        hint:"They were built as tombs for pharaohs.",
+        explanation:"The Giza pyramids were built by ancient Egyptians around 4,500 years ago as tombs for pharaohs, the largest being the Great Pyramid of Khufu." },
+      { question:"In which country did the Industrial Revolution begin?",
+        options:["Britain","France","Germany","The United States"], answer:"Britain",
+        hint:"It started with textiles, coal and steam power.",
+        explanation:"The Industrial Revolution began in Britain in the late 1700s, where coal, iron and new machines such as the steam engine transformed how goods were made." }
+    ],
+    geography: [
+      { question:"Which is the largest ocean on Earth?",
+        options:["The Pacific Ocean","The Atlantic Ocean","The Indian Ocean","The Arctic Ocean"], answer:"The Pacific Ocean",
+        hint:"It sits between Asia and the Americas.",
+        explanation:"The Pacific covers about a third of the planet's surface, larger than all the land on Earth put together." },
+      { question:"What is the capital city of Australia?",
+        options:["Canberra","Sydney","Melbourne","Perth"], answer:"Canberra",
+        hint:"It is not the biggest city in the country.",
+        explanation:"Canberra was purpose-built as the capital in 1913, chosen as a compromise between rivals Sydney and Melbourne." },
+      { question:"Which imaginary line divides Earth into the Northern and Southern hemispheres?",
+        options:["The Equator","The Prime Meridian","The Tropic of Cancer","The International Date Line"], answer:"The Equator",
+        hint:"It runs around the widest part of the planet.",
+        explanation:"The Equator is the line of zero degrees latitude. The Prime Meridian, at zero degrees longitude, divides east from west instead." },
+      { question:"Mount Everest lies on the border between Nepal and which country?",
+        options:["China","India","Bhutan","Pakistan"], answer:"China",
+        hint:"Its northern side is in Tibet.",
+        explanation:"Everest straddles the border between Nepal and the Tibet Autonomous Region of China, rising to 8,849 metres." },
+      { question:"Which layer of the atmosphere do we live in, and where nearly all weather happens?",
+        options:["The troposphere","The stratosphere","The mesosphere","The thermosphere"], answer:"The troposphere",
+        hint:"It is the layer closest to the ground.",
+        explanation:"The troposphere reaches roughly 8 to 15 km up. Almost all clouds, rain and wind occur here; airliners cruise just above it in the stratosphere." }
+    ]
+  };
+
+  /* Exam Prep demo bank: five fixed questions per exam, spanning the
+     subject mix each exam actually tests. Same rules as the Lab bank. */
+  var GUEST_EXAM = {
+    cuet: [
+      { question:"Who wrote 'Jana Gana Mana', the national anthem of India?",
+        options:["Rabindranath Tagore","Bankim Chandra Chatterjee","Sarojini Naidu","Muhammad Iqbal"], answer:"Rabindranath Tagore",
+        explanation:"Rabindranath Tagore wrote it in Bengali in 1911; it was adopted as the national anthem in 1950. He also wrote Bangladesh's anthem." },
+      { question:"A shirt marked at 800 rupees is sold at a 25% discount. What is the selling price?",
+        options:["600 rupees","640 rupees","575 rupees","700 rupees"], answer:"600 rupees",
+        explanation:"25% of 800 is 200, so the discount is 200 rupees. 800 - 200 = 600 rupees." },
+      { question:"Complete the series: 2, 6, 12, 20, 30, ?",
+        options:["42","40","36","45"], answer:"42",
+        explanation:"The gaps grow by two each time: +4, +6, +8, +10, then +12. So 30 + 12 = 42." },
+      { question:"Which of these words is spelled correctly?",
+        options:["Accommodation","Acommodation","Accomodation","Acomodation"], answer:"Accommodation",
+        explanation:"'Accommodation' takes a double c and a double m — one of the most commonly misspelled words in English." },
+      { question:"How many Fundamental Rights are guaranteed by the Indian Constitution today?",
+        options:["Six","Five","Seven","Nine"], answer:"Six",
+        explanation:"Six: Equality, Freedom, Against Exploitation, Freedom of Religion, Cultural and Educational Rights, and Constitutional Remedies. The Right to Property was removed in 1978." }
+    ],
+    railways: [
+      { question:"What is the chemical symbol for gold?",
+        options:["Au","Ag","Gd","Go"], answer:"Au",
+        explanation:"Au comes from the Latin 'aurum'. Ag is silver, from 'argentum'." },
+      { question:"A train 200 metres long runs at 72 km/h. How long does it take to pass a pole?",
+        options:["10 seconds","12 seconds","20 seconds","8 seconds"], answer:"10 seconds",
+        explanation:"72 km/h = 72 x 1000 / 3600 = 20 m/s. Passing a pole means covering its own length: 200 / 20 = 10 seconds." },
+      { question:"Which number is the odd one out: 9, 16, 24, 25, 36?",
+        options:["24","16","25","36"], answer:"24",
+        explanation:"9, 16, 25 and 36 are perfect squares (3, 4, 5 and 6 squared). 24 is not." },
+      { question:"The Konkan Railway runs through Maharashtra, Goa and which other state?",
+        options:["Karnataka","Kerala","Gujarat","Tamil Nadu"], answer:"Karnataka",
+        explanation:"The Konkan Railway hugs the west coast from Roha in Maharashtra through Goa to Mangaluru in Karnataka, crossing steep terrain and many tunnels." },
+      { question:"What is the SI unit of electric current?",
+        options:["Ampere","Volt","Watt","Ohm"], answer:"Ampere",
+        explanation:"The ampere measures current. The volt measures potential difference, the watt measures power, and the ohm measures resistance." }
+    ],
+    bankpo: [
+      { question:"What does NEFT stand for?",
+        options:["National Electronic Funds Transfer","New Electronic Finance Transaction","National Exchange for Trade","Net Electronic Fund Transaction"], answer:"National Electronic Funds Transfer",
+        explanation:"NEFT is a nationwide payment system for one-to-one funds transfers between banks, operated by the Reserve Bank of India." },
+      { question:"Which body regulates the banking system in India?",
+        options:["The Reserve Bank of India","SEBI","The Finance Ministry","NITI Aayog"], answer:"The Reserve Bank of India",
+        explanation:"The RBI, established in 1935, is India's central bank. It licenses and supervises banks, sets monetary policy and issues currency. SEBI regulates securities markets instead." },
+      { question:"What is the simple interest on 10,000 rupees at 8% per annum for 2 years?",
+        options:["1,600 rupees","800 rupees","2,000 rupees","1,664 rupees"], answer:"1,600 rupees",
+        explanation:"Simple interest = P x R x T / 100 = 10000 x 8 x 2 / 100 = 1,600 rupees. Compound interest would give slightly more, 1,664 rupees." },
+      { question:"A is B's brother and B is C's mother. How is A related to C?",
+        options:["Uncle","Father","Brother","Grandfather"], answer:"Uncle",
+        explanation:"B is C's mother, and A is B's brother, so A is C's maternal uncle." },
+      { question:"Which word is closest in meaning to 'abundant'?",
+        options:["Plentiful","Scarce","Fragile","Hidden"], answer:"Plentiful",
+        explanation:"'Abundant' means existing in large quantities. 'Scarce' is its opposite." }
+    ],
+    ssc: [
+      { question:"Who is regarded as the chief architect of the Indian Constitution?",
+        options:["Dr B. R. Ambedkar","Jawaharlal Nehru","Sardar Patel","Rajendra Prasad"], answer:"Dr B. R. Ambedkar",
+        explanation:"Dr Ambedkar chaired the Drafting Committee of the Constituent Assembly. Rajendra Prasad was the Assembly's president and later India's first President." },
+      { question:"The average of five consecutive whole numbers is 15. What is the largest of them?",
+        options:["17","19","16","20"], answer:"17",
+        explanation:"For consecutive numbers the average is the middle one, so the set is 13, 14, 15, 16, 17. The largest is 17." },
+      { question:"Find the next term: AZ, BY, CX, ?",
+        options:["DW","DX","EW","CW"], answer:"DW",
+        explanation:"The first letter moves forward (A, B, C, D) while the second moves backward (Z, Y, X, W). So the next pair is DW." },
+      { question:"What does the idiom 'to let the cat out of the bag' mean?",
+        options:["To reveal a secret","To cause confusion","To escape danger","To waste time"], answer:"To reveal a secret",
+        explanation:"It means to disclose something that was meant to be kept hidden, usually by accident." },
+      { question:"Which river is known as the 'Sorrow of Bihar'?",
+        options:["Kosi","Gandak","Son","Damodar"], answer:"Kosi",
+        explanation:"The Kosi frequently changes course and floods northern Bihar, earning the name. The Damodar was similarly called the 'Sorrow of Bengal'." }
+    ],
+    upsc: [
+      { question:"Which article of the Indian Constitution guarantees the Right to Constitutional Remedies?",
+        options:["Article 32","Article 14","Article 19","Article 21"], answer:"Article 32",
+        explanation:"Article 32 lets citizens move the Supreme Court directly when a Fundamental Right is violated. Dr Ambedkar called it 'the heart and soul of the Constitution'." },
+      { question:"Who appoints the Chief Justice of India?",
+        options:["The President","The Prime Minister","Parliament","The Law Minister"], answer:"The President",
+        explanation:"The President appoints the Chief Justice, by convention the senior-most Supreme Court judge, recommended through the collegium system." },
+      { question:"In which year was the Quit India Movement launched?",
+        options:["1942","1930","1919","1947"], answer:"1942",
+        explanation:"Gandhi launched it in August 1942 in Bombay with the call 'Do or Die', demanding an immediate end to British rule." },
+      { question:"Which Indian state has the longest coastline?",
+        options:["Gujarat","Tamil Nadu","Andhra Pradesh","Maharashtra"], answer:"Gujarat",
+        explanation:"Gujarat's deeply indented coast, including the Gulfs of Kachchh and Khambhat, gives it India's longest coastline at roughly 1,600 km." },
+      { question:"The Ramsar Convention concerns the conservation of which ecosystems?",
+        options:["Wetlands","Deserts","Coral reefs only","Tropical rainforests"], answer:"Wetlands",
+        explanation:"Signed in Ramsar, Iran in 1971, it is the international treaty for the conservation and sustainable use of wetlands. India has designated many Ramsar sites." }
+    ]
+  };
+
   var MARK='<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="dgSpace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="dgEarth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="dgSun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#dgSpace)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#dgSun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#dgEarth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg>';
 
   function el(id){ return document.getElementById(id); }
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+  function labUsed(){ var n=parseInt(lsGet(K_LAB)||'0',10); return (isNaN(n)||n<0)?0:Math.min(n,LAB_MAX); }
+  function labLeft(){ return Math.max(0, LAB_MAX - labUsed()); }
+  function labBump(){ lsSet(K_LAB, String(labUsed()+1)); }
+
+  function exUsed(){ var n=parseInt(lsGet(K_EX)||'0',10); return (isNaN(n)||n<0)?0:Math.min(n,EXAM_MAX); }
+  function exLeft(){ return Math.max(0, EXAM_MAX - exUsed()); }
+  function exBump(){ lsSet(K_EX, String(exUsed()+1)); }
+  function lockedExam(){ var v=lsGet(K_EXAM); return (v && GUEST_EXAM[v]) ? v : null; }
+
+  function histSeen(){
+    var raw = lsGet(K_HIST) || '';
+    return raw ? raw.split(',').filter(function(x){ return x; }) : [];
+  }
+  function histLeft(){ return Math.max(0, HIST_MAX - histSeen().length); }
+  function histAdd(y){
+    var ys = histSeen(), key = String(y);
+    if (ys.indexOf(key) === -1){ ys.push(key); lsSet(K_HIST, ys.join(',')); }
+  }
+
+  function lockedSubject(){ var v = lsGet(K_SUBJ); return (v && GUEST_Q[v]) ? v : null; }
+
+  /* Which subject a guest is committing to, resolved once and then frozen. */
+  function chooseSubject(params){
+    if (params && GUEST_Q[params.subject]) return params.subject;
+    if (typeof window.labSelectedSubjects === 'function'){
+      var sel = window.labSelectedSubjects();
+      for (var i=0;i<sel.length;i++) if (GUEST_Q[sel[i]]) return sel[i];
+    }
+    return 'maths';
+  }
+
+  /* Freeze the subject checklist on the locked subject. The boxes stay
+     visible so it is obvious which one is active, just not changeable. */
+  function applySubjectLock(){
+    var subj = lockedSubject();
+    var boxes = document.querySelectorAll('#labSubjectMenu .lab-subj');
+    if (!subj || demoAuthed || !boxes.length) return;
+    for (var i=0;i<boxes.length;i++){
+      boxes[i].checked  = (boxes[i].value === subj);
+      boxes[i].disabled = true;
+      if (boxes[i].parentNode && boxes[i].parentNode.style)
+        boxes[i].parentNode.style.opacity = boxes[i].checked ? '1' : '.45';
+    }
+    var menu = el('labSubjectMenu');
+    if (menu && !el('demoSubjLock')){
+      var note = document.createElement('div');
+      note.id = 'demoSubjLock';
+      note.style.cssText = 'padding:.6rem .7rem;margin-top:.4rem;border-top:1px solid rgba(62,43,30,.12);font-size:.75rem;line-height:1.5;color:#8B6E5A;';
+      note.innerHTML = '&#128274; The demo covers one subject. <a href="pages/login.html" style="color:#9A3F1E;font-weight:700;">Sign in free</a> to switch subjects and mix them.';
+      menu.appendChild(note);
+    }
+    if (typeof window.labOnSubjectChange === 'function') window.labOnSubjectChange();
+  }
+
+  function chooseExam(params){
+    if (params && GUEST_EXAM[params.exam]) return params.exam;
+    var on = document.querySelector('#epExamPicker .lab-pick.active');
+    var k  = on && on.getAttribute('data-exam');
+    return GUEST_EXAM[k] ? k : 'cuet';
+  }
+
+  /* Freeze the exam picker the same way the Lab freezes its subject list. */
+  function applyExamLock(){
+    var exam = lockedExam();
+    var picks = document.querySelectorAll('#epExamPicker .lab-pick');
+    if (!exam || demoAuthed || !picks.length) return;
+    for (var i=0;i<picks.length;i++){
+      var isIt = picks[i].getAttribute('data-exam') === exam;
+      picks[i].classList.toggle('active', isIt);
+      picks[i].disabled = true;
+      picks[i].style.opacity = isIt ? '1' : '.45';
+      picks[i].style.cursor  = 'not-allowed';
+    }
+    var badge = el('epExamBadge');
+    if (badge && window.EP_EXAM_NAMES) badge.textContent = window.EP_EXAM_NAMES[exam] || badge.textContent;
+    var wrap = el('epExamPicker');
+    if (wrap && wrap.parentNode && !el('demoExamLock')){
+      var note = document.createElement('div');
+      note.id = 'demoExamLock';
+      note.style.cssText = 'margin-top:.5rem;font-size:.75rem;line-height:1.5;color:#8B6E5A;max-width:44ch;';
+      note.innerHTML = '&#128274; The demo covers one exam, with five set questions across its usual subject mix. <a href="pages/login.html" style="color:#9A3F1E;font-weight:700;">Sign in free</a> to change exam, subject and difficulty.';
+      wrap.parentNode.appendChild(note);
+    }
+  }
+
+  function releaseExamLock(){
+    var picks = document.querySelectorAll('#epExamPicker .lab-pick');
+    for (var i=0;i<picks.length;i++){ picks[i].disabled=false; picks[i].style.opacity=''; picks[i].style.cursor=''; }
+    var note = el('demoExamLock'); if (note && note.parentNode) note.parentNode.removeChild(note);
+  }
+
+  function onExamTab(){
+    var t = el('labTabExamprep');
+    return !!(t && t.classList.contains('active'));
+  }
+
+  function releaseSubjectLock(){
+    var boxes = document.querySelectorAll('#labSubjectMenu .lab-subj');
+    for (var i=0;i<boxes.length;i++){
+      boxes[i].disabled = false;
+      if (boxes[i].parentNode && boxes[i].parentNode.style) boxes[i].parentNode.style.opacity = '';
+    }
+    var note = el('demoSubjLock'); if (note && note.parentNode) note.parentNode.removeChild(note);
+  }
+
   function showGate(){ var g=el('demoGate'); if(g) g.classList.add('show'); }
   function hideGate(){ var g=el('demoGate'); if(g) g.classList.remove('show'); }
   function showBanner(){ var b=el('demoBanner'); if(b) b.classList.add('show'); }
   function hideBanner(){ var b=el('demoBanner'); if(b) b.classList.remove('show'); }
-  function paintCount(){ var c=el('demoCount'); if(c) c.textContent=demoRemain+'s'; }
 
-  function startCountdown(){
-    if(demoTicking||demoUsed||demoAuthed) return;
-    demoTicking=true; demoRemain=Math.ceil(DEMO_MS/1000); paintCount();
-    demoInterval=setInterval(function(){
-      demoRemain--; paintCount();
-      if(demoRemain<=0) endDemo();
-    },1000);
+  /* The banner counts down whichever allowance the visitor is currently spending. */
+  function paintBanner(id){
+    var c = el('demoCount'); if(!c) return;
+    if (id === 'history'){
+      var hy = histLeft();
+      c.textContent = hy + (hy === 1 ? ' year left' : ' years left');
+    } else if (onExamTab()){
+      var eq = exLeft();
+      c.textContent = eq + (eq === 1 ? ' exam question left' : ' exam questions left');
+    } else {
+      var lq = labLeft();
+      c.textContent = lq + (lq === 1 ? ' question left' : ' questions left');
+    }
   }
-  function endDemo(){
-    if(demoInterval){ clearInterval(demoInterval); demoInterval=null; }
-    demoTicking=false; demoUsed=true; hideBanner();
-    var cur=document.querySelector('.panel.active');
-    if(cur && GATED[cur.id] && !demoAuthed) showGate();
-  }
+
   function grant(){
-    demoAuthed=true;
-    if(demoInterval){ clearInterval(demoInterval); demoInterval=null; }
-    demoTicking=false; hideBanner(); hideGate();
+    demoAuthed = true;
+    lsDel(K_LAB); lsDel(K_HIST); lsDel(K_SUBJ); lsDel(K_EX); lsDel(K_EXAM);
+    releaseSubjectLock(); releaseExamLock();
+    hideBanner(); hideGate();
   }
 
-  window.demoGateOnShow=function(id){
-    if(!GATED[id]){ hideBanner(); hideGate(); return; }
-    if(demoAuthed){ hideBanner(); hideGate(); return; }
-    if(demoUsed){ hideBanner(); showGate(); return; }
-    startCountdown(); showBanner();
+  /* ── Lab: serve the fixed demo questions, then stop ── */
+  function wrapLab(){
+    if (typeof window.provideLabQuestion === 'function' && !window.provideLabQuestion.__demoWrapped){
+      var origProvide = window.provideLabQuestion;
+      var wrappedProvide = function(params){
+        if (demoAuthed) return origProvide(params);
+        var i = labUsed();
+        if (i >= LAB_MAX){ showGate(); return Promise.reject(new Error('demo-limit')); }
+        var subj = lockedSubject();
+        if (!subj){ subj = chooseSubject(params); lsSet(K_SUBJ, subj); applySubjectLock(); }
+        var bank = GUEST_Q[subj] || GUEST_Q.maths;
+        labBump();
+        paintBanner('lab');
+        // Cloned so a guest answering twice can't mutate the source set.
+        return Promise.resolve(JSON.parse(JSON.stringify(bank[i % bank.length])));
+      };
+      wrappedProvide.__demoWrapped = true;
+      window.provideLabQuestion = wrappedProvide;
+    }
+    if (typeof window.provideExamQuestion === 'function' && !window.provideExamQuestion.__demoWrapped){
+      var origExam = window.provideExamQuestion;
+      var wrappedExam = function(params){
+        if (demoAuthed) return origExam(params);
+        var i = exUsed();
+        if (i >= EXAM_MAX){ showGate(); return Promise.reject(new Error('demo-limit')); }
+        var ex = lockedExam();
+        if (!ex){ ex = chooseExam(params); lsSet(K_EXAM, ex); applyExamLock(); }
+        var bank = GUEST_EXAM[ex] || GUEST_EXAM.cuet;
+        exBump();
+        paintBanner('lab');
+        return Promise.resolve(JSON.parse(JSON.stringify(bank[i % bank.length])));
+      };
+      wrappedExam.__demoWrapped = true;
+      window.provideExamQuestion = wrappedExam;
+    }
+    /* epGenerate re-fires itself on a timer after each answer, so the guard
+       has to sit on the generator too or the demo would auto-refill. */
+    if (typeof window.epGenerate === 'function' && !window.epGenerate.__demoWrapped){
+      var origEp = window.epGenerate;
+      var wrappedEp = function(){
+        if (!demoAuthed && exLeft() <= 0){ showGate(); return; }
+        return origEp.apply(this, arguments);
+      };
+      wrappedEp.__demoWrapped = true;
+      window.epGenerate = wrappedEp;
+    }
+    /* Switching tabs changes which allowance the banner should be counting. */
+    if (typeof window.labSwitchTab === 'function' && !window.labSwitchTab.__demoWrapped){
+      var origTab = window.labSwitchTab;
+      var wrappedTab = function(){
+        var r = origTab.apply(this, arguments);
+        if (!demoAuthed) paintBanner('lab');
+        return r;
+      };
+      wrappedTab.__demoWrapped = true;
+      window.labSwitchTab = wrappedTab;
+    }
+    if (typeof window.labGenerate === 'function' && !window.labGenerate.__demoWrapped){
+      var origGen = window.labGenerate;
+      var wrappedGen = function(){
+        if (!demoAuthed && labLeft() <= 0){ showGate(); return; }
+        return origGen.apply(this, arguments);
+      };
+      wrappedGen.__demoWrapped = true;
+      window.labGenerate = wrappedGen;
+    }
+  }
+
+  /* ── History: allow a limited number of distinct years ── */
+  window.demoHistoryGate = function(y){
+    if (demoAuthed) return true;
+    var ys = histSeen(), key = String(y);
+    if (ys.indexOf(key) !== -1) return true;        // revisiting a year is free
+    if (ys.length >= HIST_MAX){ showGate(); return false; }
+    histAdd(y);
+    paintBanner('history');
+    return true;
   };
-  window.demoGateHome=function(){ hideGate(); if(window.showPage) showPage('home'); };
+
+  window.demoGateOnShow = function(id){
+    if (!GATED[id] || demoAuthed){ hideBanner(); hideGate(); return; }
+    // The Lab panel holds both tabs, so it is only fully spent when neither has anything left.
+    if (id === 'lab' && labLeft() <= 0 && exLeft() <= 0){ hideBanner(); showGate(); return; }
+    if (id === 'history'){
+      // The timeline already shows a year the moment History opens, so that
+      // year counts against the allowance like any other.
+      var cur = el('hxYear');
+      var y = cur ? parseInt(cur.textContent, 10) : NaN;
+      if (!isNaN(y) && !window.demoHistoryGate(y)){ hideBanner(); return; }
+    }
+    paintBanner(id); showBanner(); hideGate();
+  };
+  window.demoGateHome = function(){ hideGate(); if(window.showPage) showPage('home'); };
 
   function inject(){
-    var firstPanel=document.querySelector('.panel');
-    if(firstPanel && !el('demoBanner')){
-      var b=document.createElement('div');
-      b.id='demoBanner'; b.className='demo-banner';
-      b.innerHTML='&#128064; You\'re in demo mode &mdash; <a href="pages/login.html">sign in free</a> for unlimited Lab &amp; History. <span class="db-count"><span id="demoCount">60s</span> left</span>';
+    var firstPanel = document.querySelector('.panel');
+    if (firstPanel && !el('demoBanner')){
+      var b = document.createElement('div');
+      b.id = 'demoBanner'; b.className = 'demo-banner';
+      b.innerHTML = '&#128064; You\'re in demo mode &mdash; <a href="pages/login.html">sign in free</a> for unlimited Lab &amp; History. <span class="db-count"><span id="demoCount">&nbsp;</span></span>';
       firstPanel.parentNode.insertBefore(b, firstPanel);
     }
-    if(!el('demoGate')){
-      var g=document.createElement('div');
-      g.id='demoGate'; g.className='demo-gate';
-      g.addEventListener('click',function(ev){ if(ev.target===g) window.demoGateHome(); });
-      g.innerHTML='<div class="demo-gate-box"><div class="dg-mark">'+MARK+'</div>'+
-        '<h2>Keep going &mdash; it\'s free &#128640;</h2>'+
-        '<p>The Lab and History are a members feature. Create your free account to keep practising, save your progress, and pick up right where you left off.</p>'+
+    if (!el('demoGate')){
+      var g = document.createElement('div');
+      g.id = 'demoGate'; g.className = 'demo-gate';
+      g.addEventListener('click', function(ev){ if(ev.target === g) window.demoGateHome(); });
+      g.innerHTML = '<div class="demo-gate-box"><div class="dg-mark">'+MARK+'</div>'+
+        '<h2>That\'s the demo &mdash; keep going free &#128640;</h2>'+
+        '<p>You\'ve used up the demo questions. Create your free account for unlimited Lab practice matched to your curriculum, the full History timeline, and progress that saves as you go.</p>'+
         '<div class="dg-actions"><a class="btn btn-primary" href="pages/login.html">Sign in / Create free account</a>'+
         '<button class="btn btn-secondary" type="button" onclick="demoGateHome()">Back to home</button></div>'+
         '<small>Free forever &mdash; it takes about 20 seconds.</small></div>';
@@ -3536,24 +3945,29 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function boot(){
-    inject();
-    if(window.SOS && typeof SOS.onSession==='function'){
+    inject(); wrapLab();
+    if (!demoAuthed && lockedSubject()) applySubjectLock();
+    if (!demoAuthed && lockedExam()) applyExamLock();
+    if (window.SOS && typeof SOS.onSession === 'function'){
       SOS.onSession(function(user){
-        if(user && !user.isAnonymous){ grant(); }
+        if (user && !user.isAnonymous){ grant(); }
         else {
-          demoAuthed=false;
-          var cur=document.querySelector('.panel.active');
-          if(cur && GATED[cur.id]) window.demoGateOnShow(cur.id);
+          demoAuthed = false;
+          wrapLab();
+          var cur = document.querySelector('.panel.active');
+          if (cur && GATED[cur.id]) window.demoGateOnShow(cur.id);
         }
       });
     }
-    var cur=document.querySelector('.panel.active');
-    if(cur) window.demoGateOnShow(cur.id);
+    var cur = document.querySelector('.panel.active');
+    if (cur) window.demoGateOnShow(cur.id);
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
 </script>
+
+<script src="js/components/marquee.js"></script>
 
 </body>
 </html>

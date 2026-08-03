@@ -42,8 +42,13 @@ function sosMark(pfx) {
 }
 
 /**
- * Mount the shared 3-row header into #nav-mount.
+ * Mount the shared header into #nav-mount.
  * @param {string} activePage - current filename e.g. 'lab.html'
+ * @param {object} [opts]
+ * @param {boolean} [opts.homeLinks] - point menu items at the home page's sections
+ * @param {boolean} [opts.noBanner]  - skip the big brand banner row, keeping the
+ *   utility bar, menu and scrolling strip. Used by the dashboard and admin panel,
+ *   which have their own hero heading straight below.
  */
 function mountNav(activePage, opts) {
   opts = opts || {};
@@ -77,12 +82,15 @@ function mountNav(activePage, opts) {
         <span></span><span></span><span></span>
       </button>
     </nav>
-    <div class="brand-banner">
+    ${opts.noBanner ? '' : `<div class="brand-banner">
       <div class="brand-banner-inner">
         <span class="bb-word"><span>Seek-</span>${sosMark('navBan')}-Sphere</span>
         <span class="bb-tag">Explore &middot; Learn &middot; Discover</span>
       </div>
-    </div>`;
+    </div>`}
+    ${window.SOSMarquee ? SOSMarquee.html() : ''}`;
+  // The strip is only measurable once it is in the document.
+  if (window.SOSMarquee) SOSMarquee.init();
   // The account menu (#acctMenu) is populated by session.js once Firebase auth state resolves.
 }
 

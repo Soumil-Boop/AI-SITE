@@ -74,47 +74,164 @@
   .dash-loader .ring, .dash-loader .sat, .dash-loader .core, .auth-gate-inner p { animation: none !important; }
 }
 
-/* ── AUTH PAGE ──────────────────────────────────────────────── */
+/* ── AUTH PAGE — split panel ─────────────────────────────────── */
 .auth-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--brand-dark), #3A1608);
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  background: var(--white);
+}
+
+/* Left: brand / value panel */
+.auth-brand {
+  position: sticky; top: 0;
+  height: 100vh;
+  background: linear-gradient(150deg, #5C2413 0%, var(--brand-dark) 55%, #2E1409 100%);
+  padding: 3rem 2.75rem;
+  display: flex; flex-direction: column; justify-content: space-between;
+  overflow: hidden;
+}
+.auth-brand::before,
+.auth-brand::after {
+  content: ''; position: absolute; border-radius: 50%; pointer-events: none;
+}
+.auth-brand::before { width: 420px; height: 420px; border: 1px solid rgba(224,177,90,.16); top: -120px; right: -150px; }
+.auth-brand::after  { width: 280px; height: 280px; border: 1px solid rgba(224,177,90,.12); bottom: -90px; left: -100px; }
+
+.auth-logo { position: relative; z-index: 2; display: flex; align-items: center; }
+.auth-logo-text {
+  display: inline-flex; align-items: center; gap: .12em;
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.3rem; color: #fff;
+}
+.auth-logo-text .seek { color: #E8A579; }
+
+.auth-pitch { position: relative; z-index: 2; padding: 2.5rem 0; }
+.auth-pitch h2 {
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.1rem;
+  color: #fff; line-height: 1.2; letter-spacing: -.02em; margin-bottom: .9rem;
+}
+.auth-pitch p { color: rgba(241,218,207,.8); font-size: .98rem; line-height: 1.65; max-width: 34ch; }
+.auth-feats { list-style: none; margin-top: 2rem; display: flex; flex-direction: column; gap: .9rem; }
+.auth-feats li { display: flex; align-items: center; gap: .75rem; color: rgba(255,255,255,.92); font-size: .93rem; font-weight: 500; }
+.auth-tick {
+  width: 26px; height: 26px; border-radius: 50%; background: rgba(224,177,90,.16);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  color: #E0B15A; font-size: .8rem;
+}
+.auth-proof {
+  position: relative; z-index: 2; padding-top: 1.5rem;
+  border-top: 1px solid rgba(224,177,90,.2);
+  color: rgba(241,218,207,.75); font-size: .85rem; line-height: 1.5;
+}
+
+/* Right: form column */
+.auth-form-col {
   display: flex; align-items: center; justify-content: center;
-  padding: 2rem;
+  padding: 3rem 3rem; background: var(--white);
 }
-.auth-card {
-  background: white;
-  border-radius: 20px;
-  padding: 2.5rem 2rem;
-  width: 100%; max-width: 440px;
-  box-shadow: 0 24px 60px rgba(0,0,0,.3);
+.auth-form-inner { width: 100%; max-width: 378px; }
+.auth-form-inner h1 {
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.7rem;
+  letter-spacing: -.02em; margin-bottom: .3rem; color: var(--text);
 }
-.auth-logo { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.75rem; }
-.auth-logo-text { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.3rem; }
-.auth-tabs { display: flex; border-bottom: 2px solid var(--gray-100); margin-bottom: 1.5rem; }
-.auth-tab {
-  flex: 1; padding: .65rem; font-weight: 700; font-size: .95rem;
-  background: none; border: none; border-bottom: 3px solid transparent;
-  margin-bottom: -2px; cursor: pointer; color: var(--muted); transition: all .2s;
+.auth-switch { color: var(--muted); font-size: .9rem; margin-bottom: 1.6rem; }
+.auth-switch button {
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: var(--accent-dark); font-family: 'Inter', sans-serif;
+  font-weight: 600; font-size: .9rem; text-decoration: none;
 }
-.auth-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
-.auth-submit { width: 100%; justify-content: center; margin-top: .75rem; }
-.auth-error { color: var(--accent-dark); font-size: .85rem; min-height: 1.2em; margin: .25rem 0; }
-.auth-divider { text-align: center; margin: 1.25rem 0; color: var(--muted); font-size: .85rem; position: relative; }
+.auth-switch button:hover { text-decoration: underline; }
+
+/* Password field with reveal toggle */
+.auth-pw { position: relative; }
+.auth-pw input { padding-right: 3.2rem !important; }
+.auth-eye {
+  position: absolute; right: .5rem; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; padding: .45rem;
+  border-radius: 8px; color: var(--muted); display: flex; transition: background .15s, color .15s;
+}
+.auth-eye:hover { background: var(--accent-light); color: var(--accent-dark); }
+
+.auth-forgot { text-align: right; margin: -.35rem 0 1.1rem; }
+.auth-forgot a { color: var(--accent-dark); font-size: .83rem; font-weight: 600; text-decoration: none; }
+.auth-forgot a:hover { text-decoration: underline; }
+
+.auth-submit { width: 100%; justify-content: center; margin-top: .5rem; }
+.auth-error { color: var(--accent-dark); font-size: .85rem; margin: .25rem 0; }
+.auth-note  { color: var(--green);       font-size: .85rem; margin: .25rem 0; line-height: 1.5; }
+/* Collapse the error / status lines while they hold no text, so they don't
+   reserve dead space above the submit button. */
+.auth-error:empty, .auth-note:empty { display: none; }
+
+.auth-divider {
+  display: flex; align-items: center; gap: .9rem;
+  margin: 1.15rem 0; color: var(--muted); font-size: .8rem;
+}
 .auth-divider::before, .auth-divider::after {
-  content: ''; position: absolute; top: 50%; width: 42%; height: 1px;
-  background: var(--gray-100);
+  content: ''; flex: 1; height: 1px; background: var(--border); opacity: .7;
 }
-.auth-divider::before { left: 0; }
-.auth-divider::after  { right: 0; }
+
 .btn-google {
   width: 100%; display: flex; align-items: center; justify-content: center;
-  gap: .75rem; padding: .7rem; border: 2px solid var(--gray-100);
-  border-radius: 100px; background: white; font-weight: 600; cursor: pointer;
-  margin-bottom: .75rem; transition: border-color .2s;
+  gap: .6rem; padding: .8rem; border: 1.5px solid var(--border);
+  border-radius: 100px; background: var(--white);
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: .95rem;
+  color: var(--text); cursor: pointer;
+  transition: border-color .18s, background .18s;
 }
-.btn-google:hover { border-color: var(--brand); }
-.auth-guest { width: 100%; justify-content: center; color: var(--muted); }
-.auth-terms { font-size: .75rem; color: var(--muted); text-align: center; margin-top: 1rem; }
+.btn-google:hover { border-color: var(--accent); background: var(--accent-light); }
+
+.auth-guest {
+  width: 100%; margin-top: .7rem; padding: .7rem;
+  background: none; border: none; border-radius: 100px;
+  color: var(--muted); font-family: 'Inter', sans-serif;
+  font-size: .88rem; font-weight: 600; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.auth-guest:hover { background: var(--cream); color: var(--text); }
+
+.auth-terms { font-size: .75rem; color: var(--muted); text-align: center; margin-top: 1rem; line-height: 1.55; }
+
+/* Sign-up sub-controls */
+.auth-row { display: flex; gap: .6rem; }
+.auth-row > * { flex: 1; }
+.auth-choice { display: flex; gap: .6rem; margin-top: .25rem; }
+.auth-choice label {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: .4rem;
+  padding: .7rem .75rem; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: .9rem;
+  transition: border-color .18s, background .18s;
+}
+.auth-choice label:hover { border-color: var(--brand-mid); background: var(--accent-light); }
+/* forms.css sets .form-group input { width:100% }, which stretches radios and
+   checkboxes across the row — reset them back to their intrinsic size. */
+.auth-choice input { width: auto; margin: 0; accent-color: var(--accent); }
+.auth-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .25rem; }
+.auth-chips label {
+  display: flex; align-items: center; gap: .35rem;
+  padding: .45rem .7rem; border: 1.5px solid var(--border);
+  border-radius: 100px; cursor: pointer; font-size: .88rem;
+  transition: border-color .18s, background .18s;
+}
+.auth-chips label:hover { border-color: var(--brand-mid); background: var(--accent-light); }
+.auth-chips input { width: auto; margin: 0; accent-color: var(--accent); }
+/* Make the selected option readable at a glance, not just by the radio dot. */
+.auth-choice label:has(input:checked),
+.auth-chips  label:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  box-shadow: 0 0 0 2px rgba(192,86,47,.12);
+}
+
+@media (max-width: 900px) {
+  .auth-page { grid-template-columns: 1fr; }
+  /* Stays `relative` (not `static`) so the decorative circles keep the panel
+     as their containing block instead of escaping onto the form column. */
+  .auth-brand { position: relative; height: auto; padding: 2.25rem 1.75rem; }
+  .auth-pitch { padding: 1.75rem 0; }
+  .auth-pitch h2 { font-size: 1.7rem; }
+  .auth-form-col { padding: 2.5rem 1.5rem 3rem; }
+}
 
 /* ── DASHBOARD HERO ─────────────────────────────────────────── */
 .dash-hero {
