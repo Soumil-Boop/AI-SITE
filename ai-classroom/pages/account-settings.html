@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Account Settings — Seek-O-Sphere</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
+       is still parsing, instead of when the first script or request needs them. -->
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
@@ -12,112 +19,329 @@
   <link rel="stylesheet" href="../css/components/nav.css"/>
   <link rel="stylesheet" href="../css/components/marquee.css"/>
   <link rel="stylesheet" href="../css/components/buttons.css"/>
-  <link rel="stylesheet" href="../css/components/forms.css"/>
   <style>
-    .set-wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-    .set-wrap h1 { font-family:'Nunito'; font-weight:900; color:var(--brand-dark); font-size:1.8rem; margin:0 0 1.5rem; }
-    .set-card { background:#FBF8F2; border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.4rem; }
-    .set-card h2 { font-family:'Nunito'; font-weight:800; color:var(--brand-dark); font-size:1.15rem; margin:0 0 1rem; }
-    .set-row { display:flex; gap:.6rem; }
-    .set-row .form-group { flex:1; }
-    .set-msg { font-size:.85rem; margin-top:.6rem; min-height:1.1em; }
-    .set-msg.ok { color:var(--green); } .set-msg.err { color:var(--accent-dark); }
-    .type-opt { display:flex; align-items:center; justify-content:center; gap:.4rem; padding:.7rem; border:1.5px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; font-weight:600; }
-    .exam-chip { display:flex; align-items:center; gap:.35rem; padding:.45rem .7rem; border:1.5px solid var(--border); border-radius:100px; cursor:pointer; }
-    .set-actions { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:.5rem; }
+    /* ── Settings page ────────────────────────────────────────────────
+       Same label-left form language as the sign-up page: 38px controls,
+       13px labels, 7px radii, buttons sized to their text. One section
+       at a time, chosen from the rail on the left. */
+    :root { --danger:#9A2B18; --danger-tint:#FBEAE6; --danger-line:#DDBDB4; --faint:#9C8877; }
+
+    .set-page  { background: var(--white); min-height: 60vh; }
+    .set-wrap  { max-width: 1180px; margin: 0 auto; padding: 2.2rem 2.25rem 3rem; }
+    .set-eyebrow { font-size:.74rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+                   color:var(--accent-dark); margin-bottom:.4rem; }
+    .set-title { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.7rem; letter-spacing:-.02em; color:var(--text); }
+    .set-sub   { color:var(--muted); font-size:.9rem; margin-top:.3rem; }
+
+    .set-flag { margin-top:1rem; padding:.75rem .95rem; border-radius:9px; font-size:.86rem; line-height:1.55;
+                border:1px solid var(--accent); background:var(--accent-light); color:var(--text); }
+    .set-flag.warn { border-color:var(--danger-line); background:var(--danger-tint); color:var(--danger); }
+    .set-flag b { font-weight:700; }
+    .set-flag button { background:none; border:none; padding:0; margin:0; cursor:pointer; font:inherit;
+                       font-weight:700; color:var(--accent-dark); text-decoration:underline; }
+    .set-flag button:hover { color:var(--text); }
+
+    .set-shell { display:grid; grid-template-columns:222px minmax(0,1fr); gap:2.4rem; align-items:start; margin-top:1.8rem; }
+    .set-rail  { position:sticky; top:1rem; display:flex; flex-direction:column; gap:.15rem; }
+    .set-rail button { display:flex; align-items:center; gap:.6rem; width:100%; text-align:left;
+      padding:.55rem .75rem; border:none; background:none; border-radius:7px; cursor:pointer;
+      font-family:'Inter',sans-serif; font-size:.87rem; font-weight:500; color:var(--muted); transition:all .15s; }
+    .set-rail button:hover { background:var(--cream); color:var(--text); }
+    .set-rail button.on { background:var(--accent-light); color:var(--accent-dark); font-weight:600; }
+    .set-rail button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    .set-rail em { font-style:normal; width:18px; text-align:center; }
+    .set-rail .rail-sep { height:1px; background:var(--border); opacity:.7; margin:.5rem .3rem; }
+
+    .set-pane h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.15rem; color:var(--text); letter-spacing:-.01em; }
+    .set-pane > .pane-note { font-size:.85rem; color:var(--muted); margin:.2rem 0 1.1rem; }
+
+    .srow { display:grid; grid-template-columns:200px minmax(0,1fr); gap:1.6rem; align-items:start;
+            padding:.9rem 0; border-bottom:1px solid rgba(203,187,165,.45); }
+    /* Not :last-of-type — the .sbar below is a <div> too, so it, not the last
+       row, wins that match and the row keeps a rule the bar then doubles. */
+    .srow:last-child, .srow:has(+ .sbar) { border-bottom:none; }
+    .srow-lab { padding-top:.42rem; }
+    .srow-lab b { display:block; font-size:.87rem; font-weight:600; color:var(--text); }
+    .srow-lab span { display:block; font-size:.77rem; color:var(--faint); margin-top:.15rem; line-height:1.45; }
+
+    .sin { width:100%; height:38px; padding:0 .7rem; border:1px solid var(--border); border-radius:7px;
+           font-size:.88rem; font-family:'Inter',sans-serif; background:#fff; color:var(--text);
+           outline:none; transition:border-color .15s, box-shadow .15s; }
+    .sin:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,86,47,.13); }
+    .sin:disabled { background:var(--cream); color:var(--faint); cursor:not-allowed; }
+    select.sin { cursor:pointer; }
+    .sg2 { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
+    .sg3 { display:grid; grid-template-columns:1.6fr 1.2fr 1.2fr; gap:.9rem; }
+    /* GEO renders State and City into wrappers, so style whatever it puts there. */
+    .sg3 > div > input, .sg3 > div > select {
+      width:100%; height:38px; padding:0 .7rem; border:1px solid var(--border); border-radius:7px;
+      font-size:.88rem; font-family:'Inter',sans-serif; background:#fff; color:var(--text); outline:none; }
+    .sg3 > div > input:focus, .sg3 > div > select:focus {
+      border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,86,47,.13); }
+    .shint { font-size:.78rem; color:var(--faint); margin-top:.4rem; line-height:1.5; }
+    .scnt  { font-size:.75rem; color:var(--faint); margin-top:.45rem; }
+
+    .schoice { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .schoice label { display:flex; align-items:center; gap:.45rem; min-height:38px; padding:0 .9rem;
+      border:1px solid var(--border); border-radius:7px; cursor:pointer; font-size:.86rem;
+      font-weight:500; background:#fff; transition:all .15s; }
+    .schoice input { width:auto; margin:0; accent-color:var(--accent); }
+    .schoice label:has(input:checked) { border-color:var(--accent); background:var(--accent-light); font-weight:600; }
+
+    .schips { display:flex; flex-wrap:wrap; gap:.45rem; }
+    .schips label { display:inline-flex; align-items:center; gap:.4rem; min-height:34px; padding:0 .8rem;
+      border:1px solid var(--border); border-radius:100px; background:#fff; font-size:.85rem;
+      color:var(--text); cursor:pointer; transition:all .15s; user-select:none; }
+    .schips label:hover { border-color:var(--brand-mid); }
+    /* Native box hidden — the chip carries the state; focus ring moves to the label. */
+    .schips input { position:absolute; opacity:0; width:0; height:0; margin:0; }
+    .schips em { font-style:normal; }
+    .schips label:has(input:checked) { border-color:var(--accent); background:var(--accent-light); font-weight:600; }
+    .schips.likes label:has(input:checked) { border-color:var(--green); background:var(--green-light); color:#33402C; }
+    .schips label:has(input:focus-visible) { outline:2px solid var(--accent); outline-offset:2px; }
+    .schips label.is-full { opacity:.4; cursor:not-allowed; }
+
+    .sbtn { height:38px; padding:0 1.15rem; border-radius:7px; border:1px solid transparent;
+      font-family:'Inter',sans-serif; font-weight:600; font-size:.86rem; cursor:pointer;
+      display:inline-flex; align-items:center; gap:.45rem; transition:all .15s; }
+    .sb-primary { background:var(--accent); color:#fff; }
+    .sb-primary:hover { background:var(--accent-dark); }
+    .sb-quiet { background:#fff; color:var(--text); border-color:var(--border); }
+    .sb-quiet:hover { border-color:var(--accent); color:var(--accent-dark); }
+    .sb-risk { background:#fff; color:var(--danger); border-color:var(--danger-line); }
+    .sb-risk:hover { background:var(--danger-tint); }
+
+    .sbar { display:flex; align-items:center; justify-content:flex-end; gap:.6rem;
+            margin-top:1.5rem; padding-top:1.2rem; border-top:1px solid var(--border); }
+    .sbar .set-msg { margin-right:auto; }
+    /* The Account & data bar carries only a status line, so its rule would
+       hang under the section with nothing beneath it. */
+    .sbar:not(:has(button)) { border-top:none; margin-top:.4rem; padding-top:0; }
+    .set-msg { font-size:.83rem; min-height:1.1em; }
+    .set-msg.ok  { color:var(--green); }
+    .set-msg.err { color:var(--accent-dark); }
+
+    /* Modal for the irreversible actions */
+    .set-modal { position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center;
+                 padding:1.5rem; background:rgba(26,14,8,.7); }
+    .set-modal.show { display:flex; }
+    .set-modal-box { background:#fff; border-radius:12px; max-width:440px; width:100%; padding:1.6rem 1.6rem 1.3rem; }
+    .set-modal-box h3 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.15rem; color:var(--danger); margin-bottom:.5rem; }
+    .set-modal-box p { font-size:.87rem; line-height:1.6; color:var(--muted); margin-bottom:1rem; }
+    .set-modal-box .modal-actions { display:flex; justify-content:flex-end; gap:.6rem; margin-top:1rem; }
+
+    @media (max-width: 1000px) {
+      .set-wrap { padding:1.8rem 1.25rem 2.5rem; }
+      .set-shell { grid-template-columns:1fr; gap:1.4rem; }
+      .set-rail { position:static; flex-direction:row; flex-wrap:wrap; }
+      .set-rail button { width:auto; }
+      .set-rail .rail-sep { display:none; }
+      .srow { grid-template-columns:1fr; gap:.4rem; }
+      .srow-lab { padding-top:0; }
+      .sg2, .sg3 { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
 <div id="nav-mount"></div>
 
-<main class="set-wrap">
-  <h1>Account Settings</h1>
+<main class="set-page">
+  <div class="set-wrap">
+    <p class="set-eyebrow">Your account</p>
+    <h1 class="set-title">Account settings</h1>
+    <p class="set-sub" id="setSignedIn">&nbsp;</p>
+    <div class="set-flag" id="setFlag" hidden></div>
+    <div class="set-flag warn" id="setStale" hidden></div>
 
-  <!-- NAME -->
-  <div class="set-card">
-    <h2>👤 Name</h2>
-    <div class="form-group"><label for="sName">Display name</label><input type="text" id="sName" placeholder="e.g. Priya Sharma"/></div>
-    <button class="btn btn--primary btn--sm" onclick="saveName()">Save Name</button>
-    <p class="set-msg" id="nameMsg"></p>
-  </div>
+    <div class="set-shell">
+      <!-- A <div>, not a <nav>: nav.css styles every bare <nav> as the dark
+           site bar (64px tall, sticky, brand background), which swallowed
+           this rail whole. -->
+      <div class="set-rail" id="setRail" role="navigation" aria-label="Settings sections">
+        <button class="on" data-go="profile"  onclick="setGo('profile')"><em>&#128100;</em> Profile</button>
+        <button data-go="location" onclick="setGo('location')"><em>&#128205;</em> Location</button>
+        <button data-go="learning" onclick="setGo('learning')"><em>&#127891;</em> Learning</button>
+        <button data-go="subjects" onclick="setGo('subjects')"><em>&#129517;</em> Subjects</button>
+        <button data-go="password" onclick="setGo('password')"><em>&#128274;</em> Password</button>
+        <div class="rail-sep"></div>
+        <button data-go="data" onclick="setGo('data')"><em>&#128451;</em> Account &amp; data</button>
+      </div>
 
-  <!-- ADDRESS -->
-  <div class="set-card">
-    <h2>📍 Address</h2>
-    <div class="form-group">
-      <label for="sCountry">Country</label>
-      <select id="sCountry" onchange="GEO.renderState('sStateWrap','sState',this.value)"></select>
-    </div>
-    <div class="set-row">
-      <div class="form-group" style="flex:2;"><label for="sCity">City</label><input type="text" id="sCity"/></div>
-      <div class="form-group" style="flex:1.4;"><label for="sState">State</label><div id="sStateWrap"><input type="text" id="sState"/></div></div>
-      <div class="form-group"><label for="sZip">Zip</label><input type="text" id="sZip"/></div>
-    </div>
-    <button class="btn btn--primary btn--sm" onclick="saveAddress()">Save Address</button>
-    <p class="set-msg" id="addrMsg"></p>
-  </div>
+      <div class="set-pane">
 
-  <!-- LEARNING / GRADE -->
-  <div class="set-card">
-    <h2>🎓 Learning</h2>
-    <div class="form-group">
-      <label>I am a...</label>
-      <div style="display:flex;gap:.6rem;margin-top:.25rem;">
-        <label class="type-opt" style="flex:1;"><input type="radio" name="sType" value="student" onchange="setToggleType()"/> Student</label>
-        <label class="type-opt" style="flex:1;"><input type="radio" name="sType" value="examprep" onchange="setToggleType()"/> Exam Prep</label>
+        <!-- ── PROFILE ── -->
+        <section class="pane" data-pane="profile">
+          <h2>Profile</h2>
+          <p class="pane-note">How your name appears across the site.</p>
+          <div class="srow">
+            <div class="srow-lab"><b>Display name</b><span>Shown on your dashboard.</span></div>
+            <div><input type="text" id="sName" class="sin" placeholder="e.g. Priya Sharma"/></div>
+          </div>
+          <div class="srow">
+            <div class="srow-lab"><b>Email address</b><span>Used to sign in. Contact us to change it.</span></div>
+            <div><input type="text" id="sEmail" class="sin" disabled/></div>
+          </div>
+          <div class="sbar">
+            <p class="set-msg" id="nameMsg"></p>
+            <button class="sbtn sb-primary" onclick="saveName()">Save changes</button>
+          </div>
+        </section>
+
+        <!-- ── LOCATION ── -->
+        <section class="pane" data-pane="location" style="display:none;">
+          <h2>Location</h2>
+          <p class="pane-note">Used to match your local curriculum.</p>
+          <div class="srow">
+            <div class="srow-lab"><b>Country, state and city</b></div>
+            <div class="sg3">
+              <select id="sCountry" class="sin" onchange="sCountryChange()"></select>
+              <div id="sStateWrap"><input type="text" id="sState" placeholder="State"/></div>
+              <div id="sCityWrap"><input type="text" id="sCity" placeholder="Your city"/></div>
+            </div>
+          </div>
+          <div class="srow">
+            <div class="srow-lab"><b>Zip / Postcode</b><span>Optional.</span></div>
+            <div><input type="text" id="sZip" class="sin" style="max-width:220px;"/></div>
+          </div>
+          <div class="sbar">
+            <p class="set-msg" id="addrMsg"></p>
+            <button class="sbtn sb-primary" onclick="saveAddress()">Save changes</button>
+          </div>
+        </section>
+
+        <!-- ── LEARNING ── -->
+        <section class="pane" data-pane="learning" style="display:none;">
+          <h2>Learning</h2>
+          <p class="pane-note">Controls which questions the Lab gives you.</p>
+          <div class="srow">
+            <div class="srow-lab"><b>I am studying for</b></div>
+            <div>
+              <div class="schoice">
+                <label><input type="radio" name="sType" value="student" onchange="setToggleType()"/> School (Grades 1&ndash;12)</label>
+                <label><input type="radio" name="sType" value="examprep" onchange="setToggleType()"/> Entrance &amp; Government Exams</label>
+              </div>
+              <p class="shint">Entrance covers CUET; government covers Railways, Bank PO, SSC and UPSC.</p>
+            </div>
+          </div>
+          <div id="sStudentFields">
+            <div class="srow">
+              <div class="srow-lab"><b>Grade &amp; curriculum</b><span>Takes effect next time you open the Lab.</span></div>
+              <div class="sg2">
+                <select id="sGrade" class="sin">
+                  <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option>
+                  <option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option>
+                  <option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
+                  <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option>
+                  <option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option>
+                  <option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option>
+                </select>
+                <select id="sCurriculum" class="sin">
+                  <option value="cbse">CBSE (India)</option><option value="icse">ICSE (India)</option>
+                  <option value="uk">UK National Curriculum</option><option value="us">US Common Core</option>
+                  <option value="ib">IB</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="sExamFields" style="display:none;">
+            <div class="srow">
+              <div class="srow-lab"><b>Which exams</b><span>Pick as many as apply.</span></div>
+              <div class="schips">
+                <label><input type="checkbox" class="s-exam" value="CUET"/> <em>&#127891;</em> CUET</label>
+                <label><input type="checkbox" class="s-exam" value="Railways"/> <em>&#128644;</em> Railways</label>
+                <label><input type="checkbox" class="s-exam" value="Bank PO"/> <em>&#127974;</em> Bank PO</label>
+                <label><input type="checkbox" class="s-exam" value="SSC"/> <em>&#128203;</em> SSC</label>
+                <label><input type="checkbox" class="s-exam" value="UPSC"/> <em>&#127963;</em> UPSC</label>
+              </div>
+            </div>
+          </div>
+          <div class="sbar">
+            <p class="set-msg" id="learnMsg"></p>
+            <button class="sbtn sb-primary" onclick="saveLearning()">Save changes</button>
+          </div>
+        </section>
+
+        <!-- ── SUBJECTS ── -->
+        <section class="pane" data-pane="subjects" style="display:none;">
+          <h2>Subjects</h2>
+          <p class="pane-note">These decide what the Lab opens on.</p>
+          <div class="srow">
+            <div class="srow-lab"><b>Subjects you enjoy</b><span>Kept in the mix so practice stays enjoyable.</span></div>
+            <div><div class="schips likes" id="sLikeChips"></div><p class="scnt" id="sLikeCnt"></p></div>
+          </div>
+          <div class="srow">
+            <div class="srow-lab"><b>Subjects you find hardest</b><span>The Lab opens on these first, because that's where practice helps most.</span></div>
+            <div><div class="schips" id="sHardChips"></div><p class="scnt" id="sHardCnt"></p></div>
+          </div>
+          <div class="sbar">
+            <p class="set-msg" id="subjMsg"></p>
+            <button class="sbtn sb-primary" onclick="saveSubjects()">Save changes</button>
+          </div>
+        </section>
+
+        <!-- ── PASSWORD ── -->
+        <section class="pane" data-pane="password" style="display:none;">
+          <h2>Password</h2>
+          <p class="pane-note">Change the password you sign in with.</p>
+          <div id="sPwFields">
+            <div class="srow">
+              <div class="srow-lab"><b>Current password</b></div>
+              <div><input type="password" id="sCurrentPw" class="sin" placeholder="Your current password"/></div>
+            </div>
+            <div class="srow">
+              <div class="srow-lab"><b>New password</b><span>At least 6 characters.</span></div>
+              <div><input type="password" id="sNewPw" class="sin" placeholder="Choose a new password"/></div>
+            </div>
+            <div class="sbar">
+              <p class="set-msg" id="pwMsg"></p>
+              <button class="sbtn sb-primary" onclick="savePassword()">Change password</button>
+            </div>
+          </div>
+          <!-- Shown instead when the account has no password to change. -->
+          <div id="sPwNone" style="display:none;">
+            <div class="srow">
+              <div class="srow-lab"><b>No password on this account</b></div>
+              <div><p class="shint" style="margin-top:.5rem;">You signed in with Google, so there's no Seek-O-Sphere password to change. Manage it from your Google account instead.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── ACCOUNT & DATA ── -->
+        <section class="pane" data-pane="data" style="display:none;">
+          <h2>Account &amp; data</h2>
+          <p class="pane-note">These can't be undone.</p>
+          <div class="srow">
+            <div class="srow-lab"><b>Reset my progress</b><span>Clears your questions answered, streak and badges. Your account and settings stay as they are.</span></div>
+            <div><button class="sbtn sb-risk" onclick="openModal('reset')">Reset progress</button></div>
+          </div>
+          <div class="srow">
+            <div class="srow-lab"><b>Delete my account</b><span>Removes your profile and all of your progress permanently.</span></div>
+            <div><button class="sbtn sb-risk" onclick="openModal('delete')">Delete account</button></div>
+          </div>
+          <div class="sbar"><p class="set-msg" id="dataMsg"></p></div>
+        </section>
+
       </div>
     </div>
-    <div id="sStudentFields">
-      <div class="form-group">
-        <label for="sGrade">Your Grade</label>
-        <select id="sGrade">
-          <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option>
-          <option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option>
-          <option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
-          <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option>
-          <option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option>
-          <option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="sCurriculum">Your Curriculum</label>
-        <select id="sCurriculum">
-          <option value="cbse">CBSE (India)</option><option value="icse">ICSE (India)</option>
-          <option value="uk">UK National Curriculum</option><option value="us">US Common Core</option>
-          <option value="ib">IB</option>
-        </select>
-      </div>
-    </div>
-    <div id="sExamFields" style="display:none;">
-      <div class="form-group">
-        <label>Which exams are you preparing for?</label>
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.25rem;">
-          <label class="exam-chip"><input type="checkbox" class="s-exam" value="CUET"/> CUET</label>
-          <label class="exam-chip"><input type="checkbox" class="s-exam" value="Railways"/> Railways</label>
-          <label class="exam-chip"><input type="checkbox" class="s-exam" value="Bank PO"/> Bank PO</label>
-          <label class="exam-chip"><input type="checkbox" class="s-exam" value="SSC"/> SSC</label>
-          <label class="exam-chip"><input type="checkbox" class="s-exam" value="UPSC"/> UPSC</label>
-        </div>
-      </div>
-    </div>
-    <button class="btn btn--primary btn--sm" onclick="saveLearning()">Save Learning</button>
-    <p class="set-msg" id="learnMsg"></p>
-  </div>
-
-  <!-- PASSWORD -->
-  <div class="set-card">
-    <h2>🔒 Password</h2>
-    <div class="form-group"><label for="sCurrentPw">Current password</label><input type="password" id="sCurrentPw" placeholder="Your current password"/></div>
-    <div class="form-group"><label for="sNewPw">New password</label><input type="password" id="sNewPw" placeholder="At least 6 characters"/></div>
-    <button class="btn btn--primary btn--sm" onclick="savePassword()">Change Password</button>
-    <p class="set-msg" id="pwMsg"></p>
-  </div>
-
-  <div class="set-actions">
-    <a href="dashboard.html" class="btn btn--secondary">My Dashboard</a>
-    <a href="../index.html" class="btn btn--ghost">Back to Site</a>
   </div>
 </main>
+
+<!-- Confirmation modal, shared by both irreversible actions -->
+<div class="set-modal" id="setModal">
+  <div class="set-modal-box">
+    <h3 id="modalTitle">Are you sure?</h3>
+    <p id="modalBody"></p>
+    <div id="modalConfirmWrap" style="display:none;">
+      <label class="srow-lab"><b id="modalConfirmLabel">Type your email to confirm</b></label>
+      <input type="text" id="modalConfirm" class="sin" style="margin-top:.4rem;" autocomplete="off"/>
+    </div>
+    <p class="set-msg err" id="modalErr"></p>
+    <div class="modal-actions">
+      <button class="sbtn sb-quiet" onclick="closeModal()">Cancel</button>
+      <button class="sbtn sb-risk" id="modalGo">Confirm</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -126,67 +350,228 @@
 <script src="../js/core/utils.js"></script>
 <script src="../js/components/marquee.js"></script>
 <script src="../js/core/nav.js"></script>
-<script>mountNav('account-settings.html');</script>
+<script>mountNav('account-settings.html', { homeLinks: true, noBanner: true });</script>
 <script src="../js/session.js"></script>
 <script>
   var CURRENT_USER = null;
+  var PROFILE_LOADED = false;   // guards every save against a failed read
+  var PROFILE = {};             // last known profile, kept current as sections save
+
+  /* ── Rail navigation ─────────────────────────────────────────── */
+  function setGo(name){
+    var rail = document.getElementById('setRail');
+    [].forEach.call(rail.querySelectorAll('button'), function(b){
+      b.classList.toggle('on', b.getAttribute('data-go') === name);
+    });
+    [].forEach.call(document.querySelectorAll('.pane'), function(p){
+      p.style.display = (p.getAttribute('data-pane') === name) ? 'block' : 'none';
+    });
+  }
 
   function setToggleType(){
     var t = (document.querySelector('input[name="sType"]:checked') || {}).value || 'student';
     document.getElementById('sStudentFields').style.display = (t === 'student') ? 'block' : 'none';
-    document.getElementById('sExamFields').style.display = (t === 'examprep') ? 'block' : 'none';
+    document.getElementById('sExamFields').style.display    = (t === 'examprep') ? 'block' : 'none';
+    paintSubjectChips();
   }
   function setMsg(id, text, ok){
     var el = document.getElementById(id);
+    if (!el) return;
     el.textContent = text; el.className = 'set-msg ' + (ok ? 'ok' : 'err');
   }
 
+  /* ── Country → State → City cascade ──────────────────────────── */
+  function sCountryChange(){
+    var c = (document.getElementById('sCountry') || {}).value || '';
+    if (!window.GEO) return;
+    GEO.renderState('sStateWrap', 'sState', c);
+    var st = document.getElementById('sState');
+    if (st) st.addEventListener('change', sStateChange);
+    sStateChange();
+  }
+  function sStateChange(){
+    var st = document.getElementById('sState');
+    if (window.GEO) GEO.renderCity('sCityWrap', 'sCity', st ? st.value : '');
+  }
+
+  /* ── Subject preferences ─────────────────────────────────────── */
+  var SUBJECTS = {
+    student: [
+      { k:'maths',     e:'➕',            n:'Maths' },
+      { k:'science',   e:'🔬',      n:'Science' },
+      { k:'english',   e:'📖',      n:'English' },
+      { k:'history',   e:'📜',      n:'History' },
+      { k:'geography', e:'🌍',      n:'Geography' }
+    ],
+    examprep: [
+      { k:'gk',        e:'🌐',      n:'General Knowledge' },
+      { k:'aptitude',  e:'🔢',      n:'Aptitude' },
+      { k:'reasoning', e:'🧩',      n:'Reasoning' },
+      { k:'english',   e:'📖',      n:'English' }
+    ]
+  };
+  var SUBJ_MAX = 3;
+  var subjLikes = [], subjHard = [];
+
+  function currentType(){
+    return (document.querySelector('input[name="sType"]:checked') || {}).value || 'student';
+  }
+  function subjToggle(kind, key){
+    var arr = (kind === 'like') ? subjLikes : subjHard;
+    var i = arr.indexOf(key);
+    if (i > -1) arr.splice(i, 1);
+    else if (arr.length < SUBJ_MAX) arr.push(key);
+    paintSubjectChips();
+  }
+  function paintSubjectChips(){
+    var subs = SUBJECTS[currentType()] || SUBJECTS.student;
+    function row(arr, kind){
+      return subs.map(function(s){
+        var on   = arr.indexOf(s.k) > -1;
+        var full = arr.length >= SUBJ_MAX && !on;
+        return '<label class="' + (full ? 'is-full' : '') + '">' +
+               '<input type="checkbox"' + (on ? ' checked' : '') + (full ? ' disabled' : '') +
+               ' onchange="subjToggle(\'' + kind + '\',\'' + s.k + '\')"/> <em>' + s.e + '</em> ' + s.n + '</label>';
+      }).join('');
+    }
+    var lc = document.getElementById('sLikeChips'), hc = document.getElementById('sHardChips');
+    if (!lc || !hc) return;
+    lc.innerHTML = row(subjLikes, 'like');
+    hc.innerHTML = row(subjHard,  'hard');
+    document.getElementById('sLikeCnt').textContent = subjLikes.length
+      ? subjLikes.length + ' of ' + SUBJ_MAX + ' chosen' : 'Optional — pick up to ' + SUBJ_MAX + '.';
+    document.getElementById('sHardCnt').textContent = subjHard.length
+      ? subjHard.length + ' of ' + SUBJ_MAX + ' chosen' : 'Optional — pick up to ' + SUBJ_MAX + '.';
+  }
+
+  /* Set a <select> only when the stored value really is one of its options.
+     Assigning an unknown value leaves the box blank, and a blank box would
+     then be saved back over a perfectly good answer. Older profiles may have
+     stored a bare "7" or a lower-case "cbse", so try a tidied form too. */
+  function setSel(id, value, pattern, replacement){
+    var el = document.getElementById(id);
+    if (!el || value == null || value === '') return;
+    var tries = [String(value)];
+    if (pattern && pattern.test(String(value))) tries.push(String(value).replace(pattern, replacement));
+    tries.push(String(value).toLowerCase());
+    for (var i = 0; i < tries.length; i++) {
+      for (var j = 0; j < el.options.length; j++) {
+        if (el.options[j].value === tries[i]) { el.selectedIndex = j; return; }
+      }
+    }
+  }
+
+  /* Everything the sign-up form asks for, and where to go to answer it.
+     A person who joined with Google or as a guest never saw that form, so
+     these come back blank and the page says so instead of looking finished. */
+  function flagBlanks(p){
+    var gaps = [];
+    if (!p.name)                                     gaps.push({ go:'profile',  what:'your name' });
+    if (!p.country && !p.state && !p.city)           gaps.push({ go:'location', what:'where you are' });
+    if (p.type === 'examprep'
+          ? !(p.exams || []).length
+          : !p.grade)                                gaps.push({ go:'learning', what:'what you are studying' });
+    if (!(p.enjoys || []).length && !(p.finds_hard || []).length)
+                                                     gaps.push({ go:'subjects', what:'your subjects' });
+    var el = document.getElementById('setFlag');
+    if (!gaps.length) { el.hidden = true; el.innerHTML = ''; return; }
+    var html = '<b>A few details are still blank.</b> Fill in ';
+    gaps.forEach(function(g, i){
+      if (i) html += (i === gaps.length - 1) ? ' and ' : ', ';
+      html += '<button type="button" onclick="setGo(\'' + g.go + '\')">' + g.what + '</button>';
+    });
+    el.innerHTML = html + ' so the Lab can match your level.';
+    el.hidden = false;
+  }
+
+  /* ── Load the profile ────────────────────────────────────────── */
   SOS.onSession(function(user, profile){
     if (!user) { window.location.replace('login.html'); return; }
     CURRENT_USER = user;
-    var p = profile || {};
+
+    // No profile came back (offline, or the read was refused). Saving now would
+    // write today's empty boxes over good answers, so hold everything.
+    if (!profile) {
+      document.getElementById('setSignedIn').textContent = 'Signed in as ' + (user.email || 'a guest account');
+      var stale = document.getElementById('setStale');
+      stale.innerHTML = '<b>We could not load your details just now.</b> ' +
+        'Reload the page before changing anything — saving from here would overwrite what you already have.';
+      stale.hidden = false;
+      [].forEach.call(document.querySelectorAll('.sbtn'), function(b){ b.disabled = true; b.style.opacity = '.45'; });
+      return;
+    }
+    PROFILE_LOADED = true;
+    var p = profile;
+    PROFILE = profile;
+
+    document.getElementById('setSignedIn').textContent = 'Signed in as ' + (user.email || 'a guest account');
     document.getElementById('sName').value  = p.name  || '';
-    document.getElementById('sCity').value  = p.city  || '';
+    document.getElementById('sEmail').value = user.email || '—';
+
     var country = p.country || 'India';
     if (window.GEO) {
       GEO.populateCountries('sCountry', country);
       GEO.renderState('sStateWrap', 'sState', country, p.state || '');
+      var st = document.getElementById('sState');
+      if (st) st.addEventListener('change', sStateChange);
+      GEO.renderCity('sCityWrap', 'sCity', st ? st.value : '', p.city || '');
     } else {
       document.getElementById('sState').value = p.state || '';
+      document.getElementById('sCity').value  = p.city  || '';
     }
-    document.getElementById('sZip').value   = p.zip   || '';
+    document.getElementById('sZip').value = p.zip || '';
+
     var type = p.type === 'examprep' ? 'examprep' : 'student';
     var radio = document.querySelector('input[name="sType"][value="' + type + '"]');
     if (radio) radio.checked = true;
-    if (p.grade) document.getElementById('sGrade').value = p.grade;
-    if (p.curriculum) document.getElementById('sCurriculum').value = p.curriculum;
+    setSel('sGrade', p.grade, /^\s*(?:grade\s*)?(\d{1,2})\s*$/i, 'Grade $1');
+    setSel('sCurriculum', p.curriculum);
     (p.exams || []).forEach(function(ex){
       var cb = document.querySelector('.s-exam[value="' + ex + '"]'); if (cb) cb.checked = true;
     });
+
+    subjLikes = (p.enjoys     || []).slice(0, SUBJ_MAX);
+    subjHard  = (p.finds_hard || []).slice(0, SUBJ_MAX);
     setToggleType();
+
+    // A Google or guest account has no password to change, so offer the
+    // explanation instead of a form that can only fail.
+    var hasPassword = (user.providerData || []).some(function(pr){ return pr.providerId === 'password'; });
+    document.getElementById('sPwFields').style.display = hasPassword ? 'block' : 'none';
+    document.getElementById('sPwNone').style.display   = hasPassword ? 'none'  : 'block';
+
+    flagBlanks(p);
   });
 
+  /* ── Saves ───────────────────────────────────────────────────── */
   function saveName(){
-    if (!CURRENT_USER) return;
+    if (!CURRENT_USER || !PROFILE_LOADED) return;
     var name = document.getElementById('sName').value.trim();
     if (!name) { setMsg('nameMsg', 'Please enter a name.', false); return; }
     SOS.db.collection('users').doc(CURRENT_USER.uid).set({ name: name }, { merge: true })
       .then(function(){
         try { localStorage.setItem('sos_name', name); } catch(e){}
-        setMsg('nameMsg', 'Name saved!', true);
+        PROFILE.name = name; flagBlanks(PROFILE);
+        setMsg('nameMsg', 'Saved.', true);
       })
       .catch(function(e){ setMsg('nameMsg', 'Could not save: ' + e.message, false); });
   }
 
   function saveAddress(){
-    if (!CURRENT_USER) return;
+    if (!CURRENT_USER || !PROFILE_LOADED) return;
     SOS.db.collection('users').doc(CURRENT_USER.uid).set({
       country: (document.getElementById('sCountry') || {}).value || '',
-      city: document.getElementById('sCity').value.trim(),
+      city:  ((document.getElementById('sCity')  || {}).value || '').trim(),
       state: ((document.getElementById('sState') || {}).value || '').trim(),
-      zip: document.getElementById('sZip').value.trim()
+      zip:     document.getElementById('sZip').value.trim()
     }, { merge: true })
-    .then(function(){ setMsg('addrMsg', 'Address saved!', true); })
+    .then(function(){
+      PROFILE.country = (document.getElementById('sCountry') || {}).value || '';
+      PROFILE.state   = ((document.getElementById('sState') || {}).value || '').trim();
+      PROFILE.city    = ((document.getElementById('sCity')  || {}).value || '').trim();
+      flagBlanks(PROFILE);
+      setMsg('addrMsg', 'Saved.', true);
+    })
     .catch(function(e){ setMsg('addrMsg', 'Could not save: ' + e.message, false); });
   }
 
@@ -200,8 +585,8 @@
   }
 
   function saveLearning(){
-    if (!CURRENT_USER) return;
-    var type = (document.querySelector('input[name="sType"]:checked') || {}).value || 'student';
+    if (!CURRENT_USER || !PROFILE_LOADED) return;
+    var type = currentType();
     var data = { type: type };
     if (type === 'student') {
       data.grade = document.getElementById('sGrade').value;
@@ -220,14 +605,35 @@
           if (data.curriculum) localStorage.setItem('sos_curriculum', data.curriculum);
           if (data.grade)      localStorage.setItem('sos_grade', data.grade);
           if (data.ageGroup)   localStorage.setItem('sos_age', data.ageGroup);
+          localStorage.setItem('sos_type', type);
         } catch(e){}
-        setMsg('learnMsg', 'Learning preferences saved!', true);
+        PROFILE.type = data.type; PROFILE.grade = data.grade;
+        PROFILE.curriculum = data.curriculum; PROFILE.exams = data.exams;
+        flagBlanks(PROFILE);
+        setMsg('learnMsg', 'Saved.', true);
       })
       .catch(function(e){ setMsg('learnMsg', 'Could not save: ' + e.message, false); });
   }
 
+  function saveSubjects(){
+    if (!CURRENT_USER || !PROFILE_LOADED) return;
+    SOS.db.collection('users').doc(CURRENT_USER.uid)
+      .set({ enjoys: subjLikes.slice(), finds_hard: subjHard.slice() }, { merge: true })
+      .then(function(){
+        // The Lab reads these from localStorage on load.
+        try {
+          localStorage.setItem('sos_enjoys', subjLikes.join(','));
+          localStorage.setItem('sos_hard',   subjHard.join(','));
+        } catch(e){}
+        PROFILE.enjoys = subjLikes.slice(); PROFILE.finds_hard = subjHard.slice();
+        flagBlanks(PROFILE);
+        setMsg('subjMsg', 'Saved. The Lab will use these next time you open it.', true);
+      })
+      .catch(function(e){ setMsg('subjMsg', 'Could not save: ' + e.message, false); });
+  }
+
   function savePassword(){
-    if (!CURRENT_USER) return;
+    if (!CURRENT_USER || !PROFILE_LOADED) return;
     var cur = document.getElementById('sCurrentPw').value;
     var neu = document.getElementById('sNewPw').value;
     if (neu.length < 6) { setMsg('pwMsg', 'New password must be at least 6 characters.', false); return; }
@@ -245,6 +651,101 @@
       setMsg('pwMsg', msg, false);
     });
   }
+
+  /* ── Account & data ──────────────────────────────────────────── */
+  var MODAL_MODE = null;
+
+  function openModal(mode){
+    MODAL_MODE = mode;
+    var wrap = document.getElementById('modalConfirmWrap');
+    document.getElementById('modalErr').textContent = '';
+    document.getElementById('modalConfirm').value = '';
+    if (mode === 'reset') {
+      document.getElementById('modalTitle').textContent = 'Reset your progress?';
+      document.getElementById('modalBody').textContent =
+        'This clears every question you have answered, your streak and your badges. Your account, settings and subject choices stay exactly as they are. It cannot be undone.';
+      wrap.style.display = 'none';
+      document.getElementById('modalGo').textContent = 'Reset progress';
+    } else {
+      document.getElementById('modalTitle').textContent = 'Delete your account?';
+      document.getElementById('modalBody').textContent =
+        'This removes your profile and all of your progress permanently. It cannot be undone.';
+      document.getElementById('modalConfirmLabel').textContent =
+        'Type ' + (CURRENT_USER && CURRENT_USER.email ? CURRENT_USER.email : 'DELETE') + ' to confirm';
+      wrap.style.display = 'block';
+      document.getElementById('modalGo').textContent = 'Delete account';
+    }
+    document.getElementById('setModal').classList.add('show');
+  }
+  function closeModal(){ document.getElementById('setModal').classList.remove('show'); }
+
+  document.getElementById('modalGo').addEventListener('click', function(){
+    if (MODAL_MODE === 'reset') doResetProgress();
+    else doDeleteAccount();
+  });
+  document.getElementById('setModal').addEventListener('click', function(ev){
+    if (ev.target === this) closeModal();
+  });
+  // Escape backs out of an irreversible action — the safe direction.
+  document.addEventListener('keydown', function(ev){
+    if (ev.key === 'Escape' && document.getElementById('setModal').classList.contains('show')) closeModal();
+  });
+
+  function doResetProgress(){
+    if (!CURRENT_USER || !PROFILE_LOADED) return;
+    var uid = CURRENT_USER.uid;
+    var btn = document.getElementById('modalGo');
+    btn.disabled = true; btn.textContent = 'Resetting…';
+
+    // Zero the counters on the profile, then clear the per-day documents the
+    // dashboard charts read — otherwise the two would disagree.
+    SOS.db.collection('users').doc(uid).set({
+      totalQuestions: 0, correctTotal: 0, bestStreak: 0, badgesEarned: []
+    }, { merge: true })
+    .then(function(){ return SOS.db.collection('progress').doc(uid).collection('daily').get(); })
+    .then(function(snap){
+      if (snap.empty) return null;
+      var batch = SOS.db.batch();
+      snap.docs.forEach(function(d){ batch.delete(d.ref); });
+      return batch.commit();
+    })
+    .then(function(){
+      try {
+        localStorage.removeItem('sos_beststreak');
+      } catch(e){}
+      closeModal();
+      setMsg('dataMsg', 'Your progress has been reset.', true);
+    })
+    .catch(function(e){
+      document.getElementById('modalErr').textContent = 'Could not reset: ' + e.message;
+    })
+    .then(function(){ btn.disabled = false; btn.textContent = 'Reset progress'; });
+  }
+
+  function doDeleteAccount(){
+    if (!CURRENT_USER || !PROFILE_LOADED) return;
+    var expected = CURRENT_USER.email || 'DELETE';
+    if (document.getElementById('modalConfirm').value.trim() !== expected) {
+      document.getElementById('modalErr').textContent = "That doesn't match. Please type " + expected + '.';
+      return;
+    }
+    var btn = document.getElementById('modalGo');
+    btn.disabled = true; btn.textContent = 'Deleting…';
+
+    SOS.db.collection('users').doc(CURRENT_USER.uid).delete()
+      .then(function(){ return CURRENT_USER.delete(); })
+      .then(function(){ window.location.href = '../index.html'; })
+      .catch(function(e){
+        document.getElementById('modalErr').textContent = (e.code === 'auth/requires-recent-login')
+          ? 'For security, please sign out and sign in again before deleting your account.'
+          : 'Could not delete: ' + e.message;
+        btn.disabled = false; btn.textContent = 'Delete account';
+      });
+  }
+
+  // Render the chips even if Firebase is slow, so the section is never blank.
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paintSubjectChips);
+  else paintSubjectChips();
 </script>
 </body>
 </html>

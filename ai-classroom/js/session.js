@@ -23,6 +23,19 @@
   function store(k, v){ try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch(e){} }
   function read(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
 
+  /* Everything we mirror out of the profile so pages can paint before the
+     network answers. It is all tied to ONE person, so it travels with
+     sos_uid and is thrown away the moment a different account signs in —
+     otherwise the previous member's name, photo and role bleed into the
+     new session, and a stale 'admin' role even misroutes them. */
+  var CACHE_KEYS = ['sos_name','sos_role','sos_photo','sos_curriculum','sos_grade',
+                    'sos_age','sos_type','sos_enjoys','sos_hard'];
+  function forgetCache(){
+    CACHE_KEYS.forEach(function(k){ store(k, null); });
+    store('sos_uid', null);
+  }
+  window.SOSCache = { keys: CACHE_KEYS, forget: forgetCache, uid: function(){ return read('sos_uid'); } };
+
   if (typeof firebase === 'undefined') {
     window.SOS = { onSession: function(){}, signOut: function(){ window.location.replace(HOME); } };
     return;
@@ -75,33 +88,51 @@
 
   var callbacks = [];
 
+  /* One profile read per page load, shared by everyone who wants it. The
+     dashboard and the admin panel used to each fire their own copy of this
+     exact query alongside session.js's, so every visit paid for the same
+     document twice. */
+  var profileRead = null;
+
   window.SOS = {
     auth: auth, db: db, P: P, HOME: HOME, user: null, profile: null,
     onSession: function(cb){ callbacks.push(cb); },
+    profileOnce: function(uid){
+      if (!db) return Promise.reject(new Error('firestore not loaded on this page'));
+      if (!profileRead) profileRead = db.collection('users').doc(uid).get();
+      return profileRead;
+    },
+    // Call after writing the profile, so the next reader does not serve a stale copy.
+    forgetProfileRead: function(){ profileRead = null; },
     signOut: function(){
-      store('sos_name', null); store('sos_role', null);
+      forgetCache();
       auth.signOut().then(function(){ window.location.replace(HOME); })
                     .catch(function(){ window.location.replace(HOME); });
     }
   };
 
   // Optimistic paint: show the cached name the instant the page loads, before
-  // auth/Firestore resolve. A cached name only exists while signed in (sign-out
-  // clears it), so this reconciles cleanly once auth confirms.
-  if (read('sos_name')) render({ displayName: read('sos_name') }, { name: read('sos_name') });
+  // auth/Firestore resolve. Only when the cache is stamped with the uid it came
+  // from — an unstamped cache is from an older build and cannot be trusted to
+  // belong to whoever is about to sign in.
+  if (read('sos_uid') && read('sos_name')) render({ displayName: read('sos_name') }, { name: read('sos_name') });
 
   auth.onAuthStateChanged(function(user){
     SOS.user = user;
     if (!user) {
-      SOS.profile = null; store('sos_name', null); store('sos_photo', null); store('sos_role', null);
+      SOS.profile = null; forgetCache();
       render(null, null);
       callbacks.forEach(function(cb){ try { cb(null, null); } catch(e){} });
       return;
     }
+    // A different person than the cache belongs to: drop it all before anything
+    // is painted, so no part of the last account shows up in this one.
+    if (read('sos_uid') !== user.uid) forgetCache();
+    store('sos_uid', user.uid);
     // Paint from cache immediately so the name doesn't wait on the network read.
     render(user, { name: read('sos_name') });
     if (db) {
-      db.collection('users').doc(user.uid).get().then(function(snap){
+      SOS.profileOnce(user.uid).then(function(snap){
         var profile = (snap && snap.exists) ? snap.data() : null;
         SOS.profile = profile;
         if (profile) {

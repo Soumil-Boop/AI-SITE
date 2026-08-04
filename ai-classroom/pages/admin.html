@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel - Seek-O-Sphere</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
+       is still parsing, instead of when the first script or request needs them. -->
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
@@ -105,15 +112,32 @@ var auth = firebase.auth();
 var db = firebase.firestore();
 try { db.enablePersistence({ synchronizeTabs: true }).catch(function(){}); } catch(e){}
 var allUsers = [];
+var USER_LIST = null;   // the member list, started in parallel with the role check
 
 auth.onAuthStateChanged(function(user) {
   if (!user) { window.location.href = 'login.html'; return; }
-  // Fast-path: a returning admin sees the panel instantly; the read below just confirms.
-  var cached = null; try { cached = localStorage.getItem('sos_role'); } catch(e){}
+  // Fast-path: a returning admin sees the panel instantly; the read below just
+  // confirms. The cache counts only if it was stamped with this same uid.
+  var cached = null;
+  try {
+    if (localStorage.getItem('sos_uid') === user.uid) cached = localStorage.getItem('sos_role');
+    else (window.SOSCache || { forget: function(){} }).forget();
+  } catch(e){}
   if (cached === 'admin') showAdmin();
-  db.collection('users').doc(user.uid).get().then(function(snap) {
+  // Fetch the member list at the same time as the role check rather than after
+  // it. Waiting for one before starting the other made the panel take two full
+  // round trips to appear; the rules still decide whether the list is allowed.
+  USER_LIST = db.collection('users').get();
+  USER_LIST.catch(function(){});                 // a non-admin is refused; handled below
+  var mine = (window.SOS && SOS.profileOnce)
+    ? SOS.profileOnce(user.uid)
+    : db.collection('users').doc(user.uid).get();
+  mine.then(function(snap) {
     var isAdmin = snap.exists && snap.data().role === 'admin';
-    try { localStorage.setItem('sos_role', (snap.exists && snap.data().role) || 'student'); } catch(e){}
+    try {
+      localStorage.setItem('sos_uid', user.uid);
+      localStorage.setItem('sos_role', (snap.exists && snap.data().role) || 'student');
+    } catch(e){}
     if (!isAdmin) { window.location.replace('../index.html'); return; }
     showAdmin();
   });
@@ -127,7 +151,7 @@ function showAdmin() {
 }
 
 function loadAdminData() {
-  db.collection('users').get().then(function(snap) {
+  (USER_LIST || db.collection('users').get()).then(function(snap) {
     allUsers = snap.docs.map(function(d) {
       return Object.assign({ uid: d.id }, d.data());
     });
@@ -255,7 +279,7 @@ function renderUserDetail(u, rows){
   var icons={'Math':'➕','Science':'🔬','English':'📖','History':'📜','Geography':'🌍'};
   var subjHTML = subjects.map(function(s){ var a=s.q?Math.round(s.c/s.q*100):0; var cls=a>=75?'good':(a>=50?'ok':'low'); var ic=icons[s.label]||(s.mode==='exam'?'🏛️':'📘');
     return '<div class="dash-subj-row"><div class="dash-subj-donut">'+umDonut(a,cls==='good'?'#5F7355':(cls==='ok'?'#C0562F':'#B24E33'))+'</div>'
-      +'<div class="dash-subj-head"><span class="dash-subj-ic">'+ic+'</span><div class="dash-subj-name"><strong>'+umEsc(s.label)+'</strong><span>'+(s.mode==='exam'?'Exam prep':'Curriculum')+' · Last '+umDate(s.last)+'</span></div></div>'
+      +'<div class="dash-subj-head"><span class="dash-subj-ic">'+ic+'</span><div class="dash-subj-name"><strong>'+umEsc(s.label)+'</strong><span>'+(s.mode==='exam'?'Entrance &amp; Government Exams':'Curriculum')+' · Last '+umDate(s.last)+'</span></div></div>'
       +'<div class="dash-subj-nums"><div><b>'+s.q+'</b><span>questions</span></div><div><b class="good">'+s.c+'</b><span>correct</span></div><div><b>'+s.sessions+'</b><span>sessions</span></div></div>'
       +'<div class="dash-subj-track"><span class="'+cls+'" style="width:'+a+'%"></span></div></div>';
   }).join('');

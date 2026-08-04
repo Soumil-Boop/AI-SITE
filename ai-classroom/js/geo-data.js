@@ -69,6 +69,51 @@
     ]
   };
 
+  /* Cities for the busiest states. Any state without a list falls back to a
+     free-text box, exactly the way an unlisted country does for State. */
+  GEO.cities = {
+    "Andhra Pradesh":["Guntur","Nellore","Tirupati","Vijayawada","Visakhapatnam"],
+    "Assam":["Dibrugarh","Guwahati","Jorhat","Silchar"],
+    "Bihar":["Bhagalpur","Darbhanga","Gaya","Muzaffarpur","Patna"],
+    "Chandigarh":["Chandigarh"],
+    "Chhattisgarh":["Bhilai","Bilaspur","Korba","Raipur"],
+    "Delhi":["Dwarka","Najafgarh","Narela","New Delhi","Rohini"],
+    "Goa":["Margao","Panaji","Vasco da Gama"],
+    "Gujarat":["Ahmedabad","Bhavnagar","Gandhinagar","Jamnagar","Rajkot","Surat","Vadodara"],
+    "Haryana":["Ambala","Faridabad","Gurugram","Hisar","Karnal","Panipat"],
+    "Himachal Pradesh":["Dharamshala","Shimla","Solan"],
+    "Jammu and Kashmir":["Jammu","Srinagar"],
+    "Jharkhand":["Bokaro","Dhanbad","Jamshedpur","Ranchi"],
+    "Karnataka":["Belagavi","Bengaluru","Hubballi","Mangaluru","Mysuru","Shivamogga"],
+    "Kerala":["Kochi","Kollam","Kozhikode","Thiruvananthapuram","Thrissur"],
+    "Madhya Pradesh":["Bhopal","Gwalior","Indore","Jabalpur","Ujjain"],
+    "Maharashtra":["Aurangabad","Mumbai","Nagpur","Nashik","Navi Mumbai","Pune","Thane"],
+    "Odisha":["Bhubaneswar","Cuttack","Rourkela","Sambalpur"],
+    "Puducherry":["Puducherry"],
+    "Punjab":["Amritsar","Bathinda","Jalandhar","Ludhiana","Patiala"],
+    "Rajasthan":["Ajmer","Bikaner","Jaipur","Jodhpur","Kota","Udaipur"],
+    "Tamil Nadu":["Chennai","Coimbatore","Madurai","Salem","Tiruchirappalli","Tirunelveli"],
+    "Telangana":["Hyderabad","Karimnagar","Nizamabad","Warangal"],
+    "Uttar Pradesh":["Agra","Ghaziabad","Kanpur","Lucknow","Meerut","Noida","Prayagraj","Varanasi"],
+    "Uttarakhand":["Dehradun","Haldwani","Haridwar","Roorkee"],
+    "West Bengal":["Asansol","Durgapur","Howrah","Kolkata","Siliguri"],
+    "England":["Birmingham","Bristol","Leeds","Liverpool","London","Manchester","Sheffield"],
+    "Scotland":["Aberdeen","Dundee","Edinburgh","Glasgow"],
+    "Wales":["Cardiff","Newport","Swansea"],
+    "Northern Ireland":["Belfast","Londonderry"],
+    "California":["Los Angeles","Sacramento","San Diego","San Francisco","San Jose"],
+    "Illinois":["Chicago","Naperville","Springfield"],
+    "New York":["Albany","Buffalo","New York City","Rochester"],
+    "Texas":["Austin","Dallas","Fort Worth","Houston","San Antonio"],
+    "Washington":["Bellevue","Seattle","Spokane","Tacoma"],
+    "Ontario":["Hamilton","Mississauga","Ottawa","Toronto"],
+    "British Columbia":["Burnaby","Surrey","Vancouver","Victoria"],
+    "New South Wales":["Newcastle","Sydney","Wollongong"],
+    "Victoria":["Geelong","Melbourne"],
+    "Dubai":["Deira","Dubai Marina","Jumeirah"],
+    "Abu Dhabi":["Abu Dhabi City","Al Ain"]
+  };
+
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
@@ -96,6 +141,38 @@
     } else {
       wrap.innerHTML = '<input type="text" id="' + stateId + '" placeholder="State / Province" value="' + esc(selected) + '"/>';
     }
+  };
+
+  /* Render the City control inside `wrapId`: a dropdown when the state has a
+     known list, otherwise a free-text input. Mirrors renderState exactly, and
+     the control always keeps id `cityId` so callers read it the same way.
+     Picking "Other" swaps the dropdown for a text box on the spot. */
+  GEO.renderCity = function (wrapId, cityId, state, selected) {
+    var wrap = document.getElementById(wrapId);
+    if (!wrap) return;
+    selected = selected || '';
+    var list = GEO.cities[state];
+    if (list && list.length) {
+      var known = list.indexOf(selected) !== -1;
+      var opts = '<option value="">Select…</option>' + list.map(function (c) {
+        return '<option value="' + esc(c) + '"' + (c === selected ? ' selected' : '') + '>' + esc(c) + '</option>';
+      }).join('') + '<option value="__other">Other — type it in</option>';
+      wrap.innerHTML = '<select id="' + cityId + '" onchange="GEO.cityOther(\'' + wrapId + '\',\'' + cityId + '\',this)">' + opts + '</select>';
+      if (selected && !known) GEO.renderCityInput(wrap, cityId, selected);
+    } else {
+      GEO.renderCityInput(wrap, cityId, selected);
+    }
+  };
+  GEO.renderCityInput = function (wrap, cityId, selected) {
+    wrap.innerHTML = '<input type="text" id="' + cityId + '" placeholder="Your city" value="' + esc(selected || '') + '"/>';
+  };
+  GEO.cityOther = function (wrapId, cityId, sel) {
+    if (sel.value !== '__other') return;
+    var wrap = document.getElementById(wrapId);
+    if (!wrap) return;
+    GEO.renderCityInput(wrap, cityId, '');
+    var el = document.getElementById(cityId);
+    if (el) el.focus();
   };
 
   window.GEO = GEO;
