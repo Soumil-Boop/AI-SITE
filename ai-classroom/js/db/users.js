@@ -93,5 +93,8 @@ export async function deleteUserProfile(uid) {
 /* ── CHECK if user is admin ─────────────────────────────────── */
 export async function isAdmin(uid) {
   const profile = await getUserProfile(uid);
-  return profile?.role === 'admin';
+  // Either admin level counts as an admin for gating purposes; what they can
+  // actually see is decided by the Firestore rules, not here.
+  const r = profile?.role;
+  return r === 'owner' || r === 'schooladmin' || r === 'admin';
 }

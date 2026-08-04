@@ -3,6 +3,35 @@ rules_version = '2';
 // ============================================================
 // Seek-O-Sphere — Firestore Security Rules
 // Paste this into: Firebase Console → Firestore Database → Rules → Publish
+//
+// THREE LEVELS OF ACCESS
+//   owner        — you. Sees every member, every school, every admin.
+//   schooladmin  — runs one school. Sees ONLY that school's students:
+//                  no other school, no online students, and no admin
+//                  accounts (not even their own row).
+//   student      — sees only themselves.
+//
+// HOW THE SCHOOL BOUNDARY IS ENFORCED
+// Firestore cannot filter a list for you — it can only refuse a query
+// whose results it cannot guarantee are all allowed. So every user
+// document carries a `bucket` field that says, in one value, which list
+// it belongs to:
+//
+//     'school:<schoolId>'   a student in that school
+//     'online'              a student who joined without a code
+//     'staff'               any admin or the owner
+//
+// A school admin's panel queries where('bucket','==','school:<their id>').
+// Every document that query can return is, by definition, one of their
+// own students — so the rule below is satisfiable and the query is
+// allowed. Ask for anything else and Firestore refuses the whole query,
+// not just the extra rows. One equality filter also means Firestore's
+// automatic single-field index covers it: no composite index to create.
+//
+// `bucket` is derived, never free-form: the write rules below recompute
+// it from role and schoolId and reject any document where it disagrees.
+// That stops someone editing their own profile to appear in — or vanish
+// from — a school's list.
 // ============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -11,29 +40,148 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // True when the SIGNED-IN user's own profile has role == 'admin'.
-    function isAdmin() {
+    function me() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function myProfileExists() {
       return isSignedIn()
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    // You. The only role that can create schools, appoint admins, or see
+    // across school boundaries.
+    function isOwner() {
+      return myProfileExists() && me().role == 'owner';
+    }
+
+    // A school's own admin.
+    function isSchoolAdmin() {
+      return myProfileExists() && me().role == 'schooladmin';
+    }
+
+    function mySchoolId() {
+      return me().schoolId;
+    }
+
+    // The bucket a document is entitled to, worked out from its own
+    // contents. A document whose stored bucket differs from this is
+    // rejected on write.
+    function bucketFor(d) {
+      return d.role != 'student'
+        ? 'staff'
+        : (!('schoolId' in d) || d.schoolId == null || d.schoolId == ''
+            ? 'online'
+            : 'school:' + d.schoolId);
+    }
+
+    function bucketIsHonest(d) {
+      return d.bucket == bucketFor(d);
+    }
+
+    // Fields nobody may set on themselves. Role decides power; schoolId
+    // decides who can see you; bucket decides which list you appear in.
+    // All three are set by the owner, by a school admin acting inside
+    // their own school, or by the join-code flow at sign-up.
+    function keepsOwnPrivileges() {
+      return request.resource.data.role == resource.data.role;
+    }
+
+    // ── Schools ───────────────────────────────────────────────
+    // Only the owner creates or edits a school. A school admin may read
+    // their own school so the panel can show its name; nobody else can
+    // read the list at all.
+    match /schools/{schoolId} {
+      allow get:    if isOwner() || (isSchoolAdmin() && mySchoolId() == schoolId);
+      allow list:   if isOwner();
+      allow write:  if isOwner();
+    }
+
+    // ── Join codes ────────────────────────────────────────────
+    // The document ID *is* the code, so a code can only be looked up by
+    // someone who already knows it. `list` is owner-only, which means
+    // the collection cannot be enumerated to harvest codes.
+    match /joinCodes/{code} {
+      allow get:    if isSignedIn();
+      allow list:   if isOwner();
+      allow write:  if isOwner();
     }
 
     // ── User profiles ─────────────────────────────────────────
-    // A user can read/edit their own profile. An admin can read ALL
-    // profiles (needed for the admin panel's user list), change roles,
-    // and delete accounts.
     match /users/{uid} {
-      allow read:   if isSignedIn() && (request.auth.uid == uid || isAdmin());
-      allow create: if isSignedIn() && request.auth.uid == uid;
-      allow update: if isSignedIn() && (request.auth.uid == uid || isAdmin());
-      allow delete: if isAdmin();
+
+      // Reading one document: yourself, the owner, or a school admin
+      // reading one of their own students.
+      allow get: if isSignedIn() && (
+        request.auth.uid == uid
+        || isOwner()
+        || (isSchoolAdmin() && resource.data.bucket == 'school:' + mySchoolId())
+      );
+
+      // Listing many. The owner may list freely. A school admin's query
+      // must be narrowed to their own bucket — which contains only that
+      // school's students, never an admin and never another school.
+      allow list: if isSignedIn() && (
+        isOwner()
+        || (isSchoolAdmin() && resource.data.bucket == 'school:' + mySchoolId())
+      );
+
+      // Creating your own profile at sign-up. You may place yourself in a
+      // school that exists, but you always start as a student, and the
+      // bucket has to match what you claim.
+      allow create: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.role == 'student'
+        && bucketIsHonest(request.resource.data)
+        && (
+          request.resource.data.schoolId == null
+          || request.resource.data.schoolId == ''
+          || exists(/databases/$(database)/documents/schools/$(request.resource.data.schoolId))
+        );
+
+      allow update: if isSignedIn() && (
+        // Editing your own profile. You cannot promote yourself, and any
+        // school you move into must exist and be reflected in the bucket.
+        (request.auth.uid == uid
+          && keepsOwnPrivileges()
+          && bucketIsHonest(request.resource.data)
+          && (
+            request.resource.data.schoolId == null
+            || request.resource.data.schoolId == ''
+            || exists(/databases/$(database)/documents/schools/$(request.resource.data.schoolId))
+          ))
+
+        // The owner may change anything, including handing out roles.
+        || isOwner()
+
+        // A school admin may edit their own students — resetting progress,
+        // for instance — but cannot grant a role and cannot move a student
+        // out of the school and beyond their own sight.
+        || (isSchoolAdmin()
+            && resource.data.bucket == 'school:' + mySchoolId()
+            && request.resource.data.bucket == 'school:' + mySchoolId()
+            && keepsOwnPrivileges())
+      );
+
+      // Deleting: the owner, or a school admin deleting one of their own
+      // students.
+      allow delete: if isOwner()
+        || (isSchoolAdmin() && resource.data.bucket == 'school:' + mySchoolId());
     }
 
     // ── Practice progress (per user → per day/subject) ────────
-    // Each user reads/writes only their own progress. Admins can read
-    // everyone's progress so the "View" panel can show their scores.
+    // Yours to write. Readable by you, by the owner, and by the admin of
+    // the school you belong to — the get() below is what ties a progress
+    // document back to its owner's school.
     match /progress/{uid}/{document=**} {
-      allow read:  if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow read: if isSignedIn() && (
+        request.auth.uid == uid
+        || isOwner()
+        || (isSchoolAdmin()
+            && exists(/databases/$(database)/documents/users/$(uid))
+            && get(/databases/$(database)/documents/users/$(uid)).data.bucket
+                 == 'school:' + mySchoolId())
+      );
       allow write: if isSignedIn() && request.auth.uid == uid;
     }
   }

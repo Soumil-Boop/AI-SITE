@@ -181,6 +181,23 @@
             <div class="srow-lab"><b>Email address</b><span>Used to sign in. Contact us to change it.</span></div>
             <div><input type="text" id="sEmail" class="sin" disabled/></div>
           </div>
+
+          <div class="srow">
+            <div class="srow-lab"><b>School</b><span id="sSchoolNote">If your school gave you a join code, enter it here.</span></div>
+            <div>
+              <div id="sSchoolJoined" style="display:none;">
+                <input type="text" id="sSchoolName" class="sin" disabled/>
+                <p class="shint">Your teacher can see your progress. Ask them if you need to leave.</p>
+              </div>
+              <div id="sSchoolJoin">
+                <input type="text" id="sJoinCode" class="sin" style="max-width:260px;" placeholder="e.g. SPRINGFIELD-24"
+                       autocomplete="off" autocapitalize="characters" spellcheck="false"/>
+                <p class="shint">Leave this blank to keep learning on your own.</p>
+                <p class="set-msg" id="schoolMsg"></p>
+                <button class="sbtn sb-primary" style="margin-top:.5rem;" onclick="joinSchool()">Join school</button>
+              </div>
+            </div>
+          </div>
           <div class="sbar">
             <p class="set-msg" id="nameMsg"></p>
             <button class="sbtn sb-primary" onclick="saveName()">Save changes</button>
@@ -540,8 +557,54 @@
     document.getElementById('sPwFields').style.display = hasPassword ? 'block' : 'none';
     document.getElementById('sPwNone').style.display   = hasPassword ? 'none'  : 'block';
 
+    paintSchool(p);
     flagBlanks(p);
   });
+
+  /* ── School ──────────────────────────────────────────────────────
+     A student can join a school they have the code for, but leaving is not
+     theirs to do: a school roll that anyone can quietly drop off is no roll
+     at all. The rules take the same view. */
+  function paintSchool(p) {
+    var joined = !!p.schoolId;
+    document.getElementById('sSchoolJoined').style.display = joined ? 'block' : 'none';
+    document.getElementById('sSchoolJoin').style.display   = joined ? 'none'  : 'block';
+    document.getElementById('sSchoolNote').textContent = joined
+      ? 'Your teacher can see how you are getting on.'
+      : 'If your school gave you a join code, enter it here.';
+    if (joined) document.getElementById('sSchoolName').value = p.schoolName || 'Your school';
+  }
+
+  function joinSchool() {
+    if (!CURRENT_USER || !PROFILE_LOADED) return;
+    var code = (document.getElementById('sJoinCode').value || '').trim().toUpperCase();
+    if (!code) { setMsg('schoolMsg', 'Enter the code your school gave you.', false); return; }
+    setMsg('schoolMsg', 'Checking\u2026', true);
+
+    // Looked up by exact id, which is all the rules permit — you can resolve a
+    // code you were given, but you cannot browse the list of schools.
+    SOS.db.collection('joinCodes').doc(code).get().then(function(snap) {
+      if (!snap.exists) {
+        setMsg('schoolMsg', 'We don\u2019t recognise that code. Check it with your school.', false);
+        return null;
+      }
+      var d = snap.data() || {};
+      return SOS.db.collection('users').doc(CURRENT_USER.uid).set({
+        schoolId: d.schoolId,
+        schoolName: d.name || 'Your school',
+        // What puts them on their school's roll. The rules recompute it and
+        // reject the write if it disagrees with the school being claimed.
+        bucket: 'school:' + d.schoolId
+      }, { merge: true }).then(function() {
+        PROFILE.schoolId = d.schoolId; PROFILE.schoolName = d.name;
+        try { localStorage.setItem('sos_school', d.name || ''); } catch(e){}
+        paintSchool(PROFILE);
+        setMsg('schoolMsg', 'Joined ' + (d.name || 'your school') + '.', true);
+      });
+    }).catch(function(e) {
+      setMsg('schoolMsg', 'Could not join: ' + e.message, false);
+    });
+  }
 
   /* ── Saves ───────────────────────────────────────────────────── */
   function saveName(){
