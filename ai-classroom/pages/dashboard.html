@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Dashboard — Seek-O-Sphere</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
+       is still parsing, instead of when the first script or request needs them. -->
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="../css/base/variables.css"/>
@@ -170,18 +177,24 @@ auth.onAuthStateChanged(function(user) {
     window.location.href = '../index.html';
     return;
   }
-  // Admins belong on the admin panel — fast-path from cache so there's no student-dashboard flash.
-  try { if (localStorage.getItem('sos_role') === 'admin') { window.location.replace('admin.html'); return; } } catch (e) {}
+  // Admins belong on the admin panel — fast-path from cache so there's no
+  // student-dashboard flash. Only trust the cache when it was stamped with
+  // THIS uid; another account's leftover 'admin' would bounce a student to a
+  // panel they cannot open, and back again.
+  var cacheMine = false;
+  try { cacheMine = localStorage.getItem('sos_uid') === user.uid; } catch (e) {}
+  if (!cacheMine) { try { (window.SOSCache || { forget: function(){} }).forget(); } catch (e) {} }
+  try { if (cacheMine && localStorage.getItem('sos_role') === 'admin') { window.location.replace('admin.html'); return; } } catch (e) {}
   currentUid   = user.uid;
   currentEmail = user.email || '';
   // Instant paint from cache so the name + photo are ready before the reveal.
   try {
-    var cn = localStorage.getItem('sos_name');
+    var cn = cacheMine ? localStorage.getItem('sos_name') : null;
     if (cn) {
       document.getElementById('dashName').textContent   = cn;
       document.getElementById('dashAvatar').textContent = cn[0].toUpperCase();
     }
-    var cp = localStorage.getItem('sos_photo');
+    var cp = cacheMine ? localStorage.getItem('sos_photo') : null;
     if (cp) setAvatarPhoto(cp);
   } catch (e) {}
   loadDashboard(user.uid);
@@ -189,7 +202,12 @@ auth.onAuthStateChanged(function(user) {
 });
 
 function loadDashboard(uid) {
-  db.collection('users').doc(uid).get().then(function(snap) {
+  // session.js is already reading this document — share its result instead of
+  // paying for the same read a second time.
+  var read = (window.SOS && SOS.profileOnce)
+    ? SOS.profileOnce(uid)
+    : db.collection('users').doc(uid).get();
+  read.then(function(snap) {
     // If no profile exists yet, create one now
     if (!snap.exists) {
       var u = auth.currentUser;
@@ -209,6 +227,7 @@ function loadDashboard(uid) {
         badgesEarned: []
       }).then(function() {
         console.log('Profile created from dashboard');
+        if (window.SOS && SOS.forgetProfileRead) SOS.forgetProfileRead();
         return db.collection('users').doc(uid).get();
       });
     }
@@ -217,7 +236,10 @@ function loadDashboard(uid) {
     var profile = snap.exists ? snap.data() : {};
 
     // Remember the role and bounce admins to the admin panel.
-    try { localStorage.setItem('sos_role', profile.role || 'student'); } catch (e) {}
+    try {
+      localStorage.setItem('sos_uid', uid);
+      localStorage.setItem('sos_role', profile.role || 'student');
+    } catch (e) {}
     if (profile.role === 'admin') { window.location.replace('admin.html'); return; }
 
     document.getElementById('dashName').textContent  = profile.name  || 'Student';
@@ -412,7 +434,7 @@ function renderSubjects(subjects) {
     return '<div class="dash-subj-row">'
       + '<div class="dash-subj-donut">'+donut(acc, cls==='good'?'#5F7355':(cls==='ok'?'#C0562F':'#B24E33'))+'</div>'
       + '<div class="dash-subj-head"><span class="dash-subj-ic">'+ic+'</span>'
-      + '<div class="dash-subj-name"><strong>'+escH(s.label)+'</strong><span>'+(s.mode==='exam'?'Exam prep':'Curriculum')+' · Last '+fmtDate(s.last)+'</span></div></div>'
+      + '<div class="dash-subj-name"><strong>'+escH(s.label)+'</strong><span>'+(s.mode==='exam'?'Entrance &amp; Government Exams':'Curriculum')+' · Last '+fmtDate(s.last)+'</span></div></div>'
       + '<div class="dash-subj-nums">'
       +   '<div><b>'+s.q+'</b><span>questions</span></div>'
       +   '<div><b class="good">'+s.c+'</b><span>correct</span></div>'

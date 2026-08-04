@@ -5,192 +5,297 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign In - Seek-O-Sphere</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
+       is still parsing, instead of when the first script or request needs them. -->
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
   <link rel="stylesheet" href="../css/base/typography.css"/>
+  <link rel="stylesheet" href="../css/components/nav.css"/>
+  <link rel="stylesheet" href="../css/components/marquee.css"/>
   <link rel="stylesheet" href="../css/components/buttons.css"/>
   <link rel="stylesheet" href="../css/components/forms.css"/>
   <link rel="stylesheet" href="../css/dashboard.css"/>
-  <script>
-    // Swap between the Sign In and Sign Up views in the right-hand column.
-    function switchTab(tab) {
-      document.getElementById('viewSignIn').style.display = tab === 'signin' ? 'block' : 'none';
-      document.getElementById('viewSignUp').style.display = tab === 'signup' ? 'block' : 'none';
-      window.scrollTo(0, 0);
-    }
-    // Reveal / hide a password field.
-    function togglePw(inputId, btn) {
-      var el = document.getElementById(inputId);
-      if (!el) return;
-      var show = el.type === 'password';
-      el.type = show ? 'text' : 'password';
-      btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
-    }
-  </script>
 </head>
-<body class="auth-page">
+<body>
 
-<!-- ══ Left: brand / value panel ══════════════════════════════ -->
-<aside class="auth-brand">
-  <a href="../index.html" style="text-decoration:none;" class="auth-logo">
-    <span class="auth-logo-text"><span class="seek">Seek-</span><svg viewBox="0 0 64 64" width="30" height="30" style="flex-shrink:0;vertical-align:middle;" aria-hidden="true"><defs><radialGradient id="rL0_Space" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="rL0_Earth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="rL0_Sun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#rL0_Space)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#rL0_Sun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#rL0_Earth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg><span>-Sphere</span></span>
-  </a>
+<!-- Shared header: utility bar, menu and the scrolling strip -->
+<div id="nav-mount"></div>
 
-  <div class="auth-pitch">
-    <h2>Learn AI, at any age.</h2>
-    <p>Free, forever. Built for curious eight-year-olds and curious eighty-year-olds alike.</p>
-    <ul class="auth-feats">
-      <li><span class="auth-tick">&#10003;</span> Questions matched to your curriculum</li>
-      <li><span class="auth-tick">&#10003;</span> Track your streak and progress</li>
-      <li><span class="auth-tick">&#10003;</span> Eulid explains every answer</li>
-    </ul>
-  </div>
+<main class="auth-page">
+  <div class="auth-wrap">
 
-  <p class="auth-proof">Built for learners across CBSE, ICSE, UK National Curriculum, US Common Core and IB.</p>
-</aside>
+    <p class="auth-eyebrow">Your account</p>
+    <h1 class="auth-title" id="authTitle">Create your free account</h1>
+    <p class="auth-switch" id="authSwitch">Already have one?
+      <button type="button" onclick="switchTab('signin')">Sign in instead</button></p>
 
-<!-- ══ Right: form column ═════════════════════════════════════ -->
-<main class="auth-form-col">
-  <div class="auth-form-inner">
+    <div class="auth-form">
 
-    <!-- ── Sign In ── -->
-    <div id="viewSignIn">
-      <h1>Welcome back</h1>
-      <p class="auth-switch">New here? <button type="button" onclick="switchTab('signup')">Create a free account</button></p>
-
-      <button class="btn-google" onclick="handleGoogle()">
-        <svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Continue with Google
-      </button>
-
-      <div class="auth-divider">or with email</div>
-
-      <form id="signInForm" onsubmit="handleSignIn(event)">
-        <div class="form-group">
-          <label for="siEmail">Email</label>
-          <input type="email" id="siEmail" placeholder="you@example.com" autocomplete="email" required/>
-        </div>
-        <div class="form-group">
-          <label for="siPassword">Password</label>
-          <div class="auth-pw">
-            <input type="password" id="siPassword" placeholder="Your password" autocomplete="current-password" required/>
-            <button type="button" class="auth-eye" aria-label="Show password" onclick="togglePw('siPassword', this)">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-        <div class="auth-forgot">
-          <a href="#" onclick="handlePasswordReset(event)">Forgot password?</a>
-        </div>
-        <p class="auth-error" id="signInError"></p>
-        <p class="auth-note" id="resetMsg"></p>
-        <button type="submit" class="btn btn-primary auth-submit">Sign In</button>
-      </form>
-
-      <button class="auth-guest" onclick="handleGuest()">Just looking? Continue as guest &rarr;</button>
-    </div>
-
-    <!-- ── Sign Up ── -->
-    <div id="viewSignUp" style="display:none;">
-      <h1>Create your free account</h1>
-      <p class="auth-switch">Already have one? <button type="button" onclick="switchTab('signin')">Sign in instead</button></p>
-
-      <button class="btn-google" onclick="handleGoogle()">
-        <svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Continue with Google
-      </button>
-
-      <div class="auth-divider">or with email</div>
-
+      <!-- ══════════ SIGN UP ══════════ -->
       <form id="signUpForm" onsubmit="handleSignUp(event)">
-        <div class="form-group">
-          <label for="suName">Your Name</label>
-          <input type="text" id="suName" placeholder="e.g. Priya Sharma" autocomplete="name" required/>
-        </div>
-        <div class="form-group">
-          <label for="suEmail">Email</label>
-          <input type="email" id="suEmail" placeholder="you@example.com" autocomplete="email" required/>
-        </div>
-        <div class="form-group">
-          <label for="suPassword">Password</label>
-          <div class="auth-pw">
-            <input type="password" id="suPassword" placeholder="At least 6 characters" autocomplete="new-password" required minlength="6"/>
-            <button type="button" class="auth-eye" aria-label="Show password" onclick="togglePw('suPassword', this)">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="suCountry">Country</label>
-          <select id="suCountry" onchange="GEO.renderState('suStateWrap','suState',this.value)"></select>
-        </div>
+
+        <div class="auth-sect"><b>Your account</b></div>
+
         <div class="auth-row">
-          <div class="form-group" style="flex:2;">
-            <label for="suCity">City</label>
-            <input type="text" id="suCity" placeholder="e.g. Mumbai" autocomplete="address-level2"/>
-          </div>
-          <div class="form-group" style="flex:1.4;">
-            <label for="suState">State</label>
-            <div id="suStateWrap"><input type="text" id="suState" placeholder="State"/></div>
-          </div>
-          <div class="form-group" style="flex:1;">
-            <label for="suZip">Zip</label>
-            <input type="text" id="suZip" placeholder="Zip" autocomplete="postal-code"/>
+          <div class="arow-lab"><b>Full name</b><span>Shown on your dashboard.</span></div>
+          <div><input type="text" id="suName" class="auth-in" placeholder="e.g. Priya Sharma" autocomplete="name" required/></div>
+        </div>
+
+        <div class="auth-row">
+          <div class="arow-lab"><b>Email address</b><span>Used to sign in and reset your password.</span></div>
+          <div><input type="email" id="suEmail" class="auth-in" placeholder="you@example.com" autocomplete="email" required/></div>
+        </div>
+
+        <div class="auth-row">
+          <div class="arow-lab"><b>Password</b><span>At least 6 characters.</span></div>
+          <div>
+            <div class="auth-pw">
+              <input type="password" id="suPassword" class="auth-in" placeholder="Choose a password" autocomplete="new-password" required minlength="6"/>
+              <button type="button" class="auth-eye" aria-label="Show password" onclick="togglePw('suPassword', this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <p class="auth-hint">A longer phrase beats a short complicated one.</p>
           </div>
         </div>
-        <div class="form-group">
-          <label>I am a...</label>
-          <div class="auth-choice">
-            <label><input type="radio" name="suType" value="student" checked onchange="toggleType()"/> Student</label>
-            <label><input type="radio" name="suType" value="examprep" onchange="toggleType()"/> Exam Prep</label>
+
+        <div class="auth-sect"><b>Where you are</b></div>
+
+        <div class="auth-row">
+          <div class="arow-lab"><b>Location</b><span>So the Lab matches your local curriculum.</span></div>
+          <div class="auth-g3">
+            <select id="suCountry" class="auth-in" onchange="suCountryChange()"></select>
+            <div id="suStateWrap"><input type="text" id="suState" class="auth-in" placeholder="State"/></div>
+            <div id="suCityWrap"><input type="text" id="suCity" class="auth-in" placeholder="Your city"/></div>
           </div>
         </div>
+
+        <div class="auth-row">
+          <div class="arow-lab"><b>Zip / Postcode</b><span>Optional.</span></div>
+          <div><input type="text" id="suZip" class="auth-in auth-short" placeholder="e.g. 400001" autocomplete="postal-code"/></div>
+        </div>
+
+        <div class="auth-sect"><b>What you're studying</b></div>
+
+        <div class="auth-row">
+          <div class="arow-lab"><b>I am studying for</b><span>Changes which questions you get.</span></div>
+          <div>
+            <div class="auth-choice">
+              <label><input type="radio" name="suType" value="student" checked onchange="toggleType()"/> School (Grades 1&ndash;12)</label>
+              <label><input type="radio" name="suType" value="examprep" onchange="toggleType()"/> Entrance &amp; Government Exams</label>
+            </div>
+            <p class="auth-hint">Entrance covers CUET; government covers Railways, Bank PO, SSC and UPSC.</p>
+          </div>
+        </div>
+
         <div id="suStudentFields">
-          <div class="form-group">
-            <label for="suGrade">Your Grade</label>
-            <select id="suGrade">
-              <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option>
-              <option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option>
-              <option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
-              <option value="Grade 7">Grade 7</option><option value="Grade 8" selected>Grade 8</option>
-              <option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option>
-              <option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="suCurriculum">Your Curriculum</label>
-            <select id="suCurriculum">
-              <option value="cbse">CBSE (India)</option>
-              <option value="icse">ICSE (India)</option>
-              <option value="uk">UK National Curriculum</option>
-              <option value="us">US Common Core</option>
-              <option value="ib">IB</option>
-            </select>
-          </div>
-        </div>
-        <div id="suExamFields" style="display:none;">
-          <div class="form-group">
-            <label>Which exams are you preparing for?</label>
-            <div class="auth-chips">
-              <label><input type="checkbox" class="su-exam" value="CUET"/> CUET</label>
-              <label><input type="checkbox" class="su-exam" value="Railways"/> Railways</label>
-              <label><input type="checkbox" class="su-exam" value="Bank PO"/> Bank PO</label>
-              <label><input type="checkbox" class="su-exam" value="SSC"/> SSC</label>
-              <label><input type="checkbox" class="su-exam" value="UPSC"/> UPSC</label>
+          <div class="auth-row">
+            <div class="arow-lab"><b>Grade &amp; curriculum</b><span>You can change these any time.</span></div>
+            <div class="auth-g2">
+              <select id="suGrade" class="auth-in">
+                <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option>
+                <option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option>
+                <option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
+                <option value="Grade 7">Grade 7</option><option value="Grade 8" selected>Grade 8</option>
+                <option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option>
+              </select>
+              <select id="suCurriculum" class="auth-in">
+                <option value="cbse">CBSE (India)</option>
+                <option value="icse">ICSE (India)</option>
+                <option value="uk">UK National Curriculum</option>
+                <option value="us">US Common Core</option>
+                <option value="ib">IB</option>
+              </select>
             </div>
           </div>
         </div>
+
+        <div id="suExamFields" style="display:none;">
+          <div class="auth-row">
+            <div class="arow-lab"><b>Which exams</b><span>Pick as many as apply.</span></div>
+            <div class="auth-chips">
+              <label><input type="checkbox" class="su-exam" value="CUET"/> <em>&#127891;</em> CUET</label>
+              <label><input type="checkbox" class="su-exam" value="Railways"/> <em>&#128644;</em> Railways</label>
+              <label><input type="checkbox" class="su-exam" value="Bank PO"/> <em>&#127974;</em> Bank PO</label>
+              <label><input type="checkbox" class="su-exam" value="SSC"/> <em>&#128203;</em> SSC</label>
+              <label><input type="checkbox" class="su-exam" value="UPSC"/> <em>&#127963;</em> UPSC</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-sect"><b>How you learn</b></div>
+
+        <div class="auth-row">
+          <div class="arow-lab"><b>Subjects you enjoy</b><span>We'll keep these in the mix so practice stays enjoyable.</span></div>
+          <div><div class="auth-chips" id="likeChips"></div><p class="auth-cnt" id="likeCnt"></p></div>
+        </div>
+
+        <div class="auth-row">
+          <div class="arow-lab"><b>Subjects you find hardest</b><span>These get picked first in the Lab, because that's where practice helps most.</span></div>
+          <div><div class="auth-chips" id="hardChips"></div><p class="auth-cnt" id="hardCnt"></p></div>
+        </div>
+
         <p class="auth-error" id="signUpError"></p>
-        <button type="submit" class="btn btn-primary auth-submit">Create Account</button>
+
+        <div class="auth-bar">
+          <button type="button" class="auth-ghost" onclick="handleGuest()">Continue as guest &rarr;</button>
+          <div class="auth-bar-r">
+            <button type="button" class="auth-google" onclick="handleGoogle()">
+              <svg width="15" height="15" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              Google
+            </button>
+            <button type="submit" class="auth-primary">Create account</button>
+          </div>
+        </div>
+        <p class="auth-terms">By signing up you agree to use AI responsibly. Eulid is watching.</p>
       </form>
 
-      <button class="auth-guest" onclick="handleGuest()">Just looking? Continue as guest &rarr;</button>
-      <p class="auth-terms">By signing up you agree to use AI responsibly. Eulid is watching.</p>
-    </div>
+      <!-- ══════════ SIGN IN ══════════ -->
+      <form id="signInForm" onsubmit="handleSignIn(event)" style="display:none;">
+        <div class="auth-row">
+          <div class="arow-lab"><b>Email address</b><span>The one you signed up with.</span></div>
+          <div><input type="email" id="siEmail" class="auth-in" placeholder="you@example.com" autocomplete="email" required/></div>
+        </div>
 
+        <div class="auth-row">
+          <div class="arow-lab"><b>Password</b>
+            <span><a href="#" onclick="handlePasswordReset(event)">Forgot your password?</a></span>
+          </div>
+          <div>
+            <div class="auth-pw">
+              <input type="password" id="siPassword" class="auth-in" placeholder="Your password" autocomplete="current-password" required/>
+              <button type="button" class="auth-eye" aria-label="Show password" onclick="togglePw('siPassword', this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <p class="auth-error" id="signInError"></p>
+        <p class="auth-note" id="resetMsg"></p>
+
+        <div class="auth-bar">
+          <button type="button" class="auth-ghost" onclick="handleGuest()">Continue as guest &rarr;</button>
+          <div class="auth-bar-r">
+            <button type="button" class="auth-google" onclick="handleGoogle()">
+              <svg width="15" height="15" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              Google
+            </button>
+            <button type="submit" class="auth-primary">Sign in</button>
+          </div>
+        </div>
+      </form>
+
+    </div>
   </div>
 </main>
+
+<script src="../js/components/marquee.js"></script>
+<script src="../js/core/nav.js"></script>
+<script>mountNav('login.html', { homeLinks: true, noBanner: true });</script>
+
+<script>
+/* ── Sign in / sign up view switch ─────────────────────────────── */
+function switchTab(tab){
+  var up = tab === 'signup';
+  document.getElementById('signUpForm').style.display = up ? 'block' : 'none';
+  document.getElementById('signInForm').style.display = up ? 'none'  : 'block';
+  document.getElementById('authTitle').textContent = up
+    ? 'Create your free account' : 'Sign in to Seek-O-Sphere';
+  document.getElementById('authSwitch').innerHTML = up
+    ? 'Already have one? <button type="button" onclick="switchTab(\'signin\')">Sign in instead</button>'
+    : 'New here? <button type="button" onclick="switchTab(\'signup\')">Create a free account</button>';
+  window.scrollTo(0, 0);
+}
+
+function togglePw(id, btn){
+  var el = document.getElementById(id);
+  if (!el) return;
+  var show = el.type === 'password';
+  el.type = show ? 'text' : 'password';
+  btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+}
+
+/* ── Country → State → City cascade ───────────────────────────── */
+function suCountryChange(){
+  var c = document.getElementById('suCountry').value;
+  if (window.GEO) {
+    GEO.renderState('suStateWrap', 'suState', c);
+    var st = document.getElementById('suState');
+    if (st) st.addEventListener('change', suStateChange);
+    suStateChange();
+  }
+}
+function suStateChange(){
+  var st = document.getElementById('suState');
+  if (window.GEO) GEO.renderCity('suCityWrap', 'suCity', st ? st.value : '');
+}
+
+/* ── Subject preferences ──────────────────────────────────────── */
+var SUBJECTS = {
+  student: [
+    { k:'maths',     e:'➕',       n:'Maths' },
+    { k:'science',   e:'🔬', n:'Science' },
+    { k:'english',   e:'📖', n:'English' },
+    { k:'history',   e:'📜', n:'History' },
+    { k:'geography', e:'🌍', n:'Geography' }
+  ],
+  examprep: [
+    { k:'gk',        e:'🌐', n:'General Knowledge' },
+    { k:'aptitude',  e:'🔢', n:'Aptitude' },
+    { k:'reasoning', e:'🧩', n:'Reasoning' },
+    { k:'english',   e:'📖', n:'English' }
+  ]
+};
+var SUBJ_MAX = 3;
+var subjLikes = [], subjHard = [];
+
+function currentType(){
+  var el = document.querySelector('input[name="suType"]:checked');
+  return el ? el.value : 'student';
+}
+function subjToggle(list, key){
+  var arr = (list === 'like') ? subjLikes : subjHard;
+  var i = arr.indexOf(key);
+  if (i > -1) arr.splice(i, 1);
+  else if (arr.length < SUBJ_MAX) arr.push(key);
+  paintSubjects();
+}
+function paintSubjects(){
+  var subs = SUBJECTS[currentType()] || SUBJECTS.student;
+  function row(arr, kind){
+    return subs.map(function(s){
+      var on = arr.indexOf(s.k) > -1;
+      var full = arr.length >= SUBJ_MAX && !on;
+      return '<label class="auth-chip' + (on ? ' on-' + kind : '') + (full ? ' is-full' : '') + '">' +
+             '<input type="checkbox"' + (on ? ' checked' : '') + (full ? ' disabled' : '') +
+             ' onchange="subjToggle(\'' + kind + '\',\'' + s.k + '\')"/> <em>' + s.e + '</em> ' + s.n + '</label>';
+    }).join('');
+  }
+  document.getElementById('likeChips').innerHTML = row(subjLikes, 'like');
+  document.getElementById('hardChips').innerHTML = row(subjHard, 'hard');
+  document.getElementById('likeCnt').textContent = subjLikes.length
+    ? subjLikes.length + ' of ' + SUBJ_MAX + ' chosen' : 'Optional — pick up to ' + SUBJ_MAX + '.';
+  document.getElementById('hardCnt').textContent = subjHard.length
+    ? subjHard.length + ' of ' + SUBJ_MAX + ' chosen' : 'Optional — pick up to ' + SUBJ_MAX + '.';
+}
+
+/* Render the chips as soon as the DOM is ready. The Firebase block below
+   also calls this, but that block dies if the CDN is slow or blocked — and
+   the form should still be usable when it does. */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', paintSubjects);
+} else {
+  paintSubjects();
+}
+</script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -216,24 +321,23 @@ try { db.enablePersistence({ synchronizeTabs: true }).catch(function(){}); } cat
 if (window.GEO) {
   GEO.populateCountries('suCountry', 'India');
   GEO.renderState('suStateWrap', 'suState', 'India');
+  var _st0 = document.getElementById('suState');
+  if (_st0) _st0.addEventListener('change', suStateChange);
+  GEO.renderCity('suCityWrap', 'suCity', _st0 ? _st0.value : '');
 }
+if (typeof paintSubjects === 'function') paintSubjects();
 
 // True while an explicit sign-in/up/guest handler is routing, so the
 // auth-state listener below doesn't race it to the wrong page.
 var SIGNING_IN = false;
+var SIGNED_IN_UID = null;
 
 // Verify the role from the freshly-read profile, cache it, and go straight
 // to the correct panel — admins never touch the student dashboard.
-function routeByRole(snap) {
+function routeByRole(snap, uid) {
   var data = snap && snap.exists ? snap.data() : {};
   var role = data.role || 'student';
-  try {
-    localStorage.setItem('sos_role', role);
-    if (data.name)       localStorage.setItem('sos_name', data.name);
-    if (data.curriculum) localStorage.setItem('sos_curriculum', data.curriculum);
-    if (data.ageGroup)   localStorage.setItem('sos_age', data.ageGroup);
-    if (data.photo)      localStorage.setItem('sos_photo', data.photo);
-  } catch (e) {}
+  cacheProfile(data, uid || (snap && snap.id));
   window.location.replace(role === 'admin' ? 'admin.html' : 'dashboard.html');
 }
 
@@ -242,7 +346,7 @@ auth.onAuthStateChanged(function(user) {
   if (!user || user.isAnonymous || SIGNING_IN) return;
   // Already-signed-in visitor on the login page → verify role once, then route.
   db.collection('users').doc(user.uid).get()
-    .then(routeByRole)
+    .then(function(snap){ routeByRole(snap, user.uid); })
     .catch(function(){ window.location.replace('dashboard.html'); });
 });
 
@@ -252,6 +356,9 @@ function toggleType() {
   var ef = document.getElementById('suExamFields');
   if (sf) sf.style.display = (t === 'student') ? 'block' : 'none';
   if (ef) ef.style.display = (t === 'examprep') ? 'block' : 'none';
+  // The two tracks offer different subjects, so any previous picks no longer apply.
+  subjLikes = []; subjHard = [];
+  if (typeof paintSubjects === 'function') paintSubjects();
 }
 
 // Map a school grade (e.g. "Grade 8") to the Lab's age-group buckets.
@@ -263,47 +370,116 @@ function gradeToAge(grade) {
   return '14-16';
 }
 
-function createProfile(uid, name, email) {
-  var val = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  var typeEl = document.querySelector('input[name="suType"]:checked');
-  var type = typeEl ? typeEl.value : 'student';
-  var exams = [];
-  document.querySelectorAll('.su-exam:checked').forEach(function(c){ exams.push(c.value); });
-  var grade      = type === 'student' ? (val('suGrade') || 'Grade 8') : '';
-  var curriculum = type === 'student' ? (val('suCurriculum') || 'cbse') : '';
+/* Mirror a profile into localStorage so the Lab and the admin gate can read it
+   without another round trip. Takes the real stored role, not an assumption. */
+/* Every value the rest of the site paints from before the network answers.
+   They belong to one person, so they are wiped as a set whenever a different
+   account signs in. session.js keeps the same list. */
+var CACHE_KEYS = ['sos_name','sos_role','sos_photo','sos_curriculum','sos_grade',
+                  'sos_age','sos_type','sos_enjoys','sos_hard'];
 
-  var profile = {
-    name: name || 'Student',
-    email: email || '',
-    role: 'student',                                  // Firestore permission role
-    type: type,                                       // 'student' | 'examprep'
-    country: val('suCountry'),
-    city: val('suCity'),
-    state: val('suState'),
-    zip: val('suZip'),
-    grade: grade,
-    curriculum: curriculum,
-    exams: type === 'examprep' ? exams : [],
-    ageGroup: gradeToAge(grade),                      // kept for Lab/dashboard compatibility
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-    totalQuestions: 0,
-    bestStreak: 0,
-    badgesEarned: []
-  };
-
-  // Cache for the Lab (so it auto-loads without another read).
+function forgetCachedProfile() {
   try {
-    if (name)       localStorage.setItem('sos_name', name);
-    if (curriculum) localStorage.setItem('sos_curriculum', curriculum);
-    if (grade)      localStorage.setItem('sos_grade', grade);
-    localStorage.setItem('sos_age', gradeToAge(grade));
-    localStorage.setItem('sos_role', 'student');
-  } catch(e){}
+    CACHE_KEYS.forEach(function(k){ localStorage.removeItem(k); });
+    localStorage.removeItem('sos_uid');
+  } catch (e) {}
+}
 
-  // Write directly with merge — NO get() gate, and errors propagate to the caller
-  // so a failed write surfaces instead of silently bouncing to the dashboard.
-  return db.collection('users').doc(uid).set(profile, { merge: true });
+/* Replaces the cache outright rather than writing over parts of it. Writing
+   field by field was the bug behind "it still shows my old email as my name":
+   a profile with no photo, or no name, left the previous member's still sitting
+   there for every page to paint. */
+function cacheProfile(p, uid) {
+  forgetCachedProfile();
+  try {
+    // Stamp who this cache belongs to, so the next page can tell whether it
+    // is looking at its own data.
+    if (uid) localStorage.setItem('sos_uid', uid);
+    if (p.name)       localStorage.setItem('sos_name', p.name);
+    if (p.photo)      localStorage.setItem('sos_photo', p.photo);
+    if (p.curriculum) localStorage.setItem('sos_curriculum', p.curriculum);
+    if (p.grade)      localStorage.setItem('sos_grade', p.grade);
+    if (p.ageGroup)   localStorage.setItem('sos_age', p.ageGroup);
+    if (p.type)       localStorage.setItem('sos_type', p.type);
+    localStorage.setItem('sos_role', p.role || 'student');
+    localStorage.setItem('sos_enjoys', (p.enjoys || []).join(','));
+    localStorage.setItem('sos_hard',   (p.finds_hard || []).join(','));
+  } catch (e) {}
+}
+
+/* Writes the profile document.
+
+   The counters, badges, role and createdAt are written ONCE, when the account
+   is first made, and never touched again — otherwise every later sign-in would
+   reset a member's progress to zero and demote an admin to student.
+
+   For a returning member we also leave the questionnaire fields alone. The
+   sign-up fields on this page are untouched defaults during a sign-in, so
+   writing them would overwrite the real answers they gave when they joined. */
+/* fromForm says whether the person actually filled the sign-up form. Google
+   from the sign-in tab and "Continue as guest" both land here too, and those
+   people never saw the form — harvesting it anyway would file India / Grade 8
+   / CBSE under their name as though they had chosen it. They get blanks
+   instead, which account settings then invites them to fill in. */
+function createProfile(uid, name, email, fromForm, brandNew) {
+  var val = function(id){
+    if (!fromForm) return '';
+    var el = document.getElementById(id); return el ? el.value.trim() : '';
+  };
+  var typeEl = document.querySelector('input[name="suType"]:checked');
+  var type = (fromForm && typeEl) ? typeEl.value : 'student';
+  var exams = [];
+  if (fromForm) document.querySelectorAll('.su-exam:checked').forEach(function(c){ exams.push(c.value); });
+  // Blank, not a guess, when we were never told. The Lab falls back to its own
+  // defaults for a blank grade, so nothing breaks by leaving it unanswered.
+  var grade      = (fromForm && type === 'student') ? (val('suGrade') || 'Grade 8') : '';
+  var curriculum = (fromForm && type === 'student') ? (val('suCurriculum') || 'cbse') : '';
+
+  var ref = db.collection('users').doc(uid);
+
+  // A profile that was created seconds ago by createUserWithEmailAndPassword
+  // cannot already have a document, so skip asking — that question costs a
+  // full network round trip on the slowest screen of the whole site.
+  var lookup = brandNew
+    ? Promise.resolve({ exists: false, data: function(){ return null; } })
+    : ref.get();
+
+  return lookup.then(function(snap) {
+    if (snap.exists) {
+      // Returning member — stamp the visit and fill only genuinely missing details.
+      var have  = snap.data() || {};
+      var patch = { lastActive: firebase.firestore.FieldValue.serverTimestamp() };
+      if (!have.name  && name)  patch.name  = name;
+      if (!have.email && email) patch.email = email;
+      cacheProfile(have, uid);
+      return ref.update(patch);
+    }
+
+    // Brand-new account — this is the only place the defaults are ever set.
+    var profile = {
+      name: name || 'Student',
+      email: email || '',
+      role: 'student',                                  // Firestore permission role
+      type: type,                                       // 'student' | 'examprep'
+      country: val('suCountry'),
+      city: val('suCity'),
+      state: val('suState'),
+      zip: val('suZip'),
+      grade: grade,
+      curriculum: curriculum,
+      exams: type === 'examprep' ? exams : [],
+      enjoys: (fromForm && typeof subjLikes !== 'undefined') ? subjLikes.slice() : [],
+      finds_hard: (fromForm && typeof subjHard !== 'undefined') ? subjHard.slice() : [],
+      ageGroup: grade ? gradeToAge(grade) : '',         // kept for Lab/dashboard compatibility
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+      totalQuestions: 0,
+      bestStreak: 0,
+      badgesEarned: []
+    };
+    cacheProfile(profile, uid);
+    return ref.set(profile);
+  });
 }
 
 function handleSignUp(e) {
@@ -314,28 +490,57 @@ function handleSignUp(e) {
   var errEl = document.getElementById('signUpError');
   errEl.textContent = '';
   SIGNING_IN = true;
+  setAuthBusy('signUpForm', true, 'Creating your account…');
 
   auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
-    return createProfile(cred.user.uid, name, email);
+    // brandNew: the account did not exist a second ago, so there is no profile
+    // to look up first.
+    return createProfile(cred.user.uid, name, email, true, true);
   }).then(function() {
     window.location.href = 'dashboard.html';
   }).catch(function(err) {
+    SIGNING_IN = false;
+    setAuthBusy('signUpForm', false);
     // Surface the real reason (auth OR Firestore write) instead of failing quietly.
     errEl.textContent = friendlyError(err.code) + (err && err.message ? ' (' + err.message + ')' : '');
     console.error('Sign-up/profile error:', err && err.code, err && err.message);
   });
 }
 
+/* Account creation is several network hops on a slow connection. Say so on the
+   button rather than leaving a dead-looking form, and block a second submit. */
+function setAuthBusy(formId, busy, label) {
+  var form = document.getElementById(formId);
+  if (!form) return;
+  [].forEach.call(form.querySelectorAll('button'), function(b){
+    if (busy) {
+      if (b.type === 'submit') {
+        if (!b.dataset.idle) b.dataset.idle = b.textContent;
+        b.textContent = label || 'Working…';
+      }
+      b.disabled = true;
+      b.setAttribute('aria-busy', 'true');
+    } else {
+      if (b.dataset.idle) { b.textContent = b.dataset.idle; delete b.dataset.idle; }
+      b.disabled = false;
+      b.removeAttribute('aria-busy');
+    }
+  });
+}
+
 function handleSignIn(e) {
   e.preventDefault();
   SIGNING_IN = true;                       // claim routing so the listener stays out
+  setAuthBusy('signInForm', true, 'Signing you in…');
   var email = document.getElementById('siEmail').value.trim();
   var password = document.getElementById('siPassword').value;
   auth.signInWithEmailAndPassword(email, password).then(function(cred) {
     // Verify the role ONCE, then go straight to the right panel — no student flash.
+    SIGNED_IN_UID = cred.user.uid;
     return db.collection('users').doc(cred.user.uid).get();
-  }).then(routeByRole).catch(function(err) {
+  }).then(function(snap){ routeByRole(snap, SIGNED_IN_UID); }).catch(function(err) {
     SIGNING_IN = false;
+    setAuthBusy('signInForm', false);
     document.getElementById('signInError').textContent = friendlyError(err.code);
   });
 }
@@ -344,7 +549,10 @@ function handleGoogle() {
   SIGNING_IN = true;
   var provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).then(function(cred) {
-    return createProfile(cred.user.uid, cred.user.displayName, cred.user.email);
+    // Only trust the form when the sign-up form is the one on screen.
+    var onSignUp = document.getElementById('signUpForm');
+    onSignUp = !!onSignUp && getComputedStyle(onSignUp).display !== 'none';
+    return createProfile(cred.user.uid, cred.user.displayName, cred.user.email, onSignUp);
   }).then(function() {
     window.location.href = 'dashboard.html';
   }).catch(function(err) {
@@ -355,7 +563,7 @@ function handleGoogle() {
 
 function handleGuest() {
   auth.signInAnonymously().then(function(cred) {
-    return createProfile(cred.user.uid, 'Guest', '');
+    return createProfile(cred.user.uid, 'Guest', '', false);
   }).then(function() {
     window.location.href = '../index.html';
   }).catch(function(err) {

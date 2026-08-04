@@ -74,163 +74,151 @@
   .dash-loader .ring, .dash-loader .sat, .dash-loader .core, .auth-gate-inner p { animation: none !important; }
 }
 
-/* ── AUTH PAGE — split panel ─────────────────────────────────── */
-.auth-page {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  background: var(--white);
-}
+/* ── AUTH PAGE — label-left desktop form ─────────────────────────
+   The sign-in page now sits under the shared header (utility bar,
+   menu, scrolling strip), so this styles only the form below it.
+   Deliberately desktop density: 38px controls, 13px labels, 7px
+   radii, buttons sized to their text rather than full-width pills. */
+.auth-page { background: var(--white); min-height: 60vh; }
+.auth-wrap { max-width: 1180px; margin: 0 auto; padding: 2.4rem 2.25rem 3rem; }
 
-/* Left: brand / value panel */
-.auth-brand {
-  position: sticky; top: 0;
-  height: 100vh;
-  background: linear-gradient(150deg, #5C2413 0%, var(--brand-dark) 55%, #2E1409 100%);
-  padding: 3rem 2.75rem;
-  display: flex; flex-direction: column; justify-content: space-between;
-  overflow: hidden;
+.auth-eyebrow {
+  font-size: .74rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--accent-dark); margin-bottom: .45rem;
 }
-.auth-brand::before,
-.auth-brand::after {
-  content: ''; position: absolute; border-radius: 50%; pointer-events: none;
-}
-.auth-brand::before { width: 420px; height: 420px; border: 1px solid rgba(224,177,90,.16); top: -120px; right: -150px; }
-.auth-brand::after  { width: 280px; height: 280px; border: 1px solid rgba(224,177,90,.12); bottom: -90px; left: -100px; }
-
-.auth-logo { position: relative; z-index: 2; display: flex; align-items: center; }
-.auth-logo-text {
-  display: inline-flex; align-items: center; gap: .12em;
-  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.3rem; color: #fff;
-}
-.auth-logo-text .seek { color: #E8A579; }
-
-.auth-pitch { position: relative; z-index: 2; padding: 2.5rem 0; }
-.auth-pitch h2 {
-  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.1rem;
-  color: #fff; line-height: 1.2; letter-spacing: -.02em; margin-bottom: .9rem;
-}
-.auth-pitch p { color: rgba(241,218,207,.8); font-size: .98rem; line-height: 1.65; max-width: 34ch; }
-.auth-feats { list-style: none; margin-top: 2rem; display: flex; flex-direction: column; gap: .9rem; }
-.auth-feats li { display: flex; align-items: center; gap: .75rem; color: rgba(255,255,255,.92); font-size: .93rem; font-weight: 500; }
-.auth-tick {
-  width: 26px; height: 26px; border-radius: 50%; background: rgba(224,177,90,.16);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  color: #E0B15A; font-size: .8rem;
-}
-.auth-proof {
-  position: relative; z-index: 2; padding-top: 1.5rem;
-  border-top: 1px solid rgba(224,177,90,.2);
-  color: rgba(241,218,207,.75); font-size: .85rem; line-height: 1.5;
-}
-
-/* Right: form column */
-.auth-form-col {
-  display: flex; align-items: center; justify-content: center;
-  padding: 3rem 3rem; background: var(--white);
-}
-.auth-form-inner { width: 100%; max-width: 378px; }
-.auth-form-inner h1 {
+.auth-title {
   font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.7rem;
-  letter-spacing: -.02em; margin-bottom: .3rem; color: var(--text);
+  letter-spacing: -.02em; color: var(--text);
 }
-.auth-switch { color: var(--muted); font-size: .9rem; margin-bottom: 1.6rem; }
+.auth-switch { color: var(--muted); font-size: .9rem; margin-top: .35rem; }
 .auth-switch button {
   background: none; border: none; padding: 0; cursor: pointer;
-  color: var(--accent-dark); font-family: 'Inter', sans-serif;
-  font-weight: 600; font-size: .9rem; text-decoration: none;
+  color: var(--accent-dark); font-family: 'Inter', sans-serif; font-weight: 600; font-size: .9rem;
 }
 .auth-switch button:hover { text-decoration: underline; }
 
-/* Password field with reveal toggle */
+.auth-form { max-width: 880px; margin-top: 2rem; }
+
+.auth-sect { display: flex; align-items: center; gap: .75rem; margin: 1.6rem 0 .3rem; }
+.auth-sect:first-child { margin-top: 0; }
+.auth-sect b {
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .76rem;
+  letter-spacing: .11em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
+}
+.auth-sect::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: .75; }
+
+/* One field per row: label column left, control column right. */
+.auth-row {
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 1.6rem;
+  align-items: start; padding: .9rem 0; border-bottom: 1px solid rgba(203,187,165,.45);
+}
+.auth-row:last-of-type { border-bottom: none; }
+.arow-lab { padding-top: .42rem; }
+.arow-lab b { display: block; font-size: .87rem; font-weight: 600; color: var(--text); }
+.arow-lab span { display: block; font-size: .77rem; color: #9C8877; margin-top: .15rem; line-height: 1.45; }
+.arow-lab a { color: var(--accent-dark); font-weight: 600; text-decoration: none; }
+.arow-lab a:hover { text-decoration: underline; }
+
+.auth-in {
+  width: 100%; height: 38px; padding: 0 .7rem;
+  border: 1px solid var(--border); border-radius: 7px;
+  font-size: .88rem; font-family: 'Inter', sans-serif;
+  background: #fff; color: var(--text); outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.auth-in::placeholder { color: #B9A493; }
+.auth-in:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(192,86,47,.13); }
+select.auth-in { cursor: pointer; }
+.auth-short { max-width: 220px; }
+.auth-g2 { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+.auth-g3 { display: grid; grid-template-columns: 1.6fr 1.2fr 1.2fr; gap: .9rem; }
+/* GEO renders State and City into wrappers, so style whatever it puts there. */
+.auth-g3 > div > input, .auth-g3 > div > select {
+  width: 100%; height: 38px; padding: 0 .7rem;
+  border: 1px solid var(--border); border-radius: 7px;
+  font-size: .88rem; font-family: 'Inter', sans-serif; background: #fff; color: var(--text); outline: none;
+}
+.auth-g3 > div > input:focus, .auth-g3 > div > select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(192,86,47,.13);
+}
+
 .auth-pw { position: relative; }
-.auth-pw input { padding-right: 3.2rem !important; }
+.auth-pw .auth-in { padding-right: 2.6rem; }
 .auth-eye {
-  position: absolute; right: .5rem; top: 50%; transform: translateY(-50%);
-  background: none; border: none; cursor: pointer; padding: .45rem;
-  border-radius: 8px; color: var(--muted); display: flex; transition: background .15s, color .15s;
+  position: absolute; right: .3rem; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; padding: .35rem;
+  border-radius: 6px; color: var(--muted); display: flex; transition: background .15s;
 }
 .auth-eye:hover { background: var(--accent-light); color: var(--accent-dark); }
 
-.auth-forgot { text-align: right; margin: -.35rem 0 1.1rem; }
-.auth-forgot a { color: var(--accent-dark); font-size: .83rem; font-weight: 600; text-decoration: none; }
-.auth-forgot a:hover { text-decoration: underline; }
+.auth-hint { font-size: .78rem; color: #9C8877; margin-top: .4rem; line-height: 1.5; }
+.auth-cnt  { font-size: .75rem; color: #9C8877; margin-top: .45rem; }
 
-.auth-submit { width: 100%; justify-content: center; margin-top: .5rem; }
-.auth-error { color: var(--accent-dark); font-size: .85rem; margin: .25rem 0; }
-.auth-note  { color: var(--green);       font-size: .85rem; margin: .25rem 0; line-height: 1.5; }
-/* Collapse the error / status lines while they hold no text, so they don't
-   reserve dead space above the submit button. */
-.auth-error:empty, .auth-note:empty { display: none; }
-
-.auth-divider {
-  display: flex; align-items: center; gap: .9rem;
-  margin: 1.15rem 0; color: var(--muted); font-size: .8rem;
-}
-.auth-divider::before, .auth-divider::after {
-  content: ''; flex: 1; height: 1px; background: var(--border); opacity: .7;
-}
-
-.btn-google {
-  width: 100%; display: flex; align-items: center; justify-content: center;
-  gap: .6rem; padding: .8rem; border: 1.5px solid var(--border);
-  border-radius: 100px; background: var(--white);
-  font-family: 'Inter', sans-serif; font-weight: 600; font-size: .95rem;
-  color: var(--text); cursor: pointer;
-  transition: border-color .18s, background .18s;
-}
-.btn-google:hover { border-color: var(--accent); background: var(--accent-light); }
-
-.auth-guest {
-  width: 100%; margin-top: .7rem; padding: .7rem;
-  background: none; border: none; border-radius: 100px;
-  color: var(--muted); font-family: 'Inter', sans-serif;
-  font-size: .88rem; font-weight: 600; cursor: pointer;
-  transition: background .15s, color .15s;
-}
-.auth-guest:hover { background: var(--cream); color: var(--text); }
-
-.auth-terms { font-size: .75rem; color: var(--muted); text-align: center; margin-top: 1rem; line-height: 1.55; }
-
-/* Sign-up sub-controls */
-.auth-row { display: flex; gap: .6rem; }
-.auth-row > * { flex: 1; }
-.auth-choice { display: flex; gap: .6rem; margin-top: .25rem; }
+.auth-choice { display: flex; gap: .5rem; flex-wrap: wrap; }
 .auth-choice label {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: .4rem;
-  padding: .7rem .75rem; border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: .9rem;
-  transition: border-color .18s, background .18s;
+  display: flex; align-items: center; gap: .45rem; min-height: 38px; padding: 0 .9rem;
+  border: 1px solid var(--border); border-radius: 7px; cursor: pointer;
+  font-size: .86rem; font-weight: 500; background: #fff; transition: all .15s;
 }
-.auth-choice label:hover { border-color: var(--brand-mid); background: var(--accent-light); }
-/* forms.css sets .form-group input { width:100% }, which stretches radios and
-   checkboxes across the row — reset them back to their intrinsic size. */
 .auth-choice input { width: auto; margin: 0; accent-color: var(--accent); }
-.auth-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .25rem; }
-.auth-chips label {
-  display: flex; align-items: center; gap: .35rem;
-  padding: .45rem .7rem; border: 1.5px solid var(--border);
-  border-radius: 100px; cursor: pointer; font-size: .88rem;
-  transition: border-color .18s, background .18s;
-}
-.auth-chips label:hover { border-color: var(--brand-mid); background: var(--accent-light); }
-.auth-chips input { width: auto; margin: 0; accent-color: var(--accent); }
-/* Make the selected option readable at a glance, not just by the radio dot. */
-.auth-choice label:has(input:checked),
-.auth-chips  label:has(input:checked) {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  box-shadow: 0 0 0 2px rgba(192,86,47,.12);
-}
+.auth-choice label:has(input:checked) { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+.auth-choice label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-@media (max-width: 900px) {
-  .auth-page { grid-template-columns: 1fr; }
-  /* Stays `relative` (not `static`) so the decorative circles keep the panel
-     as their containing block instead of escaping onto the form column. */
-  .auth-brand { position: relative; height: auto; padding: 2.25rem 1.75rem; }
-  .auth-pitch { padding: 1.75rem 0; }
-  .auth-pitch h2 { font-size: 1.7rem; }
-  .auth-form-col { padding: 2.5rem 1.5rem 3rem; }
+/* Pill chips for exams and subject preferences. */
+.auth-chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+.auth-chips label, .auth-chip {
+  display: inline-flex; align-items: center; gap: .4rem; min-height: 34px; padding: 0 .8rem;
+  border: 1px solid var(--border); border-radius: 100px; background: #fff;
+  font-size: .85rem; color: var(--text); cursor: pointer; transition: all .15s; user-select: none;
+}
+.auth-chips label:hover, .auth-chip:hover { border-color: var(--brand-mid); }
+/* The native box is hidden so the chip itself carries the state; the label
+   keeps a focus ring below so keyboard users are never stranded. */
+.auth-chips input { position: absolute; opacity: 0; width: 0; height: 0; margin: 0; }
+.auth-chips em { font-style: normal; font-size: .95rem; line-height: 1; }
+.auth-chips label:has(input:checked) { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+.auth-chip.on-like { border-color: var(--green); background: var(--green-light); font-weight: 600; color: #33402C; }
+.auth-chip.on-hard { border-color: var(--accent-dark); background: var(--accent-light); font-weight: 600; color: var(--accent-dark); }
+.auth-chip.is-full { opacity: .4; cursor: not-allowed; }
+.auth-chips label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Footer action bar: primary commit on the right, as desktop expects. */
+.auth-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  margin-top: 1.8rem; padding-top: 1.3rem; border-top: 1px solid var(--border); flex-wrap: wrap;
+}
+.auth-bar-r { display: flex; align-items: center; gap: .7rem; }
+.auth-primary {
+  height: 38px; padding: 0 1.15rem; border: none; border-radius: 7px;
+  background: var(--accent); color: #fff; font-family: 'Inter', sans-serif;
+  font-weight: 600; font-size: .86rem; cursor: pointer; transition: background .15s;
+}
+.auth-primary:hover { background: var(--accent-dark); }
+.auth-google {
+  height: 38px; padding: 0 1rem; border: 1px solid var(--border); border-radius: 7px;
+  background: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: .85rem;
+  color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: .5rem;
+  transition: all .15s;
+}
+.auth-google:hover { border-color: var(--accent); background: var(--accent-light); }
+.auth-ghost {
+  background: none; border: none; color: var(--muted); font-family: 'Inter', sans-serif;
+  font-weight: 600; font-size: .84rem; cursor: pointer; padding: 0;
+}
+.auth-ghost:hover { color: var(--text); text-decoration: underline; }
+
+.auth-error { color: var(--accent-dark); font-size: .85rem; margin: .8rem 0 0; }
+.auth-note  { color: var(--green);       font-size: .85rem; margin: .5rem 0 0; line-height: 1.5; }
+.auth-error:empty, .auth-note:empty { display: none; }
+.auth-terms { font-size: .75rem; color: var(--muted); margin-top: 1rem; line-height: 1.55; }
+
+@media (max-width: 1000px) {
+  .auth-wrap { padding: 1.8rem 1.25rem 2.5rem; }
+  .auth-row { grid-template-columns: 1fr; gap: .4rem; }
+  .arow-lab { padding-top: 0; }
+  .auth-g2, .auth-g3 { grid-template-columns: 1fr; }
+  .auth-bar { flex-direction: column-reverse; align-items: stretch; }
+  .auth-bar-r { justify-content: flex-end; }
 }
 
 /* ── DASHBOARD HERO ─────────────────────────────────────────── */

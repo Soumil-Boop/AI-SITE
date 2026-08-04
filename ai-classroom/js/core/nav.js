@@ -6,35 +6,40 @@
    Used by all pages inside the pages/ folder.
    ============================================================ */
 
-const NAV_LINKS = [
-  { href: '../index.html',            label: 'Home' },
-  { href: 'what-is-ai.html',          label: 'What is AI?' },
-  { href: 'history.html',             label: 'History' },
-  { href: 'types.html',               label: 'Types' },
-  { href: 'study-tools.html',         label: 'Study Tools' },
-  { href: 'ethics.html',              label: 'Ethics' },
-  { href: 'lab.html',                 label: '🧪 Visual Learning Lab' },
-  { href: 'finder.html',              label: 'Find My AI Tool' },
-  { href: 'more-study.html',          label: 'More Study Material' },
-  { href: 'resources.html',           label: 'Help & Resources' },
-  { href: 'contact.html',             label: 'Contact Us' },
-];
+/* The one and only menu. Every item opens a section of the single-page home
+   experience at ../index.html#<section>.
 
-/* Home-page section links — used by pages that should send the user back to the
-   single-page home experience (e.g. the dashboard) instead of the older
-   standalone pages. Each opens ../index.html#<section>. */
-const HOME_NAV_LINKS = [
+   There used to be a second list here pointing at standalone copies of these
+   pages (lab.html, what-is-ai.html, history.html and so on). Those copies were
+   an older build of the site that stopped being updated, and any page that
+   mounted the menu without { homeLinks: true } quietly sent people into it —
+   which is how account settings became a doorway back to the old Lab. There is
+   now nothing to get wrong: one list, current content, no way to reach the old
+   pages from the menu. */
+const NAV_LINKS = [
   { hash: 'home',      label: 'Home' },
   { hash: 'what',      label: 'What is AI?' },
   { hash: 'history',   label: 'History' },
   { hash: 'types',     label: 'Types' },
   { hash: 'study',     label: 'Study Tools' },
   { hash: 'ethics',    label: 'Ethics' },
-  { hash: 'lab',       label: '🧪 Lab' },
+  { hash: 'lab',       label: '\u{1F9EA} Learning Lab' },
   { hash: 'finder',    label: 'Find My AI Tool' },
-  { hash: 'resources', label: 'Resources' },
-  { hash: 'contact',   label: 'Contact' },
+  { hash: 'resources', label: 'Help & Resources' },
+  { hash: 'contact',   label: 'Contact Us' },
 ];
+
+/* Kept so older calls still work; the standalone pages they named are gone. */
+const HOME_NAV_LINKS = NAV_LINKS;
+
+/* Which legacy filename corresponds to which home section, so a page that still
+   passes its own name to mountNav highlights the right menu item. */
+const PAGE_TO_HASH = {
+  'index.html': 'home', 'what-is-ai.html': 'what', 'history.html': 'history',
+  'types.html': 'types', 'study-tools.html': 'study', 'ethics.html': 'ethics',
+  'lab.html': 'lab', 'finder.html': 'finder', 'resources.html': 'resources',
+  'more-study.html': 'resources', 'contact.html': 'contact'
+};
 
 /* Seek-O-Sphere solar mark. Pass a unique id prefix so gradient ids don't clash. */
 function sosMark(pfx) {
@@ -55,20 +60,15 @@ function mountNav(activePage, opts) {
   const mount = document.getElementById('nav-mount');
   if (!mount) return;
 
-  let links;
-  if (opts.homeLinks) {
-    // Point every menu item at the home page's single-page sections.
-    links = HOME_NAV_LINKS.map(link =>
-      `<a href="../index.html#${link.hash}">${link.label}</a>`
-    ).join('');
-  } else {
-    links = NAV_LINKS.map(link => {
-      const isActive = link.href === activePage || link.href.endsWith('/' + activePage);
-      return `<a href="${link.href}" class="${isActive ? 'active' : ''}">${link.label}</a>`;
-    }).join('');
-  }
+  // opts.homeLinks is accepted for compatibility but no longer changes anything:
+  // the menu always points at the current home page.
+  const activeHash = PAGE_TO_HASH[activePage] || '';
+  const links = NAV_LINKS.map(link => {
+    const isActive = link.hash === activeHash;
+    return `<a href="../index.html#${link.hash}" class="${isActive ? 'active' : ''}">${link.label}</a>`;
+  }).join('');
 
-  const helpHref = opts.homeLinks ? '../index.html#resources' : 'resources.html';
+  const helpHref = '../index.html#resources';
 
   mount.innerHTML = `
     <div class="topbar">
