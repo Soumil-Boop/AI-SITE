@@ -29,7 +29,7 @@
      otherwise the previous member's name, photo and role bleed into the
      new session, and a stale 'admin' role even misroutes them. */
   var CACHE_KEYS = ['sos_name','sos_role','sos_photo','sos_curriculum','sos_grade',
-                    'sos_age','sos_type','sos_enjoys','sos_hard'];
+                    'sos_age','sos_type','sos_enjoys','sos_hard','sos_school'];
   function forgetCache(){
     CACHE_KEYS.forEach(function(k){ store(k, null); });
     store('sos_uid', null);
@@ -72,7 +72,9 @@
     var el = document.getElementById('acctMenu');
     if (!el) return;
     if (!user) { el.innerHTML = '<a href="' + P + 'login.html" class="topbar-auth">Sign In</a>'; return; }
-    var isAdmin = (profile && profile.role === 'admin') || read('sos_role') === 'admin';
+    // Both admin levels belong on the panel; only students see the dashboard.
+    var role = (profile && profile.role) || read('sos_role');
+    var isAdmin = role === 'owner' || role === 'schooladmin' || role === 'admin';
     var dashHref  = P + (isAdmin ? 'admin.html' : 'dashboard.html');
     var dashLabel = isAdmin ? 'Admin Panel' : 'My Dashboard';
     el.innerHTML =
@@ -142,6 +144,7 @@
           if (profile.ageGroup)   store('sos_age', profile.ageGroup);
           store('sos_photo', profile.photo || null);
           store('sos_role', profile.role || 'student');
+          store('sos_school', profile.schoolName || null);
         }
         render(user, profile);
         callbacks.forEach(function(cb){ try { cb(user, profile); } catch(e){} });

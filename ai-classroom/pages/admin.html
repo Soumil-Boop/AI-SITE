@@ -20,6 +20,173 @@
   <link rel="stylesheet" href="../css/components/nav.css"/>
   <link rel="stylesheet" href="../css/components/marquee.css"/>
   <link rel="stylesheet" href="../css/dashboard.css"/>
+  <style>
+    /* ── Admin panel ──────────────────────────────────────────────────
+       The dark "Admin Panel" hero is gone. Its job — carrying the top of
+       the page — now belongs to the headline figure, so the member list
+       starts higher up and the page opens on information rather than
+       decoration. */
+    :root {
+      /* The site's --muted sits at 4.43:1 on these surfaces, just under the
+         4.5:1 WCAG AA wants at this size. A shade deeper for small print. */
+      --ink-soft:#816654; --ink-pill:#7D6351;
+      --danger:#9A2B18; --danger-tint:#FBEAE6; --danger-line:#DDBDB4;
+    }
+    #adminMain { background:var(--parchment); min-height:70vh; }
+    .ad-wrap { max-width:1200px; margin:0 auto; padding:2.2rem 2.25rem 3.5rem; }
+
+    .ad-lede { display:flex; align-items:flex-end; justify-content:space-between; gap:2rem; margin-bottom:1.6rem; }
+    .ad-lede .eyebrow { font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-dark); }
+    .ad-lede h1 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.85rem; letter-spacing:-.025em; margin-top:.3rem; color:var(--text); }
+    .ad-lede p { font-size:.88rem; color:var(--ink-soft); margin-top:.3rem; }
+
+    .ad-btn { height:38px; padding:0 1rem; border-radius:9px; border:1px solid var(--border); background:var(--white);
+              font-family:'Inter',sans-serif; font-size:.84rem; font-weight:600; cursor:pointer; color:var(--text);
+              display:inline-flex; align-items:center; gap:.45rem; white-space:nowrap; }
+    .ad-btn:hover { border-color:var(--accent); color:var(--accent-dark); }
+
+    /* Headline figure plus three supporting ones */
+    .ad-figures { display:grid; grid-template-columns:1.35fr 1fr 1fr 1fr; gap:1rem; margin-bottom:2.1rem; }
+    .ad-fig { background:var(--white); border:1px solid var(--border); border-radius:16px; padding:1.35rem 1.45rem; }
+    .ad-fig.lead { background:linear-gradient(135deg,#46200F,#8B3620); border-color:transparent; color:#fff; }
+    .ad-fig .lab { font-size:.71rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-soft); }
+    .ad-fig.lead .lab { color:rgba(255,255,255,.75); }
+    .ad-fig .num { font-family:'Nunito',sans-serif; font-weight:900; letter-spacing:-.03em; line-height:1.05;
+                   margin-top:.5rem; font-size:2.1rem; color:var(--text); }
+    .ad-fig.lead .num { font-size:2.9rem; color:#fff; }
+    .ad-fig .foot { font-size:.79rem; color:var(--ink-soft); margin-top:.4rem; min-height:1.1em; }
+    .ad-fig.lead .foot { color:rgba(255,255,255,.8); }
+    .ad-fig .foot b { color:var(--green); font-weight:700; }
+    .ad-fig.lead .foot b { color:#BFDCB2; }
+    .ad-spark { display:flex; align-items:flex-end; gap:3px; height:26px; margin-top:.7rem; }
+    .ad-spark i { flex:1; background:rgba(255,255,255,.48); border-radius:2px 2px 0 0; min-height:2px; }
+    .ad-spark i.hi { background:#FBD9BE; }
+
+    .ad-panel { background:var(--white); border:1px solid var(--border); border-radius:18px;
+                box-shadow:var(--shadow-md); overflow:hidden; }
+    .ad-phead { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; padding:1.2rem 1.5rem .95rem; }
+    .ad-phead h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.1rem; color:var(--text); }
+    .ad-phead .sub { font-size:.8rem; color:var(--ink-soft); margin-top:.12rem; }
+    .ad-search { position:relative; }
+    .ad-search input { height:36px; width:250px; border:1px solid var(--border); border-radius:100px;
+                       background:var(--gray-50); padding:0 .9rem 0 2.15rem; font-family:'Inter',sans-serif;
+                       font-size:.84rem; outline:none; color:var(--text); }
+    .ad-search input:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(192,86,47,.12); }
+    .ad-search svg { position:absolute; left:.75rem; top:50%; transform:translateY(-50%); opacity:.45; }
+
+    .ad-tabs { display:flex; gap:.35rem; padding:0 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+    .ad-tabs button { border:none; background:none; font-family:'Inter',sans-serif; font-size:.84rem; font-weight:600;
+                      color:var(--ink-soft); padding:.55rem .8rem; cursor:pointer; border-bottom:2px solid transparent;
+                      margin-bottom:-1px; }
+    .ad-tabs button:hover { color:var(--text); }
+    .ad-tabs button.on { color:var(--accent-dark); border-bottom-color:var(--accent); }
+    .ad-tabs button:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; border-radius:6px; }
+
+    .ad-tscroll { overflow-x:auto; }
+    .ad-table { width:100%; border-collapse:collapse; }
+    .ad-table thead th { text-align:left; font-size:.69rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+                         color:var(--ink-soft); padding:.8rem 1rem .6rem; white-space:nowrap; }
+    .ad-table thead th:first-child, .ad-table tbody td:first-child { padding-left:1.5rem; }
+    .ad-table thead th:last-child,  .ad-table tbody td:last-child  { padding-right:1.5rem; width:150px; }
+    .ad-table th.num, .ad-table td.num { text-align:right; }
+    .ad-table tbody td { padding:.8rem 1rem; font-size:.87rem; border-top:1px solid rgba(203,187,165,.42);
+                         white-space:nowrap; color:var(--text); }
+    .ad-table tbody tr:hover { background:var(--gray-50); }
+
+    .ad-person { display:flex; align-items:center; gap:.7rem; }
+    .ad-avatar { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-size:.8rem;
+                 font-weight:700; color:#fff; flex-shrink:0; font-family:'Inter',sans-serif; }
+    .ad-person b { font-weight:600; display:block; line-height:1.25; }
+    .ad-person span { font-size:.77rem; color:var(--ink-soft); display:block; }
+
+    .ad-pill { display:inline-flex; align-items:center; gap:.3rem; font-size:.72rem; font-weight:700;
+               padding:.24rem .6rem; border-radius:100px; }
+    .ad-pill::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
+    .ad-pill.student { background:var(--gray-100); color:var(--ink-pill); }
+    .ad-pill.admin   { background:var(--accent-light); color:var(--accent-dark); }
+    .ad-pill.guest   { background:var(--purple-light); color:var(--purple); }
+
+    .ad-ring { width:30px; height:30px; border-radius:50%; display:grid; place-items:center; }
+    .ad-ring span { background:var(--white); width:22px; height:22px; border-radius:50%; display:grid; place-items:center;
+                    font-size:.62rem; font-weight:800; color:var(--text); font-family:'Inter',sans-serif; }
+    tr:hover .ad-ring span { background:var(--gray-50); }
+    .ad-none { color:var(--ink-soft); opacity:.75; }
+
+    .ad-acts { display:flex; gap:.2rem; justify-content:flex-end; }
+    .ad-acts button { width:30px; height:30px; border:1px solid transparent; background:none; border-radius:8px;
+                      cursor:pointer; display:grid; place-items:center; color:var(--ink-soft); padding:0; }
+    .ad-acts button:hover { background:var(--gray-100); border-color:var(--border); color:var(--text); }
+    .ad-acts button.danger:hover { background:var(--danger-tint); border-color:var(--danger-line); color:var(--danger); }
+    .ad-acts button:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+
+    .ad-pfoot { padding:.9rem 1.5rem; border-top:1px solid var(--border); font-size:.8rem; color:var(--ink-soft);
+                display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+    .ad-pfoot button { background:none; border:none; font-family:'Inter',sans-serif; font-size:.8rem; font-weight:600;
+                       color:var(--accent-dark); cursor:pointer; padding:0; }
+    .ad-pfoot button:hover { color:var(--text); }
+    .ad-msg { text-align:center; padding:2.5rem 1.5rem; color:var(--ink-soft); font-size:.88rem; }
+    .ad-msg.err { color:var(--danger); }
+
+    /* School filter, sitting beside the search */
+    .ad-tools { display:flex; align-items:center; gap:.6rem; }
+    .ad-select { height:36px; border:1px solid var(--border); border-radius:100px; background:var(--gray-50);
+                 padding:0 2rem 0 .9rem; font-family:'Inter',sans-serif; font-size:.84rem; color:var(--text);
+                 cursor:pointer; outline:none; appearance:none;
+                 background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23816654' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+                 background-repeat:no-repeat; background-position:right .8rem center; }
+    .ad-select:focus { border-color:var(--accent); background-color:#fff; box-shadow:0 0 0 3px rgba(192,86,47,.12); }
+
+    .ad-school { font-size:.83rem; color:var(--ink-soft); }
+    .ad-school b { color:var(--text); font-weight:600; }
+    .ad-school .none { opacity:.7; }
+
+    /* ── Schools section (owner only) ── */
+    .ad-schools { margin-top:2rem; }
+    .ad-schools h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.1rem; color:var(--text); }
+    .ad-schools .sub { font-size:.8rem; color:var(--ink-soft); margin-top:.12rem; }
+    .ad-scards { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; margin-top:1rem; }
+    .ad-scard { background:var(--white); border:1px solid var(--border); border-radius:16px; padding:1.2rem 1.3rem; }
+    .ad-scard h3 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1rem; color:var(--text); }
+    .ad-scard .meta { font-size:.79rem; color:var(--ink-soft); margin-top:.25rem; }
+    .ad-code { display:flex; align-items:center; gap:.5rem; margin-top:.9rem; }
+    .ad-code code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.84rem; font-weight:600;
+                    background:var(--gray-50); border:1px solid var(--border); border-radius:7px;
+                    padding:.34rem .6rem; letter-spacing:.04em; color:var(--text); }
+    .ad-code button { width:30px; height:30px; border:1px solid transparent; background:none; border-radius:8px;
+                      cursor:pointer; display:grid; place-items:center; color:var(--ink-soft); }
+    .ad-code button:hover { background:var(--gray-100); border-color:var(--border); color:var(--text); }
+    .ad-scard .admins { margin-top:.9rem; padding-top:.8rem; border-top:1px solid rgba(203,187,165,.5); font-size:.8rem; }
+    .ad-scard .admins b { display:block; color:var(--text); font-weight:600; }
+    .ad-scard .admins span { color:var(--ink-soft); }
+    .ad-scard .admins .empty { color:var(--ink-soft); font-style:italic; }
+    .ad-scard .row { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-top:.35rem; }
+    .ad-mini { height:30px; padding:0 .7rem; border-radius:7px; border:1px solid var(--border); background:var(--white);
+               font-family:'Inter',sans-serif; font-size:.78rem; font-weight:600; cursor:pointer; color:var(--text); }
+    .ad-mini:hover { border-color:var(--accent); color:var(--accent-dark); }
+    .ad-mini.danger { color:var(--danger); border-color:var(--danger-line); }
+    .ad-mini.danger:hover { background:var(--danger-tint); }
+    .ad-newschool { background:var(--white); border:1px dashed var(--border); border-radius:16px; padding:1.2rem 1.3rem; }
+    .ad-newschool label { display:block; font-size:.78rem; font-weight:600; color:var(--text); margin-bottom:.3rem; }
+    .ad-newschool input { width:100%; height:36px; border:1px solid var(--border); border-radius:8px; background:#fff;
+                          padding:0 .7rem; font-family:'Inter',sans-serif; font-size:.85rem; color:var(--text);
+                          outline:none; margin-bottom:.7rem; }
+    .ad-newschool input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,86,47,.12); }
+    .ad-newschool .hint { font-size:.75rem; color:var(--ink-soft); margin:-.45rem 0 .7rem; }
+    .ad-schoolmsg { font-size:.82rem; margin-top:.5rem; min-height:1.1em; }
+    .ad-schoolmsg.ok { color:var(--green); } .ad-schoolmsg.err { color:var(--danger); }
+
+    @media (max-width:1040px) {
+      .ad-figures { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:640px) {
+      .ad-wrap { padding:1.5rem 1.1rem 2.5rem; }
+      .ad-figures { grid-template-columns:1fr; }
+      .ad-lede { flex-direction:column; align-items:flex-start; gap:1rem; }
+      .ad-phead { flex-direction:column; align-items:flex-start; }
+      .ad-search input { width:100%; }
+      .ad-search { width:100%; }
+    }
+  </style>
 </head>
 <body>
 <div id="nav-mount"></div>
@@ -32,50 +199,82 @@
 </div>
 
 <main id="adminMain" style="display:none;">
-  <div class="dash-hero" style="background:linear-gradient(135deg,#3A1608,#17100A);">
-    <div class="dash-hero-inner">
-      <span style="font-size:2rem;">🛡️</span>
+  <div class="ad-wrap">
+
+    <div class="ad-lede">
       <div>
-        <h1>Admin Panel</h1>
-        <p style="color:rgba(255,255,255,.6);">Manage users, view analytics, and control site content.</p>
+        <p class="eyebrow">Admin</p>
+        <h1>How Seek-O-Sphere is doing</h1>
+        <p id="adLedeSub">Loading&hellip;</p>
+      </div>
+      <button class="ad-btn" onclick="exportMembersCSV()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>
+        Export CSV
+      </button>
+    </div>
+
+    <div class="ad-figures">
+      <div class="ad-fig lead">
+        <div class="lab">Total students</div>
+        <div class="num" id="adminTotalUsers">0</div>
+        <div class="foot" id="adTrend"></div>
+        <div class="ad-spark" id="adSpark" style="display:none;"></div>
+      </div>
+      <div class="ad-fig"><div class="lab">Questions answered</div><div class="num" id="adminTotalQ">0</div><div class="foot">across all members</div></div>
+      <div class="ad-fig"><div class="lab">Guest users</div><div class="num" id="adminGuestUsers">0</div><div class="foot" id="adGuestFoot">&nbsp;</div></div>
+      <div class="ad-fig"><div class="lab">Active today</div><div class="num" id="adminActiveToday">0</div><div class="foot" id="adActiveFoot">&nbsp;</div></div>
+    </div>
+
+    <div class="ad-panel">
+      <div class="ad-phead">
+        <div>
+          <h2>Members</h2>
+          <p class="sub">Everyone with an account, newest activity first</p>
+        </div>
+        <div class="ad-tools">
+          <select class="ad-select" id="adSchoolFilter" onchange="filterUsers()" style="display:none;" aria-label="Filter by school"></select>
+          <div class="ad-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <label for="adminSearch" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Search members</label>
+            <input type="text" id="adminSearch" placeholder="Search name or email" oninput="filterUsers()"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="ad-tabs" id="adTabs" role="tablist">
+        <button class="on" data-tab="all"     onclick="setUserTab('all', this)">All</button>
+        <button data-tab="student" onclick="setUserTab('student', this)">Students</button>
+        <button data-tab="admin"   onclick="setUserTab('admin', this)">Admins</button>
+        <button data-tab="guest"   onclick="setUserTab('guest', this)">Guests</button>
+      </div>
+
+      <div class="ad-tscroll">
+        <table class="ad-table" id="adminUserTable">
+          <thead>
+            <tr>
+              <th>Member</th><th class="ad-colschool">School</th><th class="ad-colrole">Role</th>
+              <th class="num">Questions</th><th>Accuracy</th>
+              <th class="num">Best streak</th><th>Last active</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="adminUserBody">
+            <tr><td colspan="8"><p class="ad-msg">Loading members&hellip;</p></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ad-pfoot">
+        <span id="adCount">&nbsp;</span>
+        <button id="adShowAll" onclick="toggleShowAll()" style="display:none;">Show all &rarr;</button>
       </div>
     </div>
-  </div>
 
-  <div class="section-inner">
-
-    <h2 class="dash-section-title">Site Analytics</h2>
-    <div class="dash-stats">
-      <div class="dash-stat-card"><span class="dash-stat-num" id="adminTotalUsers">0</span><span class="dash-stat-label">Total Students</span></div>
-      <div class="dash-stat-card"><span class="dash-stat-num" id="adminTotalQ">0</span><span class="dash-stat-label">Total Questions Answered</span></div>
-      <div class="dash-stat-card"><span class="dash-stat-num" id="adminGuestUsers">0</span><span class="dash-stat-label">Guest Users</span></div>
-      <div class="dash-stat-card"><span class="dash-stat-num" id="adminActiveToday">0</span><span class="dash-stat-label">Active Today</span></div>
-    </div>
-
-    <div class="admin-table-header">
-      <h2 class="dash-section-title" style="margin:0;">All Users</h2>
-      <input type="text" id="adminSearch" class="admin-search" placeholder="Search by name or email..." oninput="filterUsers()"/>
-    </div>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table" id="adminUserTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Questions</th>
-            <th>Accuracy</th>
-            <th>Best Streak</th>
-            <th>Last Active</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="adminUserBody">
-          <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;">Loading users…</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- Owner only: create schools, hand out join codes, appoint admins. -->
+    <section class="ad-schools" id="adSchools" style="display:none;">
+      <h2>Schools</h2>
+      <p class="sub">Each school gets a join code. Students who enter it at sign-up become that school&rsquo;s students, and only its admin can see them.</p>
+      <div class="ad-scards" id="adSchoolCards"></div>
+    </section>
 
   </div>
 </main>
@@ -114,6 +313,22 @@ try { db.enablePersistence({ synchronizeTabs: true }).catch(function(){}); } cat
 var allUsers = [];
 var USER_LIST = null;   // the member list, started in parallel with the role check
 
+/* Two levels of admin.
+     owner       — you. Every school, every online learner, every admin.
+     schooladmin — one school. Only that school's students: no other school,
+                   no online learners, and no admin accounts, including their
+                   own. The Firestore rules enforce that; this file only
+                   decides what to ask for and what to draw.
+   'admin' is the role the site used before schools existed; it is read as
+   owner so your existing account keeps working without a migration. */
+var MY_ROLE   = null;
+var MY_SCHOOL = null;    // { id, name } for a school admin, null for the owner
+var SCHOOLS   = [];      // owner only
+
+function isOwnerRole(r)  { return r === 'owner' || r === 'admin'; }
+function isAdminRole(r)  { return isOwnerRole(r) || r === 'schooladmin'; }
+function amOwner()       { return isOwnerRole(MY_ROLE); }
+
 auth.onAuthStateChanged(function(user) {
   if (!user) { window.location.href = 'login.html'; return; }
   // Fast-path: a returning admin sees the panel instantly; the read below just
@@ -123,35 +338,95 @@ auth.onAuthStateChanged(function(user) {
     if (localStorage.getItem('sos_uid') === user.uid) cached = localStorage.getItem('sos_role');
     else (window.SOSCache || { forget: function(){} }).forget();
   } catch(e){}
-  if (cached === 'admin') showAdmin();
-  // Fetch the member list at the same time as the role check rather than after
-  // it. Waiting for one before starting the other made the panel take two full
-  // round trips to appear; the rules still decide whether the list is allowed.
-  USER_LIST = db.collection('users').get();
-  USER_LIST.catch(function(){});                 // a non-admin is refused; handled below
+  // The member list can no longer be started before the role check: which
+  // query is even permitted depends on who is asking. A school admin asking
+  // for every user is refused outright, so we learn the role first.
   var mine = (window.SOS && SOS.profileOnce)
     ? SOS.profileOnce(user.uid)
     : db.collection('users').doc(user.uid).get();
   mine.then(function(snap) {
-    var isAdmin = snap.exists && snap.data().role === 'admin';
+    var p = snap.exists ? (snap.data() || {}) : {};
+    MY_ROLE = p.role || 'student';
     try {
       localStorage.setItem('sos_uid', user.uid);
-      localStorage.setItem('sos_role', (snap.exists && snap.data().role) || 'student');
+      localStorage.setItem('sos_role', MY_ROLE);
     } catch(e){}
-    if (!isAdmin) { window.location.replace('../index.html'); return; }
+    if (!isAdminRole(MY_ROLE)) { window.location.replace('../index.html'); return; }
+    if (MY_ROLE === 'schooladmin') {
+      if (!p.schoolId) { showNoSchool(); return; }
+      MY_SCHOOL = { id: p.schoolId, name: p.schoolName || 'your school' };
+    }
     showAdmin();
+  }).catch(function(err) {
+    console.error('Could not confirm admin access:', err && err.code, err && err.message);
+    window.location.replace('../index.html');
   });
 });
+
+/* A school admin whose account has no school attached would otherwise see an
+   empty table with no explanation. */
+function showNoSchool() {
+  document.getElementById('adminGate').innerHTML =
+    '<div class="auth-gate-inner"><p>Your admin account isn\u2019t linked to a school yet. ' +
+    'Ask the Seek-O-Sphere admin to attach it, then reload this page.</p></div>';
+}
 
 function showAdmin() {
   if (showAdmin.done) return; showAdmin.done = true;
   document.getElementById('adminGate').style.display = 'none';
   document.getElementById('adminMain').style.display = 'block';
+  shapeForRole();
   loadAdminData();
 }
 
+/* Hide everything the signed-in admin has no business seeing, before any data
+   arrives — so nothing flashes on screen and is then taken away. */
+function shapeForRole() {
+  var owner = amOwner();
+
+  document.querySelector('.ad-lede h1').textContent = owner
+    ? 'How Seek-O-Sphere is doing'
+    : 'How ' + MY_SCHOOL.name + ' is doing';
+  document.querySelector('.ad-lede .eyebrow').textContent = owner ? 'Admin' : MY_SCHOOL.name;
+
+  // The School column and the school filter only mean something to the owner.
+  [].forEach.call(document.querySelectorAll('.ad-colschool'), function(el) {
+    el.style.display = owner ? '' : 'none';
+  });
+  document.getElementById('adSchoolFilter').style.display = owner ? '' : 'none';
+  document.getElementById('adSchools').style.display = owner ? '' : 'none';
+
+  // A school admin's list is students only, so role tabs and a Role column
+  // would be four ways of saying the same thing.
+  [].forEach.call(document.querySelectorAll('.ad-colrole'), function(el) {
+    el.style.display = owner ? '' : 'none';
+  });
+  document.getElementById('adTabs').style.display = owner ? '' : 'none';
+
+  document.querySelector('.ad-phead h2').textContent = owner ? 'Members' : 'Students';
+  document.querySelector('.ad-phead .sub').textContent = owner
+    ? 'Everyone with an account, newest activity first'
+    : 'Students at ' + MY_SCHOOL.name + ', newest activity first';
+  document.querySelector('#adminTotalQ').nextElementSibling.textContent =
+    owner ? 'across all members' : 'across your students';
+
+  // Guest accounts have no school, so a school admin never has any.
+  var guestFig = document.getElementById('adminGuestUsers').closest('.ad-fig');
+  if (guestFig) guestFig.style.display = owner ? '' : 'none';
+}
+
 function loadAdminData() {
-  (USER_LIST || db.collection('users').get()).then(function(snap) {
+  // The owner may list every user. A school admin must narrow the query to
+  // their own bucket — 'school:<id>' contains that school's students and
+  // nothing else, so the rules can prove every returned row is theirs. Ask
+  // for anything wider and Firestore refuses the whole query.
+  var query = amOwner()
+    ? db.collection('users')
+    : db.collection('users').where('bucket', '==', 'school:' + MY_SCHOOL.id);
+
+  if (amOwner()) loadSchools();
+
+  query.get().then(function(snap) {
     allUsers = snap.docs.map(function(d) {
       return Object.assign({ uid: d.id }, d.data());
     });
@@ -169,60 +444,459 @@ function loadAdminData() {
     document.getElementById('adminGuestUsers').textContent  = guests.length;
     document.getElementById('adminActiveToday').textContent = active.length;
 
-    renderUserTable(allUsers);
+    document.getElementById('adGuestFoot').textContent =
+      guests.length ? 'accounts with no email' : 'none right now';
+    document.getElementById('adActiveFoot').textContent =
+      'of ' + allUsers.length + ' member' + (allUsers.length === 1 ? '' : 's');
+    var noun = amOwner() ? 'member' : 'student';
+    document.getElementById('adLedeSub').textContent =
+      allUsers.length + ' ' + noun + (allUsers.length === 1 ? '' : 's') + ', ' +
+      (active.length ? active.length + ' of them here today' : 'none here yet today') + '. Updated just now.';
+    document.getElementById('adminTotalUsers').previousElementSibling.textContent =
+      amOwner() ? 'Total students' : 'Students';
+
+    paintSignupTrend();
+    if (amOwner()) {
+      paintTabCounts();
+      paintSchoolFilter();
+      // The cards count students, so they can only be right once the member
+      // list has arrived — the two loads run in parallel and either may land
+      // first.
+      if (SCHOOLS.length) paintSchools();
+    }
+    applyFilters();
   }).catch(function(err) {
     console.error('Failed to load users:', err && err.code, err && err.message);
     var denied = err && err.code === 'permission-denied';
     document.getElementById('adminUserBody').innerHTML =
-      '<tr><td colspan="8" style="text-align:center;color:var(--accent-dark);padding:2rem;">' +
+      '<tr><td colspan="8"><p class="ad-msg err">' +
       (denied
-        ? 'Access blocked by Firestore rules. An admin needs permission to read all users — update your Firestore security rules (see the rules file provided).'
-        : 'Could not load users: ' + ((err && err.message) || 'unknown error')) +
-      '</td></tr>';
+        ? 'Access blocked by Firestore rules — publish the updated rules from firestore.rules.'
+        : 'Could not load members: ' + ((err && err.message) || 'unknown error')) +
+      '</p></td></tr>';
   });
 }
+
+/* ── Presentation helpers ───────────────────────────────────────── */
+
+/* Which bucket a row belongs to for the tabs and the CSV. A member with no
+   email never completed a sign-up, and the analytics already counted those as
+   guests, so the table agrees with the figure above it. */
+function memberRole(u) {
+  if (isAdminRole(u.role)) return 'admin';
+  return u.email ? 'student' : 'guest';
+}
+
+/* What the role pill says. A school's admin is named after the school, so a
+   list with two schools in it reads unambiguously; you are named after the
+   site. Only you ever see either, because a school admin's list contains no
+   admin accounts at all. */
+function roleLabel(u) {
+  if (isOwnerRole(u.role))      return 'Seek-O-Sphere admin';
+  if (u.role === 'schooladmin') return (u.schoolName || 'School') + ' admin';
+  return u.email ? 'Student' : 'Guest';
+}
+
+function schoolLabel(u) {
+  if (u.schoolName) return u.schoolName;
+  if (u.schoolId)   return 'Unknown school';
+  // Only a student with no school is an "online learner". An admin without one
+  // is site-wide, which is a different thing entirely.
+  return u.role === 'student' ? null : '';
+}
+
+var AVATAR_INKS = ['#506274','#D9764E','#5F7355','#6E5460','#AC8F62','#8B3620'];
+function avatarFor(u) {
+  var label = (u.name || u.email || 'Guest').trim();
+  var initial = label.charAt(0).toUpperCase() || '?';
+  var seed = 0, key = u.uid || label;
+  for (var i = 0; i < key.length; i++) seed = (seed * 31 + key.charCodeAt(i)) >>> 0;
+  return { initial: initial, ink: AVATAR_INKS[seed % AVATAR_INKS.length] };
+}
+
+function accuracyOf(u) {
+  if (!u.totalQuestions || u.correctTotal == null) return null;
+  return Math.round(u.correctTotal / u.totalQuestions * 100);
+}
+
+/* Today gets a time, this year gets a day and month, anything older gets the
+   year too — so "Last active" is readable at a glance instead of a wall of
+   identical-looking dates. */
+function lastActiveText(u) {
+  if (!u.lastActive || !u.lastActive.toDate) return 'Never';
+  var d = u.lastActive.toDate(), now = new Date();
+  if (d.toDateString() === now.toDateString()) {
+    return 'Today, ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+  var opts = { day: 'numeric', month: 'short' };
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
+  return d.toLocaleDateString('en-GB', opts);
+}
+
+function adEsc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, function(c) {
+    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+  });
+}
+
+var AD_ICON = {
+  view:   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  up:     '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+  down:   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
+  reset:  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  bin:    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>'
+};
 
 function renderUserTable(users) {
   var tbody = document.getElementById('adminUserBody');
   if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;">No users found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8"><p class="ad-msg">No ' +
+      (amOwner() ? 'members' : 'students') + ' match that search.</p></td></tr>';
     return;
   }
   tbody.innerHTML = users.map(function(u) {
-    var active  = u.lastActive && u.lastActive.toDate ? u.lastActive.toDate().toLocaleDateString('en-GB') : 'N/A';
-    var acc = (u.totalQuestions && u.correctTotal != null) ? Math.round(u.correctTotal / u.totalQuestions * 100) + '%' : '—';
+    var av   = avatarFor(u);
+    var role = memberRole(u);
+    var acc  = accuracyOf(u);
+    var accCell = (acc == null)
+      ? '<span class="ad-none">Not started</span>'
+      : '<div class="ad-ring" style="background:conic-gradient(' +
+          (acc >= 60 ? 'var(--green)' : 'var(--accent)') + ' ' + acc + '%, var(--gray-100) 0)">' +
+          '<span>' + acc + '</span></div>';
+    var uid  = adEsc(u.uid);
+    var who  = adEsc(u.name || u.email || 'this account').replace(/'/g, '&#39;');
+    var sch  = schoolLabel(u);
+    var owner = amOwner();
+
+    var schoolCell = owner
+      ? '<td class="ad-colschool"><span class="ad-school">' +
+          (sch ? '<b>' + adEsc(sch) + '</b>'
+               : (u.role === 'student' ? '<span class="none">Online learner</span>'
+                                       : '<span class="none">Site-wide</span>')) +
+        '</span></td>'
+      : '';
+    var roleCell = owner
+      ? '<td class="ad-colrole"><span class="ad-pill ' + role + '">' + adEsc(roleLabel(u)) + '</span></td>'
+      : '';
+
+    // Appointing admins is the owner's alone, so a school admin has no
+    // promote button to press — and the rules refuse the write regardless.
+    var promoteBtn = owner
+      ? '<button onclick="promoteUser(\'' + uid + '\')" title="Change role" aria-label="Change role">' +
+          (isAdminRole(u.role) ? AD_ICON.down : AD_ICON.up) + '</button>'
+      : '';
+
     return '<tr>' +
-      '<td>' + (u.name || 'Guest') + '</td>' +
-      '<td style="color:var(--muted);font-size:.88rem;">' + (u.email || 'Anonymous') + '</td>' +
-      '<td><span class="admin-role-badge admin-role-' + u.role + '">' + u.role + '</span></td>' +
-      '<td>' + (u.totalQuestions || 0) + '</td>' +
-      '<td>' + acc + '</td>' +
-      '<td>' + (u.bestStreak || 0) + '</td>' +
-      '<td style="font-size:.82rem;color:var(--muted);">' + active + '</td>' +
-      '<td class="admin-actions">' +
-        '<button class="btn-admin-action" onclick="viewUser(\'' + u.uid + '\')" title="View progress">👁️</button>' +
-        '<button class="btn-admin-action" onclick="promoteUser(\'' + u.uid + '\',\'' + u.role + '\')" title="' + (u.role === 'admin' ? 'Demote' : 'Promote') + '">' + (u.role === 'admin' ? '⬇️' : '⬆️') + '</button>' +
-        '<button class="btn-admin-action" onclick="resetProgress(\'' + u.uid + '\')" title="Reset progress">🔄</button>' +
-        '<button class="btn-admin-action" onclick="deleteUser(\'' + u.uid + '\',\'' + (u.name || u.email) + '\')" title="Delete">🗑️</button>' +
-      '</td>' +
+      '<td><div class="ad-person"><div class="ad-avatar" style="background:' + av.ink + '">' + adEsc(av.initial) + '</div>' +
+        '<div><b>' + adEsc(u.name || 'Guest') + '</b><span>' + adEsc(u.email || 'No email') + '</span></div></div></td>' +
+      schoolCell + roleCell +
+      '<td class="num">' + (u.totalQuestions || 0) + '</td>' +
+      '<td>' + accCell + '</td>' +
+      '<td class="num">' + (u.bestStreak || 0) + '</td>' +
+      '<td>' + adEsc(lastActiveText(u)) + '</td>' +
+      '<td><div class="ad-acts">' +
+        '<button onclick="viewUser(\'' + uid + '\')" title="View progress" aria-label="View progress">' + AD_ICON.view + '</button>' +
+        promoteBtn +
+        '<button onclick="resetProgress(\'' + uid + '\')" title="Reset progress" aria-label="Reset progress">' + AD_ICON.reset + '</button>' +
+        '<button class="danger" onclick="deleteUser(\'' + uid + '\',\'' + who + '\')" title="Delete account" aria-label="Delete account">' + AD_ICON.bin + '</button>' +
+      '</div></td>' +
     '</tr>';
   }).join('');
 }
 
-function filterUsers() {
-  var q = document.getElementById('adminSearch').value.toLowerCase();
-  var filtered = allUsers.filter(function(u) {
-    return (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q);
+/* ── Filtering: the tab and the search box narrow the same list ──── */
+var AD_TAB = 'all';
+var AD_SHOW_ALL = false;
+var AD_PAGE = 5;              // rows shown before "Show all"
+
+function setUserTab(tab, btn) {
+  AD_TAB = tab;
+  AD_SHOW_ALL = false;
+  [].forEach.call(document.querySelectorAll('#adTabs button'), function(b) {
+    b.classList.toggle('on', b === btn);
   });
-  renderUserTable(filtered);
+  applyFilters();
 }
 
-function promoteUser(uid, currentRole) {
-  var newRole = currentRole === 'admin' ? 'student' : 'admin';
-  if (!confirm('Change this user role to ' + newRole + '?')) return;
-  db.collection('users').doc(uid).update({ role: newRole }).then(function() {
-    loadAdminData();
+function toggleShowAll() {
+  AD_SHOW_ALL = !AD_SHOW_ALL;
+  applyFilters();
+}
+
+function matchingUsers() {
+  var box = document.getElementById('adminSearch');
+  var q = (box ? box.value : '').trim().toLowerCase();
+  var sel = document.getElementById('adSchoolFilter');
+  var school = (amOwner() && sel) ? sel.value : '';        // '' = every school
+  return allUsers.filter(function(u) {
+    if (AD_TAB !== 'all' && memberRole(u) !== AD_TAB) return false;
+    if (school === 'online' && (u.schoolId || u.role !== 'student')) return false;
+    if (school && school !== 'online' && u.schoolId !== school) return false;
+    if (!q) return true;
+    return (u.name || '').toLowerCase().indexOf(q) !== -1 ||
+           (u.email || '').toLowerCase().indexOf(q) !== -1 ||
+           (u.schoolName || '').toLowerCase().indexOf(q) !== -1;
+  }).sort(function(a, b) {
+    var av = a.lastActive && a.lastActive.toDate ? a.lastActive.toDate().getTime() : 0;
+    var bv = b.lastActive && b.lastActive.toDate ? b.lastActive.toDate().getTime() : 0;
+    return bv - av;                                    // newest activity first
   });
+}
+
+function applyFilters() {
+  var list = matchingUsers();
+  var shown = AD_SHOW_ALL ? list : list.slice(0, AD_PAGE);
+  renderUserTable(shown);
+
+  var noun = amOwner() ? 'member' : 'student';
+  document.getElementById('adCount').textContent =
+    list.length
+      ? 'Showing ' + shown.length + ' of ' + list.length + ' ' + noun + (list.length === 1 ? '' : 's')
+      : 'No ' + noun + 's to show';
+
+  var more = document.getElementById('adShowAll');
+  more.style.display = list.length > AD_PAGE ? 'inline' : 'none';
+  more.innerHTML = AD_SHOW_ALL ? 'Show fewer' : 'Show all &rarr;';
+}
+
+// The search box calls this by name.
+function filterUsers() { AD_SHOW_ALL = false; applyFilters(); }
+
+function paintTabCounts() {
+  var counts = { all: allUsers.length, student: 0, admin: 0, guest: 0 };
+  allUsers.forEach(function(u) { counts[memberRole(u)]++; });
+  var labels = { all:'All', student:'Students', admin:'Admins', guest:'Guests' };
+  [].forEach.call(document.querySelectorAll('#adTabs button'), function(b) {
+    var k = b.getAttribute('data-tab');
+    b.textContent = labels[k] + ' · ' + counts[k];
+  });
+}
+
+/* ── Sign-up trend on the headline figure ────────────────────────
+   Built from createdAt. Older accounts predate that field, so when too
+   few members have one the trend and the sparkline stay hidden rather
+   than showing a chart that quietly understates the truth. */
+function paintSignupTrend() {
+  var withDate = allUsers.filter(function(u) { return u.createdAt && u.createdAt.toDate; });
+  var trendEl = document.getElementById('adTrend');
+  var sparkEl = document.getElementById('adSpark');
+
+  if (withDate.length < 2) {
+    trendEl.textContent = allUsers.length + ' in total';
+    sparkEl.style.display = 'none';
+    return;
+  }
+
+  var day = 86400000, now = new Date();
+  var midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  var buckets = [0,0,0,0,0,0,0];                       // six days ago → today
+  withDate.forEach(function(u) {
+    var t = u.createdAt.toDate().getTime();
+    var idx = 6 - Math.floor((midnight - t) / day);
+    if (idx >= 0 && idx <= 6) buckets[idx]++;
+  });
+  var week = buckets.reduce(function(a, b) { return a + b; }, 0);
+
+  trendEl.innerHTML = week
+    ? '<b>+' + week + '</b> in the last seven days'
+    : 'no new members this week';
+
+  var peak = Math.max.apply(null, buckets);
+  if (!peak) { sparkEl.style.display = 'none'; return; }
+  sparkEl.style.display = 'flex';
+  sparkEl.innerHTML = buckets.map(function(n, i) {
+    var h = Math.round(n / peak * 100);
+    return '<i class="' + (i >= 5 ? 'hi' : '') + '" style="height:' + Math.max(h, 6) + '%"></i>';
+  }).join('');
+  sparkEl.setAttribute('title', 'New members per day over the last week');
+}
+
+/* ── Schools (owner only) ────────────────────────────────────────
+   A school is a name, a join code and an id. The id is the random Firestore
+   document id, never the name — a student's own profile is the only place
+   they see one, so an id is not something an outsider can guess their way
+   into. The code is the human half: short, shareable, and looked up by exact
+   id so the collection cannot be trawled for school names. */
+function loadSchools() {
+  db.collection('schools').get().then(function(snap) {
+    SCHOOLS = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); })
+                       .sort(function(a, b) { return (a.name || '').localeCompare(b.name || ''); });
+    paintSchools();
+    paintSchoolFilter();
+  }).catch(function(err) {
+    console.error('Could not load schools:', err && err.code, err && err.message);
+    document.getElementById('adSchoolCards').innerHTML =
+      '<p class="ad-msg err">Could not load schools: ' + adEsc((err && err.message) || 'unknown error') + '</p>';
+  });
+}
+
+function paintSchoolFilter() {
+  var sel = document.getElementById('adSchoolFilter');
+  if (!sel || !amOwner()) return;
+  var keep = sel.value;
+  sel.innerHTML = '<option value="">All schools</option>' +
+    SCHOOLS.map(function(s) {
+      return '<option value="' + adEsc(s.id) + '">' + adEsc(s.name) + '</option>';
+    }).join('') +
+    '<option value="online">Online learners</option>';
+  if (keep) sel.value = keep;
+}
+
+function paintSchools() {
+  var wrap = document.getElementById('adSchoolCards');
+  var cards = SCHOOLS.map(function(sc) {
+    var students = allUsers.filter(function(u) { return u.schoolId === sc.id && u.role === 'student'; });
+    var admins   = allUsers.filter(function(u) { return u.schoolId === sc.id && u.role === 'schooladmin'; });
+    var adminHTML = admins.length
+      ? admins.map(function(a) {
+          return '<div class="row"><span><b>' + adEsc(a.name || 'Unnamed') + '</b>' +
+                 '<span>' + adEsc(a.email || 'no email') + '</span></span>' +
+                 '<button class="ad-mini danger" onclick="stepDownAdmin(\'' + adEsc(a.uid) + '\')">Remove</button></div>';
+        }).join('')
+      : '<p class="empty">No admin yet \u2014 promote one of this school\u2019s students from the table above.</p>';
+    return '<div class="ad-scard">' +
+      '<h3>' + adEsc(sc.name) + '</h3>' +
+      '<p class="meta">' + students.length + ' student' + (students.length === 1 ? '' : 's') + '</p>' +
+      '<div class="ad-code"><code>' + adEsc(sc.code || '\u2014') + '</code>' +
+        '<button onclick="copyCode(\'' + adEsc(sc.code || '') + '\', this)" title="Copy join code" aria-label="Copy join code">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>' +
+      '</div>' +
+      '<div class="admins"><b style="margin-bottom:.3rem;">Admins</b>' + adminHTML + '</div>' +
+    '</div>';
+  }).join('');
+
+  wrap.innerHTML = cards +
+    '<div class="ad-newschool">' +
+      '<label for="adNewName">Add a school</label>' +
+      '<input type="text" id="adNewName" placeholder="e.g. Springfield High" autocomplete="off"/>' +
+      '<label for="adNewCode">Join code</label>' +
+      '<input type="text" id="adNewCode" placeholder="e.g. SPRINGFIELD-24" autocomplete="off" spellcheck="false"/>' +
+      '<p class="hint">Students type this at sign-up. Letters, numbers and hyphens; not case sensitive.</p>' +
+      '<button class="ad-mini" onclick="createSchool()">Create school</button>' +
+      '<p class="ad-schoolmsg" id="adSchoolMsg"></p>' +
+    '</div>';
+}
+
+function copyCode(code, btn) {
+  if (!code) return;
+  var done = function() { var t = btn.title; btn.title = 'Copied'; setTimeout(function(){ btn.title = t; }, 1200); };
+  if (navigator.clipboard) navigator.clipboard.writeText(code).then(done).catch(function(){});
+}
+
+function schoolMsg(text, ok) {
+  var el = document.getElementById('adSchoolMsg');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'ad-schoolmsg ' + (ok ? 'ok' : 'err');
+}
+
+function createSchool() {
+  var name = (document.getElementById('adNewName').value || '').trim();
+  var code = (document.getElementById('adNewCode').value || '').trim().toUpperCase();
+  if (!name) { schoolMsg('Give the school a name.', false); return; }
+  if (!/^[A-Z0-9][A-Z0-9-]{2,23}$/.test(code)) {
+    schoolMsg('The code needs 3\u201324 characters: letters, numbers and hyphens.', false); return;
+  }
+  schoolMsg('Creating\u2026', true);
+
+  // Claim the code first. Its document id IS the code, so a second school
+  // cannot quietly take a code that is already handing students to another.
+  var codeRef = db.collection('joinCodes').doc(code);
+  codeRef.get().then(function(snap) {
+    if (snap.exists) throw new Error('That join code is already in use.');
+    var schoolRef = db.collection('schools').doc();          // random, unguessable id
+    return schoolRef.set({
+      name: name, code: code,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function() {
+      return codeRef.set({ schoolId: schoolRef.id, name: name });
+    });
+  }).then(function() {
+    document.getElementById('adNewName').value = '';
+    document.getElementById('adNewCode').value = '';
+    schoolMsg('School created. Share the code with its students.', true);
+    loadSchools();
+  }).catch(function(err) {
+    schoolMsg((err && err.message) || 'Could not create the school.', false);
+  });
+}
+
+/* Turn a member into a school's admin, or hand them back to being a student.
+   Only the owner reaches this. Setting bucket to 'staff' is what removes them
+   from every school's member list, including their own. */
+function promoteUser(uid) {
+  var u = allUsers.filter(function(x) { return x.uid === uid; })[0];
+  if (!u) return;
+
+  if (isAdminRole(u.role)) {
+    if (isOwnerRole(u.role) && u.uid === (auth.currentUser || {}).uid) {
+      alert('You cannot step yourself down \u2014 you would lose access to this panel.');
+      return;
+    }
+    if (!confirm('Turn ' + (u.name || u.email || 'this account') + ' back into a student?')) return;
+    return db.collection('users').doc(uid).update({
+      role: 'student',
+      bucket: u.schoolId ? 'school:' + u.schoolId : 'online'
+    }).then(loadAdminData).catch(function(e){ alert('Could not change the role: ' + e.message); });
+  }
+
+  if (!SCHOOLS.length) { alert('Create a school first, then you can appoint its admin.'); return; }
+  var names = SCHOOLS.map(function(s, i) { return (i + 1) + '. ' + s.name; }).join('\n');
+  var pick = prompt('Make ' + (u.name || u.email) + ' the admin of which school?\n\n' + names +
+                    '\n\nType the number, or 0 to make them a Seek-O-Sphere admin (sees everything).');
+  if (pick === null) return;
+  var n = parseInt(pick, 10);
+
+  if (n === 0) {
+    if (!confirm('Give ' + (u.name || u.email) + ' full access to every school and every learner?')) return;
+    return db.collection('users').doc(uid).update({ role: 'owner', bucket: 'staff' })
+      .then(loadAdminData).catch(function(e){ alert('Could not change the role: ' + e.message); });
+  }
+  var sc = SCHOOLS[n - 1];
+  if (!sc) { alert('No school with that number.'); return; }
+  db.collection('users').doc(uid).update({
+    role: 'schooladmin', schoolId: sc.id, schoolName: sc.name, bucket: 'staff'
+  }).then(loadAdminData).catch(function(e){ alert('Could not change the role: ' + e.message); });
+}
+
+function stepDownAdmin(uid) {
+  var u = allUsers.filter(function(x) { return x.uid === uid; })[0];
+  if (!u) return;
+  if (!confirm('Remove ' + (u.name || u.email) + ' as an admin? They stay a member of the school.')) return;
+  db.collection('users').doc(uid).update({
+    role: 'student',
+    bucket: u.schoolId ? 'school:' + u.schoolId : 'online'
+  }).then(loadAdminData).catch(function(e){ alert('Could not change the role: ' + e.message); });
+}
+
+/* ── Export ──────────────────────────────────────────────────────
+   Exports what is on screen, so a filtered view exports that view. */
+function exportMembersCSV() {
+  var rows = matchingUsers();
+  if (!rows.length) { alert('Nothing to export.'); return; }
+  var head = amOwner()
+    ? ['Name','Email','School','Role','Questions','Accuracy %','Best streak','Last active']
+    : ['Name','Email','Questions','Accuracy %','Best streak','Last active'];
+  var cell = function(v) {
+    v = String(v == null ? '' : v);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  };
+  var lines = [head.join(',')].concat(rows.map(function(u) {
+    var acc = accuracyOf(u);
+    var tail = [u.totalQuestions || 0, acc == null ? '' : acc, u.bestStreak || 0, lastActiveText(u)];
+    return (amOwner()
+      ? [u.name || 'Guest', u.email || '',
+         schoolLabel(u) || (u.role === 'student' ? 'Online learner' : 'Site-wide'), roleLabel(u)].concat(tail)
+      : [u.name || 'Guest', u.email || ''].concat(tail)
+    ).map(cell).join(',');
+  }));
+  var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = amOwner() ? 'seek-o-sphere-members.csv'
+    : (MY_SCHOOL.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-students.csv');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
 }
 
 function resetProgress(uid) {
@@ -237,7 +911,8 @@ function deleteUser(uid, name) {
   if (!confirm('Permanently delete the account for "' + name + '"? This cannot be undone.')) return;
   db.collection('users').doc(uid).delete().then(function() {
     allUsers = allUsers.filter(function(u) { return u.uid !== uid; });
-    renderUserTable(allUsers);
+    paintTabCounts();
+    applyFilters();
   });
 }
 

@@ -65,6 +65,17 @@
           </div>
         </div>
 
+        <div class="auth-sect"><b>Joining a school?</b></div>
+
+        <div class="auth-row">
+          <div class="arow-lab"><b>School join code</b><span>Only if your school gave you one. Leave it blank to learn with us on your own.</span></div>
+          <div>
+            <input type="text" id="suJoinCode" class="auth-in auth-short" placeholder="e.g. SPRINGFIELD-24"
+                   autocomplete="off" autocapitalize="characters" spellcheck="false"/>
+            <p class="auth-hint">Your teacher will be able to see your progress. Without a code, only you can.</p>
+          </div>
+        </div>
+
         <div class="auth-sect"><b>Where you are</b></div>
 
         <div class="auth-row">
@@ -334,11 +345,14 @@ var SIGNED_IN_UID = null;
 
 // Verify the role from the freshly-read profile, cache it, and go straight
 // to the correct panel — admins never touch the student dashboard.
+/* Both admin levels belong on the admin panel; only students see the dashboard. */
+function isAdminRole(role) { return role === 'owner' || role === 'schooladmin' || role === 'admin'; }
+
 function routeByRole(snap, uid) {
   var data = snap && snap.exists ? snap.data() : {};
   var role = data.role || 'student';
   cacheProfile(data, uid || (snap && snap.id));
-  window.location.replace(role === 'admin' ? 'admin.html' : 'dashboard.html');
+  window.location.replace(isAdminRole(role) ? 'admin.html' : 'dashboard.html');
 }
 
 auth.onAuthStateChanged(function(user) {
@@ -376,7 +390,7 @@ function gradeToAge(grade) {
    They belong to one person, so they are wiped as a set whenever a different
    account signs in. session.js keeps the same list. */
 var CACHE_KEYS = ['sos_name','sos_role','sos_photo','sos_curriculum','sos_grade',
-                  'sos_age','sos_type','sos_enjoys','sos_hard'];
+                  'sos_age','sos_type','sos_enjoys','sos_hard','sos_school'];
 
 function forgetCachedProfile() {
   try {
@@ -401,6 +415,7 @@ function cacheProfile(p, uid) {
     if (p.grade)      localStorage.setItem('sos_grade', p.grade);
     if (p.ageGroup)   localStorage.setItem('sos_age', p.ageGroup);
     if (p.type)       localStorage.setItem('sos_type', p.type);
+    if (p.schoolName) localStorage.setItem('sos_school', p.schoolName);
     localStorage.setItem('sos_role', p.role || 'student');
     localStorage.setItem('sos_enjoys', (p.enjoys || []).join(','));
     localStorage.setItem('sos_hard',   (p.finds_hard || []).join(','));
@@ -421,7 +436,7 @@ function cacheProfile(p, uid) {
    people never saw the form — harvesting it anyway would file India / Grade 8
    / CBSE under their name as though they had chosen it. They get blanks
    instead, which account settings then invites them to fill in. */
-function createProfile(uid, name, email, fromForm, brandNew) {
+function createProfile(uid, name, email, fromForm, brandNew, school) {
   var val = function(id){
     if (!fromForm) return '';
     var el = document.getElementById(id); return el ? el.value.trim() : '';
@@ -451,6 +466,13 @@ function createProfile(uid, name, email, fromForm, brandNew) {
       var patch = { lastActive: firebase.firestore.FieldValue.serverTimestamp() };
       if (!have.name  && name)  patch.name  = name;
       if (!have.email && email) patch.email = email;
+      // An older profile predates schools and has no bucket, so it would be
+      // invisible to every list. Backfill it as an online learner.
+      if (!have.bucket) {
+        patch.bucket   = have.role && have.role !== 'student' ? 'staff'
+                       : (have.schoolId ? 'school:' + have.schoolId : 'online');
+        if (have.schoolId == null) patch.schoolId = null;
+      }
       cacheProfile(have, uid);
       return ref.update(patch);
     }
@@ -460,6 +482,12 @@ function createProfile(uid, name, email, fromForm, brandNew) {
       name: name || 'Student',
       email: email || '',
       role: 'student',                                  // Firestore permission role
+      schoolId: school ? school.id : null,              // null = an online learner
+      schoolName: school ? school.name : '',            // cached so lists need no join
+      // Which list this account belongs to. The security rules recompute
+      // this from role + schoolId and reject anything that disagrees, so it
+      // cannot be edited to sneak into (or out of) a school's roll.
+      bucket: school ? ('school:' + school.id) : 'online',
       type: type,                                       // 'student' | 'examprep'
       country: val('suCountry'),
       city: val('suCity'),
@@ -482,6 +510,25 @@ function createProfile(uid, name, email, fromForm, brandNew) {
   });
 }
 
+/* Look a join code up by its exact document ID. The rules allow `get` but
+   not `list`, so a code can only be resolved by someone who already knows
+   it — the collection cannot be trawled for school names. Returns
+   { id, name } for a good code, null for a blank one, and rejects for a
+   code nobody recognises. */
+function resolveJoinCode(raw) {
+  var code = String(raw || '').trim().toUpperCase();
+  if (!code) return Promise.resolve(null);
+  return db.collection('joinCodes').doc(code).get().then(function(snap) {
+    if (!snap.exists) {
+      var err = new Error('unknown join code');
+      err.code = 'sos/bad-join-code';
+      throw err;
+    }
+    var d = snap.data() || {};
+    return { id: d.schoolId, name: d.name || 'your school' };
+  });
+}
+
 function handleSignUp(e) {
   e.preventDefault();
   var name = document.getElementById('suName').value.trim();
@@ -492,18 +539,42 @@ function handleSignUp(e) {
   SIGNING_IN = true;
   setAuthBusy('signUpForm', true, 'Creating your account…');
 
+  var joinCode = (document.getElementById('suJoinCode') || {}).value || '';
+  var newUser = null;
+
   auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
+    newUser = cred.user;
+    // The code can only be checked once we are signed in, so if it turns out
+    // to be wrong we undo the account we just made rather than leaving a
+    // half-finished one behind that blocks the same email next time.
+    return resolveJoinCode(joinCode);
+  }).then(function(school) {
     // brandNew: the account did not exist a second ago, so there is no profile
     // to look up first.
-    return createProfile(cred.user.uid, name, email, true, true);
+    return createProfile(newUser.uid, name, email, true, true, school);
   }).then(function() {
     window.location.href = 'dashboard.html';
   }).catch(function(err) {
     SIGNING_IN = false;
-    setAuthBusy('signUpForm', false);
-    // Surface the real reason (auth OR Firestore write) instead of failing quietly.
-    errEl.textContent = friendlyError(err.code) + (err && err.message ? ' (' + err.message + ')' : '');
-    console.error('Sign-up/profile error:', err && err.code, err && err.message);
+    var badCode = err && err.code === 'sos/bad-join-code';
+    var finish = function() {
+      setAuthBusy('signUpForm', false);
+      errEl.textContent = badCode
+        ? 'We don\u2019t recognise that join code. Check it with your school, or leave it blank to join as an online learner.'
+        : friendlyError(err.code) + (err && err.message ? ' (' + err.message + ')' : '');
+      if (badCode) { var f = document.getElementById('suJoinCode'); if (f) { f.focus(); f.select(); } }
+      console.error('Sign-up/profile error:', err && err.code, err && err.message);
+    };
+    // Roll the half-made account back so they can simply correct the code and
+    // press the button again.
+    if (newUser && newUser.delete) {
+      newUser.delete().then(finish).catch(function() {
+        setAuthBusy('signUpForm', false);
+        errEl.textContent = badCode
+          ? 'We don\u2019t recognise that join code. Correct it and sign in \u2014 your account was created.'
+          : friendlyError(err.code);
+      });
+    } else { finish(); }
   });
 }
 
@@ -552,7 +623,7 @@ function handleGoogle() {
     // Only trust the form when the sign-up form is the one on screen.
     var onSignUp = document.getElementById('signUpForm');
     onSignUp = !!onSignUp && getComputedStyle(onSignUp).display !== 'none';
-    return createProfile(cred.user.uid, cred.user.displayName, cred.user.email, onSignUp);
+    return createProfile(cred.user.uid, cred.user.displayName, cred.user.email, onSignUp, false, null);
   }).then(function() {
     window.location.href = 'dashboard.html';
   }).catch(function(err) {
@@ -563,7 +634,7 @@ function handleGoogle() {
 
 function handleGuest() {
   auth.signInAnonymously().then(function(cred) {
-    return createProfile(cred.user.uid, 'Guest', '', false);
+    return createProfile(cred.user.uid, 'Guest', '', false, false, null);
   }).then(function() {
     window.location.href = '../index.html';
   }).catch(function(err) {

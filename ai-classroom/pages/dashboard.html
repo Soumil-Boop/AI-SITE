@@ -184,7 +184,8 @@ auth.onAuthStateChanged(function(user) {
   var cacheMine = false;
   try { cacheMine = localStorage.getItem('sos_uid') === user.uid; } catch (e) {}
   if (!cacheMine) { try { (window.SOSCache || { forget: function(){} }).forget(); } catch (e) {} }
-  try { if (cacheMine && localStorage.getItem('sos_role') === 'admin') { window.location.replace('admin.html'); return; } } catch (e) {}
+  var adminRole = function(r) { return r === 'owner' || r === 'schooladmin' || r === 'admin'; };
+  try { if (cacheMine && adminRole(localStorage.getItem('sos_role'))) { window.location.replace('admin.html'); return; } } catch (e) {}
   currentUid   = user.uid;
   currentEmail = user.email || '';
   // Instant paint from cache so the name + photo are ready before the reveal.
@@ -240,7 +241,7 @@ function loadDashboard(uid) {
       localStorage.setItem('sos_uid', uid);
       localStorage.setItem('sos_role', profile.role || 'student');
     } catch (e) {}
-    if (profile.role === 'admin') { window.location.replace('admin.html'); return; }
+    if (adminRole(profile.role)) { window.location.replace('admin.html'); return; }
 
     document.getElementById('dashName').textContent  = profile.name  || 'Student';
     var roleEl = document.getElementById('dashRole');
