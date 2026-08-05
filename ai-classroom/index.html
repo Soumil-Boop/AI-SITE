@@ -705,7 +705,7 @@
     .tm-bar button.tm-submit{background:var(--accent);border-color:var(--accent);font-weight:700;}
     .tm-bar button.tm-submit:hover{background:#CE6237;}
 
-    .tm-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:1.5rem;
+    .tm-body{flex:1;display:grid;grid-template-columns:64px minmax(0,1fr) 268px;gap:1.5rem;
       padding:1.5rem;overflow:hidden;max-width:1400px;width:100%;margin:0 auto;}
     .tm-main{background:var(--white);border:1px solid var(--border);border-radius:16px;
       display:flex;flex-direction:column;overflow:hidden;}
@@ -808,6 +808,109 @@
       .tm-dots{grid-template-columns:repeat(8,1fr);}
       .tm-grid,.tm-row{grid-template-columns:1fr;}
     }
+    /* ── Test tools ────────────────────────────────────────────────
+       A dock of the tools this subject is allowed, down the left edge of the
+       test, and the ones opened sitting under the question. Which tools a
+       subject gets lives in js/tools/test-tools.js, because it is a teaching
+       decision rather than a layout one. */
+    .tm-dock{display:flex;flex-direction:column;gap:.45rem;align-items:center;
+      background:var(--white);border:1px solid var(--border);border-radius:16px;padding:.7rem .45rem;}
+    .tm-dock button{width:48px;height:48px;border-radius:12px;border:1px solid var(--border);
+      background:var(--white);font-size:1.15rem;display:grid;place-items:center;position:relative;
+      padding:0;transition:background .15s,border-color .15s;}
+    .tm-dock button:hover{border-color:var(--accent);}
+    .tm-dock button.on{background:var(--accent);border-color:var(--accent);}
+    .tm-dock button small{position:absolute;bottom:1px;left:0;right:0;font-size:.47rem;font-weight:800;
+      letter-spacing:.03em;text-transform:uppercase;color:var(--muted);}
+    .tm-dock button.on small{color:rgba(255,255,255,.85);}
+    .tm-dock .tm-dock-lab{font-size:.52rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:.15rem;}
+
+    .tm-panels{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+      align-items:start;margin-top:1.5rem;}
+    .tm-panels:empty{display:none;}
+    .tt{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .tt-head{display:flex;align-items:center;gap:.5rem;padding:.6rem .85rem;border-bottom:1px solid var(--border);
+      background:var(--parchment);}
+    .tt-head b{font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;color:var(--text);}
+    .tt-sub{font-size:.71rem;color:var(--muted);margin-left:auto;}
+    .tt-close{border:none;background:none;font-size:1.1rem;line-height:1;color:var(--muted);padding:0 .15rem;cursor:pointer;}
+    .tt-close:hover{color:var(--accent-dark);}
+    .tt-body{padding:.85rem;}
+    .tt-note{font-size:.74rem;color:var(--muted);line-height:1.55;}
+
+    .tt-calc-out{background:var(--brand-dark);color:#fff;border-radius:8px;padding:.7rem .85rem;text-align:right;
+      font-family:'Nunito',sans-serif;font-weight:900;font-size:1.4rem;min-height:2.9rem;word-break:break-all;line-height:1.2;}
+    .tt-calc-out small{display:block;font-size:.7rem;font-weight:600;color:rgba(255,255,255,.55);min-height:1em;}
+    .tt-calc-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;margin-top:.55rem;}
+    .tt-calc-keys button{padding:.6rem 0;border:1px solid var(--border);background:var(--white);border-radius:8px;
+      font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;color:var(--text);}
+    .tt-calc-keys button:hover{background:var(--accent-light);border-color:var(--accent);}
+    .tt-calc-keys button.op{color:var(--accent-dark);}
+    .tt-calc-keys button.eq{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .tt-calc-keys button.wide{grid-column:span 2;}
+
+    .tt-fs,.tt-gr{list-style:none;font-size:.84rem;}
+    .tt-fs li,.tt-gr li{padding:.45rem 0;border-bottom:1px solid var(--border);display:flex;
+      justify-content:space-between;gap:.9rem;}
+    .tt-fs li:last-child,.tt-gr li:last-child{border-bottom:none;}
+    .tt-fs b,.tt-gr b{font-family:'Nunito',sans-serif;font-weight:900;color:var(--accent-dark);white-space:nowrap;}
+    .tt-fs span{color:var(--muted);text-align:right;}
+    .tt-gr{font-size:.8rem;}
+    .tt-gr li{display:block;}
+    .tt-gr span{display:block;color:var(--muted);margin-top:.15rem;}
+    .tt-gr i{font-style:italic;}
+
+    .tt-pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;}
+    .tt-el{border:1px solid var(--border);border-radius:3px;padding:.18rem .05rem;text-align:center;
+      background:var(--white);font-style:normal;line-height:1.15;}
+    .tt-el b{display:block;font-family:'Nunito',sans-serif;font-weight:900;font-size:.66rem;color:var(--text);}
+    .tt-el span{display:block;font-size:.46rem;color:var(--muted);}
+    .tt-el.g1{background:#F4E2D6;}.tt-el.g2{background:#E7EEE2;}
+    .tt-el.g3{background:#E3E9EF;}.tt-el.g4{background:#F1E9DA;}
+
+    .tt-map svg{width:100%;height:auto;display:block;max-height:52vh;}
+    .tt-map path{fill:var(--white);stroke:var(--muted);stroke-width:.6;transition:fill .12s;cursor:pointer;}
+    .tt-map path:hover{fill:#AC8F62;}
+    .tt-map path.on{fill:var(--accent);}
+    .tt-mapname{margin-top:.45rem;font-size:.85rem;font-weight:600;min-height:1.3em;color:var(--text);}
+    .tt-mapname span{color:var(--muted);font-weight:400;}
+    .tt-credit{font-size:.65rem;color:var(--muted);margin-top:.3rem;}
+
+    .tt-order-add{display:flex;gap:.4rem;}
+    .tt-order-add input{flex:1;min-width:0;height:34px;border:1px solid var(--border);border-radius:8px;
+      padding:0 .6rem;font-family:'Inter',sans-serif;font-size:.84rem;background:var(--white);color:var(--text);}
+    .tt-order-add button{border:1px solid var(--border);background:var(--white);border-radius:8px;
+      padding:0 .8rem;font-size:.8rem;font-weight:700;color:var(--text);}
+    .tt-order{list-style:decimal;margin:.7rem 0 .6rem 1.2rem;font-size:.85rem;}
+    .tt-order li{display:flex;align-items:center;gap:.35rem;padding:.25rem 0;}
+    .tt-order li span{flex:1;min-width:0;}
+    .tt-order li button{border:1px solid var(--border);background:var(--white);border-radius:6px;
+      width:24px;height:24px;font-size:.75rem;color:var(--muted);padding:0;}
+    .tt-order li button:disabled{opacity:.35;cursor:not-allowed;}
+
+    .tt-pad{border:1px solid var(--border);border-radius:8px;background:var(--white);
+      touch-action:none;display:block;width:100%;cursor:crosshair;}
+    .tt-pad-bar{display:flex;gap:.4rem;align-items:center;margin-top:.45rem;}
+    .tt-pad-bar button{border:1px solid var(--border);background:var(--white);border-radius:7px;
+      padding:.3rem .65rem;font-size:.76rem;font-weight:600;color:var(--text);}
+    .tt-pad-bar .tt-note{margin-left:auto;}
+
+    @media (max-width:900px){
+      /* Stated here rather than in the page's own narrow-screen block further
+         up, because these rules have to come after the ones they override. */
+      .tm-dock{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;order:-1;}
+      .tm-dock .tm-dock-lab{width:100%;}
+      .tm-panels{grid-template-columns:1fr;}
+    }
+
+    /* the rough work a student did, shown back to them in the review */
+    .tm-rq .rw{margin-top:.7rem;}
+    .tm-rq .rw b{display:block;font-size:.74rem;font-weight:800;letter-spacing:.06em;
+      text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .tm-rq .rw canvas{border:1px solid var(--border);border-radius:8px;background:var(--white);
+      display:block;width:100%;max-width:420px;}
+
     @media (prefers-reduced-motion: reduce){ .tm-shell *{animation:none!important;transition:none!important;} }
 
     /* Exam prep scoreboard inside lab */
@@ -2632,6 +2735,7 @@
   </div>
 
   <div class="tm-body" id="tmBody">
+    <aside class="tm-dock" id="tmDock" aria-label="Tools"></aside>
     <div class="tm-main">
       <div class="tm-qhead">
         <span class="tm-qnum" id="tmQNum">Question 1</span>
@@ -2646,6 +2750,9 @@
           <input type="text" inputmode="decimal" id="tmNumInput" placeholder="Your answer"
                  oninput="tmNumChanged()" aria-label="Your answer"/>
         </div>
+        <!-- Whatever tools they have opened, under the question rather than
+             floating over it, so nothing ever covers what they are answering. -->
+        <div class="tm-panels" id="tmPanels"></div>
       </div>
       <div class="tm-foot">
         <span class="tm-prog" id="tmProg"></span>
@@ -2690,6 +2797,8 @@
    ══════════════════════════════════════════════════════════════ */
 var TM = {
   on: false, questions: [], answers: [], flags: [], at: 0,
+  // which tools are open, and what was done with them on each question
+  tools: [], work: [],
   minutes: 20, endsAt: 0, startedAt: 0, tick: null, submitted: false,
   // 'curriculum' — school subjects at an age and board.
   // 'exam'       — CUET, Railways, Bank PO, SSC or UPSC at a difficulty.
@@ -2701,6 +2810,69 @@ var TM_EXAM_NAMES = { cuet:'CUET', railways:'Railways RRB', bankpo:'Bank PO', ss
 var TM_EXAM_SUBJ  = { gk:'General Knowledge', aptitude:'Quantitative Aptitude',
                       reasoning:'Logical Reasoning', english:'English Language' };
 var TM_MAX = 35;
+
+
+/* ── Tools ───────────────────────────────────────────────────────
+   Which tools a subject may open is decided in js/tools/test-tools.js.
+   Here they are only put on screen, remembered while the test runs, and
+   handed back in the review. TM.tools is what is open; TM.work[i] is what
+   the student did with them on question i. */
+function tmToolsFor(){
+  if (!window.SOSTestTools) return [];
+  return SOSTestTools.forSubject(TM.subject);
+}
+
+function tmPaintDock(){
+  var dock = tmEl('tmDock');
+  if (!dock) return;
+  var list = tmToolsFor();
+  if (!list.length) { dock.innerHTML = ''; dock.style.display = 'none'; return; }
+  dock.style.display = '';
+  dock.innerHTML = '<span class="tm-dock-lab">Tools</span>' + list.map(function(t){
+    var m = SOSTestTools.meta[t];
+    return '<button type="button" data-tool="' + t + '" title="' + m.label + '" ' +
+           'aria-pressed="' + (TM.tools.indexOf(t) !== -1) + '" ' +
+           'class="' + (TM.tools.indexOf(t) !== -1 ? 'on' : '') + '">' +
+           m.icon + '<small>' + m.short + '</small></button>';
+  }).join('');
+}
+
+/* Rebuilt whenever the set of open tools changes or the question does — the
+   rough work and the ordering board belong to one question, so moving to the
+   next one has to hand them a different store. */
+function tmPaintPanels(){
+  var host = tmEl('tmPanels');
+  if (!host || !window.SOSTestTools) return;
+  host.innerHTML = TM.tools.map(function(t){
+    return '<div class="tt" data-tool="' + t + '">' + SOSTestTools.html(t) + '</div>';
+  }).join('');
+  var store = tmWork(TM.at);
+  TM.tools.forEach(function(t){ SOSTestTools.wire(t, store); });
+  tmPaintDock();
+}
+
+function tmWork(i){
+  if (!TM.work[i]) TM.work[i] = SOSTestTools.newStore();
+  return TM.work[i];
+}
+
+function tmToggleTool(t){
+  var at = TM.tools.indexOf(t);
+  if (at === -1) TM.tools.push(t); else TM.tools.splice(at, 1);
+  tmPaintPanels();
+}
+
+/* Their rough work, drawn back into the review at the size it was made. */
+function tmDrawWork(canvas, store){
+  if (!canvas || !store || !store.strokes.length) return;
+  var ctx = canvas.getContext('2d');
+  ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#3E2B1E';
+  store.strokes.forEach(function(s){
+    ctx.beginPath();
+    s.forEach(function(p, i){ i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); });
+    ctx.stroke();
+  });
+}
 
 function tmEl(id){ return document.getElementById(id); }
 
@@ -2845,6 +3017,10 @@ async function tmStart(){
   TM.answers   = qs.map(function(){ return null; });
   TM.flags     = qs.map(function(){ return false; });
   TM.at = 0; TM.submitted = false; TM.on = true;
+  // Rough work and the ordering board belong to a question, so they start
+  // empty; the tools this subject may open are decided by the subject.
+  TM.work  = qs.map(function(){ return SOSTestTools.newStore(); });
+  TM.tools = [];
   TM.startedAt = Date.now();
   TM.endsAt = TM.minutes ? TM.startedAt + TM.minutes * 60000 : 0;
 
@@ -2858,6 +3034,7 @@ async function tmStart(){
   document.body.classList.add('tm-running');
   window.addEventListener('beforeunload', tmWarnLeaving);
 
+  tmPaintDock();
   tmPaintDots(); tmShow(0); tmStartClock();
 }
 
@@ -2921,6 +3098,10 @@ function tmShow(i){
     tmEl('tmNumInput').value = given == null ? '' : given;
   }
 
+  // The open tools stay open across questions, but they are re-wired to this
+  // question's rough work rather than carrying the last one's over.
+  tmPaintPanels();
+
   tmEl('tmPrev').disabled = (i === 0);
   var next = tmEl('tmNext');
   next.innerHTML = (i === TM.questions.length - 1) ? 'Review &rarr;' : 'Next &rarr;';
@@ -2943,6 +3124,13 @@ function tmNumChanged(){
     ' · ' + tmAnsweredCount() + ' answered';
   tmPaintDots();
 }
+document.addEventListener('click', function(ev){
+  var b = ev.target.closest ? ev.target.closest('.tm-dock button[data-tool]') : null;
+  if (b) { tmToggleTool(b.getAttribute('data-tool')); return; }
+  var c = ev.target.closest ? ev.target.closest('.tm-panels .tt-close') : null;
+  if (c) tmToggleTool(c.getAttribute('data-close'));
+});
+
 function tmToggleFlag(){
   TM.flags[TM.at] = !TM.flags[TM.at];
   tmShow(TM.at);
@@ -3190,6 +3378,13 @@ function tmRenderResults(right, total, pct, secs, byTimer){
         (ok ? '' : ' &nbsp;·&nbsp; <b>Correct answer:</b> <span class="good">' + esc(q.answer) + '</span>') +
       '</div>' +
       (q.explanation ? '<div class="rx">' + esc(q.explanation) + '</div>' : '') +
+      // Their own working, drawn back in. Where a mistake actually happened is
+      // usually here rather than in the answer.
+      ((TM.work[i] && TM.work[i].strokes.length)
+        ? '<div class="rw"><b>Your rough work</b><canvas data-work="' + i + '" height="190"></canvas></div>' : '') +
+      ((TM.work[i] && TM.work[i].items.length)
+        ? '<div class="rw"><b>Your ordering</b><ol style="margin-left:1.1rem;font-size:.86rem;">' +
+          TM.work[i].items.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ol></div>' : '') +
     '</div>';
   }).join('');
 
@@ -3212,6 +3407,12 @@ function tmRenderResults(right, total, pct, secs, byTimer){
       '<button type="button" class="tm-nav" onclick="tmClose();tmStart();">Take another</button>' +
     '</div></div>';
   res.scrollTop = 0;
+
+  // The canvases exist now, so the strokes can be put back on them.
+  [].forEach.call(res.querySelectorAll('canvas[data-work]'), function(cv){
+    cv.width = cv.clientWidth || 420;
+    tmDrawWork(cv, TM.work[+cv.getAttribute('data-work')]);
+  });
 }
 
 /* Escape should not silently abandon a test — it asks, like everything else. */
@@ -3309,7 +3510,21 @@ function showPage(id) {
   document.getElementById('navLinks').classList.remove('open');
   window.scrollTo({ top: 0, behavior: 'instant' });
   try { if (window.demoGateOnShow) demoGateOnShow(id); } catch(e){}
+  ctaBandForPage();
 }
+
+/* The mission band closes the home page and nothing else. Every section here
+   is a panel of the same document, so it sits outside them all and would
+   otherwise turn up at the foot of What is AI?, Ethics and the rest. */
+function ctaBandForPage() {
+  var band = document.getElementById('missionBand');
+  if (!band) return;
+  var home = document.getElementById('home');
+  band.style.display = (home && home.classList.contains('active')) ? '' : 'none';
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ctaBandForPage);
+else ctaBandForPage();
+window.addEventListener('hashchange', function(){ setTimeout(ctaBandForPage, 0); });
 
 /* Open a section when the page is loaded with a #hash (e.g. ../index.html#types
    from the dashboard menu), and respond to hash changes. */
@@ -4387,6 +4602,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="js/session.js"></script>
+<script src="js/tools/test-tools.js"></script>
 <script src="js/core/footer.js"></script>
 
 <!-- ══════════════════ Members-only demo gate (Lab & History) ══════════════════ -->
