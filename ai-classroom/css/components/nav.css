@@ -149,6 +149,31 @@ nav {
   font-family: 'Inter', sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: .35rem; padding: .1rem 0;
 }
 .acct-trigger:hover { color: #fff; }
+/* The name carries its own colour rather than inheriting the button's. It is
+   a <span>, and the home page has a blanket `p, li, span, … { color: var(--text) }`
+   rule that beats an inherited value — which turned the name near-black on the
+   dark bar. Stated here, it is the same warm orange for everyone. */
+.acct-hi { white-space: nowrap; color: var(--accent, #C0562F); }
+.acct-trigger:hover .acct-hi { color: #fff; }
+/* Their standing, said once, where their name already is. A school admin's
+   title carries the school's name, which can run long, so it is allowed to
+   truncate rather than push the bar apart. */
+.acct-role {
+  font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: #F0D7C6; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18);
+  border-radius: 100px; padding: .12rem .5rem; line-height: 1.5;
+  max-width: 15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.acct-trigger:hover .acct-role { color: #fff; background: rgba(255,255,255,.22); }
+.acct-face {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  background-size: cover; background-position: center;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.3);
+}
+@media (max-width: 620px) {
+  /* On a narrow bar the name is the thing that must survive. */
+  .acct-role { max-width: 7rem; }
+}
 .acct-drop {
   position: absolute; top: 100%; right: 0;
   background: #FBF8F2; border: 1px solid var(--border); border-radius: 12px;

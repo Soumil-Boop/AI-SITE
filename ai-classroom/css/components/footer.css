@@ -1,0 +1,103 @@
+/* ============================================================
+   footer.css — the one footer, on every page.
+
+   Two jobs. First, it gives every page the same ending: the same
+   columns, the same sign-off, whether you are on the home page, the
+   dashboard, the admin panel or the sign-in form. Second, it settles
+   the uneven-page problem — a short page (the Subjects tab, say) used
+   to stop halfway down and leave a band of empty colour below it.
+   The body becomes a column, the footer takes the leftover space with
+   margin-top:auto, and a short page now fills the window while a long
+   one simply scrolls. Nothing is stretched; only the gap moves.
+   ============================================================ */
+
+body.has-site-footer { display: flex; flex-direction: column; min-height: 100vh; }
+/* Flex items may shrink when space runs short; nothing here should. */
+body.has-site-footer > * { flex-shrink: 0; }
+body.has-site-footer > .site-footer { margin-top: auto; }
+
+/* The page's own content takes the slack, so the space above the footer is
+   filled by the page's own background rather than showing a band of body
+   colour through the gap. The #adminMain half of the selector is there
+   because an id would otherwise outrank a class.
+
+   The min-height is what keeps the footer still. A page whose content changes
+   as you click around — the settings panes, the Lab's tabs — used to drag the
+   footer up and down with it, so the ending sat at a different height on every
+   tab. Giving the content one full screen minus whatever sits above it fixes
+   the footer's starting line to the bottom of the first screenful, the same on
+   every page and every tab. A section with more in it than that simply grows
+   and pushes the footer further down, which is what scrolling is for.
+
+   --sos-above is measured by footer.js, because the header is not the same
+   height everywhere: some pages carry the brand banner, some do not. The
+   fallback is the common case, used only if the script has not measured yet. */
+body.has-site-footer > main,
+body.has-site-footer > main#adminMain {
+  flex: 1 0 auto;
+  min-height: calc(100vh - var(--sos-above, 143px));
+}
+
+/* Stated rather than inherited: an older `footer { text-align:center; padding }`
+   rule still applies on some pages, and it would centre these columns. */
+.site-footer {
+  text-align: left;
+  padding: 0;
+  background: var(--brand-dark, #46200F);
+  color: #E6DBC9;
+  border-top: 3px solid var(--accent, #C0562F);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: .88rem;
+}
+
+.sf-inner {
+  max-width: 1180px; margin: 0 auto;
+  padding: 3.25rem 2.25rem 2.5rem;
+  display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 2.5rem;
+}
+
+.sf-brand .sf-logo {
+  display: inline-flex; align-items: center; gap: .12em;
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.45rem;
+  color: #fff; text-decoration: none; line-height: 1;
+}
+.sf-brand .sf-logo span { color: var(--accent, #C0562F); }
+.sf-brand .sf-logo .logo-mark { width: 26px; height: 26px; }
+.sf-blurb { color: rgba(255,255,255,.62); line-height: 1.7; margin-top: .9rem; max-width: 30em; font-size: .85rem; }
+.sf-tag {
+  display: inline-block; margin-top: 1.1rem; font-size: .68rem; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.45);
+}
+
+.sf-col { display: block; }
+.sf-col h2 {
+  font-family: 'Inter', sans-serif; font-size: .7rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.5);
+  margin: .35rem 0 1rem;
+}
+.sf-col a {
+  display: block; color: #E6DBC9; text-decoration: none; font-size: .86rem;
+  padding: .3rem 0; transition: color .18s;
+}
+.sf-col a:hover { color: var(--accent, #C0562F); }
+
+.sf-base {
+  border-top: 1px solid rgba(255,255,255,.12);
+  max-width: 1180px; margin: 0 auto;
+  padding: 1.35rem 2.25rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1.5rem; flex-wrap: wrap;
+  font-size: .8rem; color: rgba(255,255,255,.55);
+}
+.sf-base p { margin: 0; color: inherit; }
+.sf-base em { color: rgba(255,255,255,.8); font-style: italic; }
+
+@media (max-width: 900px) {
+  .sf-inner { grid-template-columns: 1fr 1fr; gap: 2rem; padding: 2.5rem 1.25rem 2rem; }
+  .sf-brand { grid-column: 1 / -1; }
+  .sf-base  { padding: 1.2rem 1.25rem 1.8rem; }
+}
+@media (max-width: 560px) {
+  .sf-inner { grid-template-columns: 1fr; }
+  .sf-base  { flex-direction: column; align-items: flex-start; gap: .5rem; }
+}

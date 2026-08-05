@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="../css/base/typography.css"/>
   <link rel="stylesheet" href="../css/components/nav.css"/>
   <link rel="stylesheet" href="../css/components/marquee.css"/>
+  <link rel="stylesheet" href="../css/components/footer.css"/>
   <link rel="stylesheet" href="../css/components/buttons.css"/>
   <link rel="stylesheet" href="../css/components/cards.css"/>
   <link rel="stylesheet" href="../css/layout/sections.css"/>
@@ -41,24 +42,15 @@
 
 <main id="dashMain" style="display:none;">
 
-  <div class="dash-hero">
-    <div class="dash-hero-inner">
-      <div class="dash-avatar-wrap">
-        <div class="dash-avatar" id="dashAvatar">S</div>
-        <button type="button" class="dash-avatar-edit" title="Change photo" aria-label="Change profile picture" onclick="document.getElementById('avatarInput').click()">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        </button>
-        <button type="button" class="dash-avatar-remove" title="Remove photo" aria-label="Remove profile picture" onclick="removeAvatar()">&times;</button>
-        <input type="file" id="avatarInput" accept="image/*" hidden onchange="handleAvatarUpload(event)"/>
-      </div>
-      <div>
-        <h1 id="dashName">Welcome back!</h1>
-        <span class="dash-role-badge" id="dashRole">Student</span>
-      </div>
-    </div>
-  </div>
-
   <div class="section-inner">
+
+    <!-- No banner: who they are and what they are is said once, beside their
+         name in the bar at the top of every page. This is only a page title. -->
+    <div class="dash-lede">
+      <p class="eyebrow">Your progress</p>
+      <h1>How you are doing</h1>
+    </div>
+
 
     <div class="dash-stats">
       <div class="dash-stat-card"><span class="dash-stat-num" id="statAccuracy">0%</span><span class="dash-stat-label">Overall Accuracy</span></div>
@@ -143,6 +135,10 @@ firebase.initializeApp({
 var auth = firebase.auth();
 var db   = firebase.firestore();
 var currentUid   = null;
+/* Both admin levels belong on the panel, not here. Declared at the top so the
+   profile load can see it too — it used to live inside the auth callback,
+   where every later reference threw and took the rest of the load with it. */
+function adminRole(r) { return r === 'owner' || r === 'schooladmin' || r === 'admin'; }
 var currentEmail = '';
 
 var BADGES = {
@@ -184,20 +180,11 @@ auth.onAuthStateChanged(function(user) {
   var cacheMine = false;
   try { cacheMine = localStorage.getItem('sos_uid') === user.uid; } catch (e) {}
   if (!cacheMine) { try { (window.SOSCache || { forget: function(){} }).forget(); } catch (e) {} }
-  var adminRole = function(r) { return r === 'owner' || r === 'schooladmin' || r === 'admin'; };
   try { if (cacheMine && adminRole(localStorage.getItem('sos_role'))) { window.location.replace('admin.html'); return; } } catch (e) {}
   currentUid   = user.uid;
   currentEmail = user.email || '';
-  // Instant paint from cache so the name + photo are ready before the reveal.
-  try {
-    var cn = cacheMine ? localStorage.getItem('sos_name') : null;
-    if (cn) {
-      document.getElementById('dashName').textContent   = cn;
-      document.getElementById('dashAvatar').textContent = cn[0].toUpperCase();
-    }
-    var cp = cacheMine ? localStorage.getItem('sos_photo') : null;
-    if (cp) setAvatarPhoto(cp);
-  } catch (e) {}
+  // The name, the picture and the role are all painted by session.js into the
+  // bar at the top, from the same cache — there is nothing to repeat here.
   loadDashboard(user.uid);
   revealDashboard();
 });
@@ -243,12 +230,6 @@ function loadDashboard(uid) {
     } catch (e) {}
     if (adminRole(profile.role)) { window.location.replace('admin.html'); return; }
 
-    document.getElementById('dashName').textContent  = profile.name  || 'Student';
-    var roleEl = document.getElementById('dashRole');
-    if (roleEl) roleEl.textContent = (profile.role || 'student').charAt(0).toUpperCase() + (profile.role || 'student').slice(1);
-    document.getElementById('dashAvatar').textContent = (profile.name || 'S')[0].toUpperCase();
-    var photo = profile.photo || (function(){ try { return localStorage.getItem('sos_photo'); } catch(e){ return null; } })();
-    setAvatarPhoto(photo || '');
     document.getElementById('statStreak').textContent = profile.bestStreak || 0;
   }).catch(function(e) {
     console.error('Failed to load profile:', e);
@@ -506,10 +487,6 @@ function savePreferences() {
     localStorage.setItem('sos_curriculum', curriculum);
     localStorage.setItem('sos_age', ageGroup);
   } catch (e) {}
-  if (name) {
-    document.getElementById('dashName').textContent = name;
-    document.getElementById('dashAvatar').textContent = name[0].toUpperCase();
-  }
   msg.textContent = 'Saved!';
   setTimeout(function() { msg.textContent = ''; }, 2000);
 
@@ -518,54 +495,8 @@ function savePreferences() {
     .catch(function() { msg.textContent = 'Saved — will sync when online'; setTimeout(function(){ msg.textContent=''; }, 2500); });
 }
 
-/* ── Profile picture ── */
-function setAvatarPhoto(url) {
-  var av = document.getElementById('dashAvatar');
-  var wrap = document.querySelector('.dash-avatar-wrap');
-  if (url) {
-    av.style.backgroundImage = 'url("' + url + '")';
-    av.classList.add('has-photo');
-    if (wrap) wrap.classList.add('has-photo');
-  } else {
-    av.style.backgroundImage = '';
-    av.classList.remove('has-photo');
-    if (wrap) wrap.classList.remove('has-photo');
-  }
-}
-
-function handleAvatarUpload(ev) {
-  var file = ev.target.files && ev.target.files[0];
-  ev.target.value = '';                       // allow re-picking the same file later
-  if (!file || !/^image\//.test(file.type)) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = new Image();
-    img.onload = function() {
-      // Resize + centre-crop to a small 256px square so it stays tiny to store.
-      var size = 256, c = document.createElement('canvas');
-      c.width = size; c.height = size;
-      var ctx = c.getContext('2d');
-      var s = Math.min(img.width, img.height);
-      ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
-      var dataUrl = c.toDataURL('image/jpeg', 0.82);
-      setAvatarPhoto(dataUrl);                 // instant preview
-      try { localStorage.setItem('sos_photo', dataUrl); } catch (e) {}
-      if (currentUid && db) {
-        db.collection('users').doc(currentUid).set({ photo: dataUrl }, { merge: true }).catch(function(){});
-      }
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function removeAvatar() {
-  setAvatarPhoto('');
-  try { localStorage.removeItem('sos_photo'); } catch (e) {}
-  if (currentUid && db) {
-    db.collection('users').doc(currentUid).set({ photo: '' }, { merge: true }).catch(function(){});
-  }
-}
+/* The profile picture lives in Account Settings now, next to the name it
+   belongs to. It is shown beside that name in the bar at the top. */
 
 function handleSignOut() {
   auth.signOut().then(function() {
@@ -596,5 +527,6 @@ function confirmDeleteAccount() {
 <script src="../js/core/nav.js"></script>
 <script>mountNav('dashboard.html', { homeLinks: true, noBanner: true });</script>
 <script src="../js/session.js"></script>
+<script src="../js/core/footer.js"></script>
 </body>
 </html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Mission — Seek-O-Sphere</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <!-- Inline and first, so the page opens on the dark rather than flashing
+       white while the stylesheets are still arriving. -->
+  <style>html,body{background:#2A1206;margin:0}</style>
+  <link rel="stylesheet" href="../css/base/variables.css"/>
+  <link rel="stylesheet" href="../css/base/reset.css"/>
+  <link rel="stylesheet" href="../css/base/typography.css"/>
+  <link rel="stylesheet" href="../css/components/nav.css"/>
+  <link rel="stylesheet" href="../css/components/marquee.css"/>
+  <link rel="stylesheet" href="../css/components/footer.css"/>
+  <link rel="stylesheet" href="../css/components/buttons.css"/>
+  <style>
+    /* ── Our mission ──────────────────────────────────────────────────
+       Direction C, "Orbit". The page opens on the dark with the mark and the
+       statement inside faint concentric rings — the geometry of the logo used
+       as texture — then turns light for what we hold to, and warm for the
+       letter. The writing is unchanged; only its surroundings are new.
+
+       --ink is the warm brown that clears WCAG AA on all three of the light
+       surfaces used here; the site's usual muted brown does not on cream. */
+    :root { --ink: #745C4C; }
+
+    .msn-mark { display:block; width:100%; height:100%; }
+
+    /* ── The opening ── */
+    .msn-hero {
+      position:relative; overflow:hidden; text-align:center;
+      padding:6.5rem 2.25rem 6rem;
+      background:
+        radial-gradient(1100px 620px at 50% -10%, rgba(178,78,51,.5), transparent 62%),
+        linear-gradient(180deg, #46200F, #2A1206);
+    }
+    /* The mark's own geometry, at the size of the page. */
+    .msn-hero::before {
+      content:''; position:absolute; inset:-45% -10% auto; height:190%; pointer-events:none;
+      background:repeating-radial-gradient(circle at 50% 26%, transparent 0 92px,
+                 rgba(255,255,255,.05) 92px 93px);
+    }
+    .msn-hero-in { position:relative; max-width:56rem; margin:0 auto; }
+    .msn-orb { width:86px; height:86px; margin:0 auto 2.2rem; }
+    .msn-kick { font-size:.7rem; font-weight:700; letter-spacing:.32em; text-transform:uppercase; color:#E0B08A; }
+    .msn-hero h1 {
+      font-family:'Nunito',sans-serif; font-weight:900; letter-spacing:-.035em;
+      font-size:clamp(2.2rem,5.4vw,4rem); line-height:1.06; color:#fff; margin-top:1.5rem;
+    }
+    .msn-hero h1 em { font-style:normal; color:#F0B98F; }
+    .msn-hero p { font-size:1.12rem; line-height:1.85; color:rgba(255,255,255,.8); margin-top:2rem; }
+    /* The three rules under the statement are the control: one per statement,
+       the lit one showing which you are reading. They are real buttons, so
+       they can be tabbed to and driven from the keyboard — a row of bare
+       lines would otherwise be a thing only a mouse could find. */
+    .msn-rules { display:flex; justify-content:center; gap:.75rem; margin-top:3rem; }
+    .msn-tab { appearance:none; border:none; background:none; padding:.75rem .25rem; cursor:pointer;
+               display:block; line-height:0; }
+    .msn-tab i { display:block; width:34px; height:2px; background:var(--accent); opacity:.3;
+                 transition:opacity .25s ease, width .25s ease, background .25s ease; }
+    .msn-tab:hover i { opacity:.65; }
+    .msn-tab[aria-selected="true"] i { opacity:1; width:52px; background:#F0B98F; }
+    .msn-tab:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
+    .msn-tab-name { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);
+                    white-space:nowrap; }
+
+    /* One statement at a time, in the same place. The panels are given a
+       common floor so switching between them never moves the page. */
+    .msn-panel { display:none; }
+    .msn-panel.on { display:block; animation:msnFade .45s ease both; }
+    @keyframes msnFade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+    @media (prefers-reduced-motion: reduce) { .msn-panel.on { animation:none; } }
+
+    /* ── What we hold to ── */
+    .msn-values { background:var(--white); color:var(--text); padding:5.5rem 2.25rem; }
+    .msn-values-in { max-width:1120px; margin:0 auto; }
+    .msn-values-head { text-align:center; max-width:38rem; margin:0 auto 3.2rem; }
+    .msn-values-head .msn-kick { color:var(--accent-dark); }
+    .msn-values h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:2.05rem;
+                     letter-spacing:-.025em; margin-top:1rem; color:var(--text); }
+    .msn-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1.4rem; }
+    .msn-v { background:var(--parchment); border:1px solid var(--border); border-radius:2px; padding:2rem 1.6rem; }
+    /* The accent is a shade short of AA on parchment at this size; the darker
+       accent carries the same warmth and clears it. */
+    .msn-v .no { font-family:'Nunito',sans-serif; font-weight:900; font-size:.78rem;
+                 letter-spacing:.1em; color:var(--accent-dark); }
+    .msn-v .ic { font-size:1.7rem; display:block; margin:1rem 0 .9rem; }
+    .msn-v h3 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.08rem;
+                letter-spacing:-.01em; color:var(--text); }
+    .msn-v p { font-size:.9rem; line-height:1.7; color:var(--ink); margin-top:.6rem; }
+
+    /* ── The letter ── */
+    .msn-letter { background:var(--cream); color:var(--text); padding:5.5rem 2.25rem; }
+    .msn-letter-in { max-width:44rem; margin:0 auto; }
+    .msn-who { display:flex; align-items:center; gap:1rem; margin-bottom:2rem; }
+    .msn-av { width:56px; height:56px; border-radius:50%; background:var(--accent);
+              display:grid; place-items:center; font-size:1.6rem; flex-shrink:0; }
+    .msn-who b { display:block; font-family:'Nunito',sans-serif; font-weight:900; font-size:1.05rem; }
+    .msn-who span { font-size:.83rem; color:var(--ink); }
+    .msn-letter p { font-size:1.02rem; line-height:1.9; margin-bottom:1.4rem; }
+    .msn-letter em { font-style:italic; color:var(--accent-dark); }
+    .msn-sign { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.05rem;
+                color:var(--brand-dark); margin-top:2rem; }
+    .msn-back { display:inline-flex; align-items:center; gap:.5rem; margin-top:2.6rem;
+                text-decoration:none; font-size:.85rem; font-weight:700; letter-spacing:.04em;
+                color:var(--accent-dark); border-bottom:1.5px solid var(--accent); padding-bottom:.15rem;
+                transition:color .18s, border-color .18s; }
+    .msn-back:hover { color:var(--text); border-color:var(--text); }
+
+    /* Arrival, in the same key as the rest of the site. */
+    @keyframes msnRise { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+    .msn-orb, .msn-rules { animation:msnRise .6s cubic-bezier(.22,.68,0,1.05) both; }
+    .msn-orb   { animation-delay:.05s; }
+    .msn-rules { animation-delay:.33s; }
+    @media (prefers-reduced-motion: reduce) {
+      .msn-orb, .msn-rules { animation:none !important; }
+    }
+
+    @media (max-width:1000px) { .msn-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:620px) {
+      .msn-hero { padding:4rem 1.25rem 3.5rem; }
+      .msn-values, .msn-letter { padding:3.5rem 1.25rem; }
+      .msn-grid { grid-template-columns:minmax(0,1fr); }
+    }
+  </style>
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<main>
+  <header class="msn-hero">
+    <div class="msn-hero-in">
+      <div class="msn-orb"><svg class="msn-mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="msnSpace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="msnEarth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="msnSun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#msnSpace)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#msnSun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#msnEarth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg></div>
+      <div class="msn-panel on" id="msnMission" role="tabpanel" aria-labelledby="msnTab0">
+        <p class="msn-kick">Our mission</p>
+        <h1>Understanding AI should not be a <em>privilege</em>.</h1>
+        <p>Our mission is to make Artificial Intelligence understandable, approachable, and genuinely
+          useful for students of every age &mdash; from a curious 8-year-old to a working adult returning
+          to study. We believe that understanding AI is no longer optional. It is the literacy of the
+          21st century, and every student deserves access to it: for free, without overwhelm, and
+          without being talked down to.</p>
+      </div>
+
+      <div class="msn-panel" id="msnVision" role="tabpanel" aria-labelledby="msnTab1" hidden>
+        <p class="msn-kick">Our vision</p>
+        <h1>A generation that meets AI with <em>curiosity</em>, not fear.</h1>
+        <p>We want a student to be able to look at any new tool and ask the right questions of it:
+          what is it doing, where did it learn that, and should I trust it here? Not because they were
+          told to be careful, but because they understand enough to judge for themselves. Our aim is to
+          be the first place a curious person goes, and the place a teacher is glad to point them to.</p>
+      </div>
+
+      <div class="msn-panel" id="msnValues" role="tabpanel" aria-labelledby="msnTab2" hidden>
+        <p class="msn-kick">Our values</p>
+        <h1>Four tests. Nothing ships until it <em>passes</em> them.</h1>
+        <p>Every lesson, every question and every feature is measured against the same four things: is
+          it clear enough for someone meeting the idea for the first time, is it open to everyone
+          without a fee or an account, is it honest about what these tools cannot do, and does it keep
+          up with a field that moves this fast? If something fails one of them, it does not go out.</p>
+      </div>
+
+      <div class="msn-rules" role="tablist" aria-label="Mission, vision and values">
+        <button type="button" class="msn-tab" id="msnTab0" role="tab" aria-selected="true"
+                aria-controls="msnMission" title="Our mission"><i></i><span class="msn-tab-name">Our mission</span></button>
+        <button type="button" class="msn-tab" id="msnTab1" role="tab" aria-selected="false"
+                aria-controls="msnVision" title="Our vision"><i></i><span class="msn-tab-name">Our vision</span></button>
+        <button type="button" class="msn-tab" id="msnTab2" role="tab" aria-selected="false"
+                aria-controls="msnValues" title="Our values"><i></i><span class="msn-tab-name">Our values</span></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="msn-values">
+    <div class="msn-values-in">
+      <div class="msn-values-head">
+        <p class="msn-kick">What we hold to</p>
+        <h2>Four things we will not trade away</h2>
+      </div>
+      <div class="msn-grid">
+        <article class="msn-v"><span class="no">01</span><span class="ic">🎯</span><h3>Clarity over hype</h3><p>We strip away the buzzwords and explain things the way a good teacher would &mdash; with patience, analogies, and zero jargon.</p></article>
+        <article class="msn-v"><span class="no">02</span><span class="ic">🌍</span><h3>Access for everyone</h3><p>Free, ad-free, and designed to work for learners of every age, background and starting point. No account needed.</p></article>
+        <article class="msn-v"><span class="no">03</span><span class="ic">⚖️</span><h3>Responsible use</h3><p>We teach AI alongside ethics, so students learn not just how to use these tools, but when and when not to rely on them.</p></article>
+        <article class="msn-v"><span class="no">04</span><span class="ic">🚀</span><h3>Always growing</h3><p>New lessons, subjects and tools are added regularly. The AI landscape moves fast &mdash; and so do we.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="msn-letter">
+    <div class="msn-letter-in">
+      <div class="msn-who">
+        <div class="msn-av">&#127891;</div>
+        <div>
+          <b>A message from the Seek-O-Sphere team</b>
+          <span>Educators, builders and lifelong learners</span>
+        </div>
+      </div>
+      <p>When we started building Seek-O-Sphere, we kept hearing the same thing from students:
+        <em>&ldquo;I know AI is important but I don&rsquo;t know where to start, and everything I find
+        is either too simple or too complicated.&rdquo;</em></p>
+      <p>That is exactly the gap we are trying to close. We built this site the way we wish AI had been
+        explained to us &mdash; with honest language, real examples, and the kind of patience that a
+        good teacher brings to a confused student. No hype, no buzzwords, no assumption that you
+        already know what a neural network is.</p>
+      <p>Whether you are using our lessons to ace a school project, our Learning Lab to help a younger
+        sibling with maths, or our AI Tool Finder to figure out which chatbot suits your coursework
+        &mdash; we built every part of this with you in mind. And we are just getting started. More
+        subjects, smarter tools, and a full progress tracking system are coming.</p>
+      <p class="msn-sign">Welcome to Seek-O-Sphere. Eulid and the whole team are glad you are here.</p>
+      <a class="msn-back" href="../index.html">&larr; Back to the site</a>
+    </div>
+  </section>
+</main>
+
+<script src="../js/components/marquee.js"></script>
+<script src="../js/core/nav.js"></script>
+<script>mountNav('mission.html', { homeLinks: true, noBanner: true });</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="../js/session.js"></script>
+<script src="../js/core/footer.js"></script>
+<script>
+  /* Mission, vision and values, one at a time, switched by the three rules
+     under the statement. The rules were decoration; making them the control
+     keeps the opening as quiet as it was while giving it three things to say. */
+  (function () {
+    var tabs   = [].slice.call(document.querySelectorAll('.msn-tab'));
+    var panels = [].slice.call(document.querySelectorAll('.msn-panel'));
+    if (tabs.length !== panels.length || !tabs.length) return;
+
+    function show(n) {
+      tabs.forEach(function (t, i) {
+        t.setAttribute('aria-selected', i === n ? 'true' : 'false');
+        t.tabIndex = i === n ? 0 : -1;
+      });
+      panels.forEach(function (p, i) {
+        p.classList.toggle('on', i === n);
+        if (i === n) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+      });
+    }
+
+    tabs.forEach(function (t, i) {
+      t.tabIndex = i === 0 ? 0 : -1;
+      t.addEventListener('click', function () { show(i); });
+      // Left and right move between them, the way a set of tabs should.
+      t.addEventListener('keydown', function (ev) {
+        var step = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        ev.preventDefault();
+        var n = (i + step + tabs.length) % tabs.length;
+        show(n); tabs[n].focus();
+      });
+    });
+
+    /* The three statements are different lengths, so without a common floor
+       the page would jump as you switched. footer.js already knows how to
+       measure a set of panels and give them all the tallest one's height. */
+    if (window.SOSFooter && SOSFooter.equaliseOn) SOSFooter.equaliseOn('.msn-panel');
+  })();
+</script>
+</body>
+</html>
