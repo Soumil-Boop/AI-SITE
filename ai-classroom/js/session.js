@@ -59,6 +59,33 @@
     return '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c.7-3.6 3.9-5.5 7.5-5.5s6.8 1.9 7.5 5.5"/></svg>';
   }
 
+  /* The title shown beside the name. It is the same wording the admin panel
+     uses in its member list, so a person is described the same way wherever
+     they appear: a school's admin is named after their school, the site owner
+     after the site. Returns '' when the role is not known yet — a bare name
+     for a moment beats telling an admin they are a student. */
+  function roleTitle(profile, user){
+    var role   = (profile && profile.role)       || read('sos_role');
+    var school = (profile && profile.schoolName) || read('sos_school');
+    if (user && user.isAnonymous) return 'Guest';
+    if (!role) return '';
+    if (role === 'owner' || role === 'admin') return 'Seek-O-Sphere admin';
+    if (role === 'schooladmin')               return (school || 'School') + ' admin';
+    return 'Student';
+  }
+
+  /* Their picture if they have set one, the outline if not. Only the resized
+     data URLs this site writes are ever painted — a remote address, or
+     anything odd that reached the profile, falls back to the outline rather
+     than being placed straight into a style attribute. */
+  function userFace(profile){
+    var photo = (profile && profile.photo) || read('sos_photo') || '';
+    if (/^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(photo)) {
+      return '<span class="acct-face" style="background-image:url(' + photo + ')" aria-hidden="true"></span>';
+    }
+    return userIcon();
+  }
+
   function firstName(profile, user){
     var n = (profile && profile.name) || (user && user.displayName) || read('sos_name') || '';
     if (!n && user && user.email) n = user.email.split('@')[0];
@@ -77,9 +104,14 @@
     var isAdmin = role === 'owner' || role === 'schooladmin' || role === 'admin';
     var dashHref  = P + (isAdmin ? 'admin.html' : 'dashboard.html');
     var dashLabel = isAdmin ? 'Admin Panel' : 'My Dashboard';
+    var title = roleTitle(profile, user);
     el.innerHTML =
       '<div class="acct-wrap">' +
-        '<button class="acct-trigger" type="button">Hi, ' + esc(firstName(profile, user)) + ' ' + userIcon() + '</button>' +
+        '<button class="acct-trigger" type="button">' +
+          '<span class="acct-hi">Hi, ' + esc(firstName(profile, user)) + '</span>' +
+          (title ? '<span class="acct-role" title="' + esc(title) + '">' + esc(title) + '</span>' : '') +
+          userFace(profile) +
+        '</button>' +
         '<div class="acct-drop">' +
           '<a href="' + dashHref + '">' + dashLabel + '</a>' +
           '<a href="' + P + 'account-settings.html">Account Settings</a>' +

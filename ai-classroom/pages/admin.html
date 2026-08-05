@@ -13,12 +13,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <!-- Inline and first, so the page is the right colour on the very first
+       paint rather than after the stylesheets land. -->
+  <style>html,body{background:#EFE6D8;margin:0}</style>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
   <link rel="stylesheet" href="../css/base/typography.css"/>
   <link rel="stylesheet" href="../css/components/buttons.css"/>
   <link rel="stylesheet" href="../css/components/nav.css"/>
   <link rel="stylesheet" href="../css/components/marquee.css"/>
+  <link rel="stylesheet" href="../css/components/footer.css"/>
   <link rel="stylesheet" href="../css/dashboard.css"/>
   <style>
     /* ── Admin panel ──────────────────────────────────────────────────
@@ -174,6 +178,31 @@
     .ad-newschool .hint { font-size:.75rem; color:var(--ink-soft); margin:-.45rem 0 .7rem; }
     .ad-schoolmsg { font-size:.82rem; margin-top:.5rem; min-height:1.1em; }
     .ad-schoolmsg.ok { color:var(--green); } .ad-schoolmsg.err { color:var(--danger); }
+
+    /* ── Arrival ──────────────────────────────────────────────────────
+       The gate used to vanish with display:none, which swapped one screen
+       for another in a single frame. It now fades, and the panel settles in
+       behind it in the same order you read it: heading, figures, then the
+       member list. Same timings as account settings, so moving between them
+       feels like one place. */
+    #adminMain { opacity: 0; }
+    #adminMain.ready { opacity: 1; }
+    #adminMain.ready .ad-lede    { animation: adIn .5s cubic-bezier(.22,.9,.3,1) both; }
+    #adminMain.ready .ad-figures { animation: adIn .5s cubic-bezier(.22,.9,.3,1) .08s both; }
+    #adminMain.ready .ad-panel   { animation: adIn .5s cubic-bezier(.22,.9,.3,1) .16s both; }
+    #adminMain.ready .ad-schools { animation: adIn .5s cubic-bezier(.22,.9,.3,1) .24s both; }
+    @keyframes adIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+
+    /* Rows arrive with the data, so a slow list does not snap into place. */
+    #adminUserBody tr { animation: rowIn .34s ease both; }
+    @keyframes rowIn { from { opacity:0; } to { opacity:1; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      #adminMain, #adminMain.ready { opacity:1; }
+      #adminMain.ready .ad-lede, #adminMain.ready .ad-figures,
+      #adminMain.ready .ad-panel, #adminMain.ready .ad-schools,
+      #adminUserBody tr { animation:none !important; }
+    }
 
     @media (max-width:1040px) {
       .ad-figures { grid-template-columns:1fr 1fr; }
@@ -373,10 +402,18 @@ function showNoSchool() {
 
 function showAdmin() {
   if (showAdmin.done) return; showAdmin.done = true;
-  document.getElementById('adminGate').style.display = 'none';
-  document.getElementById('adminMain').style.display = 'block';
+  var gate = document.getElementById('adminGate');
+  var main = document.getElementById('adminMain');
+  main.style.display = 'block';
   shapeForRole();
   loadAdminData();
+  // Shape the page first, then cross-fade — so nothing is seen rearranging
+  // itself as the loader lifts.
+  requestAnimationFrame(function(){
+    main.classList.add('ready');
+    gate.classList.add('hide');
+    setTimeout(function(){ gate.style.display = 'none'; }, 650);
+  });
 }
 
 /* Hide everything the signed-in admin has no business seeing, before any data
@@ -979,5 +1016,6 @@ function renderUserDetail(u, rows){
 <script src="../js/core/nav.js"></script>
 <script>mountNav('admin.html', { noBanner: true });</script>
 <script src="../js/session.js"></script>
+<script src="../js/core/footer.js"></script>
 </body>
 </html>

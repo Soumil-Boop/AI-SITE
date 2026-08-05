@@ -13,12 +13,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <!-- Inline and first, so the page is already the right colour on the very
+       first paint. The stylesheets below arrive later and would otherwise
+       leave a frame of white behind them. -->
+  <style>html,body{background:#EFE6D8;margin:0}</style>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
   <link rel="stylesheet" href="../css/base/typography.css"/>
   <link rel="stylesheet" href="../css/components/nav.css"/>
   <link rel="stylesheet" href="../css/components/marquee.css"/>
+  <link rel="stylesheet" href="../css/components/footer.css"/>
   <link rel="stylesheet" href="../css/components/buttons.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
   <style>
     /* ── Settings page ────────────────────────────────────────────────
        Same label-left form language as the sign-up page: 38px controls,
@@ -79,6 +85,19 @@
     .sg3 > div > input:focus, .sg3 > div > select:focus {
       border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,86,47,.13); }
     .shint { font-size:.78rem; color:var(--faint); margin-top:.4rem; line-height:1.5; }
+
+    /* Profile picture — it lives here now rather than on a banner, next to the
+       name it belongs to and in the one place a person goes to change things. */
+    .sphoto { display:flex; align-items:center; gap:1.1rem; }
+    .sphoto-face { width:68px; height:68px; border-radius:50%; flex-shrink:0;
+                   background:var(--accent); color:#fff; font-family:'Nunito',sans-serif;
+                   font-weight:900; font-size:1.9rem; display:flex; align-items:center;
+                   justify-content:center; background-size:cover; background-position:center;
+                   border:3px solid var(--white); box-shadow:0 2px 10px rgba(0,0,0,.12); }
+    .sphoto-face.has-photo { color:transparent; font-size:0; }
+    .sphoto-acts { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; }
+    .sphoto-acts .shint,
+    .sphoto-acts .set-msg { flex-basis:100%; margin-top:0; }
     .scnt  { font-size:.75rem; color:var(--faint); margin-top:.45rem; }
 
     .schoice { display:flex; gap:.5rem; flex-wrap:wrap; }
@@ -130,6 +149,31 @@
     .set-modal-box p { font-size:.87rem; line-height:1.6; color:var(--muted); margin-bottom:1rem; }
     .set-modal-box .modal-actions { display:flex; justify-content:flex-end; gap:.6rem; margin-top:1rem; }
 
+    /* ── Arrival ──────────────────────────────────────────────────────
+       This page used to render an empty form and fill it in half a second
+       later, which read as a flash. The orbiting loader now holds the screen
+       until the profile is actually here, then the page settles in: heading,
+       then rail, then section, about a twelfth of a second apart — enough to
+       feel deliberate, not enough to feel slow. */
+    .set-page { opacity: 0; }
+    .set-page.ready { opacity: 1; }
+    .set-page.ready .set-head { animation: setIn .5s cubic-bezier(.22,.9,.3,1) both; }
+    .set-page.ready .set-rail { animation: setIn .5s cubic-bezier(.22,.9,.3,1) .08s both; }
+    .set-page.ready .set-pane { animation: setIn .5s cubic-bezier(.22,.9,.3,1) .16s both; }
+    @keyframes setIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+
+    /* Switching sections should feel like one page moving, not a reload. */
+    .pane { animation: paneIn .34s cubic-bezier(.22,.9,.3,1) both; }
+    @keyframes paneIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    /* Anyone who has asked their system to calm animation down gets the
+       content immediately, with no movement at all. */
+    @media (prefers-reduced-motion: reduce) {
+      .set-page, .set-page.ready { opacity:1; }
+      .set-page.ready .set-head, .set-page.ready .set-rail,
+      .set-page.ready .set-pane, .pane { animation:none !important; }
+    }
+
     @media (max-width: 1000px) {
       .set-wrap { padding:1.8rem 1.25rem 2.5rem; }
       .set-shell { grid-template-columns:1fr; gap:1.4rem; }
@@ -143,13 +187,26 @@
   </style>
 </head>
 <body>
+
+<!-- Held over the page until the profile is actually loaded. The same
+     orbiting loader the dashboard and admin panel use, so all three arrive
+     the same way. -->
+<div id="setGate" class="auth-gate">
+  <div class="auth-gate-inner">
+    <div class="dash-loader"><div class="ring"></div><div class="ring r2"></div><div class="core"></div><div class="sat"></div></div>
+    <p>Opening your settings&hellip;</p>
+  </div>
+</div>
+
 <div id="nav-mount"></div>
 
 <main class="set-page">
   <div class="set-wrap">
-    <p class="set-eyebrow">Your account</p>
-    <h1 class="set-title">Account settings</h1>
-    <p class="set-sub" id="setSignedIn">&nbsp;</p>
+    <div class="set-head">
+      <p class="set-eyebrow">Your account</p>
+      <h1 class="set-title">Account settings</h1>
+      <p class="set-sub" id="setSignedIn">&nbsp;</p>
+    </div>
     <div class="set-flag" id="setFlag" hidden></div>
     <div class="set-flag warn" id="setStale" hidden></div>
 
@@ -174,7 +231,20 @@
           <h2>Profile</h2>
           <p class="pane-note">How your name appears across the site.</p>
           <div class="srow">
-            <div class="srow-lab"><b>Display name</b><span>Shown on your dashboard.</span></div>
+            <div class="srow-lab"><b>Profile picture</b><span>Shown beside your name at the top of every page.</span></div>
+            <div class="sphoto">
+              <div class="sphoto-face" id="sPhotoFace">S</div>
+              <div class="sphoto-acts">
+                <button type="button" class="sbtn" onclick="document.getElementById('sPhotoInput').click()">Change photo</button>
+                <button type="button" class="sbtn sb-risk" id="sPhotoClear" style="display:none;" onclick="removePhoto()">Remove</button>
+                <input type="file" id="sPhotoInput" accept="image/*" hidden onchange="handlePhotoUpload(event)"/>
+                <p class="shint">A square photo works best. It is shrunk to 256&times;256 before it is saved.</p>
+                <p class="set-msg" id="photoMsg"></p>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div class="srow-lab"><b>Display name</b><span>Shown beside your picture at the top of every page.</span></div>
             <div><input type="text" id="sName" class="sin" placeholder="e.g. Priya Sharma"/></div>
           </div>
           <div class="srow">
@@ -369,8 +439,27 @@
 <script src="../js/core/nav.js"></script>
 <script>mountNav('account-settings.html', { homeLinks: true, noBanner: true });</script>
 <script src="../js/session.js"></script>
+<script src="../js/core/footer.js"></script>
 <script>
   var CURRENT_USER = null;
+
+  /* Take the loader down and let the page settle in. Called once, from
+     whichever comes first: the profile arriving, the read failing, or the
+     safety timer below — so nobody is ever left staring at a spinner because
+     one branch forgot to call it. */
+  var REVEALED = false;
+  function revealSettings() {
+    if (REVEALED) return; REVEALED = true;
+    document.querySelector('.set-page').classList.add('ready');
+    var gate = document.getElementById('setGate');
+    if (!gate) return;
+    gate.classList.add('hide');
+    setTimeout(function(){ gate.style.display = 'none'; }, 650);
+  }
+
+  /* If Firestore is having a bad day the page still opens — better a form
+     with a warning on it than a spinner that never ends. */
+  setTimeout(revealSettings, 6000);
   var PROFILE_LOADED = false;   // guards every save against a failed read
   var PROFILE = {};             // last known profile, kept current as sections save
 
@@ -515,6 +604,7 @@
         'Reload the page before changing anything — saving from here would overwrite what you already have.';
       stale.hidden = false;
       [].forEach.call(document.querySelectorAll('.sbtn'), function(b){ b.disabled = true; b.style.opacity = '.45'; });
+      revealSettings();
       return;
     }
     PROFILE_LOADED = true;
@@ -524,6 +614,7 @@
     document.getElementById('setSignedIn').textContent = 'Signed in as ' + (user.email || 'a guest account');
     document.getElementById('sName').value  = p.name  || '';
     document.getElementById('sEmail').value = user.email || '—';
+    setPhoto(p.photo || '', p.name || user.email || 'S');
 
     var country = p.country || 'India';
     if (window.GEO) {
@@ -559,6 +650,9 @@
 
     paintSchool(p);
     flagBlanks(p);
+
+    // Everything on screen is now real, so it is safe to show.
+    revealSettings();
   });
 
   /* ── School ──────────────────────────────────────────────────────
@@ -607,6 +701,72 @@
   }
 
   /* ── Saves ───────────────────────────────────────────────────── */
+  /* ── Profile picture ──────────────────────────────────────────
+     Shrunk to a 256px square before it is stored, so it stays small enough
+     to keep on the profile document and paint instantly from the cache the
+     top bar reads. Written to both, so the change shows at once. */
+  function setPhoto(url, nameForLetter){
+    var face = document.getElementById('sPhotoFace');
+    var clear = document.getElementById('sPhotoClear');
+    if (!face) return;
+    if (nameForLetter) face.textContent = String(nameForLetter).trim().charAt(0).toUpperCase() || 'S';
+    if (url) {
+      face.style.backgroundImage = 'url("' + url + '")';
+      face.classList.add('has-photo');
+      if (clear) clear.style.display = '';
+    } else {
+      face.style.backgroundImage = '';
+      face.classList.remove('has-photo');
+      if (clear) clear.style.display = 'none';
+    }
+  }
+
+  function storePhoto(dataUrl){
+    try {
+      if (dataUrl) localStorage.setItem('sos_photo', dataUrl);
+      else localStorage.removeItem('sos_photo');
+    } catch(e){}
+    if (CURRENT_USER && SOS.db) {
+      SOS.db.collection('users').doc(CURRENT_USER.uid)
+        .set({ photo: dataUrl }, { merge: true })
+        .then(function(){ if (PROFILE) PROFILE.photo = dataUrl; })
+        .catch(function(e){ setMsg('photoMsg', 'Could not save the picture: ' + e.message, false); });
+    }
+  }
+
+  function handlePhotoUpload(ev){
+    var file = ev.target.files && ev.target.files[0];
+    ev.target.value = '';                        // so the same file can be picked again
+    if (!file) return;
+    if (!/^image\//.test(file.type)) {
+      setMsg('photoMsg', 'That file is not an image.', false); return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        // Centre-crop to a square, then down to 256px.
+        var size = 256, c = document.createElement('canvas');
+        c.width = size; c.height = size;
+        var s = Math.min(img.width, img.height);
+        c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+        var dataUrl = c.toDataURL('image/jpeg', 0.82);
+        setPhoto(dataUrl);                       // shown before the write finishes
+        storePhoto(dataUrl);
+        setMsg('photoMsg', 'Picture updated.', true);
+      };
+      img.onerror = function(){ setMsg('photoMsg', 'That image could not be read.', false); };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removePhoto(){
+    setPhoto('');
+    storePhoto('');
+    setMsg('photoMsg', 'Picture removed.', true);
+  }
+
   function saveName(){
     if (!CURRENT_USER || !PROFILE_LOADED) return;
     var name = document.getElementById('sName').value.trim();
@@ -754,24 +914,51 @@
     if (ev.key === 'Escape' && document.getElementById('setModal').classList.contains('show')) closeModal();
   });
 
+  /* Everything a student's practice leaves behind, in one place, so reset and
+     delete cannot fall out of step with each other:
+       daily        — the per-day, per-subject tallies the dashboard charts
+       tests        — one document per test paper sat
+       testSubjects — the running per-subject test tally
+     Deleted in chunks, because a batch tops out at 500 writes. */
+  var PROGRESS_PARTS = ['daily', 'tests', 'testSubjects'];
+
+  function wipeProgress(uid){
+    return PROGRESS_PARTS.reduce(function(chain, part){
+      return chain.then(function(){
+        return SOS.db.collection('progress').doc(uid).collection(part).get()
+          .then(function(snap){
+            if (snap.empty) return null;
+            var docs = snap.docs, step = Promise.resolve();
+            for (var i = 0; i < docs.length; i += 400) {
+              (function(slice){
+                step = step.then(function(){
+                  var batch = SOS.db.batch();
+                  slice.forEach(function(d){ batch.delete(d.ref); });
+                  return batch.commit();
+                });
+              })(docs.slice(i, i + 400));
+            }
+            return step;
+          })
+          // A part that was never written has nothing to remove; that is not
+          // a failure, and it must not stop the parts that follow.
+          .catch(function(e){ console.warn('Could not clear ' + part + ':', e); return null; });
+      });
+    }, Promise.resolve());
+  }
+
   function doResetProgress(){
     if (!CURRENT_USER || !PROFILE_LOADED) return;
     var uid = CURRENT_USER.uid;
     var btn = document.getElementById('modalGo');
     btn.disabled = true; btn.textContent = 'Resetting…';
 
-    // Zero the counters on the profile, then clear the per-day documents the
-    // dashboard charts read — otherwise the two would disagree.
+    // Zero the counters on the profile, then clear everything the dashboard
+    // and the test history read — otherwise the two would disagree.
     SOS.db.collection('users').doc(uid).set({
       totalQuestions: 0, correctTotal: 0, bestStreak: 0, badgesEarned: []
     }, { merge: true })
-    .then(function(){ return SOS.db.collection('progress').doc(uid).collection('daily').get(); })
-    .then(function(snap){
-      if (snap.empty) return null;
-      var batch = SOS.db.batch();
-      snap.docs.forEach(function(d){ batch.delete(d.ref); });
-      return batch.commit();
-    })
+    .then(function(){ return wipeProgress(uid); })
     .then(function(){
       try {
         localStorage.removeItem('sos_beststreak');
@@ -795,7 +982,11 @@
     var btn = document.getElementById('modalGo');
     btn.disabled = true; btn.textContent = 'Deleting…';
 
-    SOS.db.collection('users').doc(CURRENT_USER.uid).delete()
+    // Take the practice records first: once the profile is gone the rules no
+    // longer recognise this user, and once the account is gone nothing could
+    // reach them at all. Left behind, they would be unowned forever.
+    wipeProgress(CURRENT_USER.uid)
+      .then(function(){ return SOS.db.collection('users').doc(CURRENT_USER.uid).delete(); })
       .then(function(){ return CURRENT_USER.delete(); })
       .then(function(){ window.location.href = '../index.html'; })
       .catch(function(e){

@@ -41,35 +41,18 @@
 
 /* ── Dashboard entrance cascade ── */
 @keyframes dashRise    { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
-@keyframes dashHeroIn  { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
-@keyframes avatarPop   { 0% { transform: scale(0) rotate(-18deg); } 60% { transform: scale(1.15) rotate(6deg); } 100% { transform: scale(1) rotate(0); } }
-@keyframes ringPulse   { 0% { box-shadow: 0 0 0 0 rgba(192,86,47,.55); } 100% { box-shadow: 0 0 0 20px rgba(192,86,47,0); } }
-@keyframes heroSheen   { from { transform: translateX(-140%) skewX(-18deg); } to { transform: translateX(360%) skewX(-18deg); } }
 
-#dashMain.dash-in .dash-hero { animation: dashHeroIn .7s cubic-bezier(.22,.68,0,1.1) both; position: relative; overflow: hidden; }
-#dashMain.dash-in .dash-hero::after {
-  content: ""; position: absolute; top: 0; bottom: 0; width: 70px; pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
-  animation: heroSheen 1.4s ease .5s both;
-}
-#dashMain.dash-in .dash-avatar-wrap { animation: avatarPop .8s cubic-bezier(.34,1.6,.64,1) .2s both; }
-#dashMain.dash-in .dash-avatar { animation: ringPulse 1.1s ease .95s 1; }
-#dashMain.dash-in .dash-hero h1 { animation: dashRise .6s ease .38s both; }
-#dashMain.dash-in .dash-hero .dash-role-badge { animation: dashRise .6s ease .5s both; }
 #dashMain.dash-in .section-inner > * { animation: dashRise .62s cubic-bezier(.22,.68,0,1.05) both; }
-#dashMain.dash-in .section-inner > *:nth-child(1)  { animation-delay: .5s; }
-#dashMain.dash-in .section-inner > *:nth-child(2)  { animation-delay: .59s; }
-#dashMain.dash-in .section-inner > *:nth-child(3)  { animation-delay: .68s; }
-#dashMain.dash-in .section-inner > *:nth-child(4)  { animation-delay: .77s; }
-#dashMain.dash-in .section-inner > *:nth-child(5)  { animation-delay: .86s; }
-#dashMain.dash-in .section-inner > *:nth-child(6)  { animation-delay: .95s; }
-#dashMain.dash-in .section-inner > *:nth-child(7)  { animation-delay: 1.04s; }
-#dashMain.dash-in .section-inner > *:nth-child(8)  { animation-delay: 1.13s; }
-#dashMain.dash-in .section-inner > *:nth-child(n+9){ animation-delay: 1.22s; }
+#dashMain.dash-in .section-inner > *:nth-child(1)  { animation-delay: 0.06s; }
+#dashMain.dash-in .section-inner > *:nth-child(2)  { animation-delay: 0.15s; }
+#dashMain.dash-in .section-inner > *:nth-child(3)  { animation-delay: 0.24s; }
+#dashMain.dash-in .section-inner > *:nth-child(4)  { animation-delay: 0.33s; }
+#dashMain.dash-in .section-inner > *:nth-child(5)  { animation-delay: 0.42s; }
+#dashMain.dash-in .section-inner > *:nth-child(6)  { animation-delay: 0.51s; }
+#dashMain.dash-in .section-inner > *:nth-child(7)  { animation-delay: 0.60s; }
+#dashMain.dash-in .section-inner > *:nth-child(8)  { animation-delay: 0.69s; }
+#dashMain.dash-in .section-inner > *:nth-child(n+9){ animation-delay: .78s; }
 @media (prefers-reduced-motion: reduce) {
-  #dashMain.dash-in .dash-hero, #dashMain.dash-in .dash-hero::after,
-  #dashMain.dash-in .dash-avatar-wrap, #dashMain.dash-in .dash-avatar,
-  #dashMain.dash-in .dash-hero h1, #dashMain.dash-in .dash-hero .dash-role-badge,
   #dashMain.dash-in .section-inner > * { animation: none !important; }
   .dash-loader .ring, .dash-loader .sat, .dash-loader .core, .auth-gate-inner p { animation: none !important; }
 }
@@ -221,42 +204,152 @@ select.auth-in { cursor: pointer; }
   .auth-bar-r { justify-content: flex-end; }
 }
 
-/* ── DASHBOARD HERO ─────────────────────────────────────────── */
-.dash-hero {
-  background: linear-gradient(135deg, var(--brand-dark), #3A1608);
-  padding: 3rem 2rem 2.5rem;
+/* ── PAGE TITLE ─────────────────────────────────────────────
+   There is no hero here any more. Who the person is, and what they are,
+   is said once beside their name in the bar at the top of every page, so
+   the dashboard opens on the thing they actually came for. */
+.dash-lede { padding-top: 2rem; margin-bottom: 1.5rem; }
+.dash-lede .eyebrow {
+  font-size: .72rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent-dark);
 }
-.dash-hero-inner {
-  max-width: 1100px; margin: 0 auto;
-  display: flex; align-items: center; gap: 1.5rem;
+.dash-lede h1 {
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.85rem;
+  letter-spacing: -.025em; margin-top: .3rem; color: var(--text);
 }
-.dash-avatar-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
-.dash-avatar {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: var(--accent); color: white;
-  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2rem;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; border: 3px solid rgba(255,255,255,.3);
-  background-size: cover; background-position: center; overflow: hidden;
+.auth-title {
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.7rem;
+  letter-spacing: -.02em; color: var(--text);
 }
-.dash-avatar.has-photo { color: transparent; font-size: 0; }
-.dash-avatar-edit, .dash-avatar-remove {
-  position: absolute; width: 26px; height: 26px; border-radius: 50%;
-  border: 2px solid #fff; cursor: pointer; padding: 0; line-height: 1;
-  display: flex; align-items: center; justify-content: center;
-  transition: transform .15s ease, background .15s ease; box-shadow: 0 2px 6px rgba(0,0,0,.3);
+.auth-switch { color: var(--muted); font-size: .9rem; margin-top: .35rem; }
+.auth-switch button {
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: var(--accent-dark); font-family: 'Inter', sans-serif; font-weight: 600; font-size: .9rem;
 }
-.dash-avatar-edit { bottom: -3px; right: -3px; background: var(--accent); color: #fff; }
-.dash-avatar-edit:hover { transform: scale(1.12); background: var(--accent-dark); }
-.dash-avatar-remove { top: -3px; right: -3px; background: #6E5460; color: #fff; font-size: 17px; font-weight: 700; display: none; }
-.dash-avatar-remove:hover { background: #B24E33; transform: scale(1.12); }
-.dash-avatar-wrap.has-photo .dash-avatar-remove { display: flex; }
-.dash-hero h1 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2rem; color: white; }
-.dash-role-badge {
-  display: inline-block; background: rgba(255,255,255,.15);
-  color: white; font-size: .72rem; font-weight: 700;
-  padding: .2rem .7rem; border-radius: 100px; margin-top: .4rem;
-  letter-spacing: .08em; text-transform: uppercase;
+.auth-switch button:hover { text-decoration: underline; }
+
+.auth-form { max-width: 880px; margin-top: 2rem; }
+
+.auth-sect { display: flex; align-items: center; gap: .75rem; margin: 1.6rem 0 .3rem; }
+.auth-sect:first-child { margin-top: 0; }
+.auth-sect b {
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .76rem;
+  letter-spacing: .11em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
+}
+.auth-sect::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: .75; }
+
+/* One field per row: label column left, control column right. */
+.auth-row {
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 1.6rem;
+  align-items: start; padding: .9rem 0; border-bottom: 1px solid rgba(203,187,165,.45);
+}
+.auth-row:last-of-type { border-bottom: none; }
+.arow-lab { padding-top: .42rem; }
+.arow-lab b { display: block; font-size: .87rem; font-weight: 600; color: var(--text); }
+.arow-lab span { display: block; font-size: .77rem; color: #9C8877; margin-top: .15rem; line-height: 1.45; }
+.arow-lab a { color: var(--accent-dark); font-weight: 600; text-decoration: none; }
+.arow-lab a:hover { text-decoration: underline; }
+
+.auth-in {
+  width: 100%; height: 38px; padding: 0 .7rem;
+  border: 1px solid var(--border); border-radius: 7px;
+  font-size: .88rem; font-family: 'Inter', sans-serif;
+  background: #fff; color: var(--text); outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.auth-in::placeholder { color: #B9A493; }
+.auth-in:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(192,86,47,.13); }
+select.auth-in { cursor: pointer; }
+.auth-short { max-width: 220px; }
+.auth-g2 { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+.auth-g3 { display: grid; grid-template-columns: 1.6fr 1.2fr 1.2fr; gap: .9rem; }
+/* GEO renders State and City into wrappers, so style whatever it puts there. */
+.auth-g3 > div > input, .auth-g3 > div > select {
+  width: 100%; height: 38px; padding: 0 .7rem;
+  border: 1px solid var(--border); border-radius: 7px;
+  font-size: .88rem; font-family: 'Inter', sans-serif; background: #fff; color: var(--text); outline: none;
+}
+.auth-g3 > div > input:focus, .auth-g3 > div > select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(192,86,47,.13);
+}
+
+.auth-pw { position: relative; }
+.auth-pw .auth-in { padding-right: 2.6rem; }
+.auth-eye {
+  position: absolute; right: .3rem; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; padding: .35rem;
+  border-radius: 6px; color: var(--muted); display: flex; transition: background .15s;
+}
+.auth-eye:hover { background: var(--accent-light); color: var(--accent-dark); }
+
+.auth-hint { font-size: .78rem; color: #9C8877; margin-top: .4rem; line-height: 1.5; }
+.auth-cnt  { font-size: .75rem; color: #9C8877; margin-top: .45rem; }
+
+.auth-choice { display: flex; gap: .5rem; flex-wrap: wrap; }
+.auth-choice label {
+  display: flex; align-items: center; gap: .45rem; min-height: 38px; padding: 0 .9rem;
+  border: 1px solid var(--border); border-radius: 7px; cursor: pointer;
+  font-size: .86rem; font-weight: 500; background: #fff; transition: all .15s;
+}
+.auth-choice input { width: auto; margin: 0; accent-color: var(--accent); }
+.auth-choice label:has(input:checked) { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+.auth-choice label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Pill chips for exams and subject preferences. */
+.auth-chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+.auth-chips label, .auth-chip {
+  display: inline-flex; align-items: center; gap: .4rem; min-height: 34px; padding: 0 .8rem;
+  border: 1px solid var(--border); border-radius: 100px; background: #fff;
+  font-size: .85rem; color: var(--text); cursor: pointer; transition: all .15s; user-select: none;
+}
+.auth-chips label:hover, .auth-chip:hover { border-color: var(--brand-mid); }
+/* The native box is hidden so the chip itself carries the state; the label
+   keeps a focus ring below so keyboard users are never stranded. */
+.auth-chips input { position: absolute; opacity: 0; width: 0; height: 0; margin: 0; }
+.auth-chips em { font-style: normal; font-size: .95rem; line-height: 1; }
+.auth-chips label:has(input:checked) { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+.auth-chip.on-like { border-color: var(--green); background: var(--green-light); font-weight: 600; color: #33402C; }
+.auth-chip.on-hard { border-color: var(--accent-dark); background: var(--accent-light); font-weight: 600; color: var(--accent-dark); }
+.auth-chip.is-full { opacity: .4; cursor: not-allowed; }
+.auth-chips label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Footer action bar: primary commit on the right, as desktop expects. */
+.auth-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  margin-top: 1.8rem; padding-top: 1.3rem; border-top: 1px solid var(--border); flex-wrap: wrap;
+}
+.auth-bar-r { display: flex; align-items: center; gap: .7rem; }
+.auth-primary {
+  height: 38px; padding: 0 1.15rem; border: none; border-radius: 7px;
+  background: var(--accent); color: #fff; font-family: 'Inter', sans-serif;
+  font-weight: 600; font-size: .86rem; cursor: pointer; transition: background .15s;
+}
+.auth-primary:hover { background: var(--accent-dark); }
+.auth-google {
+  height: 38px; padding: 0 1rem; border: 1px solid var(--border); border-radius: 7px;
+  background: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: .85rem;
+  color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: .5rem;
+  transition: all .15s;
+}
+.auth-google:hover { border-color: var(--accent); background: var(--accent-light); }
+.auth-ghost {
+  background: none; border: none; color: var(--muted); font-family: 'Inter', sans-serif;
+  font-weight: 600; font-size: .84rem; cursor: pointer; padding: 0;
+}
+.auth-ghost:hover { color: var(--text); text-decoration: underline; }
+
+.auth-error { color: var(--accent-dark); font-size: .85rem; margin: .8rem 0 0; }
+.auth-note  { color: var(--green);       font-size: .85rem; margin: .5rem 0 0; line-height: 1.5; }
+.auth-error:empty, .auth-note:empty { display: none; }
+.auth-terms { font-size: .75rem; color: var(--muted); margin-top: 1rem; line-height: 1.55; }
+
+@media (max-width: 1000px) {
+  .auth-wrap { padding: 1.8rem 1.25rem 2.5rem; }
+  .auth-row { grid-template-columns: 1fr; gap: .4rem; }
+  .arow-lab { padding-top: 0; }
+  .auth-g2, .auth-g3 { grid-template-columns: 1fr; }
+  .auth-bar { flex-direction: column-reverse; align-items: stretch; }
+  .auth-bar-r { justify-content: flex-end; }
 }
 
 /* ── STAT CARDS ─────────────────────────────────────────────── */

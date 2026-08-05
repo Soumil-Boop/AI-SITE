@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/components/marquee.css"/>
+  <link rel="stylesheet" href="css/components/footer.css"/>
   <style>
     /* ── TYPOGRAPHY GLOBALS ── */
     /* Nunito = headings/display, Inter = body. Applied globally below. */
@@ -519,37 +520,58 @@
     .feature-card h3 { font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem; color:var(--brand-dark); margin-bottom:.3rem; }
     .feature-card p  { font-size:.82rem; color:var(--muted); line-height:1.5; }
 
-    /* Mission block */
-    .home-mission-block {
-      background: rgba(0,0,0,.3);
-      padding: 5rem 2rem;
-    }
-    .mission-inner { max-width: 1100px; margin: 0 auto; }
-    .mission-statement-box {
-      background: rgba(255,255,255,.07);
-      border-left: 5px solid var(--accent);
-      border-radius: var(--radius-sm);
-      padding: 2rem 2.5rem;
-      margin: 1.5rem 0 3rem;
-      font-size: 1.1rem;
-      line-height: 1.85;
-      color: rgba(255,255,255,.88);
-      font-style: italic;
-    }
+    /* ── Mission band ──────────────────────────────────────────────
+       The last thing on the page before the footer. The photograph fills the
+       whole band edge to edge and the words sit on top of it, held legible by
+       a scrim rather than by a dark half — the way the reference does it.
 
-    /* Personal statement */
-    .personal-statement-block {
-      background: linear-gradient(135deg, rgba(192,86,47,.12), rgba(139,54,32,.12));
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: var(--radius);
-      padding: 2.5rem;
-      margin-top: 3rem;
+       The band takes its shape from the photograph (--cta-ar, measured by the
+       script below), so filling the band and showing all of the picture are
+       the same thing: nothing is cropped unless the picture is so tall that
+       the band would run past max-height. */
+    .cta-band { position:relative; overflow:hidden; background:#2E1206;
+                aspect-ratio:var(--cta-ar, 16 / 9); min-height:420px; max-height:900px;
+                display:flex; align-items:center; }
+    .cta-photo { position:absolute; inset:0; width:100%; height:100%;
+                 object-fit:cover; object-position:center; z-index:0; }
+    /* The scrim. Heavier where the words are, lifting across the picture, so
+       the photograph still reads as a photograph. */
+    .cta-veil { position:absolute; inset:0; z-index:1; background:
+      linear-gradient(90deg, rgba(28,11,4,.72) 0%, rgba(28,11,4,.60) 38%,
+                             rgba(28,11,4,.42) 68%, rgba(28,11,4,.30) 100%); }
+    .cta-inner { position:relative; z-index:2; width:100%; max-width:1180px; margin:0 auto;
+                 padding:3rem 2.25rem; }
+    .cta-copy { max-width:41rem; }
+    .cta-copy .cta-eyebrow { display:block; font-size:.72rem; font-weight:700; letter-spacing:.18em;
+                             text-transform:uppercase; color:#F0C79E; margin-bottom:1rem;
+                             text-shadow:0 1px 12px rgba(0,0,0,.55); }
+    .cta-copy h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:clamp(1.9rem,3.2vw,2.8rem);
+                   line-height:1.14; letter-spacing:-.02em; color:#fff; margin:0;
+                   text-shadow:0 2px 20px rgba(0,0,0,.5); }
+    .cta-copy p { font-size:1.02rem; line-height:1.75; color:rgba(255,255,255,.9); margin:1.1rem 0 0;
+                  text-shadow:0 1px 14px rgba(0,0,0,.55); }
+    /* Outlined, like the reference, so the photograph shows through it. */
+    .cta-btn { margin-top:1.9rem; text-decoration:none; display:inline-flex; align-items:center; gap:.5rem;
+               background:rgba(0,0,0,.18); color:#fff; border:1.5px solid rgba(255,255,255,.85);
+               border-radius:4px; font-family:'Inter',sans-serif; font-size:.86rem; font-weight:700;
+               letter-spacing:.03em; padding:.85rem 1.7rem; cursor:pointer;
+               transition:background .18s, color .18s, border-color .18s; }
+    .cta-btn:hover { background:#fff; color:#2E1206; border-color:#fff; }
+    /* No photograph yet: the band still reads as a band rather than a blank slab. */
+    .cta-band.no-photo { aspect-ratio:auto; min-height:440px; }
+    .cta-band.no-photo .cta-veil { background:
+      radial-gradient(760px 420px at 22% 50%, rgba(178,78,51,.42), transparent 62%),
+      linear-gradient(120deg,#46200F,#2E1206); }
+
+    @media (max-width:860px) {
+      /* Taller and narrower: the scrim goes heavier so the words hold up over
+         whatever part of the picture ends up behind them. */
+      .cta-band { aspect-ratio:auto; min-height:0; max-height:none; }
+      .cta-inner { padding:4.5rem 1.25rem; }
+      .cta-copy { max-width:none; }
+      .cta-veil { background:linear-gradient(180deg, rgba(28,11,4,.62) 0%, rgba(28,11,4,.78) 60%,
+                             rgba(28,11,4,.86) 100%); }
     }
-    .ps-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .ps-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0; }
-    .ps-name { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.1rem; color:#fff; }
-    .ps-role { font-size:.85rem; color:rgba(255,255,255,.5); }
-    .ps-text { font-size:1rem; color:rgba(255,255,255,.8); line-height:1.8; }
 
     /* Mission value cards */
     .mission-values { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.25rem; margin-top:3rem; }
@@ -559,15 +581,6 @@
     .mv-card p  { font-size:.88rem; color:rgba(255,255,255,.55); line-height:1.6; }
 
     /* Keep coming back CTA */
-    .home-cta-bar {
-      background: var(--accent);
-      padding: 3rem 2rem;
-      text-align: center;
-    }
-    .home-cta-bar h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.8rem; color:#fff; margin-bottom:.5rem; }
-    .home-cta-bar p  { color:rgba(255,255,255,.8); margin-bottom:1.5rem; }
-    .home-cta-bar .btn { background:#fff; color:var(--accent); }
-    .home-cta-bar .btn:hover { background:rgba(255,255,255,.9); }
 
 
     /* ── ILLUSTRATIONS embedded in content ── */
@@ -614,6 +627,189 @@
     .lab-tab.active{color:var(--brand);border-bottom-color:var(--brand);}
     .lab-tab-content{display:none;}
     .lab-tab-content.active{display:block;}
+
+    /* ══════════════════════════════════════════════════════════════
+       TEST MODE
+       The setup panel lives in the Lab; the test itself is a fixed
+       overlay above everything, so while it is open there is no menu,
+       no scrolling strip and no other section of the site reachable.
+       Layout follows Canvas: question on the left, a navigator on the
+       right that shows at a glance what is answered, what is flagged
+       and what is still blank.
+       ══════════════════════════════════════════════════════════════ */
+    .tm-locked{max-width:38rem;margin:2.5rem auto;text-align:center;background:var(--white);
+      border:1px solid var(--border);border-radius:18px;padding:2.6rem 2.2rem;}
+    .tm-lock-ico{font-size:2rem;}
+    .tm-locked h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.35rem;margin-top:.8rem;color:var(--text);}
+    .tm-locked p{color:var(--muted);font-size:.94rem;line-height:1.7;margin-top:.6rem;}
+    .tm-lock-cta{display:flex;gap:1rem;justify-content:center;align-items:center;margin-top:1.6rem;flex-wrap:wrap;}
+    .tm-plain{color:var(--accent-dark);font-weight:700;font-size:.88rem;text-decoration:none;}
+
+    .tm-setup{max-width:62rem;margin:1.5rem auto 0;background:var(--white);border:1px solid var(--border);
+      border-radius:18px;padding:2.2rem 2.2rem 1.8rem;}
+    .tm-kick{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dark);}
+    .tm-h{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;margin-top:.5rem;color:var(--text);}
+    .tm-sub{color:var(--muted);font-size:.92rem;line-height:1.7;margin-top:.5rem;max-width:46em;}
+    .tm-track{display:flex;gap:.5rem;margin-top:1.6rem;flex-wrap:wrap;}
+    .tm-trk{padding:.7rem 1.3rem;border:2px solid var(--border);border-radius:12px;background:var(--white);
+      font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;color:var(--muted);cursor:pointer;}
+    .tm-trk:hover{border-color:var(--brand-mid);color:var(--text);}
+    .tm-trk.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent-dark);}
+    .tm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.4rem;}
+    .tm-field{display:block;}
+    .tm-field span{display:block;font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
+    .tm-field select{width:100%;height:42px;border:2px solid var(--border);border-radius:12px;background:var(--white);
+      padding:0 .8rem;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;color:var(--text);cursor:pointer;}
+    .tm-field select:focus{outline:none;border-color:var(--accent);}
+    .tm-row{display:grid;grid-template-columns:1fr 1.25fr;gap:2rem;margin-top:1.6rem;
+      padding-top:1.6rem;border-top:1px solid var(--border);}
+    .tm-lab{display:block;font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.6rem;}
+    .tm-count{display:flex;align-items:center;gap:1rem;}
+    .tm-count input[type=range]{flex:1;accent-color:var(--accent);}
+    .tm-count output{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--accent-dark);
+      min-width:2.2ch;text-align:right;}
+    .tm-hint{font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.5;}
+    .tm-times{display:flex;flex-wrap:wrap;gap:.45rem;}
+    .tm-time{padding:.5rem .95rem;border:2px solid var(--border);border-radius:100px;background:var(--white);
+      font-family:'Inter',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);cursor:pointer;}
+    .tm-time:hover{border-color:var(--brand-mid);color:var(--text);}
+    .tm-time.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent-dark);}
+    .tm-start{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;
+      margin-top:1.8rem;padding-top:1.4rem;border-top:1px solid var(--border);}
+    .tm-summary{font-size:.9rem;color:var(--muted);}
+    .tm-note{margin-top:1rem;padding:.75rem .95rem;border-radius:10px;font-size:.86rem;line-height:1.6;
+      border:1px solid #E0B15A;background:#FBF0DA;color:#6B4E10;}
+    .tm-note.blocking{border-color:#DDBDB4;background:#FBEAE6;color:#9A2B18;}
+    .tm-summary b{color:var(--text);font-weight:700;}
+
+    /* ── The shell ── */
+    .tm-shell{position:fixed;inset:0;z-index:99999;background:var(--parchment);display:none;
+      flex-direction:column;font-family:'Inter',sans-serif;}
+    .tm-shell.open{display:flex;}
+    body.tm-running{overflow:hidden;}
+
+    .tm-bar{display:flex;align-items:center;gap:1.2rem;padding:.85rem 1.5rem;background:var(--brand-dark);
+      color:#fff;flex:none;}
+    .tm-bar .tm-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;}
+    .tm-bar .tm-meta{font-size:.78rem;color:rgba(255,255,255,.68);margin-top:.1rem;}
+    .tm-clock{margin-left:auto;display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.18);border-radius:100px;padding:.45rem 1rem;}
+    .tm-clock b{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.15rem;letter-spacing:.02em;
+      font-variant-numeric:tabular-nums;}
+    .tm-clock span{font-size:.72rem;color:rgba(255,255,255,.7);}
+    .tm-clock.warn{background:rgba(192,86,47,.35);border-color:rgba(232,168,124,.6);}
+    .tm-clock.warn b{color:#FFD9C0;}
+    .tm-bar button{border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;border-radius:100px;
+      padding:.5rem 1.1rem;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;}
+    .tm-bar button:hover{background:rgba(255,255,255,.12);}
+    .tm-bar button.tm-submit{background:var(--accent);border-color:var(--accent);font-weight:700;}
+    .tm-bar button.tm-submit:hover{background:#CE6237;}
+
+    .tm-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:1.5rem;
+      padding:1.5rem;overflow:hidden;max-width:1400px;width:100%;margin:0 auto;}
+    .tm-main{background:var(--white);border:1px solid var(--border);border-radius:16px;
+      display:flex;flex-direction:column;overflow:hidden;}
+    .tm-qhead{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);
+      background:var(--gray-50,#F7ECE2);}
+    .tm-qnum{font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;color:var(--text);}
+    .tm-flag{margin-left:auto;display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--border);
+      background:var(--white);border-radius:100px;padding:.42rem .95rem;font-size:.82rem;font-weight:600;
+      color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;}
+    .tm-flag:hover{border-color:var(--brand-mid);color:var(--text);}
+    .tm-flag.on{border-color:#D9A441;background:#FBF0DA;color:#7A5A16;}
+    .tm-qbody{flex:1;overflow-y:auto;padding:1.8rem 1.5rem;}
+    .tm-qtext{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.25rem;line-height:1.5;color:var(--text);
+      max-width:46em;}
+    .tm-opts{display:grid;gap:.6rem;margin-top:1.5rem;max-width:44em;}
+    .tm-opt{display:flex;align-items:center;gap:.85rem;padding:.9rem 1.1rem;border:2px solid var(--border);
+      border-radius:12px;background:var(--white);font-size:.95rem;color:var(--text);cursor:pointer;text-align:left;
+      font-family:'Inter',sans-serif;transition:border-color .15s,background .15s;}
+    .tm-opt:hover{border-color:var(--brand-mid);}
+    .tm-opt b{width:26px;height:26px;border-radius:8px;background:var(--parchment);display:grid;place-items:center;
+      font-size:.8rem;font-weight:700;color:var(--muted);flex:none;}
+    .tm-opt.picked{border-color:var(--accent);background:var(--accent-light);}
+    .tm-opt.picked b{background:var(--accent);color:#fff;}
+    .tm-num{max-width:16rem;margin-top:1.5rem;}
+    .tm-num input{width:100%;height:48px;border:2px solid var(--border);border-radius:12px;padding:0 1rem;
+      font-family:'Nunito',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);background:var(--white);}
+    .tm-num input:focus{outline:none;border-color:var(--accent);}
+    .tm-foot{display:flex;align-items:center;gap:.7rem;padding:1rem 1.5rem;border-top:1px solid var(--border);}
+    .tm-foot .tm-prog{margin-right:auto;font-size:.84rem;color:var(--muted);}
+    .tm-nav{border:1px solid var(--border);background:var(--white);border-radius:100px;padding:.6rem 1.3rem;
+      font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:var(--text);cursor:pointer;}
+    .tm-nav:hover:not(:disabled){border-color:var(--accent);color:var(--accent-dark);}
+    .tm-nav:disabled{opacity:.4;cursor:not-allowed;}
+    .tm-nav.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .tm-nav.primary:hover{background:#CE6237;}
+
+    /* ── Navigator ── */
+    .tm-side{background:var(--white);border:1px solid var(--border);border-radius:16px;
+      display:flex;flex-direction:column;overflow:hidden;}
+    .tm-side h4{font-family:'Nunito',sans-serif;font-weight:900;font-size:.92rem;color:var(--text);
+      padding:1rem 1.2rem .8rem;}
+    .tm-dots{display:grid;grid-template-columns:repeat(5,1fr);gap:.45rem;padding:0 1.2rem 1.1rem;
+      overflow-y:auto;}
+    .tm-dot{aspect-ratio:1;border:2px solid var(--border);border-radius:10px;background:var(--white);
+      font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;color:var(--muted);cursor:pointer;
+      display:grid;place-items:center;position:relative;}
+    .tm-dot:hover{border-color:var(--brand-mid);}
+    .tm-dot.done{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .tm-dot.flag::after{content:'';position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
+      background:#D9A441;border:2px solid var(--white);}
+    .tm-dot.current{outline:3px solid var(--brand-dark);outline-offset:2px;}
+    .tm-key{border-top:1px solid var(--border);padding:.9rem 1.2rem;display:grid;gap:.45rem;font-size:.78rem;
+      color:var(--muted);}
+    .tm-key div{display:flex;align-items:center;gap:.55rem;}
+    .tm-key i{width:14px;height:14px;border-radius:5px;border:2px solid var(--border);background:var(--white);flex:none;}
+    .tm-key i.done{background:var(--accent);border-color:var(--accent);}
+    .tm-key i.flag{background:#D9A441;border-color:#D9A441;}
+
+    /* ── Confirm + results ── */
+    .tm-modal{position:fixed;inset:0;z-index:100000;background:rgba(26,14,8,.72);display:none;
+      align-items:center;justify-content:center;padding:1.5rem;}
+    .tm-modal.open{display:flex;}
+    .tm-modal-box{background:var(--white);border-radius:16px;max-width:470px;width:100%;padding:1.8rem;}
+    .tm-modal-box h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;color:var(--text);}
+    .tm-modal-box p{font-size:.9rem;line-height:1.65;color:var(--muted);margin-top:.7rem;}
+    .tm-modal-box ul{margin:.9rem 0 0 1.1rem;font-size:.88rem;color:var(--text);line-height:1.8;}
+    .tm-modal-acts{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.6rem;}
+
+    .tm-results{flex:1;overflow-y:auto;padding:2rem 1.5rem 3rem;}
+    .tm-res-inner{max-width:840px;margin:0 auto;}
+    .tm-score{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:2.2rem;
+      text-align:center;}
+    .tm-score .big{font-family:'Nunito',sans-serif;font-weight:900;font-size:3.4rem;line-height:1;
+      color:var(--accent-dark);letter-spacing:-.02em;}
+    .tm-score .pct{font-size:1rem;color:var(--muted);margin-top:.5rem;}
+    .tm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);
+      border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:1.5rem;}
+    .tm-stat{background:var(--white);padding:1.1rem;text-align:center;}
+    .tm-stat b{display:block;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.4rem;color:var(--text);}
+    .tm-stat span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:.3rem;}
+    .tm-review{margin-top:2rem;}
+    .tm-review h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.15rem;color:var(--text);margin-bottom:1rem;}
+    .tm-rq{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--green);
+      border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:.8rem;}
+    .tm-rq.wrong{border-left-color:var(--accent);}
+    .tm-rq.blank{border-left-color:var(--border);}
+    .tm-rq .rn{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+    .tm-rq .rq{font-weight:700;color:var(--text);margin-top:.35rem;line-height:1.5;}
+    .tm-rq .ra{font-size:.88rem;margin-top:.7rem;line-height:1.7;color:var(--muted);}
+    .tm-rq .ra b{color:var(--text);}
+    .tm-rq .ra .good{color:var(--green);font-weight:700;}
+    .tm-rq .ra .bad{color:var(--accent-dark);font-weight:700;}
+    .tm-rq .rx{font-size:.86rem;line-height:1.7;color:var(--muted);margin-top:.6rem;padding-top:.6rem;
+      border-top:1px solid var(--border);}
+    .tm-res-acts{display:flex;gap:.7rem;justify-content:center;margin-top:2rem;}
+
+    @media (max-width:900px){
+      .tm-body{grid-template-columns:1fr;overflow-y:auto;}
+      .tm-side{order:-1;}
+      .tm-dots{grid-template-columns:repeat(8,1fr);}
+      .tm-grid,.tm-row{grid-template-columns:1fr;}
+    }
+    @media (prefers-reduced-motion: reduce){ .tm-shell *{animation:none!important;transition:none!important;} }
+
     /* Exam prep scoreboard inside lab */
     .ep-score-board{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.5rem;}
     .ep-score-card{background:white;border:1.5px solid var(--gray-100);border-radius:var(--radius-sm);padding:.75rem;text-align:center;}
@@ -947,6 +1143,20 @@
     .acct-wrap { position:relative; display:inline-flex; }
     .acct-trigger { background:none; border:none; color:var(--accent); font-weight:700; font-size:.8rem; font-family:'Inter',sans-serif; cursor:pointer; display:inline-flex; align-items:center; gap:.35rem; padding:.1rem 0; }
     .acct-trigger:hover { color:#fff; }
+    /* Kept identical to css/components/nav.css — the home page carries its own
+       copy of the account menu's styling, so the chip has to be described in
+       both places or it appears here as bare text. */
+    .acct-hi { white-space:nowrap; color:var(--accent,#C0562F); }
+    .acct-trigger:hover .acct-hi { color:#fff; }
+    .acct-role { font-size:.66rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+                 color:#F0D7C6; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.18);
+                 border-radius:100px; padding:.12rem .5rem; line-height:1.5;
+                 max-width:15rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .acct-trigger:hover .acct-role { color:#fff; background:rgba(255,255,255,.22); }
+    .acct-face { width:20px; height:20px; border-radius:50%; flex-shrink:0;
+                 background-size:cover; background-position:center;
+                 box-shadow:0 0 0 1px rgba(255,255,255,.3); }
+    @media (max-width:620px) { .acct-role { max-width:7rem; } }
     .acct-drop { position:absolute; top:100%; right:0; background:#FBF8F2; border:1px solid var(--border); border-radius:12px; box-shadow:0 14px 34px rgba(0,0,0,.28); min-width:200px; padding:.4rem; opacity:0; visibility:hidden; transform:translateY(-6px); transition:opacity .18s,transform .18s,visibility .18s; z-index:300; }
     .acct-wrap:hover .acct-drop, .acct-wrap:focus-within .acct-drop { opacity:1; visibility:visible; transform:translateY(0); }
     .acct-drop a { display:block; padding:.55rem .8rem; color:var(--brand-dark); font-size:.85rem; font-weight:600; border-radius:8px; text-decoration:none; white-space:nowrap; }
@@ -954,14 +1164,6 @@
     .acct-drop .acct-logout { color:var(--accent-dark); border-top:1px solid var(--border); margin-top:.25rem; padding-top:.55rem; }
 
     /* Lab subject multi-select checklist */
-    .lab-multi { position:relative; }
-    .lab-multi-toggle { width:100%; text-align:left; background:var(--white); border:2px solid var(--border); border-radius:12px; padding:.55rem .85rem; font-size:.9rem; font-weight:700; color:var(--text); cursor:pointer; font-family:'Inter',sans-serif; display:flex; justify-content:space-between; align-items:center; gap:.5rem; }
-    .lab-multi-toggle:hover { border-color:var(--brand); }
-    .lab-multi-menu { position:absolute; top:calc(100% + 4px); left:0; right:0; min-width:190px; background:#FBF8F2; border:1px solid var(--border); border-radius:12px; box-shadow:0 14px 34px rgba(0,0,0,.18); padding:.4rem; z-index:60; display:none; }
-    .lab-multi-menu.open { display:block; }
-    .lab-multi-menu label { display:flex; align-items:center; gap:.55rem; padding:.5rem .6rem; border-radius:8px; font-size:.9rem; font-weight:600; color:var(--brand-dark); cursor:pointer; }
-    .lab-multi-menu label:hover { background:var(--brand-light); }
-    .lab-multi-menu input { width:16px; height:16px; accent-color:var(--accent); flex-shrink:0; }
 
     /* Lab session timer */
     .lab-timer-bar { display:flex; align-items:center; gap:.85rem; background:var(--brand-dark); color:#fff; border-radius:14px; padding:.55rem 1rem; margin-bottom:1.25rem; width:fit-content; }
@@ -1158,123 +1360,6 @@
             <p>Type what you need and get matched with the perfect AI tool from 129 options.</p>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- MISSION STATEMENT -->
-    <div class="home-mission-block">
-      <div class="mission-inner">
-        <span class="eyebrow">Our Mission</span>
-        <h2 class="section-title" style="color:#fff;margin-bottom:.5rem;">Why Seek-O-Sphere Exists</h2>
-        <div class="mission-statement-box">
-          Our mission is to make Artificial Intelligence understandable, approachable, and genuinely useful for students of every age , from a curious 8-year-old to a working adult returning to study. We believe that understanding AI is no longer optional. It is the literacy of the 21st century, and every student deserves access to it , for free, without overwhelm, and without being talked down to.
-        </div>
-
-        <!-- PERSONAL STATEMENT -->
-        <div class="personal-statement-block">
-          <div class="ps-header">
-            <div class="ps-avatar">🎓</div>
-            <div>
-              <div class="ps-name">A Message from Seek-O-Sphere Team</div>
-              <div class="ps-role">Educators, builders, and lifelong learners</div>
-            </div>
-          </div>
-          <p class="ps-text">
-            When we started building Seek-O-Sphere, we kept hearing the same thing from students: <em style="color:rgba(255,255,255,.9)">"I know AI is important but I don't know where to start, and everything I find is either too simple or too complicated."</em>
-            <br/><br/>
-            That is exactly the gap we are trying to close. We built this site the way we wish AI had been explained to us , with honest language, real examples, and the kind of patience that a good teacher brings to a confused student. No hype, no buzzwords, no assumption that you already know what a neural network is.
-            <br/><br/>
-            Whether you are using our lessons to ace a school project, our Learning Lab to help a younger sibling with maths, or our AI Tool Finder to figure out which chatbot suits your coursework , we built every part of this with you in mind. And we are just getting started. More subjects, smarter tools, and a full progress tracking system are coming.
-            <br/><br/>
-            <strong style="color:#fff;">Welcome to Seek-O-Sphere. Eulid and the whole team are glad you are here.</strong>
-          </p>
-        </div>
-
-        <!-- VALUE CARDS -->
-        <div class="mission-values">
-          <div class="mv-card">
-            <span class="mv-icon">🎯</span>
-            <h3>Clarity Over Hype</h3>
-            <p>We strip away the buzzwords and explain things the way a good teacher would , with patience, analogies, and zero jargon.</p>
-          </div>
-          <div class="mv-card">
-            <span class="mv-icon">🌍</span>
-            <h3>Access For Everyone</h3>
-            <p>Free, ad-free, and designed to work for learners of every age, background, and starting point. No account needed.</p>
-          </div>
-          <div class="mv-card">
-            <span class="mv-icon">⚖️</span>
-            <h3>Responsible Use</h3>
-            <p>We teach AI alongside ethics , so students learn not just how to use these tools, but when and when not to rely on them.</p>
-          </div>
-          <div class="mv-card">
-            <span class="mv-icon">🚀</span>
-            <h3>Always Growing</h3>
-            <p>New lessons, subjects, and tools are added regularly. The AI landscape moves fast , and so do we.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXPLORE BY SUBJECT -->
-    <section style="background:var(--parchment);padding:3.75rem 1.5rem;">
-      <div style="max-width:1100px;margin:0 auto;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.6rem;">
-          <span style="width:44px;height:44px;border-radius:12px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">📚</span>
-          <h2 class="section-title" style="margin:0;font-size:clamp(1.5rem,3vw,2rem);color:var(--brand-dark);">Explore by subject</h2>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.1rem;">
-          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
-            <span style="width:46px;height:46px;border-radius:12px;background:var(--maths);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">➗</span>
-            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Math</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;">Infinite practice questions with visual blocks and instant feedback.</p>
-          </div>
-          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
-            <span style="width:46px;height:46px;border-radius:12px;background:var(--science);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">🔬</span>
-            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Science</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;">From living things to atoms, matched to your curriculum and age.</p>
-          </div>
-          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
-            <span style="width:46px;height:46px;border-radius:12px;background:var(--history);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">🏛️</span>
-            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">History</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;">Timelines and turning points, told in a way that sticks.</p>
-          </div>
-          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
-            <span style="width:46px;height:46px;border-radius:12px;background:var(--english);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">✍️</span>
-            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">English</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;">Grammar, vocabulary and comprehension, one question at a time.</p>
-          </div>
-          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
-            <span style="width:46px;height:46px;border-radius:12px;background:var(--geography);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">🌍</span>
-            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Geography</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;">Maps, climate and the world around you.</p>
-          </div>
-          <div onclick="showPage('lab')" role="button" tabindex="0" style="background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.3rem;cursor:pointer;">
-            <span style="width:46px;height:46px;border-radius:12px;background:var(--brand-mid);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.8rem;">🧪</span>
-            <h3 style="font-family:'Nunito',sans-serif;font-weight:800;color:var(--brand-dark);margin-bottom:.35rem;">Learning Lab</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;">Hands-on practice with hints, streaks and badges.</p>
-          </div>
-        </div>
-        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem;">
-          <span style="background:var(--maths);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Math</span>
-          <span style="background:var(--science);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Science</span>
-          <span style="background:var(--history);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">History</span>
-          <span style="background:var(--english);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">English</span>
-          <span style="background:var(--geography);color:#fff;font-size:.78rem;font-weight:700;padding:.4rem .9rem;border-radius:100px;">Geography</span>
-        </div>
-        <div style="background:var(--cream);border:1px solid var(--border);border-left:5px solid var(--brand);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.6rem;color:var(--muted);font-size:.95rem;">
-          A quick tip: every question in the Lab comes with a <b style="color:var(--brand);">hint</b> and a full <b style="color:var(--brand);">explanation</b>, so you always learn the why, not just the answer.
-        </div>
-      </div>
-    </section>
-
-    <!-- KEEP COMING BACK CTA -->
-    <div class="home-cta-bar">
-      <h2>Ready to Dive In?</h2>
-      <p>Start with the basics, try the interactive Lab, or search for the perfect AI tool for your next project.</p>
-      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <button class="btn" onclick="showPage('what')">📖 Start with What is AI?</button>
-        <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;" onclick="showPage('lab')">🧪 Try the Learning Lab</button>
       </div>
     </div>
 
@@ -1779,6 +1864,7 @@
     <div class="lab-tabs">
       <button class="lab-tab active" onclick="labSwitchTab('curriculum',this)">🎓 Curriculum Lab</button>
       <button class="lab-tab" onclick="labSwitchTab('examprep',this)">📝 Entrance &amp; Government Exams</button>
+      <button class="lab-tab" onclick="labSwitchTab('test',this)">⏱️ Test Mode</button>
     </div>
 
     <!-- ══ TAB 1: CURRICULUM LAB ══ -->
@@ -1815,17 +1901,14 @@
           </select>
         </div>
         <div class="lab-ctrl-group">
-          <span class="lab-ctrl-label">📚 Subjects</span>
-          <div class="lab-multi" id="labSubjectMulti">
-            <button type="button" class="lab-multi-toggle" id="labSubjectToggle" onclick="labToggleSubjectMenu(event)">Math <span style="opacity:.6;">▾</span></button>
-            <div class="lab-multi-menu" id="labSubjectMenu">
-              <label><input type="checkbox" class="lab-subj" value="maths" checked onchange="labOnSubjectChange()"/> ➕ Math</label>
-              <label><input type="checkbox" class="lab-subj" value="science" onchange="labOnSubjectChange()"/> 🔬 Science</label>
-              <label><input type="checkbox" class="lab-subj" value="english" onchange="labOnSubjectChange()"/> 📖 English</label>
-              <label><input type="checkbox" class="lab-subj" value="history" onchange="labOnSubjectChange()"/> 📜 History</label>
-              <label><input type="checkbox" class="lab-subj" value="geography" onchange="labOnSubjectChange()"/> 🌍 Geography</label>
-            </div>
-          </div>
+          <span class="lab-ctrl-label">📚 Subject</span>
+          <select class="lab-ctrl-select" id="labSubject" onchange="labOnSubjectChange()">
+            <option value="maths">➕ Math</option>
+            <option value="science">🔬 Science</option>
+            <option value="english">📖 English</option>
+            <option value="history">📜 History</option>
+            <option value="geography">🌍 Geography</option>
+          </select>
         </div>
         <div class="lab-ctrl-group" style="max-width:170px;">
           <span class="lab-ctrl-label">⏱️ Session timer</span>
@@ -2044,6 +2127,120 @@
         <div class="lab-progress-text" id="epProgressText">0 answered</div>
       </div>
 
+    </div>
+
+    <!-- ══ TAB 3: TEST MODE ══ -->
+    <div class="lab-tab-content" id="labTabTest">
+
+      <!-- Guests get this instead. A test is worth recording and a guest has
+           nowhere to record it. -->
+      <div class="tm-locked" id="tmLocked">
+        <span class="tm-lock-ico">&#128274;</span>
+        <h3>Tests are for members</h3>
+        <p>A test gives you a score, a time and a full review afterwards &mdash; and all of that is
+          worth keeping. Create a free account and your results are saved to your dashboard.</p>
+        <div class="tm-lock-cta">
+          <a class="btn" href="pages/login.html">Create a free account</a>
+          <a class="tm-plain" href="pages/login.html">I already have one</a>
+        </div>
+      </div>
+
+      <div class="tm-setup" id="tmSetup" style="display:none;">
+        <p class="tm-kick">Test mode</p>
+        <h3 class="tm-h">Set your test up</h3>
+        <p class="tm-sub">Everything else on the site closes while you work. You can move between
+          questions freely, flag any you want to come back to, and change an answer right up until
+          you submit.</p>
+
+        <div class="tm-track" role="group" aria-label="What you are testing on">
+          <button type="button" class="tm-trk active" data-track="curriculum" onclick="tmPickTrack('curriculum',this)">
+            &#127891; School (Grades 1&ndash;12)</button>
+          <button type="button" class="tm-trk" data-track="exam" onclick="tmPickTrack('exam',this)">
+            &#128221; Entrance &amp; Government Exams</button>
+        </div>
+
+        <!-- School curriculum -->
+        <div class="tm-grid" id="tmCurrFields">
+          <label class="tm-field"><span>&#128218; Subject</span>
+            <select id="tmSubject">
+              <option value="maths">&#10133; Math</option>
+              <option value="science">&#128300; Science</option>
+              <option value="english">&#128214; English</option>
+              <option value="history">&#128220; History</option>
+              <option value="geography">&#127758; Geography</option>
+            </select></label>
+          <label class="tm-field"><span>&#127758; Curriculum</span>
+            <select id="tmCurriculum">
+              <option value="cbse">CBSE (India)</option>
+              <option value="icse">ICSE (India)</option>
+              <option value="uk">UK National Curriculum</option>
+              <option value="us">US Common Core</option>
+              <option value="ib">IB</option>
+            </select></label>
+          <label class="tm-field"><span>&#127874; Age group</span>
+            <select id="tmAge">
+              <option value="5-7">Ages 5&ndash;7 (Grade 1&ndash;2)</option>
+              <option value="8-10">Ages 8&ndash;10 (Grade 3&ndash;5)</option>
+              <option value="11-13" selected>Ages 11&ndash;13 (Grade 6&ndash;8)</option>
+              <option value="14-16">Ages 14&ndash;16 (Grade 9&ndash;12)</option>
+            </select></label>
+        </div>
+
+        <!-- Entrance & Government Exams -->
+        <div class="tm-grid" id="tmExamFields" style="display:none;">
+          <label class="tm-field"><span>&#127891; Exam</span>
+            <select id="tmExam">
+              <option value="cuet">&#127891; CUET</option>
+              <option value="railways">&#128644; Railways RRB</option>
+              <option value="bankpo">&#127974; Bank PO</option>
+              <option value="ssc">&#128203; SSC</option>
+              <option value="upsc">&#127963;&#65039; UPSC Prelims</option>
+            </select></label>
+          <label class="tm-field"><span>&#128218; Subject</span>
+            <select id="tmExamSubject">
+              <option value="gk">&#127760; General Knowledge</option>
+              <option value="aptitude">&#128290; Quantitative Aptitude</option>
+              <option value="reasoning">&#129513; Logical Reasoning</option>
+              <option value="english">&#128214; English Language</option>
+            </select></label>
+          <label class="tm-field"><span>&#127919; Difficulty</span>
+            <select id="tmDifficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select></label>
+        </div>
+
+        <div class="tm-row">
+          <div class="tm-half">
+            <span class="tm-lab">&#128221; How many questions</span>
+            <div class="tm-count">
+              <input type="range" id="tmCount" min="5" max="35" step="1" value="15"
+                     oninput="tmCountChanged()" aria-label="Number of questions"/>
+              <output id="tmCountOut">15</output>
+            </div>
+            <p class="tm-hint">Anywhere from 5 to 35.</p>
+          </div>
+          <div class="tm-half">
+            <span class="tm-lab">&#9201;&#65039; Time limit</span>
+            <div class="tm-times" id="tmTimes">
+              <button type="button" class="tm-time" data-mins="0" onclick="tmPickTime(0,this)">No timer</button>
+              <button type="button" class="tm-time" data-mins="10" onclick="tmPickTime(10,this)">10 min</button>
+              <button type="button" class="tm-time active" data-mins="20" onclick="tmPickTime(20,this)">20 min</button>
+              <button type="button" class="tm-time" data-mins="30" onclick="tmPickTime(30,this)">30 min</button>
+              <button type="button" class="tm-time" data-mins="45" onclick="tmPickTime(45,this)">45 min</button>
+              <button type="button" class="tm-time" data-mins="60" onclick="tmPickTime(60,this)">60 min</button>
+            </div>
+            <p class="tm-hint" id="tmTimeHint">The clock counts down and submits for you when it runs out.</p>
+          </div>
+        </div>
+
+        <div class="tm-start">
+          <p class="tm-summary" id="tmSummary"></p>
+          <button class="btn" onclick="tmStart()">Start test &rarr;</button>
+        </div>
+        <p class="tm-note" id="tmNote" style="display:none;"></p>
+      </div>
     </div>
 
     <!-- SHARED CELEBRATION (works for both tabs) -->
@@ -2387,19 +2584,709 @@
   </div>
 </div>
 
-<footer>
-  <p>Made with ❤️ for curious learners everywhere. <strong style="display:inline-flex;align-items:center;gap:.12em;">Seek-<svg viewBox="0 0 64 64" width="18" height="18" aria-hidden="true" style="vertical-align:-4px;"><defs><radialGradient id="rL1_Space" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="rL1_Earth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="rL1_Sun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#rL1_Space)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#rL1_Sun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#rL1_Earth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg>-Sphere</strong></p>
-  <p style="margin-top:.5rem;">AI is a tool. <em>You</em> are the thinker. Eulid agrees. 🤖</p>
-</footer>
+<!-- ══════════════════════════════════════
+     MISSION BAND — the last thing before the footer
+     The photograph lives at assets/images/mission/mission_1.png, following
+     the same folder-per-section naming as every other image on the site.
+     Any of .png / .jpg / .jpeg / .webp works; the script below tries each in
+     turn and, if none is there yet, quietly falls back to a plain warm band.
+══════════════════════════════════════ -->
+<section class="cta-band" id="missionBand">
+  <img class="cta-photo" id="missionPhoto" src="assets/images/mission/mission_1.png"
+       alt="" aria-hidden="true"/>
+  <div class="cta-veil"></div>
+  <div class="cta-inner">
+    <div class="cta-copy">
+      <span class="cta-eyebrow">Our mission</span>
+      <h2>Understanding AI should not be a privilege</h2>
+      <p>Seek-O-Sphere exists so that anyone can make sense of artificial intelligence &mdash;
+        a curious eight-year-old, a student revising for CUET, an adult coming back to study
+        after twenty years. Free, always, and never talked down to.</p>
+      <a class="cta-btn" href="pages/mission.html">Know more</a>
+    </div>
+  </div>
+</section>
+
+<!-- The footer is built by js/core/footer.js and is identical on every page. -->
 
 <!-- Local question engine (algorithmic maths + JSON bank, with optional Claude-API mode) -->
+
+<!-- ══════════════════════════════════════════════════════════════
+     TEST MODE SHELL
+     Fixed over everything at z-index 99999 with the page behind it
+     locked from scrolling, so while a test is running there is no
+     menu, no strip, and no other part of the site to wander into.
+     ══════════════════════════════════════════════════════════════ -->
+<div class="tm-shell" id="tmShell" role="dialog" aria-modal="true" aria-label="Test in progress">
+
+  <div class="tm-bar">
+    <div>
+      <div class="tm-title" id="tmBarTitle">Test</div>
+      <div class="tm-meta" id="tmBarMeta"></div>
+    </div>
+    <div class="tm-clock" id="tmClock">
+      <b id="tmClockTime">--:--</b><span id="tmClockLabel">remaining</span>
+    </div>
+    <button type="button" onclick="tmAskExit()">Exit test</button>
+    <button type="button" class="tm-submit" onclick="tmAskSubmit()">Submit test</button>
+  </div>
+
+  <div class="tm-body" id="tmBody">
+    <div class="tm-main">
+      <div class="tm-qhead">
+        <span class="tm-qnum" id="tmQNum">Question 1</span>
+        <button type="button" class="tm-flag" id="tmFlagBtn" onclick="tmToggleFlag()">
+          &#128681; <span id="tmFlagLabel">Flag for review</span>
+        </button>
+      </div>
+      <div class="tm-qbody">
+        <p class="tm-qtext" id="tmQText"></p>
+        <div class="tm-opts" id="tmOpts"></div>
+        <div class="tm-num" id="tmNumWrap" style="display:none;">
+          <input type="text" inputmode="decimal" id="tmNumInput" placeholder="Your answer"
+                 oninput="tmNumChanged()" aria-label="Your answer"/>
+        </div>
+      </div>
+      <div class="tm-foot">
+        <span class="tm-prog" id="tmProg"></span>
+        <button type="button" class="tm-nav" id="tmPrev" onclick="tmGo(-1)">&larr; Previous</button>
+        <button type="button" class="tm-nav primary" id="tmNext" onclick="tmGo(1)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <aside class="tm-side">
+      <h4>Questions</h4>
+      <div class="tm-dots" id="tmDots"></div>
+      <div class="tm-key">
+        <div><i class="done"></i> Answered</div>
+        <div><i></i> Not answered</div>
+        <div><i class="flag"></i> Flagged for review</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="tm-results" id="tmResults" style="display:none;"></div>
+</div>
+
+<div class="tm-modal" id="tmModal">
+  <div class="tm-modal-box">
+    <h3 id="tmModalTitle"></h3>
+    <div id="tmModalBody"></div>
+    <div class="tm-modal-acts">
+      <button type="button" class="tm-nav" onclick="tmCloseModal()">Cancel</button>
+      <button type="button" class="tm-nav primary" id="tmModalGo"></button>
+    </div>
+  </div>
+</div>
+
 <script src="js/questions-engine.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════
+   TEST MODE
+   A whole test is built up front — the question engine is local, so
+   there is no waiting — and then held entirely in memory. Nothing is
+   marked until the student submits, which is what makes free movement
+   and changing an answer safe.
+   ══════════════════════════════════════════════════════════════ */
+var TM = {
+  on: false, questions: [], answers: [], flags: [], at: 0,
+  minutes: 20, endsAt: 0, startedAt: 0, tick: null, submitted: false,
+  // 'curriculum' — school subjects at an age and board.
+  // 'exam'       — CUET, Railways, Bank PO, SSC or UPSC at a difficulty.
+  track: 'curriculum',
+  subject: 'maths', curriculum: 'cbse', age: '11-13',
+  exam: 'cuet', difficulty: 'medium'
+};
+var TM_EXAM_NAMES = { cuet:'CUET', railways:'Railways RRB', bankpo:'Bank PO', ssc:'SSC', upsc:'UPSC Prelims' };
+var TM_EXAM_SUBJ  = { gk:'General Knowledge', aptitude:'Quantitative Aptitude',
+                      reasoning:'Logical Reasoning', english:'English Language' };
+var TM_MAX = 35;
+
+function tmEl(id){ return document.getElementById(id); }
+
+/* Only members. The setup panel and the locked notice are swapped by the
+   session, so a guest never sees controls that will refuse them. */
+function tmApplyAccess(signedIn){
+  var lock = tmEl('tmLocked'), set = tmEl('tmSetup');
+  if (!lock || !set) return;
+  lock.style.display = signedIn ? 'none'  : 'block';
+  set.style.display  = signedIn ? 'block' : 'none';
+  if (signedIn) tmSyncSummary();
+}
+
+function tmPickTrack(track, btn){
+  TM.track = track;
+  var all = document.querySelectorAll('.tm-track .tm-trk');
+  for (var i = 0; i < all.length; i++) all[i].classList.toggle('active', all[i] === btn);
+  tmEl('tmCurrFields').style.display = (track === 'curriculum') ? 'grid' : 'none';
+  tmEl('tmExamFields').style.display = (track === 'exam')       ? 'grid' : 'none';
+  tmNote('', false);
+  tmSyncSummary();
+}
+
+/* What this test is about, in words — used in the summary, the top bar and
+   the label the result is filed under. */
+function tmSubjectKey(){
+  return TM.track === 'exam' ? tmEl('tmExamSubject').value : tmEl('tmSubject').value;
+}
+function tmSubjectName(){
+  return TM.track === 'exam'
+    ? (TM_EXAM_SUBJ[tmEl('tmExamSubject').value] || tmEl('tmExamSubject').value)
+    : (LAB_SUBJ_LABEL[tmEl('tmSubject').value] || tmEl('tmSubject').value);
+}
+function tmTestName(){
+  return TM.track === 'exam'
+    ? (TM_EXAM_NAMES[TM.exam] || TM.exam) + ' · ' + (TM_EXAM_SUBJ[TM.subject] || TM.subject)
+    : (LAB_SUBJ_LABEL[TM.subject] || TM.subject);
+}
+
+function tmCountChanged(){
+  var n = parseInt(tmEl('tmCount').value, 10) || 5;
+  tmEl('tmCountOut').textContent = n;
+  tmSyncSummary();
+}
+
+function tmPickTime(mins, btn){
+  TM.minutes = mins;
+  var all = document.querySelectorAll('#tmTimes .tm-time');
+  for (var i = 0; i < all.length; i++) all[i].classList.toggle('active', all[i] === btn);
+  tmEl('tmTimeHint').textContent = mins
+    ? 'The clock counts down and submits for you when it runs out.'
+    : 'No countdown — the clock just counts up so you know how long you took.';
+  tmSyncSummary();
+}
+
+/* One line under the Start button, for when the paper could not be built as
+   asked. Amber when the test still runs, red when it cannot. */
+function tmNote(text, blocking){
+  var el = tmEl('tmNote');
+  if (!el) return;
+  el.textContent = text || '';
+  el.style.display = text ? 'block' : 'none';
+  el.className = 'tm-note' + (blocking ? ' blocking' : '');
+}
+
+function tmSyncSummary(){
+  var n = parseInt(tmEl('tmCount').value, 10) || 15;
+  var what = TM.track === 'exam'
+    ? tmEl('tmExamSubject').selectedOptions[0].textContent.trim() + ' for ' +
+      tmEl('tmExam').selectedOptions[0].textContent.trim()
+    : tmEl('tmSubject').selectedOptions[0].textContent.trim();
+  tmEl('tmSummary').innerHTML = '<b>' + n + '</b> questions on <b>' + what + '</b>, ' +
+    (TM.minutes ? 'in <b>' + TM.minutes + ' minutes</b>.' : '<b>untimed</b>.');
+}
+
+/* ── Building the paper ─────────────────────────────────────────
+   Ask the engine for one more than we need and drop duplicates, so a
+   short topic list does not produce the same question twice. If it
+   simply cannot supply enough distinct ones we run with what there is
+   rather than padding the paper with repeats. */
+async function tmBuild(count){
+  var out = [], seen = {}, tries = 0;
+  var topics = TM.track === 'curriculum' ? labTopicsFor(TM.subject) : [''];
+  if (!topics.length) topics = [''];
+
+  while (out.length < count && tries < count * 6) {
+    tries++;
+    var topic = topics[out.length % topics.length];
+    var recent = out.map(function(x){ return x.question; });
+    var q;
+    try {
+      q = (TM.track === 'exam')
+        ? await provideExamQuestion({ exam: TM.exam, subject: TM.subject,
+                                      difficulty: TM.difficulty, recent: recent })
+        : await provideLabQuestion({ subject: TM.subject, curriculum: TM.curriculum,
+                                     age: TM.age, topic: topic, recent: recent });
+    } catch (e) { continue; }
+    if (!q || !q.question || seen[q.question]) continue;
+    seen[q.question] = 1;
+    q.topic = topic;
+    out.push(q);
+  }
+  return out;
+}
+
+async function tmStart(){
+  if (!(window.SOS && SOS.user)) { tmApplyAccess(false); return; }
+  var count = Math.min(TM_MAX, Math.max(5, parseInt(tmEl('tmCount').value, 10) || 15));
+  if (TM.track === 'exam') {
+    TM.exam       = tmEl('tmExam').value;
+    TM.subject    = tmEl('tmExamSubject').value;
+    TM.difficulty = tmEl('tmDifficulty').value;
+  } else {
+    TM.subject    = tmEl('tmSubject').value;
+    TM.curriculum = tmEl('tmCurriculum').value;
+    TM.age        = tmEl('tmAge').value;
+  }
+
+  var btn = document.querySelector('.tm-start .btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Preparing your test…'; }
+
+  var qs = await tmBuild(count);
+  if (btn) { btn.disabled = false; btn.innerHTML = 'Start test &rarr;'; }
+
+  /* A subject and age can simply not have enough distinct questions behind it
+     yet. Saying so beats quietly handing over a three-question "test" and
+     letting the student wonder why it ended. */
+  if (qs.length < 3) {
+    tmNote('There are not enough questions for ' + tmTestName() +
+           (TM.track === 'exam' ? ' at that difficulty yet. Try another subject or difficulty.'
+                                : ' at this age group yet. Try another subject or age.'), true);
+    return;
+  }
+  if (qs.length < count) {
+    tmNote('Only ' + qs.length + ' different questions are available for ' + tmTestName() +
+           ', so this test has ' + qs.length + ' rather than ' + count + '.', false);
+  } else {
+    tmNote('', false);
+  }
+
+  TM.questions = qs;
+  TM.answers   = qs.map(function(){ return null; });
+  TM.flags     = qs.map(function(){ return false; });
+  TM.at = 0; TM.submitted = false; TM.on = true;
+  TM.startedAt = Date.now();
+  TM.endsAt = TM.minutes ? TM.startedAt + TM.minutes * 60000 : 0;
+
+  tmEl('tmBarTitle').textContent = tmTestName() + ' test';
+  tmEl('tmBarMeta').textContent  = qs.length + ' questions · ' +
+    (TM.minutes ? TM.minutes + ' minute limit' : 'no time limit');
+  tmEl('tmResults').style.display = 'none';
+  tmEl('tmBody').style.display = '';
+
+  tmEl('tmShell').classList.add('open');
+  document.body.classList.add('tm-running');
+  window.addEventListener('beforeunload', tmWarnLeaving);
+
+  tmPaintDots(); tmShow(0); tmStartClock();
+}
+
+/* ── The clock ── */
+function tmStartClock(){
+  tmStopClock();
+  tmClockPaint();
+  TM.tick = setInterval(tmClockPaint, 1000);
+}
+function tmStopClock(){ if (TM.tick) { clearInterval(TM.tick); TM.tick = null; } }
+function tmTwo(n){ return (n < 10 ? '0' : '') + n; }
+function tmClockPaint(){
+  var box = tmEl('tmClock'), t = tmEl('tmClockTime'), lab = tmEl('tmClockLabel');
+  if (TM.minutes) {
+    var left = Math.max(0, TM.endsAt - Date.now());
+    var secs = Math.round(left / 1000);
+    t.textContent = tmTwo(Math.floor(secs / 60)) + ':' + tmTwo(secs % 60);
+    lab.textContent = 'remaining';
+    // The last two minutes turn the clock warm, which is enough of a nudge
+    // without interrupting anyone mid-question.
+    box.classList.toggle('warn', secs <= 120);
+    if (left <= 0) { tmStopClock(); tmSubmit(true); }
+  } else {
+    var up = Math.round((Date.now() - TM.startedAt) / 1000);
+    t.textContent = tmTwo(Math.floor(up / 60)) + ':' + tmTwo(up % 60);
+    lab.textContent = 'elapsed';
+  }
+}
+
+/* ── Moving about ── */
+function tmShow(i){
+  if (i < 0 || i >= TM.questions.length) return;
+  TM.at = i;
+  var q = TM.questions[i], given = TM.answers[i];
+
+  tmEl('tmQNum').textContent = 'Question ' + (i + 1);
+  tmEl('tmQText').textContent = q.question;
+  tmEl('tmProg').textContent = 'Question ' + (i + 1) + ' of ' + TM.questions.length +
+    ' · ' + tmAnsweredCount() + ' answered';
+
+  var flagged = TM.flags[i];
+  tmEl('tmFlagBtn').classList.toggle('on', flagged);
+  tmEl('tmFlagLabel').textContent = flagged ? 'Flagged' : 'Flag for review';
+
+  var opts = tmEl('tmOpts'), numWrap = tmEl('tmNumWrap');
+  opts.innerHTML = '';
+  if (q.options && q.options.length) {
+    numWrap.style.display = 'none';
+    var letters = ['A','B','C','D','E','F'];
+    q.options.forEach(function(o, n){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'tm-opt' + (given === o ? ' picked' : '');
+      b.innerHTML = '<b>' + letters[n] + '</b><span></span>';
+      b.querySelector('span').textContent = o;
+      b.onclick = function(){ tmAnswer(o); };
+      opts.appendChild(b);
+    });
+  } else {
+    numWrap.style.display = 'block';
+    tmEl('tmNumInput').value = given == null ? '' : given;
+  }
+
+  tmEl('tmPrev').disabled = (i === 0);
+  var next = tmEl('tmNext');
+  next.innerHTML = (i === TM.questions.length - 1) ? 'Review &rarr;' : 'Next &rarr;';
+  tmPaintDots();
+}
+
+function tmGo(step){
+  if (TM.at + step >= TM.questions.length) { tmAskSubmit(); return; }
+  tmShow(TM.at + step);
+}
+
+function tmAnswer(value){
+  TM.answers[TM.at] = value;
+  tmShow(TM.at);                      // repaint so the choice reads as chosen
+}
+function tmNumChanged(){
+  var v = tmEl('tmNumInput').value.trim();
+  TM.answers[TM.at] = v === '' ? null : v;
+  tmEl('tmProg').textContent = 'Question ' + (TM.at + 1) + ' of ' + TM.questions.length +
+    ' · ' + tmAnsweredCount() + ' answered';
+  tmPaintDots();
+}
+function tmToggleFlag(){
+  TM.flags[TM.at] = !TM.flags[TM.at];
+  tmShow(TM.at);
+}
+function tmAnsweredCount(){
+  return TM.answers.filter(function(a){ return a !== null && a !== ''; }).length;
+}
+
+function tmPaintDots(){
+  var wrap = tmEl('tmDots');
+  wrap.innerHTML = '';
+  TM.questions.forEach(function(q, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tm-dot' +
+      (TM.answers[i] !== null && TM.answers[i] !== '' ? ' done' : '') +
+      (TM.flags[i] ? ' flag' : '') +
+      (i === TM.at ? ' current' : '');
+    b.textContent = i + 1;
+    b.setAttribute('aria-label', 'Question ' + (i + 1) +
+      (TM.answers[i] ? ', answered' : ', not answered') + (TM.flags[i] ? ', flagged' : ''));
+    b.onclick = function(){ tmShow(i); };
+    wrap.appendChild(b);
+  });
+}
+
+/* ── Leaving, and being asked to confirm ── */
+function tmWarnLeaving(e){
+  if (!TM.on || TM.submitted) return;
+  e.preventDefault();
+  e.returnValue = '';                 // the browser supplies its own wording
+  return '';
+}
+
+function tmModal(title, bodyHTML, goLabel, onGo){
+  tmEl('tmModalTitle').textContent = title;
+  tmEl('tmModalBody').innerHTML = bodyHTML;
+  var go = tmEl('tmModalGo');
+  go.textContent = goLabel;
+  go.onclick = function(){ tmCloseModal(); onGo(); };
+  tmEl('tmModal').classList.add('open');
+}
+function tmCloseModal(){ tmEl('tmModal').classList.remove('open'); }
+
+function tmAskSubmit(){
+  var blank = TM.questions.length - tmAnsweredCount();
+  var flagged = TM.flags.filter(Boolean).length;
+  var bits = '<p>Once you submit you cannot change your answers.</p><ul>';
+  bits += '<li>' + tmAnsweredCount() + ' of ' + TM.questions.length + ' answered</li>';
+  if (blank)   bits += '<li><b>' + blank + '</b> left blank</li>';
+  if (flagged) bits += '<li><b>' + flagged + '</b> flagged for review</li>';
+  bits += '</ul>';
+  tmModal('Submit your test?', bits, 'Submit', function(){ tmSubmit(false); });
+}
+
+function tmAskExit(){
+  tmModal('Leave without submitting?',
+    '<p>Your answers will not be saved and this test will not be scored.</p>',
+    'Leave test', tmClose);
+}
+
+function tmClose(){
+  TM.on = false;
+  tmStopClock();
+  window.removeEventListener('beforeunload', tmWarnLeaving);
+  tmEl('tmShell').classList.remove('open');
+  document.body.classList.remove('tm-running');
+}
+
+/* ── Marking ────────────────────────────────────────────────────
+   Numeric answers are compared as numbers so "12.0" and "12" agree;
+   everything else is compared as trimmed, case-insensitive text. */
+function tmIsRight(q, given){
+  if (given === null || given === '') return false;
+  var want = String(q.answer).trim(), got = String(given).trim();
+  var a = parseFloat(want), b = parseFloat(got);
+  if (!isNaN(a) && !isNaN(b) && want !== '' && got !== '') return Math.abs(a - b) < 1e-9;
+  return want.toLowerCase() === got.toLowerCase();
+}
+
+function tmSubmit(byTimer){
+  if (TM.submitted) return;
+  TM.submitted = true;
+  TM.on = false;
+  tmStopClock();
+  tmCloseModal();
+  window.removeEventListener('beforeunload', tmWarnLeaving);
+
+  var right = 0;
+  TM.questions.forEach(function(q, i){ if (tmIsRight(q, TM.answers[i])) right++; });
+  var total = TM.questions.length;
+  var pct   = Math.round(right / total * 100);
+  var secs  = Math.round((Date.now() - TM.startedAt) / 1000);
+
+  // Recorded question by question, so a test counts towards the same totals
+  // and streaks as ordinary practice.
+  try {
+    // Filed under 'test' either way, but an exam test carries the exam in its
+    // label so a dashboard can tell a CUET paper from a Science one.
+    var label = tmTestName(), key = tmFilingKey();
+    TM.questions.forEach(function(q, i){
+      recordProgress('test', TM.subject, label, tmIsRight(q, TM.answers[i]), 0, key);
+    });
+  } catch (e) {}
+
+  // And kept as a test in its own right — the whole paper, in its own drawer.
+  tmSaveTest(right, total, pct, secs, byTimer);
+
+  tmRenderResults(right, total, pct, secs, byTimer);
+}
+
+/* Which drawer this paper belongs in. A school test files under its subject;
+   an exam test files under exam-and-subject, so a CUET Reasoning paper never
+   lands in the same drawer as an SSC one. The key leads the document id, so
+   a student's tests sit grouped by subject rather than in one heap. */
+function tmFilingKey(){
+  return TM.track === 'exam'
+    ? (TM.exam + '-' + TM.subject)
+    : ('school-' + TM.subject);
+}
+
+/* ── Keeping a finished test ──────────────────────────────────────
+   Two documents, written once, both under the student's own progress
+   record so the existing rules already cover them: the student writes
+   their own, and only they, the owner and their school's admin can read.
+
+     progress/{uid}/tests/{subject__timestamp}
+        The paper itself — every question, the option they picked,
+        whether it was right, what they flagged, the score, how long
+        they took. Enough to reopen the test months later.
+
+     progress/{uid}/testSubjects/{subject}
+        A running tally for that one subject: papers sat, questions
+        answered, questions right, how the last one went. One read
+        answers "how is she doing in SSC Reasoning".
+
+   Question-by-question tallies still go through recordProgress, so a
+   test also counts towards streaks and the dashboard as before. */
+function tmSaveTest(right, total, pct, secs, byTimer){
+  if (!(window.SOS && SOS.user && SOS.db)) return;   // guests keep nothing
+  try {
+    var db = SOS.db, uid = SOS.user.uid, FV = firebase.firestore.FieldValue;
+    var isExam = (TM.track === 'exam');
+    var key    = tmFilingKey();
+    var label  = tmTestName();
+    var subjName = isExam ? (TM_EXAM_SUBJ[TM.subject] || TM.subject)
+                          : (LAB_SUBJ_LABEL[TM.subject] || TM.subject);
+    var examName = isExam ? (TM_EXAM_NAMES[TM.exam] || TM.exam) : null;
+
+    var p2 = function(n){ return ('0' + n).slice(-2); };
+    var d  = new Date(TM.startedAt || Date.now());
+    var date  = d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+    var stamp = date + '_' + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
+
+    // Everything stored is bounded — 35 questions at most, and no single
+    // string long enough to push the document anywhere near Firestore's limit.
+    var cut = function(v, n){
+      var s = String(v == null ? '' : v);
+      return s.length > n ? s.slice(0, n) + '…' : s;
+    };
+
+    var blanks = 0;
+    var paper = TM.questions.map(function(q, i){
+      var given = TM.answers[i];
+      var blank = (given === null || given === undefined || given === '');
+      if (blank) blanks++;
+      return {
+        n: i + 1,
+        question: cut(q.question, 600),
+        options: (q.options || []).slice(0, 6).map(function(o){ return cut(o, 200); }),
+        answer: cut(q.answer, 200),
+        given: blank ? null : cut(given, 200),
+        correct: !blank && tmIsRight(q, given),
+        flagged: !!TM.flags[i],
+        topic: cut(q.topic || '', 80),
+        explanation: cut(q.explanation || '', 700)
+      };
+    });
+
+    var about = {
+      subjectKey: key,
+      track: TM.track,
+      subject: TM.subject,
+      subjectName: subjName,
+      exam: isExam ? TM.exam : null,
+      examName: examName,
+      difficulty: isExam ? TM.difficulty : null,
+      curriculum: isExam ? null : TM.curriculum,
+      ageGroup: isExam ? null : TM.age,
+      label: label
+    };
+
+    // 1. The paper.
+    var paperDoc = {
+      date: date,
+      startedAt: TM.startedAt || null,
+      finishedAt: FV.serverTimestamp(),
+      total: total, correct: right, wrong: total - right - blanks, blank: blanks,
+      pct: pct,
+      flagged: TM.flags.filter(Boolean).length,
+      durationSec: secs,
+      limitMinutes: TM.minutes || 0,        // 0 means they chose not to be timed
+      autoSubmitted: !!byTimer,
+      questions: paper
+    };
+    for (var f in about) if (about.hasOwnProperty(f)) paperDoc[f] = about[f];
+
+    db.collection('progress').doc(uid).collection('tests')
+      .doc(key + '__' + stamp).set(paperDoc)
+      .catch(function(e){ console.warn('Could not save the test paper:', e); });
+
+    // 2. That subject's running tally.
+    var tally = {
+      tests: FV.increment(1),
+      questions: FV.increment(total),
+      correct: FV.increment(right),
+      lastPct: pct, lastDate: date, lastAt: FV.serverTimestamp()
+    };
+    for (var g in about) if (about.hasOwnProperty(g)) tally[g] = about[g];
+
+    db.collection('progress').doc(uid).collection('testSubjects')
+      .doc(key).set(tally, { merge: true })
+      .catch(function(e){ console.warn('Could not update the subject tally:', e); });
+  } catch (e) {
+    console.warn('Could not save the test:', e);
+  }
+}
+
+function tmRenderResults(right, total, pct, secs, byTimer){
+  var mins = Math.floor(secs / 60);
+  var esc = function(v){ return String(v == null ? '' : v)
+    .replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+
+  var rows = TM.questions.map(function(q, i){
+    var given = TM.answers[i];
+    var ok = tmIsRight(q, given);
+    var cls = given === null || given === '' ? 'blank' : (ok ? '' : 'wrong');
+    var yours = (given === null || given === '')
+      ? '<span class="bad">left blank</span>'
+      : '<span class="' + (ok ? 'good' : 'bad') + '">' + esc(given) + '</span>';
+    return '<div class="tm-rq ' + cls + '">' +
+      '<div class="rn">Question ' + (i + 1) + (ok ? ' · correct' : ' · not correct') + '</div>' +
+      '<div class="rq">' + esc(q.question) + '</div>' +
+      '<div class="ra"><b>Your answer:</b> ' + yours +
+        (ok ? '' : ' &nbsp;·&nbsp; <b>Correct answer:</b> <span class="good">' + esc(q.answer) + '</span>') +
+      '</div>' +
+      (q.explanation ? '<div class="rx">' + esc(q.explanation) + '</div>' : '') +
+    '</div>';
+  }).join('');
+
+  tmEl('tmBody').style.display = 'none';
+  var res = tmEl('tmResults');
+  res.style.display = 'block';
+  res.innerHTML = '<div class="tm-res-inner">' +
+    (byTimer ? '<p class="tm-kick" style="text-align:center;margin-bottom:.8rem;">Time is up — submitted for you</p>' : '') +
+    '<div class="tm-score"><div class="big">' + right + ' / ' + total + '</div>' +
+      '<div class="pct">' + pct + '% · ' + tmTestName() + '</div></div>' +
+    '<div class="tm-stats">' +
+      '<div class="tm-stat"><b>' + right + '</b><span>Correct</span></div>' +
+      '<div class="tm-stat"><b>' + (total - right) + '</b><span>Missed</span></div>' +
+      '<div class="tm-stat"><b>' + (mins ? mins + 'm ' : '') + (secs % 60) + 's</b><span>Time taken</span></div>' +
+      '<div class="tm-stat"><b>' + TM.flags.filter(Boolean).length + '</b><span>Flagged</span></div>' +
+    '</div>' +
+    '<div class="tm-review"><h3>Every question, with the answer</h3>' + rows + '</div>' +
+    '<div class="tm-res-acts">' +
+      '<button type="button" class="tm-nav primary" onclick="tmClose()">Done</button>' +
+      '<button type="button" class="tm-nav" onclick="tmClose();tmStart();">Take another</button>' +
+    '</div></div>';
+  res.scrollTop = 0;
+}
+
+/* Escape should not silently abandon a test — it asks, like everything else. */
+document.addEventListener('keydown', function(e){
+  if (!TM.on) return;
+  if (e.key === 'Escape') { e.preventDefault(); tmAskExit(); }
+  if (e.key === 'ArrowRight' && TM.at < TM.questions.length - 1) tmShow(TM.at + 1);
+  if (e.key === 'ArrowLeft'  && TM.at > 0) tmShow(TM.at - 1);
+});
+
+document.addEventListener('DOMContentLoaded', function(){
+  ['tmSubject','tmExam','tmExamSubject','tmDifficulty','tmCurriculum','tmAge'].forEach(function(id){
+    var el = tmEl(id);
+    if (el) el.addEventListener('change', tmSyncSummary);
+  });
+  tmSyncSummary();
+  tmApplyAccess(!!(window.SOS && SOS.user));
+  if (window.SOS && typeof SOS.onSession === 'function') {
+    SOS.onSession(function(user){ tmApplyAccess(!!user); });
+  }
+});
+</script>
 
 <script>
 /* ══════════════════════════════════════
    PAGE NAVIGATION WITH ENTRANCE ANIMATIONS
 ══════════════════════════════════════ */
 const ALL_PAGES = ['home','what','history','types','study','ethics','lab','finder','resources','help','contact'];
+
+/* ── Mission band ─────────────────────────────────────────────
+   The photograph may arrive as a png, a jpg, a jpeg or a webp — the assets
+   folder already holds both png and jpg — so each is tried in turn rather
+   than the file name being dictated. If none of them is there, the band drops
+   into its no-photo treatment instead of showing a broken frame. */
+var CTA_PHOTO_TRIES = ['png', 'jpg', 'jpeg', 'webp'];
+
+/* Wired here rather than with an inline onerror: the image is in the markup
+   near the foot of the page and can fail before this script has run, in which
+   case an inline handler would call a function that does not exist yet. */
+function ctaWirePhoto() {
+  var img = document.getElementById('missionPhoto');
+  if (!img) return;
+  img.addEventListener('error', function () { ctaNextPhoto(img); });
+  img.addEventListener('load', ctaMeasurePhoto);
+  window.addEventListener('resize', ctaMeasurePhoto);
+  // It may already have loaded, or already have failed, before this ran.
+  if (img.complete && img.naturalWidth) ctaMeasurePhoto();
+  if (img.complete && !img.naturalWidth) ctaNextPhoto(img);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ctaWirePhoto);
+else ctaWirePhoto();
+
+/* The band takes the photograph's own shape, so that filling the band and
+   showing the whole picture are the same thing. Measured rather than assumed,
+   because the shape is whatever the file happens to be — and re-measured on a
+   resize because the band is capped in height on very tall pictures. */
+function ctaMeasurePhoto() {
+  var img = document.getElementById('missionPhoto');
+  var band = document.getElementById('missionBand');
+  if (!img || !band || !img.naturalWidth) return;
+  band.style.setProperty('--cta-ar', img.naturalWidth + ' / ' + img.naturalHeight);
+}
+
+function ctaNextPhoto(img) {
+  var at = parseInt(img.getAttribute('data-try') || '0', 10) + 1;
+  if (at < CTA_PHOTO_TRIES.length) {
+    img.setAttribute('data-try', at);
+    img.src = 'assets/images/mission/mission_1.' + CTA_PHOTO_TRIES[at];
+    return;
+  }
+  img.style.display = 'none';
+  var band = document.getElementById('missionBand');
+  if (band) band.classList.add('no-photo');
+}
+
 
 function showPage(id) {
   const current = document.querySelector('.panel.active');
@@ -2620,30 +3507,35 @@ function labUpdateSubjects(){
   labUpdateTopics();
 }
 
-/* Subjects are a multi-select checklist now. */
+/* One subject at a time. The picker is a plain dropdown like the two beside
+   it, so the whole control bar reads as one row of the same thing. */
 const LAB_SUBJ_LABEL = { maths:'Math', science:'Science', english:'English', history:'History', geography:'Geography' };
 
-function labSelectedSubjects(){
-  const arr = [];
-  document.querySelectorAll('#labSubjectMenu .lab-subj:checked').forEach(c => arr.push(c.value));
-  return arr.length ? arr : ['maths'];
+function labSubject(){
+  const sel = document.getElementById('labSubject');
+  const v = sel ? sel.value : 'maths';
+  return LAB_SUBJ_LABEL[v] ? v : 'maths';
 }
-function labToggleSubjectMenu(e){
-  if (e) e.stopPropagation();
-  const m = document.getElementById('labSubjectMenu');
-  if (m) m.classList.toggle('open');
+
+/* Set the picker, if the value is one it actually offers. Returns whether it
+   took, so callers can fall back rather than silently leaving the wrong
+   subject on screen. */
+function labSetSubject(value){
+  const sel = document.getElementById('labSubject');
+  if (!sel) return false;
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === value) { sel.selectedIndex = i; return true; }
+  }
+  return false;
 }
-document.addEventListener('click', function(e){
-  const menu = document.getElementById('labSubjectMenu');
-  const wrap = document.getElementById('labSubjectMulti');
-  if (menu && wrap && !wrap.contains(e.target)) menu.classList.remove('open');
-});
+
+/* Kept because the guest demo gate calls it by name; there is only ever one. */
+function labSelectedSubjects(){ return [labSubject()]; }
+
 function labOnSubjectChange(){
-  const subs = labSelectedSubjects();
-  LAB.subjects = subs;
-  LAB.subject  = subs[0];
-  const toggle = document.getElementById('labSubjectToggle');
-  if (toggle) toggle.innerHTML = (subs.length === 1 ? LAB_SUBJ_LABEL[subs[0]] : subs.length + ' subjects') + ' <span style="opacity:.6;">▾</span>';
+  const s = labSubject();
+  LAB.subject  = s;
+  LAB.subjects = [s];
   labUpdateTopics();
 }
 
@@ -2663,33 +3555,22 @@ function labTopicsFor(subject){
 function labUpdateTopics(){
   LAB.age = document.getElementById('labAge').value;
   LAB.curriculum = document.getElementById('labCurriculum').value;
-  const subs = labSelectedSubjects();
-  LAB.subjects = subs;
-  LAB.subject  = subs[0];
+  const subject = labSubject();
+  LAB.subject  = subject;
+  LAB.subjects = [subject];
 
   const sel = document.getElementById('labTopic');
-  if (subs.length === 1) {
-    const topics = labTopicsFor(subs[0]);
-    if (topics.length) {
-      sel.innerHTML = topics.map(t => `<option value="${t}">${t}</option>`).join('');
-      LAB.topic = topics[0];
-    } else {
-      sel.innerHTML = '<option value="">No topics for this age yet</option>';
-      LAB.topic = '';
-    }
+  const topics = labTopicsFor(subject);
+  if (topics.length) {
+    sel.innerHTML = topics.map(t => `<option value="${t}">${t}</option>`).join('');
+    LAB.topic = topics[0];
   } else {
-    let html = '<option value="__mixed__">🎲 Mixed (all selected)</option>';
-    subs.forEach(s => {
-      const ts = labTopicsFor(s);
-      if (ts.length) html += `<optgroup label="${LAB_SUBJ_LABEL[s]}">` + ts.map(t => `<option value="${s}|${t}">${t}</option>`).join('') + '</optgroup>';
-    });
-    sel.innerHTML = html;
-    LAB.topic = '__mixed__';
+    sel.innerHTML = '<option value="">No topics for this age yet</option>';
+    LAB.topic = '';
   }
 
-  const currName  = document.getElementById('labCurriculum').selectedOptions[0].text;
-  const subjLabel = subs.length === 1 ? LAB_SUBJ_LABEL[subs[0]] : (subs.length + ' subjects');
-  labSetTutor(`Curriculum: <strong>${currName}</strong> · Age: <strong>${LAB.age}</strong> · Subjects: <strong>${subjLabel}</strong> — hit <strong>New Question</strong> to start!`);
+  const currName = document.getElementById('labCurriculum').selectedOptions[0].text;
+  labSetTutor(`Curriculum: <strong>${currName}</strong> · Age: <strong>${LAB.age}</strong> · Subject: <strong>${LAB_SUBJ_LABEL[subject]}</strong> — hit <strong>New Question</strong> to start!`);
 }
 
 /* ── GENERATE QUESTION VIA CLAUDE API ───────────────────────── */
@@ -2699,23 +3580,9 @@ async function labGenerate(){
   LAB.age   = document.getElementById('labAge').value;
   LAB.curriculum = document.getElementById('labCurriculum').value;
 
-  // Resolve subject + topic (multi-subject aware: value can be "__mixed__" or "subject|topic").
-  const topicVal = document.getElementById('labTopic').value;
-  const subs = labSelectedSubjects();
-  if (topicVal === '__mixed__' || (!topicVal && subs.length > 1)) {
-    const s = subs[Math.floor(Math.random() * subs.length)];
-    const ts = labTopicsFor(s);
-    if (!ts.length) { labSetTutor("No topics for that subject at this age yet — try another! 😊"); return; }
-    LAB.subject = s;
-    LAB.topic   = ts[Math.floor(Math.random() * ts.length)];
-  } else if (topicVal.indexOf('|') !== -1) {
-    const parts = topicVal.split('|');
-    LAB.subject = parts[0];
-    LAB.topic   = parts.slice(1).join('|');
-  } else {
-    LAB.subject = subs[0];
-    LAB.topic   = topicVal;
-  }
+  // One subject, one topic — the picker says exactly what you will be asked.
+  LAB.subject = labSubject();
+  LAB.topic   = document.getElementById('labTopic').value;
 
   if (!LAB.topic) { labSetTutor("Please select a topic first! 😊"); return; }
 
@@ -2864,16 +3731,22 @@ function labCheckMCQ(choice, btn){
 
 /* Record one answered question to Firestore (signed-in students only).
    Aggregated per day + per subject so the dashboard can chart trends,
-   per-subject mastery, an activity calendar and a session log. */
-function recordProgress(mode, subject, label, isCorrect, streak){
+   per-subject mastery, an activity calendar and a session log.
+
+   The optional `key` decides which daily document the answer lands in. It
+   defaults to the subject, which is right for practice — but two entrance
+   exams share subject names, so an SSC Reasoning paper and a CUET Reasoning
+   paper sat on the same day would otherwise be added together and end up
+   labelled whichever finished last. Test mode passes its own filing key. */
+function recordProgress(mode, subject, label, isCorrect, streak, key){
   try {
     if (!(window.SOS && SOS.user && SOS.db)) return;
     var db = SOS.db, uid = SOS.user.uid, FV = firebase.firestore.FieldValue;
     var d = new Date();
     var date = d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
-    var id = date + '__' + mode + '__' + subject;
+    var id = date + '__' + mode + '__' + (key || subject);
     db.collection('progress').doc(uid).collection('daily').doc(id).set({
-      date: date, mode: mode, subject: subject, label: label,
+      date: date, mode: mode, subject: subject, subjectKey: (key || subject), label: label,
       questions: FV.increment(1), correct: FV.increment(isCorrect ? 1 : 0),
       lastTs: FV.serverTimestamp()
     }, { merge: true }).catch(function(){});
@@ -3448,18 +4321,14 @@ function labApplySubjectPrefs(){
   var wanted = hard.length ? hard : likes;
   if (!wanted.length) return;
 
-  var boxes = document.querySelectorAll('#labSubjectMenu .lab-subj');
-  if (!boxes.length) return;
-  var matched = [];
-  for (var i = 0; i < boxes.length; i++) {
-    var on = wanted.indexOf(boxes[i].value) !== -1;
-    boxes[i].checked = on;
-    if (on) matched.push(boxes[i].value);
+  // One subject at a time, so open on the first of theirs the Lab teaches.
+  // Their list can hold exam subjects the curriculum Lab has no questions for,
+  // which is why this walks the list rather than trusting the first entry.
+  var picked = null;
+  for (var i = 0; i < wanted.length && !picked; i++) {
+    if (labSetSubject(wanted[i])) picked = wanted[i];
   }
-  if (!matched.length) {           // nothing here matches (e.g. exam subjects) — undo
-    for (var j = 0; j < boxes.length; j++) boxes[j].checked = (boxes[j].value === 'maths');
-    return;
-  }
+  if (!picked) return;             // nothing here matches — leave the default alone
   LAB_PREFS_APPLIED = true;
   labShowPrefNote(hard.length ? 'hard' : 'likes');
   try { labOnSubjectChange(); } catch(e){}
@@ -3474,9 +4343,9 @@ function labShowPrefNote(kind){
   n.id = 'labPrefNote';
   n.style.cssText = 'flex-basis:100%;font-size:.82rem;line-height:1.5;color:var(--muted);margin-top:.1rem;';
   n.innerHTML = (kind === 'hard'
-      ? '&#129517; Starting with the subjects you said you find hardest &mdash; that is where practice helps most. '
-      : '&#129517; Starting with the subjects you said you enjoy. ')
-    + '<button type="button" id="labPrefSwap" style="background:none;border:none;padding:0;cursor:pointer;color:var(--accent-dark);font-weight:700;font-family:inherit;font-size:.82rem;">Use my other subjects</button>';
+      ? '&#129517; Starting with a subject you said you find hardest &mdash; that is where practice helps most. '
+      : '&#129517; Starting with a subject you said you enjoy. ')
+    + '<button type="button" id="labPrefSwap" style="background:none;border:none;padding:0;cursor:pointer;color:var(--accent-dark);font-weight:700;font-family:inherit;font-size:.82rem;">Use a subject I enjoy instead</button>';
   bar.appendChild(n);
   var swap = document.getElementById('labPrefSwap');
   if (swap) swap.addEventListener('click', function(){
@@ -3485,11 +4354,10 @@ function labShowPrefNote(kind){
       other = (kind === 'hard' ? localStorage.getItem('sos_enjoys') : localStorage.getItem('sos_hard')) || '';
     } catch(e){ other = ''; }
     var list = other.split(',').filter(Boolean);
-    if (!list.length) { n.remove(); return; }
-    var boxes = document.querySelectorAll('#labSubjectMenu .lab-subj');
-    for (var i = 0; i < boxes.length; i++) boxes[i].checked = list.indexOf(boxes[i].value) !== -1;
+    var swapped = false;
+    for (var i = 0; i < list.length && !swapped; i++) swapped = labSetSubject(list[i]);
     n.remove();
-    try { labOnSubjectChange(); } catch(e){}
+    if (swapped) { try { labOnSubjectChange(); } catch(e){} }
   });
 }
 document.addEventListener('DOMContentLoaded', function() {
@@ -3519,6 +4387,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="js/session.js"></script>
+<script src="js/core/footer.js"></script>
 
 <!-- ══════════════════ Members-only demo gate (Lab & History) ══════════════════ -->
 <style>
@@ -3802,21 +4671,21 @@ document.addEventListener('DOMContentLoaded', function() {
      visible so it is obvious which one is active, just not changeable. */
   function applySubjectLock(){
     var subj = lockedSubject();
-    var boxes = document.querySelectorAll('#labSubjectMenu .lab-subj');
-    if (!subj || demoAuthed || !boxes.length) return;
-    for (var i=0;i<boxes.length;i++){
-      boxes[i].checked  = (boxes[i].value === subj);
-      boxes[i].disabled = true;
-      if (boxes[i].parentNode && boxes[i].parentNode.style)
-        boxes[i].parentNode.style.opacity = boxes[i].checked ? '1' : '.45';
+    var sel  = el('labSubject');
+    if (!subj || demoAuthed || !sel) return;
+    // Hold the picker on the subject this guest committed to. The other
+    // options stay listed but greyed, so it reads as locked rather than as
+    // though the site only teaches one thing.
+    for (var i=0;i<sel.options.length;i++){
+      sel.options[i].disabled = (sel.options[i].value !== subj);
+      if (sel.options[i].value === subj) sel.selectedIndex = i;
     }
-    var menu = el('labSubjectMenu');
-    if (menu && !el('demoSubjLock')){
-      var note = document.createElement('div');
+    if (!el('demoSubjLock')){
+      var note = document.createElement('p');
       note.id = 'demoSubjLock';
-      note.style.cssText = 'padding:.6rem .7rem;margin-top:.4rem;border-top:1px solid rgba(62,43,30,.12);font-size:.75rem;line-height:1.5;color:#8B6E5A;';
-      note.innerHTML = '&#128274; The demo covers one subject. <a href="pages/login.html" style="color:#9A3F1E;font-weight:700;">Sign in free</a> to switch subjects and mix them.';
-      menu.appendChild(note);
+      note.style.cssText = 'margin-top:.35rem;font-size:.74rem;line-height:1.5;color:#8B6E5A;';
+      note.innerHTML = '&#128274; The demo covers one subject. <a href="pages/login.html" style="color:#9A3F1E;font-weight:700;">Sign in free</a> to switch.';
+      if (sel.parentNode) sel.parentNode.appendChild(note);
     }
     if (typeof window.labOnSubjectChange === 'function') window.labOnSubjectChange();
   }
@@ -3864,11 +4733,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function releaseSubjectLock(){
-    var boxes = document.querySelectorAll('#labSubjectMenu .lab-subj');
-    for (var i=0;i<boxes.length;i++){
-      boxes[i].disabled = false;
-      if (boxes[i].parentNode && boxes[i].parentNode.style) boxes[i].parentNode.style.opacity = '';
-    }
+    var sel = el('labSubject');
+    if (sel) for (var i=0;i<sel.options.length;i++) sel.options[i].disabled = false;
     var note = el('demoSubjLock'); if (note && note.parentNode) note.parentNode.removeChild(note);
   }
 
