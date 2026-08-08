@@ -808,6 +808,65 @@
       .tm-dots{grid-template-columns:repeat(8,1fr);}
       .tm-grid,.tm-row{grid-template-columns:1fr;}
     }
+    /* ── The way into a test, from inside a Lab ─────────────────
+       A banner, still, but flat: one colour rather than a gradient, a hairline
+       of accent along the top, a squared mark and a squared button. The gloss
+       and the pill were what made the old one read as an advertisement — the
+       same shape without them reads as a notice. */
+    .lab-test-invite{display:flex;align-items:center;gap:1.4rem;margin-top:2.5rem;position:relative;
+      background:#2E1206;border-radius:6px;padding:1.8rem 1.9rem;color:#fff;overflow:hidden;}
+    .lab-test-invite::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);}
+    .lti-mark{width:46px;height:46px;border-radius:6px;background:none;
+      border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;font-size:1.25rem;
+      flex-shrink:0;color:#E0B08A;}
+    .lti-words{min-width:0;flex:1;}
+    .lti-kick{display:block;font-size:.66rem;font-weight:700;letter-spacing:.22em;
+      text-transform:uppercase;color:#E0B08A;}
+    .lti-words b{display:block;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.32rem;
+      letter-spacing:-.02em;line-height:1.25;margin-top:.55rem;}
+    .lti-words span{display:block;font-size:.88rem;line-height:1.7;color:rgba(255,255,255,.66);
+      margin-top:.5rem;max-width:44em;}
+    .lti-go{margin-left:auto;flex-shrink:0;background:var(--accent);color:#fff;border:1px solid var(--accent);
+      border-radius:5px;padding:.85rem 1.7rem;font-family:'Inter',sans-serif;font-size:.85rem;
+      font-weight:700;letter-spacing:.03em;cursor:pointer;white-space:nowrap;
+      transition:background .18s,border-color .18s;}
+    .lti-go:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
+    .lab-test-invite.open .lti-go{background:transparent;border-color:rgba(255,255,255,.5);}
+    @media (max-width:720px){
+      .lab-test-invite{flex-direction:column;align-items:flex-start;}
+      .lti-go{margin-left:0;}
+    }
+
+    /* A test that was put down, offered back. Warmer than the banner beneath it
+       so it reads as something waiting rather than something on offer. */
+    .tm-resume{display:flex;align-items:center;gap:1.2rem;margin-top:2.5rem;position:relative;
+      background:var(--white);border:1px solid var(--border);border-left:4px solid var(--accent);
+      border-radius:6px;padding:1.25rem 1.4rem;}
+    .tmr-mark{width:42px;height:42px;border-radius:6px;background:var(--accent-light);
+      border:1px solid var(--accent);display:grid;place-items:center;font-size:1.15rem;flex-shrink:0;}
+    .tmr-words{min-width:0;flex:1;}
+    .tmr-kick{display:block;font-size:.64rem;font-weight:700;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--accent-dark);}
+    .tmr-words b{display:block;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;
+      color:var(--text);margin-top:.35rem;}
+    .tmr-sub{display:block;font-size:.83rem;line-height:1.6;color:var(--muted);margin-top:.25rem;}
+    .tmr-acts{margin-left:auto;display:flex;gap:.55rem;flex-shrink:0;}
+    .tmr-go{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:5px;
+      padding:.7rem 1.4rem;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;}
+    .tmr-go:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
+    .tmr-drop{background:none;border:1px solid var(--border);color:var(--muted);border-radius:5px;
+      padding:.7rem 1.1rem;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;}
+    .tmr-drop:hover{border-color:var(--danger,#9A2B18);color:var(--danger,#9A2B18);}
+    @media (max-width:720px){
+      .tm-resume{flex-direction:column;align-items:flex-start;}
+      .tmr-acts{margin-left:0;}
+    }
+
+    /* Once summoned, the setup sits directly under the invitation it came from. */
+    .tm-setup-host{margin-top:1rem;}
+    .tm-setup-host .tm-setup,.tm-setup-host .tm-locked{animation:tmDrop .4s cubic-bezier(.22,.9,.3,1) both;}
+    @keyframes tmDrop{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
+
     /* ── Test tools ────────────────────────────────────────────────
        A dock of the tools this subject is allowed, down the left edge of the
        test, and the ones opened sitting under the question. Which tools a
@@ -1967,7 +2026,6 @@
     <div class="lab-tabs">
       <button class="lab-tab active" onclick="labSwitchTab('curriculum',this)">🎓 Curriculum Lab</button>
       <button class="lab-tab" onclick="labSwitchTab('examprep',this)">📝 Entrance &amp; Government Exams</button>
-      <button class="lab-tab" onclick="labSwitchTab('test',this)">⏱️ Test Mode</button>
     </div>
 
     <!-- ══ TAB 1: CURRICULUM LAB ══ -->
@@ -2075,7 +2133,18 @@
         <div class="lab-progress-text" id="labProgressText">0 answered</div>
       </div>
 
-    </div>
+    
+      <!-- The way into a test, from inside the Lab it belongs to. -->
+      <div class="lab-test-invite" id="labInviteCurr">
+        <div class="lti-mark">&#9201;</div>
+        <div class="lti-words">
+          <span class="lti-kick">Test mode</span>
+          <b>Sit a paper on what you have been practising</b>
+          <span>Pick a subject, how many questions and how long you want. Nothing is marked until you submit, and the whole paper is explained afterwards.</span>
+        </div>
+        <button type="button" class="lti-go" onclick="tmOpenSetup('curriculum', this)">Take a test &rarr;</button>
+      </div>
+</div>
 
     <!-- ══ TAB 2: EXAM PREP ══ -->
     <div class="lab-tab-content" id="labTabExamprep">
@@ -2230,10 +2299,24 @@
         <div class="lab-progress-text" id="epProgressText">0 answered</div>
       </div>
 
+      <!-- The way into a test, from inside the Lab it belongs to. -->
+      <div class="lab-test-invite" id="labInviteExam">
+        <div class="lti-mark">&#9201;</div>
+        <div class="lti-words">
+          <span class="lti-kick">Test mode</span>
+          <b>Sit a paper on what you have been practising</b>
+          <span>A timed paper for CUET, Railways, Bank PO, SSC or UPSC. Nothing is marked until you submit, and the whole paper is explained afterwards.</span>
+        </div>
+        <button type="button" class="lti-go" onclick="tmOpenSetup('exam', this)">Take a test &rarr;</button>
+      </div>
+
     </div>
 
-    <!-- ══ TAB 3: TEST MODE ══ -->
-    <div class="lab-tab-content" id="labTabTest">
+    <!-- ══ THE TEST ITSELF ══ -->
+    <!-- Test mode is no longer a tab of its own. Its setup lives here, out of the
+     way, and is moved into whichever Lab asked for it — so there is one of it
+     rather than a copy per Lab, and no duplicated ids. -->
+<div id="tmHome" hidden>
 
       <!-- Guests get this instead. A test is worth recording and a guest has
            nowhere to record it. -->
@@ -2250,7 +2333,7 @@
 
       <div class="tm-setup" id="tmSetup" style="display:none;">
         <p class="tm-kick">Test mode</p>
-        <h3 class="tm-h">Set your test up</h3>
+        <h3 class="tm-h" id="tmSetupTitle">Set your test up</h3>
         <p class="tm-sub">Everything else on the site closes while you work. You can move between
           questions freely, flag any you want to come back to, and change an answer right up until
           you submit.</p>
@@ -2344,7 +2427,8 @@
         </div>
         <p class="tm-note" id="tmNote" style="display:none;"></p>
       </div>
-    </div>
+
+</div>
 
     <!-- SHARED CELEBRATION (works for both tabs) -->
     <div class="lab-celebration" id="labCelebration">
@@ -2730,6 +2814,7 @@
     <div class="tm-clock" id="tmClock">
       <b id="tmClockTime">--:--</b><span id="tmClockLabel">remaining</span>
     </div>
+    <button type="button" onclick="tmPause()">Pause &amp; save</button>
     <button type="button" onclick="tmAskExit()">Exit test</button>
     <button type="button" class="tm-submit" onclick="tmAskSubmit()">Submit test</button>
   </div>
@@ -2860,6 +2945,7 @@ function tmToggleTool(t){
   var at = TM.tools.indexOf(t);
   if (at === -1) TM.tools.push(t); else TM.tools.splice(at, 1);
   tmPaintPanels();
+  tmSaveState();
 }
 
 /* Their rough work, drawn back into the review at the size it was made. */
@@ -2884,6 +2970,86 @@ function tmApplyAccess(signedIn){
   lock.style.display = signedIn ? 'none'  : 'block';
   set.style.display  = signedIn ? 'block' : 'none';
   if (signedIn) tmSyncSummary();
+}
+
+/* Test mode is opened from inside a Lab now, so the Lab says which track it
+   is and the setup does not have to ask. The one setup panel is moved to the
+   Lab that called for it — one of it, no duplicated ids, and it always appears
+   directly under the invitation that was clicked. */
+function tmOpenSetup(track, btn){
+  var home = tmEl('tmHome');
+  var invite = btn.closest('.lab-test-invite');
+  if (!home || !invite) return;
+
+  // Clicking again closes it, so the invitation is a toggle rather than a trap.
+  if (invite.classList.contains('open')) return tmCloseSetup();
+
+  tmCloseSetup();          // if the other Lab had it open, take it back first
+
+  var host = document.createElement('div');
+  host.className = 'tm-setup-host';
+  invite.parentNode.insertBefore(host, invite.nextSibling);
+  // Both pieces travel together: the setup for members, the notice for guests.
+  host.appendChild(tmEl('tmLocked'));
+  host.appendChild(tmEl('tmSetup'));
+  home.hidden = true;
+  invite.classList.add('open');
+  invite.querySelector('.lti-go').textContent = 'Close';
+
+  TM.track = track;
+  tmSyncTrackFields();
+  tmSeedFromLab(track);
+  tmApplyAccess(!!(window.SOS && SOS.user));
+  tmSyncSummary();
+  setTimeout(function(){
+    host.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 60);
+}
+
+function tmCloseSetup(){
+  var host = document.querySelector('.tm-setup-host');
+  var home = tmEl('tmHome');
+  if (host && home) {
+    while (host.firstChild) home.appendChild(host.firstChild);
+    host.remove();
+  }
+  [].forEach.call(document.querySelectorAll('.lab-test-invite'), function(x){
+    x.classList.remove('open');
+    var go = x.querySelector('.lti-go');
+    if (go) go.innerHTML = 'Take a test &rarr;';
+  });
+}
+
+/* Which set of fields belongs to this track. The old switch inside the setup
+   is gone: the Lab you started from already decided. */
+function tmSyncTrackFields(){
+  var curr = tmEl('tmCurrFields'), exam = tmEl('tmExamFields');
+  if (curr) curr.style.display = (TM.track === 'curriculum') ? 'grid' : 'none';
+  if (exam) exam.style.display = (TM.track === 'exam')       ? 'grid' : 'none';
+  var trk = document.querySelector('.tm-track');
+  if (trk) trk.style.display = 'none';
+  var h = tmEl('tmSetupTitle');
+  if (h) h.textContent = (TM.track === 'exam') ? 'Set your exam paper up' : 'Set your test up';
+}
+
+/* Start them where they already are: the subject, board and age they have been
+   practising on, so the only thing left to decide is how long and how many. */
+function tmSeedFromLab(track){
+  // Both LAB and EP are declared with const, so they are not on window — they
+  // are reached by name, inside a guard, rather than through it.
+  try {
+    if (track === 'curriculum') {
+      if (typeof LAB === 'object' && LAB) {
+        if (LAB.subject)    tmEl('tmSubject').value    = LAB.subject;
+        if (LAB.curriculum) tmEl('tmCurriculum').value = LAB.curriculum;
+        if (LAB.age)        tmEl('tmAge').value        = LAB.age;
+      }
+    } else if (typeof EP === 'object' && EP) {
+      if (EP.exam)       tmEl('tmExam').value        = EP.exam;
+      if (EP.subject)    tmEl('tmExamSubject').value = EP.subject;
+      if (EP.difficulty) tmEl('tmDifficulty').value  = EP.difficulty;
+    }
+  } catch (e) {}
 }
 
 function tmPickTrack(track, btn){
@@ -3101,6 +3267,7 @@ function tmShow(i){
   // The open tools stay open across questions, but they are re-wired to this
   // question's rough work rather than carrying the last one's over.
   tmPaintPanels();
+  tmSaveState();
 
   tmEl('tmPrev').disabled = (i === 0);
   var next = tmEl('tmNext');
@@ -3116,10 +3283,12 @@ function tmGo(step){
 function tmAnswer(value){
   TM.answers[TM.at] = value;
   tmShow(TM.at);                      // repaint so the choice reads as chosen
+  tmSaveState();
 }
 function tmNumChanged(){
   var v = tmEl('tmNumInput').value.trim();
   TM.answers[TM.at] = v === '' ? null : v;
+  tmSaveState();
   tmEl('tmProg').textContent = 'Question ' + (TM.at + 1) + ' of ' + TM.questions.length +
     ' · ' + tmAnsweredCount() + ' answered';
   tmPaintDots();
@@ -3134,6 +3303,7 @@ document.addEventListener('click', function(ev){
 function tmToggleFlag(){
   TM.flags[TM.at] = !TM.flags[TM.at];
   tmShow(TM.at);
+  tmSaveState();
 }
 function tmAnsweredCount(){
   return TM.answers.filter(function(a){ return a !== null && a !== ''; }).length;
@@ -3186,10 +3356,205 @@ function tmAskSubmit(){
   tmModal('Submit your test?', bits, 'Submit', function(){ tmSubmit(false); });
 }
 
+/* ── Pausing, and coming back ─────────────────────────────────────
+   A test can be put down and picked up. Everything is kept: the paper itself,
+   every answer, every flag, the rough work and the ordering boards, which
+   tools were open, where they had got to, and how much time was left.
+
+   It is written to this browser rather than to Firestore. A paper with rough
+   work on thirty-five questions is a few hundred kilobytes of stroke data —
+   more than a Firestore document is meant to hold — and the case that matters
+   is the one where a student closes the tab and opens it again, which this
+   covers completely. Picking up on a different device would need the strokes
+   thinned first; it is not done here rather than done badly. */
+function tmStateKey(){
+  var uid = '';
+  try { uid = localStorage.getItem('sos_uid') || ''; } catch (e) {}
+  return 'sos_test_' + (uid || 'anon');
+}
+
+function tmSnapshot(){
+  return {
+    v: 1,
+    savedAt: Date.now(),
+    track: TM.track, subject: TM.subject,
+    curriculum: TM.curriculum, age: TM.age,
+    exam: TM.exam, difficulty: TM.difficulty,
+    minutes: TM.minutes,
+    // What is left on the clock, not when it was due to end — the pause may
+    // last a week and the time remaining has to survive it.
+    remainingMs: TM.endsAt ? Math.max(0, TM.endsAt - Date.now()) : 0,
+    elapsedMs: TM.startedAt ? (Date.now() - TM.startedAt) : 0,
+    at: TM.at,
+    questions: TM.questions,
+    answers: TM.answers,
+    flags: TM.flags,
+    tools: TM.tools,
+    work: TM.work.map(function(w){
+      return { strokes: (w && w.strokes) || [], items: (w && w.items) || [] };
+    })
+  };
+}
+
+/* Rough work and the ordering board live in the tools, which announce when
+   they change rather than knowing what a test is. This is what makes a drawing
+   part of the saved paper. */
+window.SOSToolChanged = function(){ tmSaveState(); };
+
+var TM_SAVE_PENDING = null;
+function tmSaveState(){
+  if (!TM.on || TM.submitted) return;
+  // Called on every answer and every stroke, so the writing is batched.
+  clearTimeout(TM_SAVE_PENDING);
+  TM_SAVE_PENDING = setTimeout(function(){
+    try {
+      localStorage.setItem(tmStateKey(), JSON.stringify(tmSnapshot()));
+    } catch (e) {
+      // Out of room: keep the paper and the answers, drop the drawings, and
+      // say so rather than silently losing the lot.
+      try {
+        var lean = tmSnapshot();
+        lean.work = lean.work.map(function(w){ return { strokes: [], items: w.items }; });
+        lean.roughDropped = true;
+        localStorage.setItem(tmStateKey(), JSON.stringify(lean));
+      } catch (x) {}
+    }
+  }, 400);
+}
+
+function tmSavedState(){
+  try {
+    var raw = localStorage.getItem(tmStateKey());
+    if (!raw) return null;
+    var st = JSON.parse(raw);
+    return (st && st.questions && st.questions.length) ? st : null;
+  } catch (e) { return null; }
+}
+
+function tmClearState(){
+  clearTimeout(TM_SAVE_PENDING);
+  try { localStorage.removeItem(tmStateKey()); } catch (e) {}
+  tmPaintResume();
+}
+
+/* Put it down. The state is written before anything closes, so nothing
+   depends on the page surviving the next moment. */
+function tmPause(){
+  if (!TM.on) return;
+  clearTimeout(TM_SAVE_PENDING);
+  try { localStorage.setItem(tmStateKey(), JSON.stringify(tmSnapshot())); } catch (e) {}
+  TM.on = false;
+  tmStopClock();
+  window.removeEventListener('beforeunload', tmWarnLeaving);
+  tmEl('tmShell').classList.remove('open');
+  document.body.classList.remove('tm-running');
+  tmPaintResume();
+  var strip = document.querySelector('.tm-resume');
+  if (strip) setTimeout(function(){ strip.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80);
+}
+
+/* Pick it up again, exactly where it was left. */
+function tmResume(){
+  var st = tmSavedState();
+  if (!st) return;
+  if (!(window.SOS && SOS.user)) { tmApplyAccess(false); return; }
+
+  TM.track = st.track; TM.subject = st.subject;
+  TM.curriculum = st.curriculum; TM.age = st.age;
+  TM.exam = st.exam; TM.difficulty = st.difficulty;
+  TM.minutes = st.minutes;
+  TM.questions = st.questions;
+  TM.answers = st.answers;
+  TM.flags = st.flags;
+  TM.tools = st.tools || [];
+  TM.work = (st.work || []).map(function(w){
+    var store = SOSTestTools.newStore();
+    store.strokes = w.strokes || [];
+    store.items = w.items || [];
+    return store;
+  });
+  while (TM.work.length < TM.questions.length) TM.work.push(SOSTestTools.newStore());
+  TM.at = Math.min(st.at || 0, TM.questions.length - 1);
+  TM.submitted = false;
+  TM.on = true;
+  // The clock restarts from what was left, not from where it would have been.
+  TM.startedAt = Date.now() - (st.elapsedMs || 0);
+  TM.endsAt = st.remainingMs ? Date.now() + st.remainingMs : 0;
+
+  tmEl('tmBarTitle').textContent = tmTestName() + ' test';
+  tmEl('tmBarMeta').textContent = TM.questions.length + ' questions · ' +
+    (TM.minutes ? TM.minutes + ' minute limit' : 'no time limit');
+  tmEl('tmResults').style.display = 'none';
+  tmEl('tmBody').style.display = '';
+  tmEl('tmShell').classList.add('open');
+  document.body.classList.add('tm-running');
+  window.addEventListener('beforeunload', tmWarnLeaving);
+
+  tmPaintDock();
+  tmPaintDots();
+  tmShow(TM.at);
+  tmStartClock();
+  tmPaintResume();
+}
+
+function tmDiscardPaused(){
+  tmModal('Throw away the paused test?',
+    '<p>The answers and rough work you saved will be lost. This cannot be undone.</p>',
+    'Throw it away', function(){ tmClearState(); });
+}
+
+/* The strip that offers it back, at the top of whichever Lab it belongs to. */
+function tmPaintResume(){
+  [].forEach.call(document.querySelectorAll('.tm-resume'), function(x){ x.remove(); });
+  var st = tmSavedState();
+  if (!st || !(window.SOS && SOS.user)) return;
+  // The saved copy is kept while the test runs, so a crash still recovers —
+  // but the Lab behind the test should not be offering it back at the time.
+  if (TM.on) return;
+
+  var host = document.getElementById(st.track === 'exam' ? 'labInviteExam' : 'labInviteCurr');
+  if (!host) return;
+
+  var answered = st.answers.filter(function(a){ return a !== null && a !== undefined && a !== ''; }).length;
+  var left = st.remainingMs
+    ? Math.max(1, Math.round(st.remainingMs / 60000)) + ' min left'
+    : 'no time limit';
+  var when = tmWhenSaved(st.savedAt);
+  var name = (st.track === 'exam')
+    ? (TM_EXAM_NAMES[st.exam] || st.exam) + ' · ' + (TM_EXAM_SUBJ[st.subject] || st.subject)
+    : (LAB_SUBJ_LABEL[st.subject] || st.subject);
+
+  var el = document.createElement('div');
+  el.className = 'tm-resume';
+  el.innerHTML =
+    '<div class="tmr-mark">&#9208;</div>' +
+    '<div class="tmr-words"><span class="tmr-kick">Paused test</span>' +
+      '<b>' + name + ' &mdash; ' + answered + ' of ' + st.questions.length + ' answered</b>' +
+      '<span class="tmr-sub">Saved ' + when + ' · ' + left +
+        '. Your answers and rough work are exactly as you left them.</span></div>' +
+    '<div class="tmr-acts">' +
+      '<button type="button" class="tmr-go" onclick="tmResume()">Carry on</button>' +
+      '<button type="button" class="tmr-drop" onclick="tmDiscardPaused()">Throw away</button>' +
+    '</div>';
+  host.parentNode.insertBefore(el, host);
+}
+
+function tmWhenSaved(ts){
+  if (!ts) return 'earlier';
+  var mins = Math.round((Date.now() - ts) / 60000);
+  if (mins < 1)  return 'a moment ago';
+  if (mins < 60) return mins + (mins === 1 ? ' minute ago' : ' minutes ago');
+  var hrs = Math.round(mins / 60);
+  if (hrs < 24)  return hrs + (hrs === 1 ? ' hour ago' : ' hours ago');
+  var days = Math.round(hrs / 24);
+  return days + (days === 1 ? ' day ago' : ' days ago');
+}
+
 function tmAskExit(){
   tmModal('Leave without submitting?',
-    '<p>Your answers will not be saved and this test will not be scored.</p>',
-    'Leave test', tmClose);
+    '<p>This test will not be scored, and the answers and rough work you have done ' +
+    'will be thrown away. If you want to come back to it, use <b>Pause &amp; save</b> instead.</p>',
+    'Leave test', function(){ tmClearState(); tmClose(); });
 }
 
 function tmClose(){
@@ -3214,6 +3579,8 @@ function tmIsRight(q, given){
 function tmSubmit(byTimer){
   if (TM.submitted) return;
   TM.submitted = true;
+  // Submitted: there is nothing left to come back to.
+  tmClearState();
   TM.on = false;
   tmStopClock();
   tmCloseModal();
@@ -3462,6 +3829,24 @@ function ctaWirePhoto() {
   if (img.complete && img.naturalWidth) ctaMeasurePhoto();
   if (img.complete && !img.naturalWidth) ctaNextPhoto(img);
 }
+/* The strip can only be drawn once we know who is signed in, since a saved
+   test belongs to one person. session.js is loaded after this block, so SOS
+   does not exist yet when this runs — it is waited for rather than assumed,
+   and then asked to say when the session resolves. */
+var TM_RESUME_WATCHING = false, TM_RESUME_TRIES = 0;
+function tmWatchResume(){
+  try { tmPaintResume(); } catch (e) {}
+  if (TM_RESUME_WATCHING) return;
+  if (window.SOS && typeof SOS.onSession === 'function') {
+    TM_RESUME_WATCHING = true;
+    SOS.onSession(function(){ try { tmPaintResume(); } catch (e) {} });
+  } else if (TM_RESUME_TRIES++ < 40) {
+    setTimeout(tmWatchResume, 150);
+  }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tmWatchResume);
+else tmWatchResume();
+
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ctaWirePhoto);
 else ctaWirePhoto();
 
