@@ -329,6 +329,22 @@ var auth = firebase.auth();
 var db = firebase.firestore();
 try { db.enablePersistence({ synchronizeTabs: true }).catch(function(){}); } catch(e){}
 
+/* One tab, one session. This page starts its own Firebase app rather than
+   going through session.js, so it has to say the same thing here: keep the
+   session in the tab, not on the disk. Signing in then lasts as long as the
+   tab does — moving between pages and reloading are fine, closing the tab
+   ends it — instead of Firebase's default, which is to keep a person signed
+   in through a browser restart and a shutdown. The fall-back, for browsers
+   that will not give us sessionStorage at all, holds the session in memory,
+   which errs towards asking again rather than never asking. session.js
+   carries the same block; if one changes, change both. */
+(function scopeSignInToTab(){
+  var P = firebase.auth && firebase.auth.Auth && firebase.auth.Auth.Persistence;
+  if (!P) return;
+  function fallback(){ try { auth.setPersistence(P.NONE).catch(function(){}); } catch(e){} }
+  try { auth.setPersistence(P.SESSION).catch(fallback); } catch (e) { fallback(); }
+})();
+
 // Populate the Country dropdown and its dependent State control.
 if (window.GEO) {
   GEO.populateCountries('suCountry', 'India');
@@ -398,6 +414,7 @@ function forgetCachedProfile() {
     CACHE_KEYS.forEach(function(k){ localStorage.removeItem(k); });
     localStorage.removeItem('sos_uid');
   } catch (e) {}
+  try { sessionStorage.removeItem('sos_tab'); } catch (e) {}
 }
 
 /* Replaces the cache outright rather than writing over parts of it. Writing
@@ -410,6 +427,9 @@ function cacheProfile(p, uid) {
     // Stamp who this cache belongs to, so the next page can tell whether it
     // is looking at its own data.
     if (uid) localStorage.setItem('sos_uid', uid);
+    // And in the tab, so a later tab can tell a live session from the cache a
+    // closed one left behind. session.js reads this before it paints anything.
+    if (uid) { try { sessionStorage.setItem('sos_tab', uid); } catch (e) {} }
     if (p.name)       localStorage.setItem('sos_name', p.name);
     if (p.photo)      localStorage.setItem('sos_photo', p.photo);
     if (p.curriculum) localStorage.setItem('sos_curriculum', p.curriculum);

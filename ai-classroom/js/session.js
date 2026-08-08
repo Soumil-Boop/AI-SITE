@@ -33,6 +33,7 @@
   function forgetCache(){
     CACHE_KEYS.forEach(function(k){ store(k, null); });
     store('sos_uid', null);
+    tabStore('sos_tab', null);
   }
   window.SOSCache = { keys: CACHE_KEYS, forget: forgetCache, uid: function(){ return read('sos_uid'); } };
 
@@ -44,6 +45,32 @@
 
   var auth = firebase.auth();
   var db   = (typeof firebase.firestore === 'function') ? firebase.firestore() : null;  // may be absent on light pages
+
+  /* ---- One tab, one session -------------------------------------------
+     Firebase signs people in for good by default: it keeps the session in
+     localStorage, which outlives the tab, the browser and the computer being
+     switched off. On a shared or school machine that means the next person to
+     open the site is still signed in as the last one.
+
+     SESSION persistence keeps the session in the tab instead. Moving between
+     pages and reloading are unaffected — it is the same tab — but closing the
+     tab ends the session, and opening the site again asks for a sign-in.
+
+     If sessionStorage is unavailable (some private-browsing and locked-down
+     setups block it) the fall-back is NONE, which holds the session in memory
+     only. That is stricter than asked for — a reload signs them out too — but
+     it fails towards signing people out rather than leaving them signed in,
+     which is the right way round for a fall-back nobody will notice. */
+  function tabRead(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } }
+  function tabStore(k, v){
+    try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch(e){}
+  }
+  (function scopeSignInToTab(){
+    var P = firebase.auth && firebase.auth.Auth && firebase.auth.Auth.Persistence;
+    if (!P) return;
+    function fallback(){ try { auth.setPersistence(P.NONE).catch(function(){}); } catch(e){} }
+    try { auth.setPersistence(P.SESSION).catch(fallback); } catch (e) { fallback(); }
+  })();
 
   // Offline persistence: serve reads from a local cache and commit writes
   // locally first (they sync in the background). This removes the network
@@ -145,6 +172,15 @@
     }
   };
 
+  /* The mirrored profile lives in localStorage, which the closing tab does not
+     take with it, so a name, a photo and a role can outlive the session they
+     belong to. A tab that carries no marker of its own has nobody signed in to
+     it, and whatever is in that cache belongs to a tab that has since been
+     closed: drop it before a line of it is painted. On a shared computer that
+     is the difference between the next person seeing a sign-in prompt and
+     seeing the last person's name and face. */
+  if (tabRead('sos_tab') !== read('sos_uid')) forgetCache();
+
   // Optimistic paint: show the cached name the instant the page loads, before
   // auth/Firestore resolve. Only when the cache is stamped with the uid it came
   // from — an unstamped cache is from an older build and cannot be trusted to
@@ -163,6 +199,10 @@
     // is painted, so no part of the last account shows up in this one.
     if (read('sos_uid') !== user.uid) forgetCache();
     store('sos_uid', user.uid);
+    // This tab's own record that somebody is signed in here. It goes when the
+    // tab does, which is what lets the next tab tell a live session from the
+    // leftovers of a closed one.
+    tabStore('sos_tab', user.uid);
     // Paint from cache immediately so the name doesn't wait on the network read.
     render(user, { name: read('sos_name') });
     if (db) {

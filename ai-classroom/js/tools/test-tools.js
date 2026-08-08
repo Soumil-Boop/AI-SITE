@@ -38,6 +38,14 @@
     rough:    { label: 'Rough work', short: 'Rough',    icon: '✏️' }
   };
 
+  /* The tools do not know what a test is, so they do not save anything. They
+     announce a change and whoever is using them decides what that is worth. */
+  function changed() {
+    if (typeof window.SOSToolChanged === 'function') {
+      try { window.SOSToolChanged(); } catch (e) {}
+    }
+  }
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
@@ -228,16 +236,16 @@
     function push() {
       var v = (input.value || '').trim();
       if (!v) return;
-      state.items.push(v); input.value = ''; draw();
+      state.items.push(v); input.value = ''; draw(); changed();
     }
     add.addEventListener('click', push);
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); push(); } });
     list.addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
-      if (b.hasAttribute('data-rm')) { state.items.splice(+b.getAttribute('data-rm'), 1); return draw(); }
+      if (b.hasAttribute('data-rm')) { state.items.splice(+b.getAttribute('data-rm'), 1); draw(); return changed(); }
       var i = +b.getAttribute('data-mv'), d = +b.getAttribute('data-dir'), j = i + d;
       if (j < 0 || j >= state.items.length) return;
-      var t = state.items[i]; state.items[i] = state.items[j]; state.items[j] = t; draw();
+      var t = state.items[i]; state.items[i] = state.items[j]; state.items[j] = t; draw(); changed();
     });
     draw();
   }
@@ -269,13 +277,13 @@
       try { cv.setPointerCapture(e.pointerId); } catch (x) {}
     });
     cv.addEventListener('pointermove', function (e) { if (drawing) { cur.push(at(e)); redraw(); } });
-    cv.addEventListener('pointerup', function () { drawing = false; });
-    cv.addEventListener('pointerleave', function () { drawing = false; });
+    cv.addEventListener('pointerup', function () { if (drawing) { drawing = false; changed(); } });
+    cv.addEventListener('pointerleave', function () { if (drawing) { drawing = false; changed(); } });
     var bar = cv.parentElement.querySelector('.tt-pad-bar');
     if (bar) bar.addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
       if (b.getAttribute('data-pad') === 'undo') store.strokes.pop(); else store.strokes.length = 0;
-      redraw();
+      redraw(); changed();
     });
     redraw();
   }
