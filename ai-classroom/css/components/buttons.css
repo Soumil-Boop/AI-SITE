@@ -22,10 +22,10 @@
 .btn:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
 
 /* Variants */
-.btn--primary  { background: var(--accent);      color: #fff; box-shadow: var(--shadow-sm); }
+.btn--primary  { background: var(--accent);      color: var(--on-fill); box-shadow: var(--shadow-sm); }
 .btn--primary:hover  { background: var(--accent-dark); }
 
-.btn--secondary { background: var(--brand);       color: #fff; box-shadow: var(--shadow-sm); }
+.btn--secondary { background: var(--brand);       color: var(--on-fill); box-shadow: var(--shadow-sm); }
 .btn--secondary:hover { background: var(--brand-dark); }
 
 .btn--outline {
@@ -47,7 +47,7 @@
 .btn--full { width: 100%; justify-content: center; }
 
 /* ── Single-dash aliases (login/dashboard/admin/index markup use these) ── */
-.btn-primary   { background: var(--accent); color:#fff; box-shadow: var(--shadow-sm); }
+.btn-primary   { background: var(--accent); color:var(--on-fill); box-shadow: var(--shadow-sm); }
 .btn-primary:hover   { background: var(--accent-dark); }
-.btn-secondary { background: var(--brand); color:#fff; box-shadow: var(--shadow-sm); }
+.btn-secondary { background: var(--brand); color:var(--on-fill); box-shadow: var(--shadow-sm); }
 .btn-secondary:hover { background: var(--brand-dark); }

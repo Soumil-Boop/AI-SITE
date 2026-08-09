@@ -16,9 +16,13 @@ nav {
 
 /* Logo */
 .nav-logo {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 900;
-  font-size: 1.3rem;
+  /* The wordmark, in the same face as the home page's. It was Nunito here
+     and Space Grotesk there, which is one logo wearing two typefaces
+     depending on which page you were looking at. */
+  font-family: 'Space Grotesk', 'Nunito', sans-serif;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  font-size: 1.26rem;
   color: #fff;
   text-decoration: none;
   display: flex;
@@ -84,7 +88,7 @@ nav {
 .hamburger span {
   width: 24px;
   height: 2px;
-  background: white;
+  background: var(--surface);
   border-radius: 2px;
   display: block;
 }
@@ -130,7 +134,8 @@ nav {
 }
 .brand-banner-inner { display: flex; flex-direction: column; align-items: center; gap: .25rem; }
 .bb-word {
-  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.9rem; color: #fff;
+  font-family: 'Space Grotesk', 'Nunito', sans-serif; font-weight: 700;
+  letter-spacing: -.025em; font-size: 1.9rem; color: #fff;
   display: inline-flex; align-items: center; gap: .12em; line-height: 1;
 }
 .bb-word > span { color: var(--accent); }
@@ -176,7 +181,7 @@ nav {
 }
 .acct-drop {
   position: absolute; top: 100%; right: 0;
-  background: #FBF8F2; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
   box-shadow: 0 14px 34px rgba(0,0,0,.28); min-width: 200px; padding: .4rem;
   opacity: 0; visibility: hidden; transform: translateY(-6px);
   transition: opacity .18s ease, transform .18s ease, visibility .18s; z-index: 300;

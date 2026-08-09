@@ -4,6 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Account Settings — Seek-O-Sphere</title>
+  <!-- Which look to paint, decided before the page paints. This has to be a
+       plain inline script and it has to sit above the stylesheet links: a
+       synchronous script waits for every stylesheet declared before it, and
+       parsing waits for the script, so putting it lower delays the whole body.
+       Nothing else in the head may be moved below it for the same reason. -->
+  <script>(function(){var t;try{t=localStorage.getItem('sos_theme');}catch(e){}
+    document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');})();</script>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
        is still parsing, instead of when the first script or request needs them. -->
@@ -12,11 +19,11 @@
   <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <!-- Inline and first, so the page is already the right colour on the very
        first paint. The stylesheets below arrive later and would otherwise
        leave a frame of white behind them. -->
-  <style>html,body{background:#EFE6D8;margin:0}</style>
+  <style>html,body{background:var(--parchment);margin:0}</style>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
   <link rel="stylesheet" href="../css/base/typography.css"/>
@@ -71,7 +78,7 @@
     .srow-lab span { display:block; font-size:.77rem; color:var(--faint); margin-top:.15rem; line-height:1.45; }
 
     .sin { width:100%; height:38px; padding:0 .7rem; border:1px solid var(--border); border-radius:7px;
-           font-size:.88rem; font-family:'Inter',sans-serif; background:#fff; color:var(--text);
+           font-size:.88rem; font-family:'Inter',sans-serif; background:var(--surface); color:var(--text);
            outline:none; transition:border-color .15s, box-shadow .15s; }
     .sin:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,86,47,.13); }
     .sin:disabled { background:var(--cream); color:var(--faint); cursor:not-allowed; }
@@ -81,7 +88,7 @@
     /* GEO renders State and City into wrappers, so style whatever it puts there. */
     .sg3 > div > input, .sg3 > div > select {
       width:100%; height:38px; padding:0 .7rem; border:1px solid var(--border); border-radius:7px;
-      font-size:.88rem; font-family:'Inter',sans-serif; background:#fff; color:var(--text); outline:none; }
+      font-size:.88rem; font-family:'Inter',sans-serif; background:var(--surface); color:var(--text); outline:none; }
     .sg3 > div > input:focus, .sg3 > div > select:focus {
       border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,86,47,.13); }
     .shint { font-size:.78rem; color:var(--faint); margin-top:.4rem; line-height:1.5; }
@@ -90,7 +97,7 @@
        name it belongs to and in the one place a person goes to change things. */
     .sphoto { display:flex; align-items:center; gap:1.1rem; }
     .sphoto-face { width:68px; height:68px; border-radius:50%; flex-shrink:0;
-                   background:var(--accent); color:#fff; font-family:'Nunito',sans-serif;
+                   background:var(--accent); color:var(--on-fill); font-family:'Nunito',sans-serif;
                    font-weight:900; font-size:1.9rem; display:flex; align-items:center;
                    justify-content:center; background-size:cover; background-position:center;
                    border:3px solid var(--white); box-shadow:0 2px 10px rgba(0,0,0,.12); }
@@ -103,13 +110,13 @@
     .schoice { display:flex; gap:.5rem; flex-wrap:wrap; }
     .schoice label { display:flex; align-items:center; gap:.45rem; min-height:38px; padding:0 .9rem;
       border:1px solid var(--border); border-radius:7px; cursor:pointer; font-size:.86rem;
-      font-weight:500; background:#fff; transition:all .15s; }
+      font-weight:500; background:var(--surface); transition:all .15s; }
     .schoice input { width:auto; margin:0; accent-color:var(--accent); }
     .schoice label:has(input:checked) { border-color:var(--accent); background:var(--accent-light); font-weight:600; }
 
     .schips { display:flex; flex-wrap:wrap; gap:.45rem; }
     .schips label { display:inline-flex; align-items:center; gap:.4rem; min-height:34px; padding:0 .8rem;
-      border:1px solid var(--border); border-radius:100px; background:#fff; font-size:.85rem;
+      border:1px solid var(--border); border-radius:100px; background:var(--surface); font-size:.85rem;
       color:var(--text); cursor:pointer; transition:all .15s; user-select:none; }
     .schips label:hover { border-color:var(--brand-mid); }
     /* Native box hidden — the chip carries the state; focus ring moves to the label. */
@@ -123,11 +130,11 @@
     .sbtn { height:38px; padding:0 1.15rem; border-radius:7px; border:1px solid transparent;
       font-family:'Inter',sans-serif; font-weight:600; font-size:.86rem; cursor:pointer;
       display:inline-flex; align-items:center; gap:.45rem; transition:all .15s; }
-    .sb-primary { background:var(--accent); color:#fff; }
+    .sb-primary { background:var(--accent); color:var(--on-fill); }
     .sb-primary:hover { background:var(--accent-dark); }
-    .sb-quiet { background:#fff; color:var(--text); border-color:var(--border); }
+    .sb-quiet { background:var(--surface); color:var(--text); border-color:var(--border); }
     .sb-quiet:hover { border-color:var(--accent); color:var(--accent-dark); }
-    .sb-risk { background:#fff; color:var(--danger); border-color:var(--danger-line); }
+    .sb-risk { background:var(--surface); color:var(--danger); border-color:var(--danger-line); }
     .sb-risk:hover { background:var(--danger-tint); }
 
     .sbar { display:flex; align-items:center; justify-content:flex-end; gap:.6rem;
@@ -144,7 +151,7 @@
     .set-modal { position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center;
                  padding:1.5rem; background:rgba(26,14,8,.7); }
     .set-modal.show { display:flex; }
-    .set-modal-box { background:#fff; border-radius:12px; max-width:440px; width:100%; padding:1.6rem 1.6rem 1.3rem; }
+    .set-modal-box { background:var(--surface); border-radius:12px; max-width:440px; width:100%; padding:1.6rem 1.6rem 1.3rem; }
     .set-modal-box h3 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.15rem; color:var(--danger); margin-bottom:.5rem; }
     .set-modal-box p { font-size:.87rem; line-height:1.6; color:var(--muted); margin-bottom:1rem; }
     .set-modal-box .modal-actions { display:flex; justify-content:flex-end; gap:.6rem; margin-top:1rem; }
@@ -185,6 +192,9 @@
       .sg2, .sg3 { grid-template-columns:1fr; }
     }
   </style>
+  <!-- Last stylesheet in the head. Every rule inside is locked behind
+       html[data-theme="dark"], so it contributes nothing in the light theme. -->
+  <link rel="stylesheet" href="../css/theme-dark.css"/>
 </head>
 <body>
 
@@ -439,6 +449,7 @@
 <script src="../js/core/nav.js"></script>
 <script>mountNav('account-settings.html', { homeLinks: true, noBanner: true });</script>
 <script src="../js/session.js"></script>
+<script src="../js/core/theme.js"></script>
 <script src="../js/core/footer.js"></script>
 <script>
   var CURRENT_USER = null;

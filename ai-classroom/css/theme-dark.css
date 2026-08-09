@@ -1,0 +1,544 @@
+/* ============================================================
+   theme-dark.css — "Observatory"
+
+   The dark look, and only the dark look. Every rule in this file is
+   locked behind html[data-theme="dark"], so with the attribute absent
+   or set to "light" the site is exactly the cream-and-terracotta site
+   it has always been. Nothing here can affect the light theme, which
+   is why the light theme needed no changes to gain a dark one.
+
+   Why the attribute selector rather than a class: it adds one level of
+   specificity to every rule, so these beat the plain element and class
+   rules in index.html and nav.css without needing !important anywhere,
+   whatever order the stylesheets happen to load in.
+
+   Scope: the whole site. Every page, every section, every panel.
+
+   Most of it is done by the token block below rather than by rules.
+   The site already paints almost everything through --white, --text,
+   --muted, --border and the rest, so restating those twenty-odd values
+   converts something like a thousand declarations in one go. The rules
+   after it are only for the places a literal colour was written, or
+   where a token means two different things in the two themes.
+   ============================================================ */
+
+html[data-theme="dark"] {
+  /* The palette. Near-black ground, ice type, one aqua doing the
+     signalling and a warm ember held back for the things that matter
+     most — which is what the logo already is. */
+  --obs-void:   #05080E;   /* the ground everything sits on          */
+  --obs-void-2: #080D16;   /* a second ground, for banded sections   */
+  --obs-panel:  #0C121C;   /* raised surfaces: cards, bars           */
+  --obs-glass:  rgba(255,255,255,.045);
+  --obs-edge:   rgba(150,185,225,.14);
+  --obs-edge-2: rgba(150,185,225,.26);
+  --obs-ink:    #E6EDF6;   /* body text                              */
+  --obs-dim:    #8496AB;   /* secondary text — 6.6:1 on the void     */
+  --obs-aqua:   #63E6E2;
+  --obs-aqua-d: #04252A;   /* ink for text sitting ON the aqua       */
+  --obs-ember:  #FF8A4C;
+
+  /* The neural web behind the hero is drawn on a canvas, not in CSS,
+     so it reads its two colours from here rather than carrying them
+     hard-coded. Plain "r,g,b" triples: the script supplies the alpha. */
+  --neural-dot:  99,230,226;
+  --neural-line: 90,170,210;
+
+  color-scheme: dark;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   THE TOKENS
+
+   This is the whole conversion, near enough. Each of these names is
+   already used consistently across the site — --white is only ever a
+   surface, --text and --muted are only ever type, --border is only ever
+   an edge — so restating them here turns the site over without touching
+   the rules that use them.
+
+   Two names needed care because they mean opposite things depending on
+   the property. --accent is a signal colour: aqua as type and as an
+   edge, but the site also fills buttons with it, and white on aqua is
+   1.6:1. That is what --on-fill is for. And --brand-dark is a dark
+   surface in twenty-seven places and dark type in seven; it stays dark
+   here, and those seven are restated further down.
+   ════════════════════════════════════════════════════════════════ */
+html[data-theme="dark"] {
+  /* Surfaces, from the ground up */
+  --parchment:    #05080E;   /* the page itself                        */
+  --gray-50:      #080D15;   /* a band that is barely off the ground   */
+  --white:        #0D131D;   /* the card — the "raised" surface        */
+  --surface:      #0D131D;   /* the same, for rules that said #fff     */
+  --blush:        #171522;   /* the palest warm panel, gone cool       */
+  --sand:         rgba(150,185,225,.12);
+  --cream:        #121A26;   /* a deeper card, or a card on a card     */
+  --gray-100:     #1B2532;   /* also used as an edge, so it must show  */
+  --gray-200:     #24303F;
+  --border:       rgba(150,185,225,.18);
+
+  /* Type */
+  --text:         #E6EDF6;
+  --muted:        #93A3B7;   /* 7.2:1 on the card surface              */
+  --faint:        #74839A;
+
+  /* The signal colour */
+  --accent:       #63E6E2;
+  --accent-dark:  #8BF1EE;   /* "darker" means brighter on a dark page */
+  --accent-light: #0E262B;   /* the tinted panel, not the bright ink   */
+  --on-fill:      #04222A;   /* ink for text sitting on a filled accent*/
+  --on-fill-soft: rgba(4,34,42,.78);
+
+  /* The warm one, kept for the things that matter most */
+  --brand:        #FF8A4C;
+  --brand-mid:    #FFA470;
+  --brand-light:  #23160E;   /* a warm tinted panel                    */
+  --brand-dark:   #0A121C;   /* a dark slab — it was one before, too   */
+
+  /* Supporting */
+  --green:        #6FDCA6;
+  --green-light:  #0E2018;
+  --purple:       #C79BFF;
+  --purple-light: #1A1426;
+  --danger:       #FF8F7A;
+  --danger-tint:  #2A1310;
+  --danger-line:  rgba(255,143,122,.34);
+  --ink:          #C6D3E2;
+  --ink-soft:     #93A3B7;
+  --ink-pill:     #93A3B7;
+
+  /* Subject hues, lifted so they hold against near-black */
+  --maths:        #FF9A63;
+  --science:      #6FDCA6;
+  --history:      #7FB4FF;
+  --english:      #C79BFF;
+  --geography:    #F2C14E;
+
+  /* Right, wrong, and the practice heatmap. The heatmap keeps its idea —
+     one hue getting stronger the more you did — but climbs out of the dark
+     rather than down from cream, so an empty square reads as empty. */
+  --good:      #6FDCA6;
+  --good-2:    #4FBF8B;
+  --good-tint: #12291F;
+  --good-ink:  #6FDCA6;
+  --warn:      #FF8A6B;
+  --heat-0: rgba(150,185,225,.08); --heat-1: #14464C; --heat-2: #1E6B72;
+  --heat-3: #3AA39D; --heat-4: #63E6E2;
+
+  /* The dashboard's chart and its rings are drawn as SVG in JavaScript, so
+     their colours cannot be styled — the script reads these instead. */
+  --chart-line:  #63E6E2;
+  --chart-grid:  rgba(150,185,225,.14);
+  --chart-axis:  #8496AB;
+  --chart-dot:   #0D131D;
+  --chart-track: rgba(150,185,225,.16);
+  --chart-text:  #E6EDF6;
+  --chart-good:  #6FDCA6;
+  --chart-warn:  #FF8A4C;
+  --chart-guide: rgba(99,230,226,.35);
+  --tip-bg:      #24303F;
+  --tip-ink:     #E6EDF6;
+
+  /* Shadows stop being warm grey and start being absence of light */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4), 0 1px 3px rgba(0,0,0,.3);
+  --shadow-md: 0 2px 4px rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.45);
+  --shadow-lg: 0 4px 8px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.55);
+}
+
+/* The seven places --brand-dark is type rather than a surface. It has to
+   stay dark for the twenty-seven surfaces painted with it, so these are
+   named instead. */
+html[data-theme="dark"] .feature-card h3,
+html[data-theme="dark"] .acct-drop a,
+html[data-theme="dark"] .lab-milestone,
+html[data-theme="dark"] .msn-sign { color: var(--text); }
+html[data-theme="dark"] ::selection { background: rgba(99,230,226,.3); color: #fff; }
+
+/* ── The page itself ─────────────────────────────────────────────
+   The body now follows too. Three pages also set html's background
+   directly, to stop their own flash of white before their stylesheets
+   arrive; left alone that cream shows past the edges when the page
+   overscrolls, so the root is restated as well. */
+html[data-theme="dark"] { background: var(--obs-void); }
+html[data-theme="dark"] body { background: var(--parchment); color: var(--text); }
+html[data-theme="dark"] :focus-visible { outline-color: var(--obs-aqua); }
+
+/* ── Utility bar ─────────────────────────────────────────────── */
+html[data-theme="dark"] .topbar {
+  background: #03060B;
+  border-bottom: 1px solid var(--obs-edge);
+}
+html[data-theme="dark"] .topbar a { color: var(--obs-dim); }
+html[data-theme="dark"] .topbar a:hover { color: #fff; }
+html[data-theme="dark"] .topbar .topbar-auth { color: var(--obs-aqua); }
+html[data-theme="dark"] .topbar .topbar-auth:hover { color: #fff; }
+
+/* ── The theme switch itself ─────────────────────────────────── */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: .42rem;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+  color: rgba(255,255,255,.82); font-family: 'Inter', sans-serif;
+  font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: .26rem .7rem; border-radius: 100px; cursor: pointer; margin-right: auto;
+  transition: background .18s, color .18s, border-color .18s;
+}
+.theme-toggle:hover { background: rgba(255,255,255,.16); color: #fff; }
+.theme-toggle svg { width: 13px; height: 13px; flex-shrink: 0; }
+html[data-theme="dark"] .theme-toggle {
+  background: rgba(99,230,226,.1); border-color: var(--obs-edge-2); color: var(--obs-aqua);
+}
+html[data-theme="dark"] .theme-toggle:hover { background: rgba(99,230,226,.2); color: #fff; }
+/* The label is for a mouse; on a phone the icon alone has to carry it. */
+@media (max-width: 620px) { .theme-toggle .tt-label { display: none; } }
+
+/* ── Nav ─────────────────────────────────────────────────────── */
+html[data-theme="dark"] nav {
+  background: rgba(5,8,14,.82);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--obs-edge);
+  box-shadow: 0 10px 30px -14px #000;
+}
+html[data-theme="dark"] .nav-logo { color: #fff; }
+html[data-theme="dark"] .nav-logo span { color: var(--obs-aqua); }
+/* The mark is a planet against space — it belongs here more than it did
+   on cream, so it only gains a little light around it. */
+html[data-theme="dark"] .logo-mark { filter: drop-shadow(0 0 9px rgba(99,230,226,.4)); }
+html[data-theme="dark"] .nav-links a { color: var(--obs-dim); }
+html[data-theme="dark"] .nav-links a:hover { background: rgba(255,255,255,.07); color: #fff; }
+html[data-theme="dark"] .nav-links a.active {
+  background: rgba(99,230,226,.14); color: var(--obs-aqua);
+  box-shadow: inset 0 0 0 1px var(--obs-edge-2);
+}
+html[data-theme="dark"] .hamburger span { background: var(--obs-ink); }
+@media (max-width: 900px) {
+  html[data-theme="dark"] .nav-links {
+    background: #060A12; border-bottom: 1px solid var(--obs-edge);
+    box-shadow: 0 14px 34px rgba(0,0,0,.6);
+  }
+}
+
+/* ── Brand banner (the pages/ header) ────────────────────────── */
+html[data-theme="dark"] .brand-banner {
+  background: radial-gradient(120% 160% at 50% -40%, #101B2B 0%, #05080E 62%);
+  border-bottom: 1px solid var(--obs-edge);
+}
+html[data-theme="dark"] .bb-word { color: #fff; }
+html[data-theme="dark"] .bb-word > span { color: var(--obs-aqua); }
+html[data-theme="dark"] .bb-tag { color: var(--obs-dim); }
+
+/* ── Brand marquee ───────────────────────────────────────────── */
+html[data-theme="dark"] .brand-marquee {
+  background: linear-gradient(90deg, #070C15 0%, #0E1826 50%, #070C15 100%);
+  border-bottom: 1px solid var(--obs-edge);
+}
+html[data-theme="dark"] .marquee-group span { color: rgba(230,237,246,.86); }
+html[data-theme="dark"] .marquee-group i { color: var(--obs-aqua); }
+
+/* ── Account menu ────────────────────────────────────────────── */
+html[data-theme="dark"] .acct-trigger,
+html[data-theme="dark"] .acct-hi { color: var(--obs-aqua); }
+html[data-theme="dark"] .acct-trigger:hover,
+html[data-theme="dark"] .acct-trigger:hover .acct-hi { color: #fff; }
+html[data-theme="dark"] .acct-role {
+  color: var(--obs-ink); background: rgba(150,185,225,.12); border-color: var(--obs-edge-2);
+}
+html[data-theme="dark"] .acct-face { box-shadow: 0 0 0 1px var(--obs-edge-2); }
+html[data-theme="dark"] .acct-drop {
+  background: #0B111B; border: 1px solid var(--obs-edge);
+  box-shadow: 0 18px 44px rgba(0,0,0,.6);
+}
+html[data-theme="dark"] .acct-drop a { color: var(--obs-ink); }
+html[data-theme="dark"] .acct-drop a:hover { background: rgba(99,230,226,.1); color: var(--obs-aqua); }
+
+/* ════════════════════════════════════════════════════════════════
+   THE HOME PAGE
+   ════════════════════════════════════════════════════════════════ */
+
+/* The hero used to be a brown gradient. It becomes sky: a cool wash
+   lifting out of black, with the aqua glow sitting behind where the
+   headline lands. The stars are painted rather than animated — a fixed
+   background image costs nothing and does not touch the main thread. */
+html[data-theme="dark"] #home {
+  background:
+    radial-gradient(1100px 620px at 50% 8%, rgba(99,230,226,.10) 0%, transparent 62%),
+    radial-gradient(900px 560px at 78% 34%, rgba(80,120,220,.12) 0%, transparent 66%),
+    linear-gradient(180deg, #070C16 0%, #05080E 46%, #05080E 100%);
+
+  /* Subject hues, restated for the dark ground. These are read by the
+     inline background:var(--maths) on each feature icon, so the chips
+     recolour without a line of markup changing. Tints rather than
+     solids: a saturated block of colour on near-black glares. */
+  --maths:     rgba(255,138,76,.16);
+  --science:   rgba(99,230,226,.16);
+  --history:   rgba(127,180,255,.16);
+  --english:   rgba(199,155,255,.16);
+  --geography: rgba(242,193,78,.16);
+  --brand-mid: rgba(255,122,69,.16);
+}
+/* The star field. One layer, no animation, and it sits under everything. */
+html[data-theme="dark"] #home::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .8;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #fff, transparent),
+    radial-gradient(1px 1px at 27% 62%, #cfe4ff, transparent),
+    radial-gradient(1.4px 1.4px at 44% 12%, #fff, transparent),
+    radial-gradient(1px 1px at 63% 44%, #bcd8ff, transparent),
+    radial-gradient(1px 1px at 78% 22%, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 88% 68%, #fff, transparent),
+    radial-gradient(1px 1px at 8% 82%, #a9c8ee, transparent),
+    radial-gradient(1px 1px at 35% 88%, #fff, transparent),
+    radial-gradient(1px 1px at 55% 74%, #cfe4ff, transparent),
+    radial-gradient(1px 1px at 70% 92%, #fff, transparent);
+  background-size: 100% 1200px;
+}
+
+/* Hero */
+html[data-theme="dark"] .hero-badge {
+  background: rgba(99,230,226,.1); border-color: var(--obs-edge-2); color: var(--obs-aqua);
+}
+html[data-theme="dark"] .hero-title { color: #fff; }
+/* The two words that name the subject take the light with them. */
+html[data-theme="dark"] .hero-title em {
+  background: linear-gradient(96deg, var(--obs-aqua), #9FD8FF 45%, var(--obs-ember));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+html[data-theme="dark"] .hero-sub { color: var(--obs-dim); }
+html[data-theme="dark"] .mascot-name { color: var(--obs-dim); }
+html[data-theme="dark"] .mascot-name::before,
+html[data-theme="dark"] .mascot-name::after { background: var(--obs-aqua); }
+html[data-theme="dark"] .mascot-svg { filter: drop-shadow(0 18px 44px rgba(99,230,226,.22)); }
+
+/* Buttons. The filled one carries the aqua and therefore needs dark ink on
+   it; white on aqua would fail every contrast check going.
+
+   These were scoped to the home page while the rest of the site was still
+   cream — aqua on cream is about 1.3:1, and that is not a style choice, it is
+   text nobody can read. Every surface under them is dark now, so they apply
+   everywhere. The filled button gets its colour from --accent and its ink
+   from --on-fill, both restated in the token block, so only the outlined one
+   needs saying here. */
+html[data-theme="dark"] .btn-outline {
+  background: rgba(255,255,255,.03); border: 1px solid var(--obs-edge-2); color: var(--obs-ink);
+}
+html[data-theme="dark"] .btn-outline:hover { background: rgba(255,255,255,.08); }
+
+/* Stats. The panel — its shape, its dividers, its corners — is in the page's
+   own stylesheet now, because both themes use it. Only the colours are here. */
+html[data-theme="dark"] .stat-item { background: var(--obs-glass); border-color: var(--obs-edge); }
+html[data-theme="dark"] .stat-num { color: #fff; }
+html[data-theme="dark"] .stat-lbl { color: var(--obs-dim); }
+
+/* The orbit rings behind the hero, cooled to match the sky behind them. */
+html[data-theme="dark"] .hero-rings i { border-color: rgba(150,190,230,.12); }
+html[data-theme="dark"] .hero-rings i:nth-child(3) { border-color: rgba(99,230,226,.14); }
+
+/* Quotes */
+html[data-theme="dark"] .quote-section-label { color: var(--obs-aqua); }
+html[data-theme="dark"] .quote-card { border-color: var(--obs-edge); }
+/* The lit rule across the top of a card is terracotta on cream and aqua here —
+   the card itself, and the gradient it is drawn with, are shared. */
+html[data-theme="dark"] .quote-card::before,
+html[data-theme="dark"] .feature-card::before {
+  background: linear-gradient(90deg, transparent, var(--obs-aqua), transparent);
+}
+html[data-theme="dark"] .quote-text { color: var(--obs-ink); }
+html[data-theme="dark"] .quote-author { color: var(--obs-aqua); }
+html[data-theme="dark"] .quote-author span { color: var(--obs-dim); }
+html[data-theme="dark"] .quote-arrow {
+  background: rgba(255,255,255,.05); border: 1px solid var(--obs-edge-2); color: var(--obs-ink);
+}
+html[data-theme="dark"] .quote-arrow:hover { background: rgba(99,230,226,.16); color: var(--obs-aqua); }
+
+/* What you will find here */
+html[data-theme="dark"] .home-features {
+  background: var(--obs-void-2); border-top: 1px solid var(--obs-edge);
+}
+html[data-theme="dark"] .home-features .section-title { color: #fff !important; }
+html[data-theme="dark"] .home-features .features-inner > p { color: var(--obs-dim) !important; }
+html[data-theme="dark"] .feature-card {
+  background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+  border-color: var(--obs-edge);
+}
+html[data-theme="dark"] .feature-card:hover {
+  border-color: var(--obs-edge-2);
+  box-shadow: 0 18px 40px -22px rgba(99,230,226,.5);
+}
+html[data-theme="dark"] .feature-icon { box-shadow: inset 0 0 0 1px var(--obs-edge-2); }
+html[data-theme="dark"] .feature-card h3 { color: #fff; }
+html[data-theme="dark"] .feature-card p { color: var(--obs-dim); }
+
+
+/* Mission band. The photograph stays exactly as it is; only the scrim
+   over it and the button on it change, so the picture reads warm
+   against a cold page rather than fighting it. */
+html[data-theme="dark"] .cta-band { background: #05080E; }
+html[data-theme="dark"] .cta-veil {
+  background: linear-gradient(90deg, rgba(4,8,14,.80) 0%, rgba(4,8,14,.68) 38%,
+                                     rgba(5,12,22,.48) 68%, rgba(6,14,26,.34) 100%);
+}
+html[data-theme="dark"] .cta-band.no-photo .cta-veil {
+  background:
+    radial-gradient(760px 420px at 22% 50%, rgba(99,230,226,.20), transparent 62%),
+    linear-gradient(120deg, #0B1220, #05080E);
+}
+html[data-theme="dark"] .cta-copy .cta-eyebrow { color: var(--obs-aqua); }
+html[data-theme="dark"] .cta-btn {
+  background: var(--obs-ember); color: #1A0A03; border-color: var(--obs-ember);
+  box-shadow: 0 0 30px rgba(255,138,76,.3);
+}
+html[data-theme="dark"] .cta-btn:hover { background: #FFA470; border-color: #FFA470; color: #1A0A03; }
+@media (max-width: 860px) {
+  html[data-theme="dark"] .cta-veil {
+    background: linear-gradient(180deg, rgba(4,8,14,.68) 0%, rgba(4,8,14,.82) 60%,
+                                        rgba(4,8,14,.9) 100%);
+  }
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+html[data-theme="dark"] .site-footer {
+  background: #03060B; color: var(--obs-ink);
+  border-top: 1px solid var(--obs-edge);
+}
+html[data-theme="dark"] .sf-brand .sf-logo { color: #fff; }
+html[data-theme="dark"] .sf-brand .sf-logo span { color: var(--obs-aqua); }
+html[data-theme="dark"] .sf-blurb { color: var(--obs-dim); }
+html[data-theme="dark"] .sf-tag { color: rgba(255,255,255,.34); }
+html[data-theme="dark"] .sf-col h2 { color: var(--obs-dim); }
+html[data-theme="dark"] .sf-col a { color: #C6D3E2; }
+html[data-theme="dark"] .sf-col a:hover { color: var(--obs-aqua); }
+html[data-theme="dark"] .sf-base { border-top-color: var(--obs-edge); color: var(--obs-dim); }
+html[data-theme="dark"] .sf-base em { color: var(--obs-ink); }
+
+/* ════════════════════════════════════════════════════════════════
+   THE PLACES A LITERAL WAS WRITTEN
+
+   Everything above is tokens. What follows is the remainder: rules that
+   named a colour outright, usually because they were painting something
+   one-off — the History stage's warm sky, a tooltip, a slider thumb.
+   Each was found by scan.js walking the rendered page and measuring,
+   not by reading the stylesheet, which is why the list is short and
+   specific rather than long and hopeful.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── History: the stage and its weather ──────────────────────────
+   The section is built as a lit sky with soft orbs drifting behind
+   glass cards. That idea survives the change of palette; it just moves
+   from warm afternoon to deep space, and the orbs go from sunlight to
+   aurora. */
+html[data-theme="dark"] .hist-stage {
+  background: radial-gradient(120% 80% at 50% -8%, #0E1726 0%, #080D16 55%, #05080E 100%);
+}
+html[data-theme="dark"] .hist-atmos .o1 { background: #2A6E8C; opacity: .30; }
+html[data-theme="dark"] .hist-atmos .o2 { background: #6D4A8C; opacity: .26; }
+html[data-theme="dark"] .hist-atmos .o3 { background: #2C7A63; opacity: .24; }
+html[data-theme="dark"] .hist-atmos .o4 { background: #8A5A2A; opacity: .24; }
+/* The glass panel over it was 60% white; here it is a lift out of the
+   dark rather than a wash over it. */
+html[data-theme="dark"] .hist-intro {
+  background: rgba(255,255,255,.05); border-color: var(--obs-edge);
+}
+html[data-theme="dark"] .hf-then { background: rgba(255,255,255,.06); }
+html[data-theme="dark"] .hf-then span { color: var(--muted); }
+html[data-theme="dark"] .hf-then p { color: var(--text); }
+html[data-theme="dark"] .hf-nextlink { color: var(--muted); }
+html[data-theme="dark"] .hf-nextlink:hover { color: var(--text); }
+html[data-theme="dark"] .hf-detail-inner { background: rgba(0,0,0,.35); border-color: var(--obs-edge); color: var(--text); }
+/* A tooltip is a dark chip on a light page; on a dark page it has to be
+   the lighter thing, or it disappears into what it is explaining. */
+html[data-theme="dark"] .hx-chip[data-tip]:hover::after {
+  background: #24303F; color: var(--text); box-shadow: 0 10px 26px rgba(0,0,0,.6);
+}
+html[data-theme="dark"] .hx-slider::-webkit-slider-thumb { border-color: #0D131D; }
+html[data-theme="dark"] .hx-slider::-moz-range-thumb { border-color: #0D131D; }
+
+/* ── The tool finder's badge ─────────────────────────────────────
+   A gradient with white text on it. The gradient is the ember and the
+   violet from the token block, both now light, so the ink flips. */
+html[data-theme="dark"] .finder-ai-badge { color: var(--on-fill); }
+
+/* ── The footer's sign-off ──────────────────────────────────────
+   34% white on near-black is 2.9:1. It was legible enough over brown;
+   it is not here. */
+html[data-theme="dark"] .sf-tag { color: rgba(230,237,246,.62); }
+
+/* ── The band at the top of every section ───────────────────────
+   It was a warm slab: deep brown lifting to terracotta. On a cool page it
+   reads as a leftover, so it becomes the same sky the home page opens with —
+   the aqua glow above, the ground below — and the section keeps its own
+   colour by way of the eyebrow and the rules inside it rather than by a
+   block of orange at the top. */
+html[data-theme="dark"] .page-hero {
+  background:
+    radial-gradient(120% 150% at 50% -30%, rgba(99,230,226,.13) 0%, transparent 62%),
+    linear-gradient(180deg, #0B1220 0%, #070C16 100%);
+  border-bottom: 1px solid var(--obs-edge);
+}
+html[data-theme="dark"] .page-hero p { color: var(--muted); }
+
+/* ════════════════════════════════════════════════════════════════
+   THE WARM SLABS
+
+   Six places painted a wide band of brown or terracotta outright. Each
+   is dark enough to pass every brightness check and still be the only
+   warm thing on a cool page, which is why the sweep's scanner learned
+   to look at hue and area as well as at lightness. They become the same
+   sky the rest of the site opens on; the warmth stays where it belongs,
+   on the one button that matters in each of them.
+   ════════════════════════════════════════════════════════════════ */
+
+/* The Learning Lab's banner */
+html[data-theme="dark"] .lab-hero {
+  background:
+    radial-gradient(120% 160% at 50% -30%, rgba(99,230,226,.13) 0%, transparent 62%),
+    linear-gradient(180deg, #0B1220 0%, #070C16 100%);
+  border-bottom: 1px solid var(--obs-edge);
+}
+
+/* The "set up a test" banner inside it */
+html[data-theme="dark"] .lab-test-invite {
+  background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.02)), #0B1220;
+  box-shadow: inset 0 0 0 1px var(--obs-edge);
+}
+
+/* History's focus card */
+html[data-theme="dark"] .hf {
+  background: linear-gradient(160deg, #101B2B, #0A121C);
+  border-color: var(--obs-edge-2);
+  color: var(--text);
+}
+
+/* The slab beside the definition on "What is AI?" */
+html[data-theme="dark"] #what .two-col > div:last-child {
+  background:
+    radial-gradient(90% 120% at 30% 0%, rgba(99,230,226,.16), transparent 64%),
+    linear-gradient(135deg, #101B2B, #0A121C) !important;
+}
+
+/* The admin panel's headline figure */
+html[data-theme="dark"] .ad-fig.lead {
+  background:
+    radial-gradient(120% 160% at 20% -20%, rgba(99,230,226,.16), transparent 62%),
+    linear-gradient(135deg, #101B2B, #0A121C);
+  border-color: var(--obs-edge);
+}
+
+/* The mission page's own opening */
+html[data-theme="dark"] .msn-hero {
+  background:
+    radial-gradient(1100px 620px at 50% -10%, rgba(99,230,226,.16), transparent 62%),
+    linear-gradient(180deg, #0B1220, #05080E);
+}
+/* ── Secondary buttons ───────────────────────────────────────────
+   --brand is a deep, receding red-brown on cream and a bright ember here,
+   because it also has to work as type on a dark page. That flips the
+   hierarchy where it fills a button: the Lab's "New Question" came out
+   louder than the aqua primary beside it. So a secondary button is a
+   tinted ember rather than a solid one — plainly warm, plainly second. */
+html[data-theme="dark"] .btn-secondary,
+html[data-theme="dark"] .btn--secondary {
+  background: rgba(255,138,76,.15); color: var(--brand-mid);
+  box-shadow: inset 0 0 0 1px rgba(255,138,76,.42);
+}
+html[data-theme="dark"] .btn-secondary:hover,
+html[data-theme="dark"] .btn--secondary:hover {
+  background: rgba(255,138,76,.26); color: #FFC4A0;
+}

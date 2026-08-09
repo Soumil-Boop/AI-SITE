@@ -29,6 +29,31 @@
   --purple:      #6E5460;
   --purple-light:#EADFE3;
 
+  /* The ink that sits ON a surface painted with an accent — a filled button,
+     an active pill, a correct answer. White here, because that is what every
+     one of those rules already said. It exists as a token so the dark theme
+     can make it near-black: white on aqua is about 1.6:1, unreadable, and
+     without this each of thirty-odd rules would have needed its own override. */
+  /* A surface that was written as pure white rather than as the warm
+     near-white the palette uses. Kept apart so the cream theme stays
+     exactly what it was, down to the four points of warmth. */
+  --surface:     #FFFFFF;
+  --blush:       #F6EEEA;   /* the palest warm panel */
+  --sand:        #EFE1CD;   /* a warm chip behind an icon */
+  --on-fill:     #FFFFFF;
+  --on-fill-soft: rgba(255,255,255,.84);   /* the same ink, one step quieter */
+
+  /* Right / wrong / warm-middle, and the five steps of the practice heatmap.
+     These were written as literals in a dozen places in dashboard.css; naming
+     them is what lets the dark theme restate them once. */
+  --good:      #5F7355;
+  --good-2:    #7E9A64;
+  --good-tint: #E2E8DC;
+  --good-ink:  #4F6440;
+  --warn:      #B24E33;
+  --heat-0: #EFE6D8; --heat-1: #F0C9B5; --heat-2: #E39B76;
+  --heat-3: #CE6B3D; --heat-4: #A5451F;
+
   /* Shape */
   --radius:    14px;
   --radius-sm: 10px;

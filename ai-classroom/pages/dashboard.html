@@ -4,6 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Dashboard — Seek-O-Sphere</title>
+  <!-- Which look to paint, decided before the page paints. This has to be a
+       plain inline script and it has to sit above the stylesheet links: a
+       synchronous script waits for every stylesheet declared before it, and
+       parsing waits for the script, so putting it lower delays the whole body.
+       Nothing else in the head may be moved below it for the same reason. -->
+  <script>(function(){var t;try{t=localStorage.getItem('sos_theme');}catch(e){}
+    document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');})();</script>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
        is still parsing, instead of when the first script or request needs them. -->
@@ -12,7 +19,7 @@
   <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
@@ -24,6 +31,10 @@
   <link rel="stylesheet" href="../css/components/cards.css"/>
   <link rel="stylesheet" href="../css/layout/sections.css"/>
   <link rel="stylesheet" href="../css/dashboard.css"/>
+  <!-- Last stylesheet in the head. Every rule inside is locked behind
+       html[data-theme="dark"], so it contributes nothing in the light theme. -->
+  <link rel="stylesheet" href="../css/components/planner.css"/>
+<link rel="stylesheet" href="../css/theme-dark.css"/>
 </head>
 <body>
 <div id="nav-mount"></div>
@@ -280,9 +291,9 @@ function renderProgress(rows) {
   document.getElementById('miCorrect').textContent = totalC;
   document.getElementById('miAcc').textContent     = acc + '%';
   document.getElementById('miDays').textContent    = activeDays;
-  document.getElementById('miAccDonut').innerHTML  = donut(acc, '#5F7355');
+  document.getElementById('miAccDonut').innerHTML  = donut(acc, chartInk().good);
   var consist = Math.min(100, Math.round(activeDays/30*100));
-  document.getElementById('miDaysDonut').innerHTML = donut(consist, '#C0562F');
+  document.getElementById('miDaysDonut').innerHTML = donut(consist, chartInk().line);
 
   // Progress report chart (respects the current range)
   renderReportChart(PROGRESS.range);
@@ -298,6 +309,10 @@ function renderProgress(rows) {
   var subjects = Object.keys(bySubj).map(function(k){return bySubj[k];}).sort(function(a,b){return b.q-a.q;});
   document.getElementById('subjLbl').textContent = subjects.length + ' subject' + (subjects.length===1?'':'s') + ' practised';
   renderSubjects(subjects);
+  // Remember how to paint this again, for a theme switch.
+  LAST_PAINT = function () { renderReportChart(PROGRESS.range); renderSubjects(subjects);
+    document.getElementById('miAccDonut').innerHTML  = donut(acc, chartInk().good);
+    document.getElementById('miDaysDonut').innerHTML = donut(consist, chartInk().line); };
 
   renderHeatmap(byDate);
 
@@ -310,10 +325,13 @@ function donut(pct, color) {
   var size=58, stroke=8, r=(size-stroke)/2, c=2*Math.PI*r, cx=size/2;
   pct = Math.max(0, Math.min(100, pct));
   var g = pct/100*c;
+  /* The unfilled part of the ring and the number in the middle: both drawn,
+     both needing to follow the theme. */
+  var INK = chartInk();
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">'
-    + '<circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="#EFE1CD" stroke-width="'+stroke+'"/>'
+    + '<circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="'+INK.track+'" stroke-width="'+stroke+'"/>'
     + '<circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="'+stroke+'" stroke-linecap="round" stroke-dasharray="'+g.toFixed(1)+' '+(c-g).toFixed(1)+'" transform="rotate(-90 '+cx+' '+cx+')"/>'
-    + '<text x="'+cx+'" y="'+(cx+4)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="14" fill="#2B2016">'+Math.round(pct)+'%</text></svg>';
+    + '<text x="'+cx+'" y="'+(cx+4)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="14" fill="'+INK.text+'">'+Math.round(pct)+'%</text></svg>';
 }
 
 /* Date-range dropdown */
@@ -343,9 +361,45 @@ function renderReportChart(days){
   drawAreaChart('reportChart', series);
 }
 
-/* Smooth area chart with hover tooltip */
+/* Smooth area chart with hover tooltip.
+
+   The chart is hand-built SVG with the colours written into fill and stroke
+   attributes, so no stylesheet can reach them — a dark theme would have left
+   a terracotta line and white dots sitting on a near-black card. It reads
+   its four colours out of CSS instead, exactly the way the neural web on the
+   home page does, and redraws when the theme changes. */
 var CHART_PTS = {};
+function chartInk() {
+  var cs = getComputedStyle(document.documentElement);
+  var pick = function (name, fallback) {
+    var v = (cs.getPropertyValue(name) || '').trim();
+    return v || fallback;
+  };
+  return {
+    line:  pick('--chart-line',  '#C0562F'),
+    grid:  pick('--chart-grid',  '#EEE3D2'),
+    axis:  pick('--chart-axis',  '#9C8B79'),
+    dot:   pick('--chart-dot',   '#fff'),
+    track: pick('--chart-track', '#EFE1CD'),
+    text:  pick('--chart-text',  '#2B2016'),
+    good:  pick('--chart-good',  '#5F7355'),
+    warn:  pick('--chart-warn',  '#B24E33')
+  };
+}
+/* Everything drawn rather than styled has to be drawn again when the theme
+   changes. loadDashboard keeps the last data it painted so the redraw does
+   not need another read. */
+var LAST_PAINT = null;
+if (window.SOSTheme && typeof SOSTheme.onChange === 'function') {
+  SOSTheme.onChange(function () {
+    try {
+      if (LAST_PAINT) LAST_PAINT();
+    } catch (e) {}
+  });
+}
+
 function drawAreaChart(elId, series) {
+  var INK = chartInk();
   var el = document.getElementById(elId); if (!el) return;
   if (!series.length) { el.innerHTML = '<div class="dash-chart-empty">No practice in this range yet.</div>'; return; }
   var W=900, H=300, padL=44, padR=20, padT=22, padB=42, n=series.length;
@@ -369,20 +423,20 @@ function drawAreaChart(elId, series) {
   var area = line + ' L'+pts[n-1].x.toFixed(1)+' '+(H-padB)+' L'+pts[0].x.toFixed(1)+' '+(H-padB)+' Z';
   var grid='', ylab='';
   for (var g=0; g<=4; g++){ var gy=padT+(g/4)*(H-padT-padB); var gv=Math.round(maxY*(1-g/4));
-    grid += '<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="#EEE3D2" stroke-width="1"/>';
-    ylab += '<text x="'+(padL-8)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="12" fill="#9C8B79">'+gv+'</text>';
+    grid += '<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="'+INK.grid+'" stroke-width="1"/>';
+    ylab += '<text x="'+(padL-8)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="12" fill="'+INK.axis+'">'+gv+'</text>';
   }
   function md(d){ var p=String(d).split('-'); return p.length===3 ? (DASH_MON[parseInt(p[1],10)-1]+' '+parseInt(p[2],10)) : d; }
   var idxs = n<=8 ? series.map(function(_,i){return i;}) : [0, Math.round((n-1)/3), Math.round(2*(n-1)/3), n-1];
-  var xl=''; idxs.forEach(function(i){ xl += '<text x="'+xAt(i).toFixed(1)+'" y="'+(H-14)+'" text-anchor="middle" font-size="12" fill="#9C8B79">'+md(series[i].date)+'</text>'; });
-  var dots = pts.map(function(p){ return '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="3.5" fill="#fff" stroke="#C0562F" stroke-width="2.5"/>'; }).join('');
+  var xl=''; idxs.forEach(function(i){ xl += '<text x="'+xAt(i).toFixed(1)+'" y="'+(H-14)+'" text-anchor="middle" font-size="12" fill="'+INK.axis+'">'+md(series[i].date)+'</text>'; });
+  var dots = pts.map(function(p){ return '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="3.5" fill="'+INK.dot+'" stroke="'+INK.line+'" stroke-width="2.5"/>'; }).join('');
 
   el.innerHTML =
     '<svg viewBox="0 0 '+W+' '+H+'" class="dash-svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="progress report chart">'
-    + '<defs><linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C0562F" stop-opacity=".28"/><stop offset="1" stop-color="#C0562F" stop-opacity="0"/></linearGradient></defs>'
+    + '<defs><linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+INK.line+'" stop-opacity=".28"/><stop offset="1" stop-color="'+INK.line+'" stop-opacity="0"/></linearGradient></defs>'
     + grid + ylab
     + '<path d="'+area+'" fill="url(#areaFill)"/>'
-    + '<path d="'+line+'" fill="none" stroke="#C0562F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'
+    + '<path d="'+line+'" fill="none" stroke="'+INK.line+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'
     + dots + xl + '</svg>'
     + '<div class="chart-guide"></div><div class="chart-marker"></div><div class="chart-tip"></div>';
 
@@ -414,7 +468,7 @@ function renderSubjects(subjects) {
     var ic = icons[s.label] || (s.mode==='exam' ? '🏛️' : '📘');
     var cls = acc>=75 ? 'good' : (acc>=50 ? 'ok' : 'low');
     return '<div class="dash-subj-row">'
-      + '<div class="dash-subj-donut">'+donut(acc, cls==='good'?'#5F7355':(cls==='ok'?'#C0562F':'#B24E33'))+'</div>'
+      + '<div class="dash-subj-donut">'+donut(acc, cls==='good'?chartInk().good:(cls==='ok'?chartInk().line:chartInk().warn))+'</div>'
       + '<div class="dash-subj-head"><span class="dash-subj-ic">'+ic+'</span>'
       + '<div class="dash-subj-name"><strong>'+escH(s.label)+'</strong><span>'+(s.mode==='exam'?'Entrance &amp; Government Exams':'Curriculum')+' · Last '+fmtDate(s.last)+'</span></div></div>'
       + '<div class="dash-subj-nums">'
@@ -527,6 +581,8 @@ function confirmDeleteAccount() {
 <script src="../js/core/nav.js"></script>
 <script>mountNav('dashboard.html', { homeLinks: true, noBanner: true });</script>
 <script src="../js/session.js"></script>
+<script src="../js/core/theme.js"></script>
 <script src="../js/core/footer.js"></script>
+<script src="../js/core/planner.js"></script>
 </body>
 </html>
