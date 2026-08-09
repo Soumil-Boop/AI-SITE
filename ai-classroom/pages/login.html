@@ -36,6 +36,16 @@
 </head>
 <body>
 
+<!-- The curtain. Raised the moment a password is accepted and left up until
+     the next page arrives: creating a profile and looking up a role are
+     several network hops, and a form that just sits there afterwards looks
+     broken. Same turning mark as every other gated page. -->
+<div id="authCurtain" class="auth-gate" hidden>
+  <div class="auth-gate-inner">
+    <div class="sos-spin" role="status" aria-label="Signing you in"><svg class="sos-spin-mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="gateSpace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="gateEarth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="gateSun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#gateSpace)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#gateSun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#gateEarth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg></div>
+  </div>
+</div>
+
 <!-- Shared header: utility bar, menu and the scrolling strip -->
 <div id="nav-mount"></div>
 
@@ -576,6 +586,7 @@ function handleSignUp(e) {
 
   auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
     newUser = cred.user;
+    raiseCurtain();
     // The code can only be checked once we are signed in, so if it turns out
     // to be wrong we undo the account we just made rather than leaving a
     // half-finished one behind that blocks the same email next time.
@@ -588,6 +599,7 @@ function handleSignUp(e) {
     window.location.href = 'dashboard.html';
   }).catch(function(err) {
     SIGNING_IN = false;
+    dropCurtain();
     var badCode = err && err.code === 'sos/bad-join-code';
     var finish = function() {
       setAuthBusy('signUpForm', false);
@@ -608,6 +620,19 @@ function handleSignUp(e) {
       });
     } else { finish(); }
   });
+}
+
+/* The curtain over the whole page, for the stretch between a password
+   being accepted and the next page painting. setAuthBusy dresses the
+   button for the stretch before that, while the credentials are still
+   being checked and an error can still come back to this form. */
+function raiseCurtain() {
+  var c = document.getElementById('authCurtain');
+  if (c) c.hidden = false;
+}
+function dropCurtain() {
+  var c = document.getElementById('authCurtain');
+  if (c) c.hidden = true;
 }
 
 /* Account creation is several network hops on a slow connection. Say so on the
@@ -639,10 +664,12 @@ function handleSignIn(e) {
   var password = document.getElementById('siPassword').value;
   auth.signInWithEmailAndPassword(email, password).then(function(cred) {
     // Verify the role ONCE, then go straight to the right panel — no student flash.
+    raiseCurtain();
     SIGNED_IN_UID = cred.user.uid;
     return db.collection('users').doc(cred.user.uid).get();
   }).then(function(snap){ routeByRole(snap, SIGNED_IN_UID); }).catch(function(err) {
     SIGNING_IN = false;
+    dropCurtain();
     setAuthBusy('signInForm', false);
     document.getElementById('signInError').textContent = friendlyError(err.code);
   });
@@ -652,6 +679,7 @@ function handleGoogle() {
   SIGNING_IN = true;
   var provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).then(function(cred) {
+    raiseCurtain();
     // Only trust the form when the sign-up form is the one on screen.
     var onSignUp = document.getElementById('signUpForm');
     onSignUp = !!onSignUp && getComputedStyle(onSignUp).display !== 'none';
@@ -659,6 +687,7 @@ function handleGoogle() {
   }).then(function() {
     window.location.href = 'dashboard.html';
   }).catch(function(err) {
+    dropCurtain();
     console.error(err);
     alert('Google sign-in failed. Please try again.');
   });
@@ -666,10 +695,12 @@ function handleGoogle() {
 
 function handleGuest() {
   auth.signInAnonymously().then(function(cred) {
+    raiseCurtain();
     return createProfile(cred.user.uid, 'Guest', '', false, false, null);
   }).then(function() {
     window.location.href = '../index.html';
   }).catch(function(err) {
+    dropCurtain();
     console.error(err);
   });
 }

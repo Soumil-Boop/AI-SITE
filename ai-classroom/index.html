@@ -650,56 +650,90 @@
     @media (max-width:620px){ .features-grid { grid-template-columns:1fr; } }
 
     /* ── Mission band ──────────────────────────────────────────────
-       The last thing on the page before the footer. The photograph fills the
-       whole band edge to edge and the words sit on top of it, held legible by
-       a scrim rather than by a dark half — the way the reference does it.
+       The last thing on the page before the footer.
 
-       The band takes its shape from the photograph (--cta-ar, measured by the
-       script below), so filling the band and showing all of the picture are
-       the same thing: nothing is cropped unless the picture is so tall that
-       the band would run past max-height. */
-    .cta-band { position:relative; overflow:hidden; background:#2E1206;
-                aspect-ratio:var(--cta-ar, 16 / 9); min-height:420px; max-height:900px;
-                display:flex; align-items:center; }
-    .cta-photo { position:absolute; inset:0; width:100%; height:100%;
-                 object-fit:cover; object-position:center; z-index:0; }
-    /* The scrim. Heavier where the words are, lifting across the picture, so
-       the photograph still reads as a photograph. */
+       It used to take its height from the photograph — the picture is 16:9,
+       so the band came out 810px on an ordinary window and hit its cap on a
+       wide one. That made one sentence the tallest thing on the home page,
+       taller than the hero itself. The link between the picture's shape and
+       the band's height is cut here: the band is a fixed, shallow height and
+       the photograph steps back to being atmosphere, desaturated and softly
+       blurred behind a vignette, so what is left is the sentence with the
+       kind of air a title page has.
+
+       Which also settles the crop argument for good. Nothing is being read
+       on top of anybody's face any more, so there is no scrim fighting the
+       type and no part of the picture that has to be kept clear. */
+    .cta-band { position:relative; overflow:hidden; display:grid; place-items:center;
+                min-height:360px; padding:3.2rem 0;
+                background:var(--parchment);
+                border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+                /* The page's own colour as a triplet, so the scrim can fade to
+                   it at any opacity without the value being written twice —
+                   and so that one line in the dark theme moves all of it.
+                   --msn-wash is the flat layer of that colour laid over the
+                   whole picture: the cream page needs a lot of it, because
+                   cream is a bright backdrop for small terracotta type and
+                   the chalkboard behind it is brighter still. */
+                --msn-rgb:239,230,216; --msn-wash:.55;
+                /* The band's own ink. --muted is 3.80:1 on cream and --accent
+                   3.68:1, both under the 4.5 body text needs — true of the
+                   whole cream theme, but a mission statement is the last
+                   place to inherit it, and there is a photograph under this
+                   one eating into what little margin there was. */
+                --msn-ink:#6B5340; --msn-cta:var(--accent-dark); --msn-cta-hi:#7A2E0F; }
+    .cta-photo { position:absolute; inset:0; width:100%; height:100%; z-index:0;
+                 object-fit:cover; object-position:center 38%;
+                 filter:blur(2px) brightness(1.02) saturate(1.15); opacity:.42; }
+    /* Three layers of the page's own colour: a soft well in the middle for
+       the words to sit in, a fade to the page at both edges so the band has
+       no hard vertical seam, and under both a flat wash across the whole
+       picture. The wash is what the corners and the eyebrow depend on — the
+       well only reaches so far, and a line of small type sitting above it
+       was landing on bare chalkboard at 2.9:1. */
     .cta-veil { position:absolute; inset:0; z-index:1; background:
-      linear-gradient(90deg, rgba(28,11,4,.72) 0%, rgba(28,11,4,.60) 38%,
-                             rgba(28,11,4,.42) 68%, rgba(28,11,4,.30) 100%); }
-    .cta-inner { position:relative; z-index:2; width:100%; max-width:1180px; margin:0 auto;
-                 padding:3rem 2.25rem; }
-    .cta-copy { max-width:41rem; }
-    .cta-copy .cta-eyebrow { display:block; font-size:.72rem; font-weight:700; letter-spacing:.18em;
-                             text-transform:uppercase; color:#F0C79E; margin-bottom:1rem;
-                             text-shadow:0 1px 12px rgba(0,0,0,.55); }
-    .cta-copy h2 { font-family:'Space Grotesk','Nunito',sans-serif; font-weight:700; font-size:clamp(1.9rem,3.2vw,2.8rem);
-                   line-height:1.14; letter-spacing:-.02em; color:#fff; margin:0;
-                   text-shadow:0 2px 20px rgba(0,0,0,.5); }
-    .cta-copy p { font-size:1.02rem; line-height:1.75; color:rgba(255,255,255,.9); margin:1.1rem 0 0;
-                  text-shadow:0 1px 14px rgba(0,0,0,.55); }
-    /* Outlined, like the reference, so the photograph shows through it. */
-    .cta-btn { margin-top:1.9rem; text-decoration:none; display:inline-flex; align-items:center; gap:.5rem;
-               background:rgba(0,0,0,.18); color:#fff; border:1.5px solid rgba(255,255,255,.85);
-               border-radius:4px; font-family:'Inter',sans-serif; font-size:.86rem; font-weight:700;
-               letter-spacing:.03em; padding:.85rem 1.7rem; cursor:pointer;
-               transition:background .18s, color .18s, border-color .18s; }
-    .cta-btn:hover { background:var(--surface); color:#2E1206; border-color:#fff; }
-    /* No photograph yet: the band still reads as a band rather than a blank slab. */
-    .cta-band.no-photo { aspect-ratio:auto; min-height:440px; }
+      radial-gradient(820px 300px at 50% 50%, rgba(var(--msn-rgb),.80) 0%,
+                                              rgba(var(--msn-rgb),.52) 58%,
+                                              rgba(var(--msn-rgb),.10) 100%),
+      linear-gradient(90deg, rgba(var(--msn-rgb),1) 0%, rgba(var(--msn-rgb),0) 26%,
+                             rgba(var(--msn-rgb),0) 74%, rgba(var(--msn-rgb),1) 100%),
+      linear-gradient(rgba(var(--msn-rgb),var(--msn-wash)),
+                      rgba(var(--msn-rgb),var(--msn-wash))); }
+    .cta-inner { position:relative; z-index:2; width:100%; max-width:46rem; margin:0 auto;
+                 padding:0 2rem; text-align:center; }
+    .cta-copy { max-width:none; }
+    /* Rules either side of it, the way a title page sets a standfirst. */
+    .cta-copy .cta-eyebrow { display:flex; align-items:center; justify-content:center; gap:.9rem;
+                             font-size:.66rem; font-weight:700; letter-spacing:.24em;
+                             text-transform:uppercase; color:var(--msn-cta); margin-bottom:1.4rem;
+                             text-shadow:none; }
+    .cta-copy .cta-eyebrow::before, .cta-copy .cta-eyebrow::after {
+      content:''; width:44px; height:1px; background:var(--border); flex-shrink:0; }
+    .cta-copy h2 { font-family:'Space Grotesk','Nunito',sans-serif; font-weight:700;
+                   font-size:clamp(1.7rem,3vw,2.4rem); line-height:1.14; letter-spacing:-.03em;
+                   color:var(--text); margin:0; text-shadow:none; }
+    .cta-copy p { font-size:.98rem; line-height:1.72; color:var(--msn-ink);
+                  margin:1.15rem auto 0; max-width:36rem; text-shadow:none; }
+    /* An underlined link rather than a boxed button: at this size a button
+       shouts over the sentence it is meant to follow. */
+    .cta-btn { display:inline-flex; align-items:center; gap:.5rem; margin-top:1.5rem;
+               text-decoration:none; background:none; border:0; border-radius:0;
+               border-bottom:1.5px solid var(--msn-cta);
+               font-family:'Inter',sans-serif; font-size:.84rem; font-weight:700;
+               letter-spacing:.02em; color:var(--msn-cta); padding:0 0 .3rem; cursor:pointer;
+               transition:color .18s, border-color .18s, gap .18s; }
+    .cta-btn:hover { color:var(--msn-cta-hi); border-bottom-color:var(--msn-cta-hi); gap:.75rem; }
+    .cta-btn svg { width:13px; height:13px; flex-shrink:0; }
+    /* No photograph yet: the band still reads as a band rather than a blank
+       slab, and the words are in exactly the same place either way. */
     .cta-band.no-photo .cta-veil { background:
-      radial-gradient(760px 420px at 22% 50%, rgba(178,78,51,.42), transparent 62%),
-      linear-gradient(120deg,#46200F,#2E1206); }
+      radial-gradient(720px 300px at 50% 50%, rgba(var(--msn-rgb),.55), rgba(var(--msn-rgb),1) 76%); }
 
     @media (max-width:860px) {
-      /* Taller and narrower: the scrim goes heavier so the words hold up over
-         whatever part of the picture ends up behind them. */
-      .cta-band { aspect-ratio:auto; min-height:0; max-height:none; }
-      .cta-inner { padding:4.5rem 1.25rem; }
-      .cta-copy { max-width:none; }
-      .cta-veil { background:linear-gradient(180deg, rgba(28,11,4,.62) 0%, rgba(28,11,4,.78) 60%,
-                             rgba(28,11,4,.86) 100%); }
+      .cta-band { min-height:0; padding:3.6rem 0; }
+      .cta-inner { padding:0 1.25rem; }
+      .cta-copy .cta-eyebrow::before, .cta-copy .cta-eyebrow::after { width:22px; }
+      .cta-photo { object-position:center 42%; }
     }
 
     /* Mission value cards */
@@ -2930,7 +2964,7 @@
       <p>Seek-O-Sphere exists so that anyone can make sense of artificial intelligence &mdash;
         a curious eight-year-old, a student revising for CUET, an adult coming back to study
         after twenty years. Free, always, and never talked down to.</p>
-      <a class="cta-btn" href="pages/mission.html">Know more</a>
+      <a class="cta-btn" href="pages/mission.html">Know more<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a>
     </div>
   </div>
 </section>
@@ -3964,10 +3998,7 @@ function ctaWirePhoto() {
   var img = document.getElementById('missionPhoto');
   if (!img) return;
   img.addEventListener('error', function () { ctaNextPhoto(img); });
-  img.addEventListener('load', ctaMeasurePhoto);
-  window.addEventListener('resize', ctaMeasurePhoto);
-  // It may already have loaded, or already have failed, before this ran.
-  if (img.complete && img.naturalWidth) ctaMeasurePhoto();
+  // It may already have failed before this ran.
   if (img.complete && !img.naturalWidth) ctaNextPhoto(img);
 }
 /* The strip can only be drawn once we know who is signed in, since a saved
@@ -3991,16 +4022,9 @@ else tmWatchResume();
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ctaWirePhoto);
 else ctaWirePhoto();
 
-/* The band takes the photograph's own shape, so that filling the band and
-   showing the whole picture are the same thing. Measured rather than assumed,
-   because the shape is whatever the file happens to be — and re-measured on a
-   resize because the band is capped in height on very tall pictures. */
-function ctaMeasurePhoto() {
-  var img = document.getElementById('missionPhoto');
-  var band = document.getElementById('missionBand');
-  if (!img || !band || !img.naturalWidth) return;
-  band.style.setProperty('--cta-ar', img.naturalWidth + ' / ' + img.naturalHeight);
-}
+/* The band no longer takes its shape from the picture — it is a fixed,
+   shallow height and the photograph is cropped into it — so there is
+   nothing left to measure. Only the file extension is still guessed at. */
 
 function ctaNextPhoto(img) {
   var at = parseInt(img.getAttribute('data-try') || '0', 10) + 1;

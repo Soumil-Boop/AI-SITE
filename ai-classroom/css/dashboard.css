@@ -2,42 +2,75 @@
    dashboard.css — Styles for login, dashboard, and admin pages
    ============================================================ */
 
-/* ── AUTH GATE ──────────────────────────────────────────────── */
+/* ── AUTH GATE ───────────────────────────────────────────────
+   The screen that covers a page while it works out who is asking:
+   entering the dashboard, the admin panel, account settings, and the
+   moment between a password being accepted and the next page arriving.
+
+   It is the wordmark's own O, turning. Nothing else — no spinner drawn
+   for the occasion, and no words. A line of text under a loader has to
+   be read, and it is gone before it can be; the mark is recognised
+   instead of read, which is faster and quieter. It also means the
+   handful of "Setting up your space…" phrases that were slightly
+   different on each page are now one thing that cannot drift.
+
+   The gate was a cream radial on every page, in both themes — the dark
+   theme opened with a full-screen flash of the light one. It takes the
+   page's own background now. */
 .auth-gate {
   position: fixed; inset: 0;
   display: flex; align-items: center; justify-content: center;
   background: radial-gradient(120% 120% at 50% 0%, #FDF8EF 0%, #F1E7DA 100%);
   z-index: 9999; transition: opacity .55s ease, visibility .55s ease;
+  /* The light around the mark. On cream there is nothing for a glow to
+     glow against, so the light theme lifts the mark with a warm shadow
+     instead and the dark theme lights it from behind. */
+  --spin-halo: rgba(192,86,47,.17);
+  --spin-glow: rgba(90,42,22,.30);
+  --spin-drop: 0 7px 20px;
 }
 .auth-gate.hide { opacity: 0; visibility: hidden; }
+/* display:flex above would win over the hidden attribute on its own. The
+   sign-in page's curtain is in the markup from the start and raised later,
+   so it needs to actually be gone until then. */
+.auth-gate[hidden] { display: none; }
 .auth-gate-inner { text-align: center; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Orbiting-planet loader ── */
-.dash-loader { width: 92px; height: 92px; margin: 0 auto 1.4rem; position: relative; }
-.dash-loader .ring {
-  position: absolute; inset: 0; border-radius: 50%;
-  border: 2px dashed rgba(192,86,47,.4); animation: spin 6s linear infinite;
+/* ── The turning mark ── */
+.sos-spin { position: relative; width: 104px; height: 104px; display: grid; place-items: center; }
+/* A soft light behind it, so the mark is not one small disc on an empty
+   screen. It breathes rather than turns — two things turning at two
+   speeds is a fidget spinner, not a loader. */
+.sos-spin::before {
+  content: ''; position: absolute; inset: -30px; border-radius: 50%;
+  background: radial-gradient(circle, var(--spin-halo) 0%, transparent 68%);
+  animation: sosHalo 2.8s ease-in-out infinite;
 }
-.dash-loader .ring.r2 { inset: 15px; border-color: rgba(110,84,96,.4); animation-duration: 4s; animation-direction: reverse; }
-.dash-loader .core {
-  position: absolute; inset: 34px; border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #E68A54, #C0562F 70%);
-  box-shadow: 0 0 20px rgba(192,86,47,.55); animation: corePulse 1.6s ease-in-out infinite;
+/* One hairline ring outside it with a single lit arc, turning the other
+   way — which is what makes the whole thing read as working rather than
+   as a logo that happens to be rotating. */
+.sos-spin::after {
+  content: ''; position: absolute; inset: -13px; border-radius: 50%;
+  border: 1px solid var(--border); border-top-color: var(--accent);
+  animation: spin 2.4s linear infinite reverse;
 }
-.dash-loader .sat {
-  position: absolute; top: -5px; left: 50%; width: 13px; height: 13px; margin-left: -6.5px;
-  border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px rgba(192,86,47,.7);
-  transform-origin: 6.5px 51px; animation: spin 2.3s linear infinite;
+.sos-spin-mark {
+  position: relative; width: 82px; height: 82px; display: block;
+  animation: spin 6s linear infinite;
+  filter: drop-shadow(var(--spin-drop) var(--spin-glow));
 }
-@keyframes corePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.16); } }
+@keyframes sosHalo { 0%, 100% { opacity: .55; transform: scale(.94); }
+                     50%      { opacity: 1;   transform: scale(1.06); } }
+/* The same breath without the movement, for anyone who has asked for less. */
+@keyframes sosHaloStill { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+
+/* The gate carries a line of prose in one case only: a school admin whose
+   account has no school attached, which is a message rather than a wait. */
 .auth-gate-inner p {
-  font-family: 'Nunito', sans-serif; font-weight: 800; letter-spacing: .04em; font-size: 1rem;
-  background: linear-gradient(90deg, var(--brand), var(--accent), var(--brand));
-  background-size: 200% auto; -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent; color: var(--brand); animation: shimmer 2.4s linear infinite;
+  font-family: 'Inter', sans-serif; font-size: .95rem; line-height: 1.7;
+  color: var(--muted); max-width: 30rem; margin: 0 auto;
 }
-@keyframes shimmer { to { background-position: 200% center; } }
 
 /* ── Dashboard entrance cascade ── */
 @keyframes dashRise    { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
@@ -54,7 +87,9 @@
 #dashMain.dash-in .section-inner > *:nth-child(n+9){ animation-delay: .78s; }
 @media (prefers-reduced-motion: reduce) {
   #dashMain.dash-in .section-inner > * { animation: none !important; }
-  .dash-loader .ring, .dash-loader .sat, .dash-loader .core, .auth-gate-inner p { animation: none !important; }
+  /* Still lit, still clearly a loader — it just stops turning. */
+  .sos-spin-mark, .sos-spin::after { animation: none !important; }
+  .sos-spin::before { animation: sosHaloStill 4.5s ease-in-out infinite !important; }
 }
 
 /* ── AUTH PAGE — label-left desktop form ─────────────────────────
