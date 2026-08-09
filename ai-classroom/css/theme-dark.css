@@ -367,30 +367,29 @@ html[data-theme="dark"] .feature-card h3 { color: #fff; }
 html[data-theme="dark"] .feature-card p { color: var(--obs-dim); }
 
 
-/* Mission band. The photograph stays exactly as it is; only the scrim
-   over it and the button on it change, so the picture reads warm
-   against a cold page rather than fighting it. */
-html[data-theme="dark"] .cta-band { background: #05080E; }
-html[data-theme="dark"] .cta-veil {
-  background: linear-gradient(90deg, rgba(4,8,14,.80) 0%, rgba(4,8,14,.68) 38%,
-                                     rgba(5,12,22,.48) 68%, rgba(6,14,26,.34) 100%);
+/* Mission band. The band's own colour and the strength of the photograph
+   behind it, and nothing else: the scrim is written in terms of --msn-rgb,
+   so setting that one triplet re-tints every gradient in it. The eyebrow
+   and the link are already on --accent, which is aqua here. */
+html[data-theme="dark"] .cta-band {
+  background: var(--parchment); --msn-rgb: 5,8,14; --msn-wash: .3;
+  /* On the void the theme's own muted and accent are already well clear of
+     4.5:1, so the band's ink is just the theme's ink. */
+  --msn-ink: var(--muted); --msn-cta: var(--accent); --msn-cta-hi: var(--accent-dark);
 }
-html[data-theme="dark"] .cta-band.no-photo .cta-veil {
-  background:
-    radial-gradient(760px 420px at 22% 50%, rgba(99,230,226,.20), transparent 62%),
-    linear-gradient(120deg, #0B1220, #05080E);
-}
-html[data-theme="dark"] .cta-copy .cta-eyebrow { color: var(--obs-aqua); }
-html[data-theme="dark"] .cta-btn {
-  background: var(--obs-ember); color: #1A0A03; border-color: var(--obs-ember);
-  box-shadow: 0 0 30px rgba(255,138,76,.3);
-}
-html[data-theme="dark"] .cta-btn:hover { background: #FFA470; border-color: #FFA470; color: #1A0A03; }
-@media (max-width: 860px) {
-  html[data-theme="dark"] .cta-veil {
-    background: linear-gradient(180deg, rgba(4,8,14,.68) 0%, rgba(4,8,14,.82) 60%,
-                                        rgba(4,8,14,.9) 100%);
-  }
+/* Darker and a shade less grey than in the cream theme: on a near-black page
+   a bright photograph reads as a hole rather than as atmosphere. */
+html[data-theme="dark"] .cta-photo { filter: blur(2px) brightness(.62); opacity: .5; }
+
+/* The loading gate. It was a cream radial in both themes, so the dark
+   theme opened every gated page with a full-screen flash of the light
+   one. It is the void now, and the light around the turning mark is the
+   theme's aqua rather than the cream theme's terracotta. */
+html[data-theme="dark"] .auth-gate {
+  background: radial-gradient(120% 120% at 50% 0%, #0C1524 0%, #05080E 68%);
+  --spin-halo: rgba(99,230,226,.13);
+  --spin-glow: rgba(99,230,226,.32);
+  --spin-drop: 0 0 17px;
 }
 
 /* ── Footer ──────────────────────────────────────────────────── */
