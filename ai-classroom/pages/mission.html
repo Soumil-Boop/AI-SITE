@@ -4,12 +4,19 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Our Mission — Seek-O-Sphere</title>
+  <!-- Which look to paint, decided before the page paints. This has to be a
+       plain inline script and it has to sit above the stylesheet links: a
+       synchronous script waits for every stylesheet declared before it, and
+       parsing waits for the script, so putting it lower delays the whole body.
+       Nothing else in the head may be moved below it for the same reason. -->
+  <script>(function(){var t;try{t=localStorage.getItem('sos_theme');}catch(e){}
+    document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');})();</script>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin/>
   <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <!-- Inline and first, so the page opens on the dark rather than flashing
        white while the stylesheets are still arriving. -->
   <style>html,body{background:#2A1206;margin:0}</style>
@@ -130,6 +137,10 @@
       .msn-grid { grid-template-columns:minmax(0,1fr); }
     }
   </style>
+  <!-- Last stylesheet in the head. Every rule inside is locked behind
+       html[data-theme="dark"], so it contributes nothing in the light theme. -->
+  <link rel="stylesheet" href="../css/components/planner.css"/>
+<link rel="stylesheet" href="../css/theme-dark.css"/>
 </head>
 <body>
 <div id="nav-mount"></div>
@@ -224,7 +235,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="../js/session.js"></script>
+<script src="../js/core/theme.js"></script>
 <script src="../js/core/footer.js"></script>
+<script src="../js/core/planner.js"></script>
 <script>
   /* Mission, vision and values, one at a time, switched by the three rules
      under the statement. The rules were decoration; making them the control

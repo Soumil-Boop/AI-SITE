@@ -4,6 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Seek-O-Sphere</title>
+  <!-- Which look to paint, decided before the page paints. This has to be a
+       plain inline script and it has to sit above the stylesheet links: a
+       synchronous script waits for every stylesheet declared before it, and
+       parsing waits for the script, so putting it lower delays the whole body.
+       Nothing else in the head may be moved below it for the same reason. -->
+  <script>(function(){var t;try{t=localStorage.getItem('sos_theme');}catch(e){}
+    document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');})();</script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
        is still parsing, instead of when the first script or request needs them. -->
@@ -12,7 +19,7 @@
   <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/components/marquee.css"/>
   <link rel="stylesheet" href="css/components/footer.css"/>
   <style>
@@ -62,6 +69,18 @@
       --purple:      #6E5460;
       --radius:      14px;
       --radius-sm:   10px;
+      /* The ink that sits ON a surface painted with an accent — a filled
+         button, an active pill, a correct answer. White here, which is what
+         each of those rules already said; it is a token so the dark theme can
+         make it near-black, because white on aqua cannot be read. */
+      /* A surface that was written as pure white rather than as the warm
+         near-white the palette uses. Kept apart so the cream theme stays
+         exactly what it was, down to the four points of warmth. */
+      --surface:     #FFFFFF;
+      --blush:       #F6EEEA;   /* the palest warm panel */
+      --sand:        #EFE1CD;   /* a warm chip behind an icon */
+      --on-fill:     #FFFFFF;
+      --on-fill-soft: rgba(255,255,255,.84);   /* the same ink, one step quieter */
     }
 
     /* ── NAV ── */
@@ -73,7 +92,7 @@
       border-bottom: 1px solid rgba(192,86,47,.42);
       box-shadow: 0 10px 30px -14px rgba(20,8,3,.75);
     }
-    .nav-logo { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.34rem; letter-spacing:-.01em; color:#fff; display:flex; align-items:center; gap:.5rem; white-space:nowrap; cursor:pointer; }
+    .nav-logo { font-family:'Space Grotesk','Nunito',sans-serif; font-weight:700; font-size:1.28rem; letter-spacing:-.02em; color:#fff; display:flex; align-items:center; gap:.5rem; white-space:nowrap; cursor:pointer; }
     .nav-logo span { color:var(--accent); }
     .logo-mark { width:32px; height:32px; flex-shrink:0; filter:drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
     .logo-node { fill:var(--accent); transform-origin:center; animation:logoPulse 3s ease-in-out infinite; }
@@ -83,9 +102,9 @@
     .nav-links{display:flex;align-items:center;gap:.15rem;flex-wrap:wrap;}
     .nav-links a{color:rgba(255,255,255,.78);font-size:.83rem;font-weight:600;padding:.42rem .78rem;border-radius:9px;transition:background .2s,color .2s,box-shadow .2s;white-space:nowrap;cursor:pointer;}
     .nav-links a:hover{background:rgba(255,255,255,.12);color:#fff;}
-    .nav-links a.active{background:var(--accent);color:#fff;box-shadow:0 4px 12px -3px rgba(192,86,47,.75);}
+    .nav-links a.active{background:var(--accent);color:var(--on-fill);box-shadow:0 4px 12px -3px rgba(192,86,47,.75);}
     .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:.25rem;}
-    .hamburger span{width:24px;height:2px;background:white;border-radius:2px;display:block;}
+    .hamburger span{width:24px;height:2px;background:var(--surface);border-radius:2px;display:block;}
     @media(max-width:900px){
       .nav-links{display:none;flex-direction:column;position:absolute;top:66px;left:0;right:0;background:var(--brand-dark);padding:1rem;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.3);}
       .nav-links.open{display:flex;} .hamburger{display:flex;}
@@ -313,14 +332,14 @@
     .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.75rem;border-radius:100px;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;font-family:'Inter',sans-serif;}
     .btn:hover{transform:translateY(-1px);} .btn:active{transform:translateY(0);}
     .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2);}
-    .btn-primary{background:var(--accent);color:#fff;} .btn-primary:hover{background:var(--accent-dark);}
-    .btn-secondary{background:var(--brand);color:#fff;} .btn-secondary:hover{background:var(--brand-dark);}
+    .btn-primary{background:var(--accent);color:var(--on-fill);} .btn-primary:hover{background:var(--accent-dark);}
+    .btn-secondary{background:var(--brand);color:var(--on-fill);} .btn-secondary:hover{background:var(--brand-dark);}
     .btn-outline{background:transparent;border:2px solid rgba(255,255,255,.4);color:white;}
     .btn-ghost{background:var(--gray-100);color:var(--text);}
 
     /* ── PAGE HERO BANNER ── */
     .page-hero{background:linear-gradient(160deg,var(--brand-dark) 0%,#B24E33 100%);padding:2.25rem 2rem 1.75rem;text-align:center;}
-    .page-hero h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3.2rem);color:#fff;margin-bottom:1rem;}
+    .page-hero h1{font-family:'Space Grotesk','Nunito',sans-serif;font-weight:700;letter-spacing:-.025em;font-size:clamp(2rem,5vw,3.2rem);color:#fff;margin-bottom:1rem;}
     .page-hero p{color:rgba(255,255,255,.7);font-size:1.1rem;max-width:560px;margin:0 auto;}
     .eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.5rem;}
 
@@ -343,10 +362,10 @@
     .type-card h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.5rem;}
     .type-card p{font-size:.95rem;line-height:1.65;}
     .tc-tag{display:inline-block;margin-top:1rem;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:100px;}
-    .tc-blue{background:#F1DACF;color:var(--brand);} .tc-coral{background:var(--accent-light);color:var(--accent-dark);}
-    .tc-purple{background:#E6DBC9;color:var(--purple);} .tc-green{background:#E2E8DC;color:var(--green);}
+    .tc-blue{background:var(--brand-light);color:var(--brand);} .tc-coral{background:var(--accent-light);color:var(--accent-dark);}
+    .tc-purple{background:var(--cream);color:var(--purple);} .tc-green{background:var(--green-light);color:var(--green);}
     .tc-gold{background:var(--accent-light);color:var(--accent-dark);}
-    .ethics-card{background:white;border-radius:var(--radius);padding:1.75rem;border-top:4px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:transform .25s;}
+    .ethics-card{background:var(--surface);border-radius:var(--radius);padding:1.75rem;border-top:4px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:transform .25s;}
     .ethics-card:hover{transform:translateY(-3px);}
     .ec-icon{font-size:2.4rem;margin-bottom:.75rem;display:block;}
     .ethics-card h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:.4rem;}
@@ -397,47 +416,72 @@
     }
     #neural-canvas{position:absolute;inset:0;opacity:.22;}
 
-    /* Hero top area */
+    /* Hero top area.
+
+       One centred column, with the text stacked above the mascot: the badge,
+       the headline, the sentence, the two buttons, then Eulid. The old layout
+       put the words on the left and the mascot on the right, which works but
+       gives the headline half a screen to live in; centring it lets the
+       sentence run at the size it deserves and puts the mascot where a person
+       looks next rather than beside what they are already reading.
+
+       The orbit rings behind it are decorative and marked aria-hidden. They
+       are the same circles as the mark in the wordmark, drawn large. */
     .home-hero-wrap {
       position: relative; z-index: 2;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 2rem;
-      align-items: center;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
       max-width: 1100px;
       width: 100%;
       padding: 5rem 2rem 3rem;
     }
-    .home-hero-text {}
+    .home-hero-text { position: relative; z-index: 2; width: 100%; }
+    .hero-rings {
+      position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%);
+      width: min(880px, 92vw); aspect-ratio: 1; pointer-events: none; z-index: 0;
+    }
+    .hero-rings i { position: absolute; inset: 0; border-radius: 50%;
+                    border: 1px solid rgba(255,255,255,.09); }
+    .hero-rings i:nth-child(2) { inset: 13%; }
+    .hero-rings i:nth-child(3) { inset: 27%; border-style: dashed; border-color: rgba(255,255,255,.07); }
     .hero-badge{display:inline-block;background:rgba(192,86,47,.15);border:1px solid rgba(192,86,47,.45);color:var(--accent);font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .9rem;border-radius:100px;margin-bottom:1.25rem;}
-    .hero-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(2.2rem,4.5vw,3.6rem);color:#fff;line-height:1.12;margin-bottom:1.1rem;}
+    .hero-title{font-family:'Space Grotesk','Nunito',sans-serif;font-weight:700;font-size:clamp(2.3rem,4.8vw,4.1rem);color:#fff;line-height:1.06;letter-spacing:-.03em;margin:0 auto 1.1rem;max-width:15em;}
     .hero-title em{color:var(--accent);font-style:normal;}
-    .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.75);max-width:500px;margin-bottom:2rem;line-height:1.75;}
-    .hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;}
+    .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.75);max-width:40em;margin:0 auto 2rem;line-height:1.75;}
+    .hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;}
 
     /* Stats bar */
+    /* The four numbers read as one instrument panel rather than four things
+       that happen to be next to each other: a single bordered surface, the
+       cells divided by hairlines inside it. The panel is drawn on the padding
+       box so the outer 2rem gutter still lines up with everything else. */
     .home-stats {
       position: relative; z-index: 2;
       display: flex; gap: 0;
       max-width: 1100px; width: 100%;
-      padding: 0 2rem 2.5rem;
+      margin: 0 auto; padding: 0 2rem 2.5rem;
     }
     .stat-item {
       flex: 1; text-align: center;
-      padding: 1.25rem .75rem;
-      border-right: 1px solid rgba(255,255,255,.1);
+      padding: 1.6rem .75rem;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.14);
+      border-left-width: 0;
     }
-    .stat-item:last-child { border-right: none; }
-    .stat-num { font-family:'Nunito',sans-serif; font-weight:900; font-size:2rem; color:var(--accent); display:block; }
+    .stat-item:first-child { border-left-width: 1px; border-radius: 12px 0 0 12px; }
+    .stat-item:last-child  { border-radius: 0 12px 12px 0; }
+    .stat-num { font-family:'Space Grotesk','Nunito',sans-serif; font-weight:700; font-size:2.1rem; letter-spacing:-.02em; color:var(--accent); display:block; }
     .stat-lbl { font-size:.8rem; color:rgba(255,255,255,.55); font-weight:600; text-transform:uppercase; letter-spacing:.07em; }
 
     /* ── MASCOT SVG ── */
+    /* Below the buttons now rather than beside the headline, and smaller for
+       it: at 300px it was competing with the sentence it is meant to follow. */
     .mascot-wrap {
-      width: 330px; flex-shrink: 0;
+      width: 210px; flex-shrink: 0; position: relative; z-index: 2;
+      margin: 2.8rem auto 0;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem;
     }
     @keyframes mascotFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
-    .mascot-svg { width: 300px; height: auto; overflow: visible; animation: mascotFloat 5.5s ease-in-out infinite; }
+    .mascot-svg { width: 210px; height: auto; overflow: visible; animation: mascotFloat 5.5s ease-in-out infinite; }
     .eu-tentacles { transform-box: fill-box; transform-origin: center top; animation: euWiggle 4s ease-in-out infinite; }
     @keyframes euWiggle { 0%,100%{ transform: rotate(-1.4deg); } 50%{ transform: rotate(1.4deg); } }
     .mascot-wrap:hover .eu-tentacles { animation-duration: 1.3s; }
@@ -447,8 +491,8 @@
     @keyframes euPulse { 0%,100%{ transform: scale(1); opacity:1; } 50%{ transform: scale(1.18); opacity:.82; } }
     .eulid-pupil { transition: transform .1s ease-out; }
     .mascot-name {
-      font-family:'Nunito',sans-serif; font-weight:900; font-size:1.15rem; letter-spacing:.14em;
-      color:#fff; text-transform:uppercase; display:inline-flex; align-items:center; gap:.55rem;
+      font-family:'Space Grotesk','Nunito',sans-serif; font-weight:600; font-size:.78rem; letter-spacing:.24em;
+      color:rgba(255,255,255,.6); text-transform:uppercase; display:inline-flex; align-items:center; gap:.55rem;
     }
     .mascot-name::before, .mascot-name::after { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); }
     /* Blink animation for eyes */
@@ -466,11 +510,19 @@
     @keyframes mouthWave { 0%,100%{d:path("M70 130 Q100 148 130 130")} 50%{d:path("M70 132 Q100 152 130 132")} }
 
     @media(max-width:768px){
-      .home-hero-wrap { grid-template-columns:1fr; padding:3rem 1.5rem 2rem; }
-      .mascot-wrap { width:230px; margin:0 auto; }
-      .mascot-svg { width:220px; height:auto; }
+      .home-hero-wrap { padding:3rem 1.5rem 2rem; }
+      .mascot-wrap { width:170px; }
+      .mascot-svg { width:170px; height:auto; }
+      .hero-rings { display:none; }
       .home-stats { flex-wrap:wrap; }
-      .stat-item { min-width:50%; border-right:none; border-bottom:1px solid rgba(255,255,255,.1); }
+      /* Two by two, and the rounded corners follow the grid rather than the
+         source order — otherwise the panel keeps its ends rounded halfway
+         down the stack. */
+      .stat-item { min-width:50%; border-left-width:1px; border-radius:0; }
+      .stat-item:first-child { border-radius:12px 0 0 0; }
+      .stat-item:nth-child(2) { border-radius:0 12px 0 0; }
+      .stat-item:nth-child(3) { border-radius:0 0 0 12px; }
+      .stat-item:last-child { border-radius:0 0 12px 0; }
     }
 
     /* Quote scroller */
@@ -479,17 +531,75 @@
       width:100%;max-width:1100px;
       padding:0 2rem 3rem;
     }
-    .quote-section-label{color:rgba(255,255,255,.45);font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.75rem;display:block;}
-    .quote-scroller-row{display:flex;align-items:center;gap:.75rem;}
-    .quote-scroller{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1;}
-    .quote-scroller::-webkit-scrollbar{display:none;}
-    .quote-card{flex-shrink:0;width:300px;scroll-snap-align:start;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:1.5rem;}
-    .quote-text{font-family:'Nunito',sans-serif;font-weight:700;font-style:italic;font-size:.92rem;color:#fff;line-height:1.6;margin-bottom:.75rem;}
+    /* One quote at a time, given room, instead of a row of small cards.
+
+       The words are the whole of it: no card, no border, no panel — just the
+       sentence at a size worth reading and the name underneath it. All nine
+       pioneers are still here; the arrows step between them, and so do the
+       left and right keys once the section has been used. */
+    .quote-section-label{color:var(--accent);font-family:'JetBrains Mono','Inter',monospace;
+      font-size:.7rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;
+      margin-bottom:1.6rem;display:block;text-align:center;}
+    /* The stage has a HEIGHT, not a minimum. That distinction is the whole
+       fix: a minimum is a floor a long quote can still push past, so one
+       measurement that comes out a few pixels short — a font that swapped in
+       late, a scrollbar that appeared — and the section below moves again.
+       A height cannot be pushed past. Whatever the quote does, this box is
+       the same size, so nothing under it can be shifted by it.
+
+       The number is measured by the script below, because how many lines a
+       quote takes depends on the window, the typeface and which quote it is;
+       the 14rem here is only what stands before the script has measured, and
+       for anyone without JavaScript.
+
+       scrollbar-gutter keeps room for the scrollbar whether or not one is
+       showing. Without it a quote sitting exactly on the boundary makes the
+       bar appear, which narrows the text, which rewraps it shorter, which
+       makes the bar go away — a few pixels of flicker, back and forth. */
+    .quote-stage{position:relative;display:flex;align-items:center;justify-content:center;gap:1rem;
+      height:14rem;}
+    /* max-height:100% ties the quote to the stage rather than to the window,
+       so a quote that will not fit scrolls inside the box instead of growing
+       it. In practice it never has to: the stage is measured to hold the
+       longest of the nine. */
+    .quote-pane{flex:1;text-align:center;max-width:46rem;max-height:100%;overflow-y:auto;
+      scrollbar-gutter:stable;
+      scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent;}
+    .quote-pane::-webkit-scrollbar{width:6px;}
+    .quote-pane::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:3px;}
+    .quote-pane::-webkit-scrollbar-track{background:transparent;}
+    .quote-text{font-family:'Space Grotesk','Nunito',sans-serif;font-weight:400;font-style:normal;
+      font-size:clamp(1.35rem,2.7vw,2.3rem);line-height:1.34;letter-spacing:-.015em;
+      color:#fff;margin:0 auto;max-width:22em;}
     .quote-text::before{content:'\201C';} .quote-text::after{content:'\201D';}
-    .quote-author{color:var(--accent);font-size:.8rem;font-weight:700;}
-    .quote-author span{color:rgba(255,255,255,.45);font-weight:500;}
-    .quote-arrow{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;width:36px;height:36px;border-radius:50%;font-size:1.3rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .2s;}
-    .quote-arrow:hover{background:rgba(255,255,255,.2);}
+    /* font-style:normal because this is a <cite>, which every browser slants by
+       default — and a mono face set in italic at this size reads as a mistake. */
+    .quote-author{display:block;margin-top:1.5rem;font-family:'JetBrains Mono','Inter',monospace;
+      font-size:.68rem;font-weight:500;font-style:normal;letter-spacing:.2em;text-transform:uppercase;
+      color:var(--accent);}
+    .quote-author span{color:rgba(255,255,255,.45);font-weight:400;}
+    /* The change itself: out, swap, in. Short enough not to be a wait. */
+    .quote-pane{transition:opacity .22s ease, transform .22s ease;}
+    .quote-pane.turning{opacity:0;transform:translateY(6px);}
+    @media (prefers-reduced-motion: reduce){
+      .quote-pane{transition:none;} .quote-pane.turning{opacity:1;transform:none;}
+    }
+    /* Quiet at the edges — they are a way through, not the point of the section. */
+    .quote-arrow{background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.6);
+      width:34px;height:34px;border-radius:50%;font-size:1.2rem;display:flex;align-items:center;
+      justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;
+      transition:background .2s,color .2s,border-color .2s;}
+    .quote-arrow:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.34);}
+    /* Which of the nine you are on. Small, and clickable for anyone who would
+       rather jump than step. */
+    .quote-dots{display:flex;justify-content:center;gap:.42rem;margin-top:1.7rem;}
+    .quote-dots button{width:6px;height:6px;padding:0;border-radius:50%;border:none;cursor:pointer;
+      background:rgba(255,255,255,.24);transition:background .2s,transform .2s;}
+    .quote-dots button:hover{background:rgba(255,255,255,.5);}
+    .quote-dots button[aria-current="true"]{background:var(--accent);transform:scale(1.5);}
+    @media (max-width:620px){
+      .quote-stage{gap:.4rem;} .quote-arrow{width:30px;height:30px;font-size:1rem;}
+    }
 
     /* Home bottom panels */
     .home-bottom { width: 100%; }
@@ -499,26 +609,45 @@
       background: var(--parchment);
       padding: 4rem 2rem;
     }
-    .features-inner { max-width: 1100px; margin: 0 auto; }
+    /* The heading block is centred over the grid, the cards are not: a card
+       is read left to right from its own corner, and centring three lines of
+       body copy inside one makes every line start in a different place. */
+    .features-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+    .home-features .section-title { font-family:'Space Grotesk','Nunito',sans-serif; font-weight:700;
+      letter-spacing:-.025em; }
+    /* Three and three. The old auto-fit rule fitted five across at this width
+       and left the sixth stranded on a line of its own. */
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-      gap: 1.5rem;
-      margin-top: 2.5rem;
+      grid-template-columns: repeat(3,1fr);
+      gap: 1.1rem;
+      margin-top: 2.6rem;
+      text-align: left;
     }
     .feature-card {
+      position: relative; overflow: hidden;
       background: var(--cream);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.75rem 1.5rem;
-      text-align: center;
-      transition: border-color .25s, transform .25s;
+      border-radius: 14px;
+      padding: 1.9rem 1.7rem 2rem;
+      text-align: left;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
       cursor: pointer;
     }
+    .feature-card::before { content:''; position:absolute; top:0; left:1.6rem; right:1.6rem; height:1px;
+      background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:.75; }
     .feature-card:hover { border-color: var(--brand); transform: translateY(-3px); }
-    .feature-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto .85rem; }
-    .feature-card h3 { font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem; color:var(--brand-dark); margin-bottom:.3rem; }
-    .feature-card p  { font-size:.82rem; color:var(--muted); line-height:1.5; }
+    /* A tinted chip with a hairline edge, holding the subject's own emoji.
+       The mockup numbered these 01–06; numbering six sections that have no
+       order implies one, and the colour is doing real work for the youngest
+       readers, so the chip keeps the icon and takes the mockup's shape. */
+    .feature-icon { width:44px; height:44px; border-radius:11px; display:flex; align-items:center;
+      justify-content:center; font-size:1.25rem; margin:0 0 1.15rem; }
+    .feature-card h3 { font-family:'Space Grotesk','Nunito',sans-serif; font-weight:700; font-size:1.1rem;
+      letter-spacing:-.015em; color:var(--brand-dark); margin-bottom:.45rem; }
+    .feature-card p  { font-size:.86rem; color:var(--muted); line-height:1.7; }
+    @media (max-width:900px){ .features-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:620px){ .features-grid { grid-template-columns:1fr; } }
 
     /* ── Mission band ──────────────────────────────────────────────
        The last thing on the page before the footer. The photograph fills the
@@ -545,7 +674,7 @@
     .cta-copy .cta-eyebrow { display:block; font-size:.72rem; font-weight:700; letter-spacing:.18em;
                              text-transform:uppercase; color:#F0C79E; margin-bottom:1rem;
                              text-shadow:0 1px 12px rgba(0,0,0,.55); }
-    .cta-copy h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:clamp(1.9rem,3.2vw,2.8rem);
+    .cta-copy h2 { font-family:'Space Grotesk','Nunito',sans-serif; font-weight:700; font-size:clamp(1.9rem,3.2vw,2.8rem);
                    line-height:1.14; letter-spacing:-.02em; color:#fff; margin:0;
                    text-shadow:0 2px 20px rgba(0,0,0,.5); }
     .cta-copy p { font-size:1.02rem; line-height:1.75; color:rgba(255,255,255,.9); margin:1.1rem 0 0;
@@ -556,7 +685,7 @@
                border-radius:4px; font-family:'Inter',sans-serif; font-size:.86rem; font-weight:700;
                letter-spacing:.03em; padding:.85rem 1.7rem; cursor:pointer;
                transition:background .18s, color .18s, border-color .18s; }
-    .cta-btn:hover { background:#fff; color:#2E1206; border-color:#fff; }
+    .cta-btn:hover { background:var(--surface); color:#2E1206; border-color:#fff; }
     /* No photograph yet: the band still reads as a band rather than a blank slab. */
     .cta-band.no-photo { aspect-ratio:auto; min-height:440px; }
     .cta-band.no-photo .cta-veil { background:
@@ -702,8 +831,8 @@
     .tm-bar button{border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;border-radius:100px;
       padding:.5rem 1.1rem;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;}
     .tm-bar button:hover{background:rgba(255,255,255,.12);}
-    .tm-bar button.tm-submit{background:var(--accent);border-color:var(--accent);font-weight:700;}
-    .tm-bar button.tm-submit:hover{background:#CE6237;}
+    .tm-bar button.tm-submit{background:var(--accent);border-color:var(--accent);color:var(--on-fill);font-weight:700;}
+    .tm-bar button.tm-submit:hover{background:var(--accent-dark);}
 
     .tm-body{flex:1;display:grid;grid-template-columns:64px minmax(0,1fr) 268px;gap:1.5rem;
       padding:1.5rem;overflow:hidden;max-width:1400px;width:100%;margin:0 auto;}
@@ -728,7 +857,7 @@
     .tm-opt b{width:26px;height:26px;border-radius:8px;background:var(--parchment);display:grid;place-items:center;
       font-size:.8rem;font-weight:700;color:var(--muted);flex:none;}
     .tm-opt.picked{border-color:var(--accent);background:var(--accent-light);}
-    .tm-opt.picked b{background:var(--accent);color:#fff;}
+    .tm-opt.picked b{background:var(--accent);color:var(--on-fill);}
     .tm-num{max-width:16rem;margin-top:1.5rem;}
     .tm-num input{width:100%;height:48px;border:2px solid var(--border);border-radius:12px;padding:0 1rem;
       font-family:'Nunito',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);background:var(--white);}
@@ -739,7 +868,7 @@
       font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:var(--text);cursor:pointer;}
     .tm-nav:hover:not(:disabled){border-color:var(--accent);color:var(--accent-dark);}
     .tm-nav:disabled{opacity:.4;cursor:not-allowed;}
-    .tm-nav.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .tm-nav.primary{background:var(--accent);border-color:var(--accent);color:var(--on-fill);}
     .tm-nav.primary:hover{background:#CE6237;}
 
     /* ── Navigator ── */
@@ -753,7 +882,7 @@
       font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;color:var(--muted);cursor:pointer;
       display:grid;place-items:center;position:relative;}
     .tm-dot:hover{border-color:var(--brand-mid);}
-    .tm-dot.done{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .tm-dot.done{background:var(--accent);border-color:var(--accent);color:var(--on-fill);}
     .tm-dot.flag::after{content:'';position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
       background:#D9A441;border:2px solid var(--white);}
     .tm-dot.current{outline:3px solid var(--brand-dark);outline-offset:2px;}
@@ -826,7 +955,7 @@
       letter-spacing:-.02em;line-height:1.25;margin-top:.55rem;}
     .lti-words span{display:block;font-size:.88rem;line-height:1.7;color:rgba(255,255,255,.66);
       margin-top:.5rem;max-width:44em;}
-    .lti-go{margin-left:auto;flex-shrink:0;background:var(--accent);color:#fff;border:1px solid var(--accent);
+    .lti-go{margin-left:auto;flex-shrink:0;background:var(--accent);color:var(--on-fill);border:1px solid var(--accent);
       border-radius:5px;padding:.85rem 1.7rem;font-family:'Inter',sans-serif;font-size:.85rem;
       font-weight:700;letter-spacing:.03em;cursor:pointer;white-space:nowrap;
       transition:background .18s,border-color .18s;}
@@ -851,7 +980,7 @@
       color:var(--text);margin-top:.35rem;}
     .tmr-sub{display:block;font-size:.83rem;line-height:1.6;color:var(--muted);margin-top:.25rem;}
     .tmr-acts{margin-left:auto;display:flex;gap:.55rem;flex-shrink:0;}
-    .tmr-go{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:5px;
+    .tmr-go{background:var(--accent);color:var(--on-fill);border:1px solid var(--accent);border-radius:5px;
       padding:.7rem 1.4rem;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;}
     .tmr-go:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
     .tmr-drop{background:none;border:1px solid var(--border);color:var(--muted);border-radius:5px;
@@ -906,7 +1035,7 @@
       font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;color:var(--text);}
     .tt-calc-keys button:hover{background:var(--accent-light);border-color:var(--accent);}
     .tt-calc-keys button.op{color:var(--accent-dark);}
-    .tt-calc-keys button.eq{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .tt-calc-keys button.eq{background:var(--accent);border-color:var(--accent);color:var(--on-fill);}
     .tt-calc-keys button.wide{grid-column:span 2;}
 
     .tt-fs,.tt-gr{list-style:none;font-size:.84rem;}
@@ -974,7 +1103,7 @@
 
     /* Exam prep scoreboard inside lab */
     .ep-score-board{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.5rem;}
-    .ep-score-card{background:white;border:1.5px solid var(--gray-100);border-radius:var(--radius-sm);padding:.75rem;text-align:center;}
+    .ep-score-card{background:var(--surface);border:1.5px solid var(--gray-100);border-radius:var(--radius-sm);padding:.75rem;text-align:center;}
     .ep-score-num{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.4rem;display:block;}
     .ep-score-lbl{font-size:.7rem;color:var(--muted);font-weight:600;}
     .ep-timer-wrap{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;background:var(--brand-dark);border-radius:var(--radius);padding:.75rem 1.25rem;}
@@ -989,8 +1118,8 @@
     .ep-timer-fill.danger{background:#E3AE9E;}
     .ep-exam-picks{display:flex;gap:.4rem;flex-wrap:wrap;}
     .ep-opt-letter{width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;color:var(--muted);}
-    .lab-opt.correct .ep-opt-letter{background:var(--green);color:white;}
-    .lab-opt.wrong .ep-opt-letter{background:var(--accent);color:white;}
+    .lab-opt.correct .ep-opt-letter{background:var(--green);color:var(--on-fill);}
+    .lab-opt.wrong .ep-opt-letter{background:var(--accent);color:var(--on-fill);}
     @media(max-width:600px){.ep-score-board{grid-template-columns:repeat(2,1fr);}}
 
     /* ── QUIZ ── */
@@ -1024,12 +1153,12 @@
     .finder-result-card:hover{box-shadow:0 10px 28px rgba(0,0,0,.08);border-color:var(--brand-light);}
     .finder-result-card.top-match{border-color:var(--accent);border-width:2px;}
     .fr-icon{font-size:2.25rem;flex-shrink:0;} .fr-info{flex:1;}
-    .fr-badge{display:inline-block;background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .6rem;border-radius:100px;margin-bottom:.4rem;}
+    .fr-badge{display:inline-block;background:var(--accent);color:var(--on-fill);font-size:.7rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .6rem;border-radius:100px;margin-bottom:.4rem;}
     .fr-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.1rem;margin-bottom:.25rem;}
     .fr-desc{color:var(--muted);font-size:.9rem;margin-bottom:.6rem;}
     .fr-tags{display:flex;gap:.35rem;flex-wrap:wrap;}
     .fr-tag{background:var(--brand-light);color:var(--brand);font-size:.72rem;font-weight:700;padding:.15rem .6rem;border-radius:100px;}
-    .fr-link{display:inline-flex;align-items:center;gap:.3rem;background:var(--brand);color:#fff;padding:.45rem 1rem;border-radius:100px;font-size:.82rem;font-weight:700;transition:background .2s;white-space:nowrap;flex-shrink:0;align-self:center;}
+    .fr-link{display:inline-flex;align-items:center;gap:.3rem;background:var(--brand);color:var(--on-fill);padding:.45rem 1rem;border-radius:100px;font-size:.82rem;font-weight:700;transition:background .2s;white-space:nowrap;flex-shrink:0;align-self:center;}
     .fr-link:hover{background:var(--brand-dark);}
     @media(max-width:600px){.finder-input-row{flex-direction:column;}.finder-result-card{flex-direction:column;}}
 
@@ -1037,24 +1166,29 @@
 
     /* ══ UPGRADED LAB CSS ══ */
     .lab-hero{background:linear-gradient(135deg,var(--brand-dark),#B24E33);text-align:center;padding:1.6rem 2rem 1.4rem;}
+    /* Was written inline on the heading itself, which no stylesheet could
+       reach. Same size and weight as the other section banners. */
+    .lab-hero h1{font-family:'Space Grotesk','Nunito',sans-serif;font-weight:700;letter-spacing:-.025em;
+      font-size:clamp(2rem,5vw,3rem);color:#fff;margin-bottom:.75rem;}
+    .lab-hero p{color:rgba(255,255,255,.7);max-width:640px;margin:0 auto;}
     .lab-controls-bar{display:flex;flex-wrap:wrap;gap:1rem;background:var(--gray-50);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;align-items:flex-end;}
     .lab-ctrl-group{display:flex;flex-direction:column;gap:.5rem;flex:1;min-width:160px;}
     .lab-ctrl-label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
-    .lab-ctrl-select{padding:.55rem .9rem;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.88rem;font-weight:600;font-family:'Inter',sans-serif;color:var(--text);background:white;cursor:pointer;outline:none;transition:border-color .2s;}
+    .lab-ctrl-select{padding:.55rem .9rem;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.88rem;font-weight:600;font-family:'Inter',sans-serif;color:var(--text);background:var(--surface);cursor:pointer;outline:none;transition:border-color .2s;}
     .lab-ctrl-select:focus{border-color:var(--brand);}
-    .lab-pick{background:white;border:2px solid var(--gray-200);border-radius:100px;padding:.45rem 1rem;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--text);transition:all .2s;font-family:'Inter',sans-serif;white-space:nowrap;}
+    .lab-pick{background:var(--surface);border:2px solid var(--gray-200);border-radius:100px;padding:.45rem 1rem;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--text);transition:all .2s;font-family:'Inter',sans-serif;white-space:nowrap;}
     .lab-pick:hover{border-color:var(--brand);color:var(--brand);}
-    .lab-pick.active{background:var(--brand);border-color:var(--brand);color:white;}
+    .lab-pick.active{background:var(--brand);border-color:var(--brand);color:var(--on-fill);}
     .lab-picks-row{display:flex;gap:.4rem;flex-wrap:wrap;}
     .tutor-wrap{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem;}
     .tutor-avatar{width:64px;height:64px;border-radius:50%;background:var(--brand-dark);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;border:3px solid var(--accent);animation:tutorBob 3s ease-in-out infinite;}
     @keyframes tutorBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
     .tutor-bubble{background:var(--brand-light);border-radius:16px;border-top-left-radius:4px;padding:1rem 1.25rem;font-size:.95rem;color:var(--text);line-height:1.6;border:1.5px solid var(--brand);flex:1;}
-    .lab-question-card{background:white;border:1.5px solid var(--gray-100);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;box-shadow:0 4px 20px rgba(0,0,0,.06);}
+    .lab-question-card{background:var(--surface);border:1.5px solid var(--gray-100);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;box-shadow:0 4px 20px rgba(0,0,0,.06);}
     .lab-question-text{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.4rem;text-align:center;margin-bottom:1.25rem;color:var(--text);line-height:1.4;}
     .lab-question-context{font-size:.95rem;color:var(--muted);text-align:center;margin-bottom:1rem;line-height:1.6;background:var(--gray-50);border-radius:var(--radius-sm);padding:.75rem 1rem;}
     .lab-options{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.25rem;}
-    .lab-opt{background:white;border:2px solid var(--gray-200);border-radius:var(--radius-sm);padding:.8rem 1.2rem;font-size:.95rem;font-family:'Inter',sans-serif;color:var(--text);cursor:pointer;transition:all .2s;text-align:left;}
+    .lab-opt{background:var(--surface);border:2px solid var(--gray-200);border-radius:var(--radius-sm);padding:.8rem 1.2rem;font-size:.95rem;font-family:'Inter',sans-serif;color:var(--text);cursor:pointer;transition:all .2s;text-align:left;}
     .lab-opt:hover{border-color:var(--brand);background:var(--brand-light);}
     .lab-opt.correct{background:var(--green-light);border-color:var(--green);color:var(--green);}
     .lab-opt.wrong{background:var(--accent-light);border-color:var(--accent);color:var(--accent-dark);}
@@ -1098,7 +1232,7 @@
     .lab-progress-text{font-size:.8rem;color:var(--muted);}
     .lab-celebration{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .3s;}
     .lab-celebration.show{opacity:1;}
-    .lab-celebration-inner{background:white;border-radius:24px;padding:2.5rem 3rem;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.25);transform:scale(.8);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+    .lab-celebration-inner{background:var(--surface);border-radius:24px;padding:2.5rem 3rem;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.25);transform:scale(.8);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
     .lab-celebration.show .lab-celebration-inner{transform:scale(1);}
     .lab-celebration-emoji{font-size:4rem;margin-bottom:.5rem;display:block;}
     .lab-celebration-text{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.8rem;color:var(--brand);}
@@ -1108,7 +1242,7 @@
     .finder-filters{display:flex;flex-wrap:wrap;gap:1rem;background:var(--gray-50);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;align-items:flex-end;}
     .finder-filter-group{display:flex;flex-direction:column;gap:.4rem;flex:1;min-width:140px;}
     .finder-filter-label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
-    .finder-filter-select{padding:.55rem .9rem;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.88rem;font-weight:600;font-family:'Inter',sans-serif;color:var(--text);background:white;cursor:pointer;outline:none;transition:border-color .2s;}
+    .finder-filter-select{padding:.55rem .9rem;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.88rem;font-weight:600;font-family:'Inter',sans-serif;color:var(--text);background:var(--surface);cursor:pointer;outline:none;transition:border-color .2s;}
     .finder-filter-select:focus{border-color:var(--brand);}
     .finder-ai-badge{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--brand),var(--purple));color:white;font-size:.72rem;font-weight:700;padding:.25rem .75rem;border-radius:100px;margin-bottom:.75rem;}
     .finder-ai-thinking{display:flex;align-items:center;gap:.75rem;padding:1.5rem;background:var(--brand-light);border-radius:var(--radius);color:var(--brand);font-weight:600;}
@@ -1128,19 +1262,19 @@
     .finder-empty{text-align:center;padding:3rem 1.5rem;color:var(--muted);background:var(--gray-50);border-radius:var(--radius);}
     .fe-icon{font-size:2.5rem;display:block;margin-bottom:.75rem;}
     .finder-count-note{color:var(--muted);font-size:.85rem;margin-bottom:.5rem;}
-    .finder-result-card{background:white;border:1.5px solid var(--gray-100);border-radius:var(--radius);padding:1.5rem;display:flex;gap:1.25rem;align-items:flex-start;transition:box-shadow .25s,border-color .25s;}
+    .finder-result-card{background:var(--surface);border:1.5px solid var(--gray-100);border-radius:var(--radius);padding:1.5rem;display:flex;gap:1.25rem;align-items:flex-start;transition:box-shadow .25s,border-color .25s;}
     .finder-result-card:hover{box-shadow:0 10px 28px rgba(0,0,0,.08);border-color:var(--brand-light);}
     .finder-result-card.top-match{border-color:var(--accent);border-width:2px;}
     .fr-icon{font-size:2.25rem;flex-shrink:0;}
     .fr-info{flex:1;}
-    .fr-badge{display:inline-block;background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .6rem;border-radius:100px;margin-bottom:.4rem;}
+    .fr-badge{display:inline-block;background:var(--accent);color:var(--on-fill);font-size:.7rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .6rem;border-radius:100px;margin-bottom:.4rem;}
     .fr-curriculum-badge{display:inline-block;background:var(--brand-light);color:var(--brand);font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;margin-left:.3rem;}
     .fr-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.1rem;margin-bottom:.25rem;color:var(--text);}
     .fr-desc{color:var(--muted);font-size:.9rem;margin-bottom:.6rem;}
     .fr-reason{color:var(--brand);font-size:.85rem;font-style:italic;margin-bottom:.6rem;}
     .fr-tags{display:flex;gap:.35rem;flex-wrap:wrap;}
     .fr-tag{background:var(--brand-light);color:var(--brand);font-size:.72rem;font-weight:700;padding:.15rem .6rem;border-radius:100px;}
-    .fr-link{display:inline-flex;align-items:center;gap:.3rem;background:var(--brand);color:#fff;padding:.45rem 1rem;border-radius:100px;font-size:.82rem;font-weight:700;transition:background .2s;white-space:nowrap;flex-shrink:0;align-self:center;}
+    .fr-link{display:inline-flex;align-items:center;gap:.3rem;background:var(--brand);color:var(--on-fill);padding:.45rem 1rem;border-radius:100px;font-size:.82rem;font-weight:700;transition:background .2s;white-space:nowrap;flex-shrink:0;align-self:center;}
     .fr-link:hover{background:var(--brand-dark);}
     @media(max-width:600px){.finder-input-row{flex-direction:column;}.finder-result-card{flex-direction:column;}.finder-filters{flex-direction:column;}}
 
@@ -1149,7 +1283,7 @@
     .lab-picker-label{font-weight:700;font-size:.85rem;color:var(--muted);margin-bottom:.65rem;text-transform:uppercase;letter-spacing:.08em;display:block;}
     .lab-picker-options{display:flex;gap:.5rem;flex-wrap:wrap;}
     .lab-pick{background:var(--white);border:2px solid var(--gray-200);border-radius:100px;padding:.5rem 1.1rem;font-size:.88rem;font-weight:700;cursor:pointer;color:var(--text);transition:all .2s;font-family:'Inter',sans-serif;}
-    .lab-pick:hover{border-color:var(--brand);color:var(--brand);} .lab-pick.active{background:var(--brand);border-color:var(--brand);color:white;}
+    .lab-pick:hover{border-color:var(--brand);color:var(--brand);} .lab-pick.active{background:var(--brand);border-color:var(--brand);color:var(--on-fill);}
     .tutor-wrap{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem;}
     .tutor-avatar{width:64px;height:64px;border-radius:50%;background:var(--brand-dark);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;border:3px solid var(--accent);animation:tutorBob 3s ease-in-out infinite;}
     @keyframes tutorBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
@@ -1190,7 +1324,7 @@
     .lab-progress-text{font-size:.8rem;color:var(--muted);}
     .lab-celebration{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .3s;}
     .lab-celebration.show{opacity:1;}
-    .lab-celebration-inner{background:white;border-radius:24px;padding:2.5rem 3rem;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.25);transform:scale(.8);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+    .lab-celebration-inner{background:var(--surface);border-radius:24px;padding:2.5rem 3rem;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.25);transform:scale(.8);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
     .lab-celebration.show .lab-celebration-inner{transform:scale(1);}
     .lab-celebration-emoji{font-size:4rem;margin-bottom:.5rem;display:block;}
     .lab-celebration-text{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.8rem;color:var(--brand);}
@@ -1319,7 +1453,7 @@
                  background-size:cover; background-position:center;
                  box-shadow:0 0 0 1px rgba(255,255,255,.3); }
     @media (max-width:620px) { .acct-role { max-width:7rem; } }
-    .acct-drop { position:absolute; top:100%; right:0; background:#FBF8F2; border:1px solid var(--border); border-radius:12px; box-shadow:0 14px 34px rgba(0,0,0,.28); min-width:200px; padding:.4rem; opacity:0; visibility:hidden; transform:translateY(-6px); transition:opacity .18s,transform .18s,visibility .18s; z-index:300; }
+    .acct-drop { position:absolute; top:100%; right:0; background:var(--white); border:1px solid var(--border); border-radius:12px; box-shadow:0 14px 34px rgba(0,0,0,.28); min-width:200px; padding:.4rem; opacity:0; visibility:hidden; transform:translateY(-6px); transition:opacity .18s,transform .18s,visibility .18s; z-index:300; }
     .acct-wrap:hover .acct-drop, .acct-wrap:focus-within .acct-drop { opacity:1; visibility:visible; transform:translateY(0); }
     .acct-drop a { display:block; padding:.55rem .8rem; color:var(--brand-dark); font-size:.85rem; font-weight:600; border-radius:8px; text-decoration:none; white-space:nowrap; }
     .acct-drop a:hover { background:var(--brand-light); color:var(--brand); }
@@ -1331,16 +1465,21 @@
     .lab-timer-bar { display:flex; align-items:center; gap:.85rem; background:var(--brand-dark); color:#fff; border-radius:14px; padding:.55rem 1rem; margin-bottom:1.25rem; width:fit-content; }
     .lab-timer-ico { font-size:1.1rem; }
     .lab-timer-face { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.4rem; letter-spacing:.03em; min-width:74px; }
-    .lab-timer-btn { background:var(--accent); color:#fff; border:none; border-radius:100px; padding:.35rem .95rem; font-weight:700; font-size:.82rem; cursor:pointer; font-family:'Inter',sans-serif; }
+    .lab-timer-btn { background:var(--accent); color:var(--on-fill); border:none; border-radius:100px; padding:.35rem .95rem; font-weight:700; font-size:.82rem; cursor:pointer; font-family:'Inter',sans-serif; }
     .lab-timer-btn:hover { background:var(--accent-dark); }
 
     /* Milestone toast (every 10 correct) */
-    .lab-milestone { position:fixed; top:84px; left:50%; transform:translate(-50%,-24px); background:#fff; border:2px solid var(--accent); color:var(--brand-dark); font-family:'Nunito',sans-serif; font-weight:900; padding:.6rem 1.15rem; border-radius:100px; box-shadow:0 14px 34px rgba(0,0,0,.2); display:flex; align-items:center; gap:.5rem; opacity:0; pointer-events:none; z-index:9999; transition:opacity .3s, transform .38s cubic-bezier(.34,1.56,.64,1); }
+    .lab-milestone { position:fixed; top:84px; left:50%; transform:translate(-50%,-24px); background:var(--surface); border:2px solid var(--accent); color:var(--brand-dark); font-family:'Nunito',sans-serif; font-weight:900; padding:.6rem 1.15rem; border-radius:100px; box-shadow:0 14px 34px rgba(0,0,0,.2); display:flex; align-items:center; gap:.5rem; opacity:0; pointer-events:none; z-index:9999; transition:opacity .3s, transform .38s cubic-bezier(.34,1.56,.64,1); }
     .lab-milestone.show { opacity:1; transform:translate(-50%,0); }
     .lab-milestone-emoji { font-size:1.3rem; display:inline-block; }
     .lab-milestone.show .lab-milestone-emoji { animation:milestonePop .6s ease; }
     @keyframes milestonePop { 0%{transform:scale(.4) rotate(-15deg);} 60%{transform:scale(1.3) rotate(10deg);} 100%{transform:scale(1) rotate(0);} }
 </style>
+<!-- Last, so its rules land after everything above them. Every rule inside is
+     locked behind html[data-theme="dark"], so in the light theme this file
+     contributes nothing at all. -->
+<link rel="stylesheet" href="css/components/planner.css"/>
+<link rel="stylesheet" href="css/theme-dark.css"/>
 </head>
 <body>
 
@@ -1404,13 +1543,14 @@
 
   <!-- HERO: text left, mascot right -->
   <div class="home-hero-wrap">
+    <span class="hero-rings" aria-hidden="true"><i></i><i></i><i></i></span>
     <div class="home-hero-text">
       <div class="hero-badge">✨ Free for Students of All Ages</div>
       <h1 class="hero-title">The Friendliest Way to Learn <em>Artificial Intelligence</em></h1>
       <p class="hero-sub">No jargon. No confusion. Just clear lessons, real tools, and a friendly alien named Eulid who actually wants you to succeed , whether you are 8 or 80.</p>
       <div class="hero-ctas">
-        <button class="btn btn-primary" onclick="showPage('what')">🚀 Start Learning Now</button>
-        <button class="btn btn-outline" onclick="showPage('finder')">🔍 Find My AI Tool</button>
+        <button class="btn btn-primary" onclick="showPage('what')">Start Learning Now</button>
+        <button class="btn btn-outline" onclick="showPage('finder')">Find My AI Tool</button>
       </div>
     </div>
 
@@ -1474,11 +1614,12 @@
   <!-- QUOTE SCROLLER -->
   <div class="quote-section-wrap">
     <span class="quote-section-label">Words from the Pioneers Who Built AI</span>
-    <div class="quote-scroller-row">
-      <button class="quote-arrow" onclick="scrollQuotes(-1)">‹</button>
-      <div class="quote-scroller" id="quoteScroller"></div>
-      <button class="quote-arrow" onclick="scrollQuotes(1)">›</button>
+    <div class="quote-stage">
+      <button class="quote-arrow" type="button" onclick="scrollQuotes(-1)" aria-label="Previous quote">&lsaquo;</button>
+      <div class="quote-pane" id="quoteScroller" aria-live="polite"></div>
+      <button class="quote-arrow" type="button" onclick="scrollQuotes(1)" aria-label="Next quote">&rsaquo;</button>
     </div>
+    <div class="quote-dots" id="quoteDots"></div>
   </div>
 
   <!-- HOME BOTTOM CONTENT -->
@@ -1553,7 +1694,7 @@
       </div>
       <div style="background:linear-gradient(135deg,var(--brand-dark),var(--brand));border-radius:var(--radius);padding:2.5rem;text-align:center;">
         <span style="font-size:7rem;display:block;filter:drop-shadow(0 0 20px rgba(192,86,47,.5))">🧠</span>
-        <p style="color:rgba(255,255,255,.7);margin-top:1rem;">AI combines data, algorithms, and computing power to simulate intelligent behaviour.</p>
+        <p style="color:rgba(255,255,255,.86);margin-top:1rem;">AI combines data, algorithms, and computing power to simulate intelligent behaviour.</p>
       </div>
     </div>
     <div style="margin-top:3rem;">
@@ -1564,19 +1705,19 @@
         </div>
       </div>
       <div class="grid-3" style="margin-top:1.5rem;">
-        <div class="type-card tc-blue" style="background:#EFE6D8;" onclick="addRipple(event,this)">
+        <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)">
           <span class="tc-icon">💬</span>
           <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Language</h3>
           <div class="expandable open"><div class="expandable-inner"><p>Chatbots, translation tools, voice assistants like Siri, and AI writing tools all use natural language processing to understand and generate human language.</p></div></div>
           <span class="tc-tag tc-blue">NLP</span>
         </div>
-        <div class="type-card tc-green" style="background:#E6DBC9;" onclick="addRipple(event,this)">
+        <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)">
           <span class="tc-icon">👁️</span>
           <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Vision</h3>
           <div class="expandable open"><div class="expandable-inner"><p>Face ID, Google Photos, self-driving cars, and medical imaging all use computer vision to interpret the visual world in real time.</p></div></div>
           <span class="tc-tag tc-green">Computer Vision</span>
         </div>
-        <div class="type-card tc-purple" style="background:#F6EEEA;" onclick="addRipple(event,this)">
+        <div class="type-card tc-purple" style="background:var(--blush);" onclick="addRipple(event,this)">
           <span class="tc-icon">🎯</span>
           <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommendations</h3>
           <div class="expandable open"><div class="expandable-inner"><p>Netflix, Spotify, YouTube, and TikTok all use AI to predict what you want to watch, listen to, or read next based on your behaviour.</p></div></div>
@@ -1596,7 +1737,7 @@
 <style>
 .hist-stage .section-inner{max-width:none;padding-left:2rem;padding-right:2rem;}
 .hist-wrap{max-width:1720px;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;position:relative;z-index:1;}
-.hist-card{background:#fff;border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);}
+.hist-card{background:var(--surface);border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);}
 .panel.active .hist-wrap>*{animation:histRise .7s cubic-bezier(.22,.68,0,1.1) both;}
 .panel.active .hist-wrap>*:nth-child(2){animation-delay:.08s;}
 .panel.active .hist-wrap>*:nth-child(3){animation-delay:.16s;}
@@ -1608,8 +1749,8 @@
 .hx-headline{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.15rem;color:var(--text);line-height:1.25;}
 .hx-yearctrl{display:flex;align-items:center;gap:.55rem;flex-shrink:0;}
 .hx-year{font-family:'Nunito',sans-serif;font-weight:900;font-size:44px;line-height:1;color:var(--accent);min-width:2.6ch;text-align:center;}
-.hx-step{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gray-200);background:#fff;color:var(--accent);font-size:1.35rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,color .2s;}
-.hx-step:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:#fff;}
+.hx-step{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gray-200);background:var(--surface);color:var(--accent);font-size:1.35rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,color .2s;}
+.hx-step:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:var(--on-fill);}
 .hx-step:disabled{opacity:.35;cursor:default;}
 .hx-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:var(--gray-200);margin:1.4rem 0 .45rem;outline:none;}
 .hx-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:var(--shadow-sm);cursor:pointer;}
@@ -1618,13 +1759,13 @@
 .hx-divider{height:1px;background:var(--gray-100);margin:1.25rem 0;}
 .hx-lm-label{font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.65rem;}
 .hx-chips{display:flex;flex-wrap:wrap;gap:.4rem;}
-.hx-chip{position:relative;border:1.5px solid var(--gray-200);background:#fff;color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;padding:.32rem .72rem;border-radius:100px;cursor:pointer;transition:background .25s,border-color .25s,color .25s;}
+.hx-chip{position:relative;border:1.5px solid var(--gray-200);background:var(--surface);color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;padding:.32rem .72rem;border-radius:100px;cursor:pointer;transition:background .25s,border-color .25s,color .25s;}
 .hx-chip:hover{border-color:var(--accent);}
-.hx-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.hx-chip.active{background:var(--accent);border-color:var(--accent);color:var(--on-fill);}
 .hx-chip[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#3E2B1E;color:#fff;font-size:.7rem;font-weight:600;white-space:nowrap;padding:.35rem .55rem;border-radius:8px;z-index:5;box-shadow:var(--shadow-md);pointer-events:none;}
 .hf{background:linear-gradient(160deg,#3A1B0D,#2A1206);border:1.5px solid #7A4A2E;color:#F3E7D3;padding:1.6rem 1.7rem;}
 .hf-top{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap;}
-.hf-pill{background:var(--accent);color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;padding:.25rem .8rem;border-radius:100px;}
+.hf-pill{background:var(--accent);color:var(--on-fill);font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;padding:.25rem .8rem;border-radius:100px;}
 .hf-badge{background:rgba(224,169,63,.18);color:#F0C36A;border:1px solid rgba(224,169,63,.4);font-weight:800;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:.24rem .6rem;border-radius:100px;}
 .hf-counter{margin-left:auto;font-size:.76rem;color:rgba(243,231,211,.6);font-weight:600;}
 .hf-headline{font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;line-height:1.25;color:#fff;margin-bottom:.5rem;}
@@ -1635,9 +1776,9 @@
 .hf-tn p{font-size:.9rem;line-height:1.5;}
 .hf-then{background:rgba(230,219,201,.12);}
 .hf-then span{color:#CDB79E;} .hf-then p{color:rgba(243,231,211,.8);}
-.hf-now{background:var(--accent);} .hf-now span{color:rgba(255,255,255,.85);} .hf-now p{color:#fff;}
+.hf-now{background:var(--accent);} .hf-now span{color:var(--on-fill-soft);} .hf-now p{color:var(--on-fill);}
 .hf-actions{display:flex;align-items:center;gap:1.1rem;margin-top:1.2rem;flex-wrap:wrap;}
-.hf-readmore{background:var(--accent);color:#fff;border:none;font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;padding:.6rem 1.2rem;border-radius:100px;cursor:pointer;transition:background .2s;}
+.hf-readmore{background:var(--accent);color:var(--on-fill);border:none;font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;padding:.6rem 1.2rem;border-radius:100px;cursor:pointer;transition:background .2s;}
 .hf-readmore:hover{background:var(--accent-dark);}
 .hf-nextlink{color:rgba(243,231,211,.72);font-weight:600;font-size:.88rem;cursor:pointer;text-decoration:none;}
 .hf-nextlink:hover{color:#fff;}
@@ -1650,13 +1791,13 @@
 .hq-score{font-size:.8rem;color:var(--muted);font-weight:600;}
 .hq-q{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text);margin-bottom:1rem;line-height:1.4;}
 .hq-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;}
-.hq-opt{border:1.5px solid var(--gray-200);background:#fff;color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;padding:.7rem;border-radius:100px;cursor:pointer;transition:background .2s,border-color .2s,color .2s;}
+.hq-opt{border:1.5px solid var(--gray-200);background:var(--surface);color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;padding:.7rem;border-radius:100px;cursor:pointer;transition:background .2s,border-color .2s,color .2s;}
 .hq-opt:hover:not(:disabled){border-color:var(--accent);}
 .hq-opt:disabled{cursor:default;}
-.hq-opt.correct{background:var(--green);border-color:var(--green);color:#fff;}
-.hq-opt.wrong{background:#B24E33;border-color:#B24E33;color:#fff;}
+.hq-opt.correct{background:var(--green);border-color:var(--green);color:var(--on-fill);}
+.hq-opt.wrong{background:var(--brand-mid);border-color:var(--brand-mid);color:var(--on-fill);}
 .hq-explain{margin-top:1rem;font-size:.92rem;line-height:1.55;color:var(--muted);}
-.hq-next{margin-top:1rem;background:var(--accent);color:#fff;border:none;font-family:'Inter',sans-serif;font-weight:600;padding:.6rem 1.3rem;border-radius:100px;cursor:pointer;}
+.hq-next{margin-top:1rem;background:var(--accent);color:var(--on-fill);border:none;font-family:'Inter',sans-serif;font-weight:600;padding:.6rem 1.3rem;border-radius:100px;cursor:pointer;}
 .hq-next:hover{background:var(--accent-dark);}
 @media(max-width:600px){.hx-year{font-size:34px;}.hf-thennow{grid-template-columns:1fr;}.hq-opts{grid-template-columns:1fr;}}
 
@@ -1680,13 +1821,13 @@
 .hist-stat b{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--accent);display:block;line-height:1;}
 .hist-stat span{font-size:.74rem;color:var(--muted);font-weight:600;}
 /* era ribbon (timeline spine) */
-.hist-era{display:flex;gap:0;background:#fff;border:1.5px solid var(--gray-100);border-radius:100px;padding:.4rem;box-shadow:var(--shadow-sm);}
+.hist-era{display:flex;gap:0;background:var(--surface);border:1.5px solid var(--gray-100);border-radius:100px;padding:.4rem;box-shadow:var(--shadow-sm);}
 .hist-era .era{flex:1;border:none;background:none;cursor:pointer;padding:.55rem .5rem;border-radius:100px;text-align:center;transition:background .25s,color .25s;}
 .hist-era .era b{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--text);line-height:1.15;}
 .hist-era .era span{font-size:.66rem;color:var(--muted);font-weight:600;}
 .hist-era .era:hover{background:var(--gray-50);}
 .hist-era .era.active{background:var(--accent);}
-.hist-era .era.active b{color:#fff;} .hist-era .era.active span{color:rgba(255,255,255,.82);}
+.hist-era .era.active b{color:var(--on-fill);} .hist-era .era.active span{color:var(--on-fill-soft);}
 /* two-column lower */
 .hist-lower{display:grid;grid-template-columns:1.55fr 1fr;gap:1.5rem;align-items:start;}
 @media(max-width:860px){.hist-lower{grid-template-columns:1fr;}.hist-intro{grid-template-columns:1fr;text-align:center;justify-items:center;}.hist-intro-text p{margin-left:auto;margin-right:auto;}.hist-stats{flex-direction:row;justify-content:center;border-left:none;padding-left:0;gap:1.8rem;}.hist-era{flex-wrap:wrap;border-radius:var(--radius-lg);}.hist-era .era{flex:1 1 45%;}}
@@ -1911,12 +2052,12 @@
       <img class="page-illus-svg" src="assets/images/types/types_1.png" alt="Narrow AI, General AI and Super AI shown as three illustrated panels"/>
     </div>
     <div class="grid-3">
-      <div class="type-card tc-blue" style="background:#EFE6D8;" onclick="addRipple(event,this)"><span class="tc-icon">🤖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Machine Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get , like learning to spot spam emails from millions of examples.</p></div></div><span class="tc-tag tc-blue">Learning from data</span></div>
-      <div class="type-card tc-coral" style="background:#F7E3D8;" onclick="addRipple(event,this)"><span class="tc-icon">🕸️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Neural Networks</h3><div class="expandable open"><div class="expandable-inner"><p>Inspired by the human brain, layers of connected nodes process information. They are behind face recognition, voice assistants, and the large language models powering today's chatbots.</p></div></div><span class="tc-tag tc-coral">Brain-inspired</span></div>
-      <div class="type-card tc-purple" style="background:#F6EEEA;" onclick="addRipple(event,this)"><span class="tc-icon">💬</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Natural Language Processing</h3><div class="expandable open"><div class="expandable-inner"><p>AI that understands and generates human language , powering chatbots, translation tools, voice assistants, and AI writing tools like Claude and ChatGPT.</p></div></div><span class="tc-tag tc-purple">Language and text</span></div>
-      <div class="type-card tc-green" style="background:#E6DBC9;" onclick="addRipple(event,this)"><span class="tc-icon">👁️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Computer Vision</h3><div class="expandable open"><div class="expandable-inner"><p>AI that can see and interpret images and video. Used in medical imaging to detect diseases, in self-driving cars to navigate roads, and in facial recognition systems.</p></div></div><span class="tc-tag tc-green">Seeing the world</span></div>
-      <div class="type-card tc-gold" style="background:#F7E3D8;" onclick="addRipple(event,this)"><span class="tc-icon">🎨</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Generative AI</h3><div class="expandable open"><div class="expandable-inner"><p>AI that creates new content , text, images, music, code, and video. Claude, ChatGPT, DALL·E, Midjourney, and Suno all fall into this rapidly growing category.</p></div></div><span class="tc-tag tc-gold">Creating content</span></div>
-      <div class="type-card" style="background:#EFE6D8;" onclick="addRipple(event,this)"><span class="tc-icon">♟️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Reinforcement Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI that learns by trial and error, receiving rewards for good decisions and penalties for bad ones. This is how AI learned to master chess, Go, and control robots.</p></div></div><span class="tc-tag" style="background:#F1DACF;color:#C0562F;">Trial and reward</span></div>
+      <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">🤖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Machine Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get , like learning to spot spam emails from millions of examples.</p></div></div><span class="tc-tag tc-blue">Learning from data</span></div>
+      <div class="type-card tc-coral" style="background:var(--accent-light);" onclick="addRipple(event,this)"><span class="tc-icon">🕸️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Neural Networks</h3><div class="expandable open"><div class="expandable-inner"><p>Inspired by the human brain, layers of connected nodes process information. They are behind face recognition, voice assistants, and the large language models powering today's chatbots.</p></div></div><span class="tc-tag tc-coral">Brain-inspired</span></div>
+      <div class="type-card tc-purple" style="background:var(--blush);" onclick="addRipple(event,this)"><span class="tc-icon">💬</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Natural Language Processing</h3><div class="expandable open"><div class="expandable-inner"><p>AI that understands and generates human language , powering chatbots, translation tools, voice assistants, and AI writing tools like Claude and ChatGPT.</p></div></div><span class="tc-tag tc-purple">Language and text</span></div>
+      <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)"><span class="tc-icon">👁️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Computer Vision</h3><div class="expandable open"><div class="expandable-inner"><p>AI that can see and interpret images and video. Used in medical imaging to detect diseases, in self-driving cars to navigate roads, and in facial recognition systems.</p></div></div><span class="tc-tag tc-green">Seeing the world</span></div>
+      <div class="type-card tc-gold" style="background:var(--accent-light);" onclick="addRipple(event,this)"><span class="tc-icon">🎨</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Generative AI</h3><div class="expandable open"><div class="expandable-inner"><p>AI that creates new content , text, images, music, code, and video. Claude, ChatGPT, DALL·E, Midjourney, and Suno all fall into this rapidly growing category.</p></div></div><span class="tc-tag tc-gold">Creating content</span></div>
+      <div class="type-card" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">♟️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Reinforcement Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI that learns by trial and error, receiving rewards for good decisions and penalties for bad ones. This is how AI learned to master chess, Go, and control robots.</p></div></div><span class="tc-tag tc-blue">Trial and reward</span></div>
     </div>
   </div>
 </div>
@@ -2017,8 +2158,8 @@
 <div id="lab" class="panel">
   <div class="lab-hero">
     <span class="eyebrow">Interactive Learning</span>
-    <h1 style="font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3rem);color:#fff;margin-bottom:.75rem;">Learning Lab 🧪</h1>
-    <p style="color:rgba(255,255,255,.7);max-width:640px;margin:0 auto;">Curriculum questions for school (Grades 1&ndash;12) AND entrance &amp; government exams for CUET, Railways, Bank PO, SSC and UPSC , all in one place.</p>
+    <h1>Learning Lab 🧪</h1>
+    <p>Curriculum questions for school (Grades 1&ndash;12) AND entrance &amp; government exams for CUET, Railways, Bank PO, SSC and UPSC , all in one place.</p>
   </div>
   <div class="section-inner">
 
@@ -2561,15 +2702,15 @@
     </div>
     <div class="definition-box"><p><strong>New to AI?</strong> Start with "What is AI?" and "History" in the menu above, then take the quiz to test what you have learned.</p></div>
     <div class="grid-3" style="margin-top:2rem;">
-      <div class="type-card tc-blue" style="background:#EFE6D8;" onclick="addRipple(event,this)"><span class="tc-icon">📺</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Videos</h3><div class="expandable open"><div class="expandable-inner"><p>3Blue1Brown's neural network series and Crash Course AI , both free , are excellent video explainers. Search for them on YouTube and start with whichever topic interests you most.</p></div></div></div>
-      <div class="type-card tc-green" style="background:#E6DBC9;" onclick="addRipple(event,this)"><span class="tc-icon">📖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Reading</h3><div class="expandable open"><div class="expandable-inner"><p>"AI Superpowers" by Kai-Fu Lee and "Life 3.0" by Max Tegmark are two of the most accessible books on the topic for students and curious adults.</p></div></div></div>
-      <div class="type-card tc-purple" style="background:#F6EEEA;" onclick="addRipple(event,this)"><span class="tc-icon">🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Free Online Courses</h3><div class="expandable open"><div class="expandable-inner"><p>Khan Academy, Coursera's "AI For Everyone" by Andrew Ng, and Google's "AI Essentials" are all free, beginner-friendly and take just a few hours to complete.</p></div></div></div>
-      <div class="type-card tc-coral" style="background:#F7E3D8;" onclick="addRipple(event,this)"><span class="tc-icon">🛠️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Troubleshooting AI Tools</h3><div class="expandable open"><div class="expandable-inner"><p>Getting strange answers? Try being more specific, breaking your question into smaller parts, or giving an example of the kind of answer you want.</p></div></div></div>
-      <div class="type-card" style="background:#EFE6D8;" onclick="addRipple(event,this)"><span class="tc-icon">🗂️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Glossary of AI Terms</h3><div class="expandable open"><div class="expandable-inner"><p>Confused by "token", "parameter", "fine-tuning" or "embedding"? Send us a message on the Contact page and we will explain it clearly.</p></div></div></div>
-      <div class="type-card tc-green" style="background:#E6DBC9;" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">For Teachers and Parents</h3><div class="expandable open"><div class="expandable-inner"><p>We have collected age-appropriate talking points, lesson hooks and discussion questions for introducing AI at home or in the classroom. Contact us to request the full educator guide.</p></div></div></div>
-      <div class="type-card tc-purple" style="background:#F6EEEA;" onclick="addRipple(event,this)"><span class="tc-icon">💼</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">AI Tools for Job Hunting</h3><div class="expandable open"><div class="expandable-inner"><p>Use Claude or ChatGPT to polish your resume and cover letter, Yoodli to practice interview answers, and LinkedIn AI to improve your profile.</p></div></div></div>
-      <div class="type-card tc-blue" style="background:#EFE6D8;" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍💻</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Community and Forums</h3><div class="expandable open"><div class="expandable-inner"><p>Reddit's r/artificial and r/MachineLearning plus Hugging Face's community forums are friendly spaces for AI questions. Most people are welcoming to beginners.</p></div></div></div>
-      <div class="type-card tc-gold" style="background:#F7E3D8;" onclick="addRipple(event,this)"><span class="tc-icon">❓</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Frequently Asked Questions</h3><div class="expandable open"><div class="expandable-inner"><p>Wondering if AI will take over jobs, or whether it is conscious? Visit our Contact page and ask , we love these questions and answer every one.</p></div></div></div>
+      <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">📺</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Videos</h3><div class="expandable open"><div class="expandable-inner"><p>3Blue1Brown's neural network series and Crash Course AI , both free , are excellent video explainers. Search for them on YouTube and start with whichever topic interests you most.</p></div></div></div>
+      <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)"><span class="tc-icon">📖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Reading</h3><div class="expandable open"><div class="expandable-inner"><p>"AI Superpowers" by Kai-Fu Lee and "Life 3.0" by Max Tegmark are two of the most accessible books on the topic for students and curious adults.</p></div></div></div>
+      <div class="type-card tc-purple" style="background:var(--blush);" onclick="addRipple(event,this)"><span class="tc-icon">🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Free Online Courses</h3><div class="expandable open"><div class="expandable-inner"><p>Khan Academy, Coursera's "AI For Everyone" by Andrew Ng, and Google's "AI Essentials" are all free, beginner-friendly and take just a few hours to complete.</p></div></div></div>
+      <div class="type-card tc-coral" style="background:var(--accent-light);" onclick="addRipple(event,this)"><span class="tc-icon">🛠️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Troubleshooting AI Tools</h3><div class="expandable open"><div class="expandable-inner"><p>Getting strange answers? Try being more specific, breaking your question into smaller parts, or giving an example of the kind of answer you want.</p></div></div></div>
+      <div class="type-card" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">🗂️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Glossary of AI Terms</h3><div class="expandable open"><div class="expandable-inner"><p>Confused by "token", "parameter", "fine-tuning" or "embedding"? Send us a message on the Contact page and we will explain it clearly.</p></div></div></div>
+      <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">For Teachers and Parents</h3><div class="expandable open"><div class="expandable-inner"><p>We have collected age-appropriate talking points, lesson hooks and discussion questions for introducing AI at home or in the classroom. Contact us to request the full educator guide.</p></div></div></div>
+      <div class="type-card tc-purple" style="background:var(--blush);" onclick="addRipple(event,this)"><span class="tc-icon">💼</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">AI Tools for Job Hunting</h3><div class="expandable open"><div class="expandable-inner"><p>Use Claude or ChatGPT to polish your resume and cover letter, Yoodli to practice interview answers, and LinkedIn AI to improve your profile.</p></div></div></div>
+      <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍💻</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Community and Forums</h3><div class="expandable open"><div class="expandable-inner"><p>Reddit's r/artificial and r/MachineLearning plus Hugging Face's community forums are friendly spaces for AI questions. Most people are welcoming to beginners.</p></div></div></div>
+      <div class="type-card tc-gold" style="background:var(--accent-light);" onclick="addRipple(event,this)"><span class="tc-icon">❓</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Frequently Asked Questions</h3><div class="expandable open"><div class="expandable-inner"><p>Wondering if AI will take over jobs, or whether it is conscious? Visit our Contact page and ask , we love these questions and answer every one.</p></div></div></div>
     </div>
   </div>
 </div>
@@ -2582,11 +2723,11 @@
 .help-wrap{max-width:1040px;margin:0 auto;}
 .help-search{position:relative;max-width:640px;margin:0 auto 2rem;}
 .help-search svg{position:absolute;left:1.05rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
-.help-search input{width:100%;padding:.95rem 1.1rem .95rem 2.95rem;border:1.5px solid var(--gray-200);border-radius:100px;font-family:'Inter',sans-serif;font-size:1rem;color:var(--text);background:#fff;outline:none;box-shadow:var(--shadow-sm);transition:border-color .2s;}
+.help-search input{width:100%;padding:.95rem 1.1rem .95rem 2.95rem;border:1.5px solid var(--gray-200);border-radius:100px;font-family:'Inter',sans-serif;font-size:1rem;color:var(--text);background:var(--surface);outline:none;box-shadow:var(--shadow-sm);transition:border-color .2s;}
 .help-search input:focus{border-color:var(--accent);}
 /* topic landing */
 .help-topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.15rem;}
-.help-topic{display:flex;flex-direction:column;align-items:flex-start;gap:.25rem;text-align:left;background:#fff;border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);padding:1.35rem 1.45rem;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
+.help-topic{display:flex;flex-direction:column;align-items:flex-start;gap:.25rem;text-align:left;background:var(--surface);border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);padding:1.35rem 1.45rem;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
 .help-topic:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--accent);}
 .ht-ic{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.55rem;margin-bottom:.55rem;}
 .help-topic b{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.06rem;color:var(--text);}
@@ -2595,7 +2736,7 @@
 .help-back{background:none;border:none;color:var(--accent);font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;cursor:pointer;padding:.3rem .1rem;margin-bottom:1.1rem;display:inline-flex;align-items:center;gap:.4rem;}
 .help-back:hover{color:var(--accent-dark);}
 .help-cats{display:flex;flex-direction:column;gap:1.4rem;}
-.help-cat{background:#fff;border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:1.2rem 1.6rem;}
+.help-cat{background:var(--surface);border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:1.2rem 1.6rem;}
 .help-cat h2{display:flex;align-items:center;gap:.6rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;color:var(--text);margin-bottom:.3rem;}
 .help-cat h2 span{font-size:1.4rem;}
 .help-item{border-top:1px solid var(--gray-100);}
@@ -2609,7 +2750,7 @@
 .help-a p{color:var(--muted);font-size:.94rem;line-height:1.65;padding:0 0 1rem;}
 .help-a a{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:none;}
 .help-a a:hover{text-decoration:underline;}
-.help-none{text-align:center;color:var(--muted);padding:1.5rem;font-weight:600;background:#fff;border:1.5px dashed var(--border);border-radius:var(--radius);}
+.help-none{text-align:center;color:var(--muted);padding:1.5rem;font-weight:600;background:var(--surface);border:1.5px dashed var(--border);border-radius:var(--radius);}
 .help-none a{color:var(--accent);cursor:pointer;}
 @media(max-width:560px){.help-topics{grid-template-columns:1fr;}}
 </style>
@@ -2624,7 +2765,7 @@
     <button class="help-topic" data-cat="1"><span class="ht-ic" style="background:var(--green-light);">&#129514;</span><b>Using the Learning Lab</b><small>Practise questions, subjects, timer and hints.</small></button>
     <button class="help-topic" data-cat="2"><span class="ht-ic" style="background:var(--purple-light);">&#128100;</span><b>Accounts &amp; sign-in</b><small>Sign up, sign in, profile picture and settings.</small></button>
     <button class="help-topic" data-cat="3"><span class="ht-ic" style="background:var(--accent-light);">&#128202;</span><b>Dashboard &amp; progress</b><small>What your stats and graphs actually mean.</small></button>
-    <button class="help-topic" data-cat="4"><span class="ht-ic" style="background:#EFE1CD;">&#128295;</span><b>Troubleshooting</b><small>Quick fixes for the most common problems.</small></button>
+    <button class="help-topic" data-cat="4"><span class="ht-ic" style="background:var(--sand);">&#128295;</span><b>Troubleshooting</b><small>Quick fixes for the most common problems.</small></button>
     <button class="help-topic" data-cat="5"><span class="ht-ic" style="background:var(--green-light);">&#128737;</span><b>Safety &amp; responsible use</b><small>Privacy, young learners and using AI well.</small></button>
     <button class="help-topic" data-cat="6"><span class="ht-ic" style="background:var(--brand-light);">&#128172;</span><b>Still need help?</b><small>Reach the team directly.</small></button>
   </div>
@@ -3953,6 +4094,25 @@ const canvas = document.getElementById('neural-canvas');
 if (canvas) {
   const ctx = canvas.getContext('2d');
   let nodes = [];
+
+  /* The web is drawn, not styled, so it cannot follow the theme by itself.
+     It reads its two colours out of CSS instead of carrying them: the light
+     theme leaves the variables unset and these terracotta defaults stand,
+     the dark theme sets them to aqua. theme.js calls the refresh below when
+     somebody flips the switch. */
+  const NEURAL = { dot: '192,86,47', line: '210,118,78' };
+  function readNeural() {
+    try {
+      const cs = getComputedStyle(document.documentElement);
+      const d = (cs.getPropertyValue('--neural-dot')  || '').trim();
+      const l = (cs.getPropertyValue('--neural-line') || '').trim();
+      NEURAL.dot  = d || '192,86,47';
+      NEURAL.line = l || '210,118,78';
+    } catch (e) {}
+  }
+  readNeural();
+  window.SOSNeuralRefresh = readNeural;
+
   function resizeCanvas() {
     canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
     nodes = [];
@@ -3972,11 +4132,11 @@ if (canvas) {
       if(n.x<0||n.x>canvas.width)n.vx*=-1; if(n.y<0||n.y>canvas.height)n.vy*=-1;
       const g=.5+.5*Math.sin(t*1.5+n.pulse);
       ctx.beginPath(); ctx.arc(n.x,n.y,n.r*(1+.3*g),0,Math.PI*2);
-      ctx.fillStyle=`rgba(192,86,47,${.42+.42*g})`; ctx.fill();
+      ctx.fillStyle=`rgba(${NEURAL.dot},${.42+.42*g})`; ctx.fill();
     }
     for (let i=0;i<nodes.length;i++){ const a=nodes[i];
       for(let j=i+1;j<nodes.length;j++){ const b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy;
-        if(d2<22500){const d=Math.sqrt(d2);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(210,118,78,${(1-d/150)*.35})`;ctx.lineWidth=.8;ctx.stroke();}
+        if(d2<22500){const d=Math.sqrt(d2);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(${NEURAL.line},${(1-d/150)*.35})`;ctx.lineWidth=.8;ctx.stroke();}
       }
     }
   }
@@ -3998,12 +4158,138 @@ const AI_QUOTES=[
   {text:"By far the greatest danger of artificial intelligence is that people conclude too early that they understand it.",author:"Eliezer Yudkowsky",role:"AI researcher"},
   {text:"The development of full artificial intelligence could spell the end of the human race, or it could be the most beneficial event in our history.",author:"Stephen Hawking",role:"Physicist"},
 ];
+/* One quote on show, the other eight a step away.
+
+   This was a row of cards you scrolled sideways; it is a single pull-quote
+   now, which is a change of presentation and not of content — the same nine
+   pioneers, reached the same way, by the same two arrows. What it adds is
+   the dots underneath, so you can see there are nine and jump to one, and
+   the arrow keys, which cost nothing and are the obvious thing to press
+   once a section has a left and a right.
+
+   The pane is aria-live="polite", so a screen reader hears the new quote
+   when it arrives rather than being interrupted mid-sentence. */
+var QUOTE_AT = 0;
+
+function quoteHTML(q){
+  return '<p class="quote-text">' + q.text + '</p>' +
+         '<cite class="quote-author">' + q.author + ' <span>&middot; ' + q.role + '</span></cite>';
+}
+
+function quotePaintDots(){
+  var dots = document.getElementById('quoteDots');
+  if (!dots) return;
+  dots.innerHTML = AI_QUOTES.map(function(q, i){
+    return '<button type="button" aria-current="' + (i === QUOTE_AT) + '" ' +
+           'aria-label="Quote ' + (i+1) + ' of ' + AI_QUOTES.length + ', ' + q.author + '" ' +
+           'onclick="showQuote(' + i + ')"></button>';
+  }).join('');
+}
+
+/* Fade the old one out, swap the words, fade the new one in. The swap happens
+   on a timer rather than on transitionend because a browser that has been
+   told to reduce motion never fires one, and the quote would never change. */
+var QUOTE_TURNING = false;
+function showQuote(i, instant){
+  var pane = document.getElementById('quoteScroller');
+  if (!pane || !AI_QUOTES.length) return;
+  var n = AI_QUOTES.length;
+  QUOTE_AT = ((i % n) + n) % n;                       // wraps both ways
+  if (instant || QUOTE_TURNING) {
+    pane.innerHTML = quoteHTML(AI_QUOTES[QUOTE_AT]);
+    quotePaintDots();
+    return;
+  }
+  QUOTE_TURNING = true;
+  pane.classList.add('turning');
+  setTimeout(function(){
+    pane.innerHTML = quoteHTML(AI_QUOTES[QUOTE_AT]);
+    quotePaintDots();
+    pane.classList.remove('turning');
+    QUOTE_TURNING = false;
+  }, 220);
+}
+
+/* Kept under its old name: the two arrows in the markup call it, and so does
+   anything else that ever did. */
+function scrollQuotes(dir){ showQuote(QUOTE_AT + (dir < 0 ? -1 : 1)); }
+
+/* Hold the stage at the height of the tallest quote, so the section below it
+   never moves when you step through them.
+
+   Every one of the nine is laid out in a hidden twin of the pane — same width,
+   same type, out of the flow so it disturbs nothing — and the tallest wins.
+   It has to be measured rather than assumed because the number of lines a
+   quote takes depends on the window width, and re-measured on a resize for
+   the same reason. It also waits for the web fonts: measured in the fallback
+   face the answer is wrong, and wrong in the direction that lets the page
+   jump. */
+function quoteFitStage(){
+  var stage = document.querySelector('.quote-stage');
+  var pane  = document.getElementById('quoteScroller');
+  if (!stage || !pane || !AI_QUOTES.length) return;
+  var w = pane.clientWidth;
+  if (!w) return;
+
+  var ghost = document.createElement('div');
+  ghost.className = 'quote-pane';
+  ghost.setAttribute('aria-hidden', 'true');
+  ghost.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;pointer-events:none;' +
+                        'max-height:none;overflow:visible;transition:none;width:' + w + 'px;';
+  stage.appendChild(ghost);
+  var tallest = 0;
+  for (var i = 0; i < AI_QUOTES.length; i++) {
+    ghost.innerHTML = quoteHTML(AI_QUOTES[i]);
+    if (ghost.offsetHeight > tallest) tallest = ghost.offsetHeight;
+  }
+  ghost.parentNode.removeChild(ghost);
+  /* One pixel of slack for sub-pixel line heights, then set the height
+     outright. Not a minimum — see the note on .quote-stage. */
+  if (tallest) stage.style.height = (tallest + 1) + 'px';
+}
+
+var QUOTE_FIT_TIMER = null;
+function quoteFitSoon(){
+  clearTimeout(QUOTE_FIT_TIMER);
+  QUOTE_FIT_TIMER = setTimeout(quoteFitStage, 120);
+}
+
 (function initQuotes(){
-  const s=document.getElementById('quoteScroller');
-  if(!s)return;
-  s.innerHTML=AI_QUOTES.map(q=>`<div class="quote-card"><p class="quote-text">${q.text}</p><p class="quote-author">${q.author} <span>, ${q.role}</span></p></div>`).join('');
+  var pane = document.getElementById('quoteScroller');
+  if (!pane) return;
+  showQuote(0, true);
+  quoteFitStage();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(quoteFitStage).catch(function(){});
+  }
+  window.addEventListener('resize', quoteFitSoon, { passive: true });
+  /* A resize event is not the only way this box changes width — a scrollbar
+     arriving elsewhere on the page does it too, and never fires one. */
+  if (window.ResizeObserver) {
+    try {
+      var seen = 0;
+      new ResizeObserver(function (entries) {
+        var w = Math.round(entries[0].contentRect.width);
+        if (w && w !== seen) { seen = w; quoteFitSoon(); }
+      }).observe(document.querySelector('.quote-section-wrap'));
+    } catch (e) {}
+  }
+  /* Left and right move between quotes, but only once the section is where
+     the reader is looking — otherwise the arrow keys would be hijacked from
+     whatever else the page is doing. */
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var home = document.getElementById('home');
+    if (!home || !home.classList.contains('active')) return;
+    var stage = document.querySelector('.quote-stage');
+    if (!stage) return;
+    var r = stage.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > (window.innerHeight || 0)) return;   // not on screen
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    scrollQuotes(e.key === 'ArrowLeft' ? -1 : 1);
+  });
 })();
-function scrollQuotes(dir){const s=document.getElementById('quoteScroller');if(s)s.scrollBy({left:dir*320,behavior:'smooth'});}
 
 /* ══════════════════════════════════════
    QUIZ
@@ -4988,7 +5274,9 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="js/session.js"></script>
 <script src="js/tools/test-tools.js"></script>
+<script src="js/core/theme.js"></script>
 <script src="js/core/footer.js"></script>
+<script src="js/core/planner.js"></script>
 
 <!-- ══════════════════ Members-only demo gate (Lab & History) ══════════════════ -->
 <style>
@@ -4999,7 +5287,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .demo-gate{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:1.5rem;background:rgba(26,14,8,.74);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);}
 .demo-gate.show{display:flex;animation:dgFade .25s ease both;}
 @keyframes dgFade{from{opacity:0}to{opacity:1}}
-.demo-gate-box{background:#fff;border-radius:24px;max-width:460px;width:100%;padding:2.4rem 2.2rem;text-align:center;box-shadow:0 30px 80px -18px rgba(0,0,0,.55);animation:dgPop .38s cubic-bezier(.34,1.5,.64,1) both;}
+.demo-gate-box{background:var(--surface);border-radius:24px;max-width:460px;width:100%;padding:2.4rem 2.2rem;text-align:center;box-shadow:0 30px 80px -18px rgba(0,0,0,.55);animation:dgPop .38s cubic-bezier(.34,1.5,.64,1) both;}
 @keyframes dgPop{from{opacity:0;transform:translateY(18px) scale(.95)}to{opacity:1;transform:none}}
 .demo-gate-box .dg-mark{width:66px;height:66px;margin:0 auto 1rem;}
 .demo-gate-box .dg-mark svg{width:100%;height:100%;display:block;}

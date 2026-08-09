@@ -58,7 +58,8 @@ body.has-site-footer > main#adminMain {
 
 .sf-brand .sf-logo {
   display: inline-flex; align-items: center; gap: .12em;
-  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.45rem;
+  font-family: 'Space Grotesk', 'Nunito', sans-serif; font-weight: 700;
+  letter-spacing: -.025em; font-size: 1.42rem;
   color: #fff; text-decoration: none; line-height: 1;
 }
 .sf-brand .sf-logo span { color: var(--accent, #C0562F); }

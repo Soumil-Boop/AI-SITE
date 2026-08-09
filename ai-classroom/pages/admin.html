@@ -4,6 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel - Seek-O-Sphere</title>
+  <!-- Which look to paint, decided before the page paints. This has to be a
+       plain inline script and it has to sit above the stylesheet links: a
+       synchronous script waits for every stylesheet declared before it, and
+       parsing waits for the script, so putting it lower delays the whole body.
+       Nothing else in the head may be moved below it for the same reason. -->
+  <script>(function(){var t;try{t=localStorage.getItem('sos_theme');}catch(e){}
+    document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');})();</script>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
        is still parsing, instead of when the first script or request needs them. -->
@@ -12,10 +19,10 @@
   <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <!-- Inline and first, so the page is the right colour on the very first
        paint rather than after the stylesheets land. -->
-  <style>html,body{background:#EFE6D8;margin:0}</style>
+  <style>html,body{background:var(--parchment);margin:0}</style>
   <link rel="stylesheet" href="../css/base/variables.css"/>
   <link rel="stylesheet" href="../css/base/reset.css"/>
   <link rel="stylesheet" href="../css/base/typography.css"/>
@@ -75,7 +82,7 @@
     .ad-search input { height:36px; width:250px; border:1px solid var(--border); border-radius:100px;
                        background:var(--gray-50); padding:0 .9rem 0 2.15rem; font-family:'Inter',sans-serif;
                        font-size:.84rem; outline:none; color:var(--text); }
-    .ad-search input:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(192,86,47,.12); }
+    .ad-search input:focus { border-color:var(--accent); background:var(--surface); box-shadow:0 0 0 3px rgba(192,86,47,.12); }
     .ad-search svg { position:absolute; left:.75rem; top:50%; transform:translateY(-50%); opacity:.45; }
 
     .ad-tabs { display:flex; gap:.35rem; padding:0 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; }
@@ -138,7 +145,7 @@
                  cursor:pointer; outline:none; appearance:none;
                  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23816654' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
                  background-repeat:no-repeat; background-position:right .8rem center; }
-    .ad-select:focus { border-color:var(--accent); background-color:#fff; box-shadow:0 0 0 3px rgba(192,86,47,.12); }
+    .ad-select:focus { border-color:var(--accent); background-color:var(--surface); box-shadow:0 0 0 3px rgba(192,86,47,.12); }
 
     .ad-school { font-size:.83rem; color:var(--ink-soft); }
     .ad-school b { color:var(--text); font-weight:600; }
@@ -153,7 +160,7 @@
     .ad-scard h3 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1rem; color:var(--text); }
     .ad-scard .meta { font-size:.79rem; color:var(--ink-soft); margin-top:.25rem; }
     .ad-code { display:flex; align-items:center; gap:.5rem; margin-top:.9rem; }
-    .ad-code code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.84rem; font-weight:600;
+    .ad-code code { font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.84rem; font-weight:600;
                     background:var(--gray-50); border:1px solid var(--border); border-radius:7px;
                     padding:.34rem .6rem; letter-spacing:.04em; color:var(--text); }
     .ad-code button { width:30px; height:30px; border:1px solid transparent; background:none; border-radius:8px;
@@ -171,7 +178,7 @@
     .ad-mini.danger:hover { background:var(--danger-tint); }
     .ad-newschool { background:var(--white); border:1px dashed var(--border); border-radius:16px; padding:1.2rem 1.3rem; }
     .ad-newschool label { display:block; font-size:.78rem; font-weight:600; color:var(--text); margin-bottom:.3rem; }
-    .ad-newschool input { width:100%; height:36px; border:1px solid var(--border); border-radius:8px; background:#fff;
+    .ad-newschool input { width:100%; height:36px; border:1px solid var(--border); border-radius:8px; background:var(--surface);
                           padding:0 .7rem; font-family:'Inter',sans-serif; font-size:.85rem; color:var(--text);
                           outline:none; margin-bottom:.7rem; }
     .ad-newschool input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,86,47,.12); }
@@ -216,6 +223,9 @@
       .ad-search { width:100%; }
     }
   </style>
+  <!-- Last stylesheet in the head. Every rule inside is locked behind
+       html[data-theme="dark"], so it contributes nothing in the light theme. -->
+  <link rel="stylesheet" href="../css/theme-dark.css"/>
 </head>
 <body>
 <div id="nav-mount"></div>
@@ -978,7 +988,13 @@ function closeUserModal(){ document.getElementById('userModal').style.display='n
 function renderUserDetail(u, rows){
   var body = document.getElementById('umBody');
   var totalQ = rows.reduce(function(s,r){ return s+(r.questions||0); },0);
-  if (!rows.length || !totalQ) { body.innerHTML = '<div class="um-empty">This user hasn\'t practised yet — no scores to show.</div>'; return; }
+  if (!rows.length || !totalQ) {
+    /* No practice yet is not a reason to hide the planner — setting a task
+       for someone who has not started is exactly when it is wanted. */
+    body.innerHTML = '<div class="um-empty">This user hasn\'t practised yet — no scores to show.</div>';
+    mountPlanBlock(body, u);
+    return;
+  }
   var totalC = rows.reduce(function(s,r){ return s+(r.correct||0); },0);
   var acc = Math.round(totalC/totalQ*100);
   var byDate={}; rows.forEach(function(r){ byDate[r.date]=1; });
@@ -1009,6 +1025,139 @@ function renderUserDetail(u, rows){
     + '</div>'
     + '<h3 class="um-h">Progress by Subject</h3><div class="dash-subj-list">'+subjHTML+'</div>'
     + '<h3 class="um-h">Recent Sessions</h3><div class="dash-table-wrap"><table class="dash-table"><thead><tr><th>Date</th><th>Subject</th><th>Type</th><th>Questions</th><th>Accuracy</th></tr></thead><tbody>'+sessHTML+'</tbody></table></div>';
+  mountPlanBlock(body, u);
+}
+
+/* ── Setting work in a student's day planner ─────────────────────
+   An admin can put something in a student's plan: "16:00 — finish the
+   algebra worksheet". It appears in their planner marked with who set it,
+   and they can tick it off but not delete it.
+
+   What an admin is shown here is ONLY what an admin has set. A day is one
+   Firestore document, so the rules cannot hand over half of it — reading
+   the document to add to it means the student's own notes come along. They
+   are written straight back untouched and never put on screen. That is the
+   whole of the boundary: a plan is the student's, and this is a place to
+   add to it, not a window into it. */
+var PLAN_ADMIN_NAME = '';
+function planAdminName() {
+  if (PLAN_ADMIN_NAME) return PLAN_ADMIN_NAME;
+  var n = '';
+  try { n = (SOS && SOS.profile && SOS.profile.name) || localStorage.getItem('sos_name') || ''; } catch (e) {}
+  PLAN_ADMIN_NAME = n || 'your school';
+  return PLAN_ADMIN_NAME;
+}
+function planToday() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function planTidyTime(raw) {
+  var t = String(raw || '').trim().toLowerCase().replace(/\s+/g, '');
+  if (!t) return '';
+  var m = t.match(/^(\d{1,2})[:.]?(\d{2})?(am|pm)?$/);
+  if (!m) return '';
+  var h = parseInt(m[1],10), mi = m[2] ? parseInt(m[2],10) : 0, ap = m[3];
+  if (isNaN(h) || h > 24 || mi > 59) return '';
+  if (ap === 'pm' && h < 12) h += 12;
+  if (ap === 'am' && h === 12) h = 0;
+  if (h > 23) h = h % 24;
+  return String(h).padStart(2,'0') + ':' + String(mi).padStart(2,'0');
+}
+function planRef(uid, date) {
+  return db.collection('planner').doc(uid).collection('days').doc(date);
+}
+
+function mountPlanBlock(body, u) {
+  var uid = u.uid;
+  if (!uid) return;
+  var box = document.createElement('div');
+  box.className = 'um-plan';
+  box.innerHTML =
+    '<h3 class="um-h">Set work in their plan</h3>' +
+    '<p class="um-plan-note">They see this in their planner marked as yours, and can tick it off. ' +
+    'Their own notes are private and are not shown here.</p>' +
+    '<div class="um-plan-row">' +
+      '<input type="date" id="planDate" class="um-in" value="' + planToday() + '" aria-label="Date"/>' +
+      '<input type="text" id="planTime" class="um-in um-in-t" maxlength="5" placeholder="4pm" aria-label="Time, optional"/>' +
+      '<input type="text" id="planText" class="um-in um-in-w" maxlength="120" placeholder="What should they do?" aria-label="What should they do?"/>' +
+      '<button class="ad-mini" id="planAdd" type="button">Set</button>' +
+    '</div>' +
+    '<div class="um-plan-list" id="planList"></div>';
+  body.appendChild(box);
+
+  document.getElementById('planDate').addEventListener('change', function(){ loadPlanSet(uid); });
+  document.getElementById('planAdd').addEventListener('click', function(){ addPlanItem(uid); });
+  document.getElementById('planText').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); addPlanItem(uid); }
+  });
+  loadPlanSet(uid);
+}
+
+/* Only the items an admin set. Everything else in the document is left
+   alone and unread. */
+function loadPlanSet(uid) {
+  var date = document.getElementById('planDate').value || planToday();
+  var list = document.getElementById('planList');
+  list.innerHTML = '<p class="um-plan-empty">Loading…</p>';
+  planRef(uid, date).get().then(function(snap){
+    var items = (snap.exists && (snap.data() || {}).items) || [];
+    var mine = items.filter(function(i){ return i && i.by; });
+    if (!mine.length) { list.innerHTML = '<p class="um-plan-empty">Nothing set for this day.</p>'; return; }
+    list.innerHTML = mine.map(function(i){
+      return '<div class="um-plan-item' + (i.done ? ' done' : '') + '">' +
+        '<span class="um-plan-when">' + (i.at ? adEsc(i.at) : '—') + '</span>' +
+        '<span class="um-plan-what">' + adEsc(i.text) + '</span>' +
+        '<span class="um-plan-state">' + (i.done ? 'done' : 'to do') + '</span>' +
+        '<button class="um-plan-drop" type="button" data-text="' + adEsc(i.text) + '" ' +
+          'aria-label="Remove this task">&times;</button>' +
+      '</div>';
+    }).join('');
+    [].forEach.call(list.querySelectorAll('.um-plan-drop'), function(b){
+      b.addEventListener('click', function(){ dropPlanItem(uid, b.getAttribute('data-text')); });
+    });
+  }).catch(function(){
+    list.innerHTML = '<p class="um-plan-empty">Could not read their plan. ' +
+      'Publish firestore.rules if you have not yet.</p>';
+  });
+}
+
+/* Read, add, write back — so a task set here cannot wipe out whatever the
+   student wrote a moment ago. */
+function addPlanItem(uid) {
+  var date = document.getElementById('planDate').value || planToday();
+  var textEl = document.getElementById('planText');
+  var timeEl = document.getElementById('planTime');
+  var text = (textEl.value || '').trim();
+  if (!text) { textEl.focus(); return; }
+  var ref = planRef(uid, date);
+  ref.get().then(function(snap){
+    var items = (snap.exists && (snap.data() || {}).items) || [];
+    items = items.slice();
+    items.push({ at: planTidyTime(timeEl.value), text: text, done: false, by: planAdminName() });
+    items.sort(function(a,b){
+      if (!a.at && !b.at) return 0;
+      if (!a.at) return 1;
+      if (!b.at) return -1;
+      return a.at < b.at ? -1 : (a.at > b.at ? 1 : 0);
+    });
+    return ref.set({ items: items, updatedAt: Date.now() });
+  }).then(function(){
+    textEl.value = ''; timeEl.value = '';
+    loadPlanSet(uid);
+  }).catch(function(){
+    document.getElementById('planList').innerHTML =
+      '<p class="um-plan-empty">Could not save. Publish firestore.rules if you have not yet.</p>';
+  });
+}
+
+function dropPlanItem(uid, text) {
+  var date = document.getElementById('planDate').value || planToday();
+  var ref = planRef(uid, date);
+  ref.get().then(function(snap){
+    var items = (snap.exists && (snap.data() || {}).items) || [];
+    var out = items.filter(function(i){ return !(i && i.by && i.text === text); });
+    return ref.set({ items: out, updatedAt: Date.now() });
+  }).then(function(){ loadPlanSet(uid); }).catch(function(){});
 }
 </script>
 <script src="../js/core/utils.js"></script>
@@ -1016,6 +1165,7 @@ function renderUserDetail(u, rows){
 <script src="../js/core/nav.js"></script>
 <script>mountNav('admin.html', { noBanner: true });</script>
 <script src="../js/session.js"></script>
+<script src="../js/core/theme.js"></script>
 <script src="../js/core/footer.js"></script>
 </body>
 </html>

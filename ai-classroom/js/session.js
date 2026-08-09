@@ -147,7 +147,20 @@
       '</div>';
   }
 
+  /* Everyone who wants to know when the session resolves, and the answer
+     once it has. Keeping the answer matters: subscribers arrive at different
+     moments — footer.js registers on DOMContentLoaded, the home page's resume
+     strip later still — and auth can easily resolve before they get there. A
+     list-only version silently never calls them, which showed up as a footer
+     stuck on "Sign in" for a signed-in person on any slow load. A late
+     subscriber now gets the answer immediately instead of waiting for a
+     second sign-in that never comes. */
   var callbacks = [];
+  var settled = false, lastUser = null, lastProfile = null;
+  function fire(user, profile){
+    settled = true; lastUser = user; lastProfile = profile;
+    callbacks.forEach(function(cb){ try { cb(user, profile); } catch(e){} });
+  }
 
   /* One profile read per page load, shared by everyone who wants it. The
      dashboard and the admin panel used to each fire their own copy of this
@@ -157,7 +170,10 @@
 
   window.SOS = {
     auth: auth, db: db, P: P, HOME: HOME, user: null, profile: null,
-    onSession: function(cb){ callbacks.push(cb); },
+    onSession: function(cb){
+      callbacks.push(cb);
+      if (settled) { try { cb(lastUser, lastProfile); } catch(e){} }
+    },
     profileOnce: function(uid){
       if (!db) return Promise.reject(new Error('firestore not loaded on this page'));
       if (!profileRead) profileRead = db.collection('users').doc(uid).get();
@@ -192,7 +208,7 @@
     if (!user) {
       SOS.profile = null; forgetCache();
       render(null, null);
-      callbacks.forEach(function(cb){ try { cb(null, null); } catch(e){} });
+      fire(null, null);
       return;
     }
     // A different person than the cache belongs to: drop it all before anything
@@ -219,15 +235,15 @@
           store('sos_school', profile.schoolName || null);
         }
         render(user, profile);
-        callbacks.forEach(function(cb){ try { cb(user, profile); } catch(e){} });
+        fire(user, profile);
       }).catch(function(){
         render(user, null);
-        callbacks.forEach(function(cb){ try { cb(user, null); } catch(e){} });
+        fire(user, null);
       });
     } else {
       // Light page (no firestore): render from cached name, no profile fetch.
       render(user, null);
-      callbacks.forEach(function(cb){ try { cb(user, null); } catch(e){} });
+      fire(user, null);
     }
   });
 })();

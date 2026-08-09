@@ -43,15 +43,15 @@
 }
 
 /* Tag colour variants */
-.tc-blue   { background: #F1DACF; color: var(--brand); }
+.tc-blue   { background: var(--brand-light); color: var(--brand); }
 .tc-coral  { background: var(--accent-light); color: var(--accent-dark); }
-.tc-purple { background: #E6DBC9; color: var(--purple); }
-.tc-green  { background: #E2E8DC; color: var(--green); }
+.tc-purple { background: var(--cream); color: var(--purple); }
+.tc-green  { background: var(--green-light); color: var(--green); }
 .tc-gold   { background: var(--accent-light); color: var(--accent-dark); }
 
 /* ── Ethics Cards ── */
 .ethics-card {
-  background: white;
+  background: var(--surface);
   border-radius: var(--radius);
   padding: 1.75rem;
   border-top: 4px solid transparent;

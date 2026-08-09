@@ -169,6 +169,30 @@ service cloud.firestore {
         || (isSchoolAdmin() && resource.data.bucket == 'school:' + mySchoolId());
     }
 
+    // ── The day planner (per user → per date) ─────────────────
+    // The student's own, and their school's admin may set them work in it.
+    // A school admin reaches only their own school's students — the same
+    // bucket test the progress rule below uses — so this opens nothing
+    // across a school boundary.
+    //
+    // Note what the rules cannot do: they are all-or-nothing per document,
+    // and a day is one document, so an admin allowed to add an item is
+    // technically able to read the whole day. The panel therefore shows an
+    // admin only the items an admin set; a student's own notes to
+    // themselves are round-tripped untouched and never displayed. That is
+    // a decision in the code rather than a guarantee from the rules, and
+    // it is written down here so nobody later mistakes it for one.
+    match /planner/{uid}/{document=**} {
+      allow read, write: if isSignedIn() && (
+        request.auth.uid == uid
+        || isOwner()
+        || (isSchoolAdmin()
+            && exists(/databases/$(database)/documents/users/$(uid))
+            && get(/databases/$(database)/documents/users/$(uid)).data.bucket
+                 == 'school:' + mySchoolId())
+      );
+    }
+
     // ── Practice progress (per user → per day/subject) ────────
     // Yours to write. Readable by you, by the owner, and by the admin of
     // the school you belong to — the get() below is what ties a progress
