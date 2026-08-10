@@ -125,6 +125,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="../js/core/role.js"></script>
 
 <script>
 firebase.initializeApp({
@@ -184,7 +185,13 @@ auth.onAuthStateChanged(function(user) {
   var cacheMine = false;
   try { cacheMine = localStorage.getItem('sos_uid') === user.uid; } catch (e) {}
   if (!cacheMine) { try { (window.SOSCache || { forget: function(){} }).forget(); } catch (e) {} }
-  try { if (cacheMine && adminRole(localStorage.getItem('sos_role'))) { window.location.replace('admin.html'); return; } } catch (e) {}
+  /* Asked of the tab first and the machine second. The tab's answer was
+     confirmed against the account during this very sign-in; the machine's
+     can be left over from one that ended. Either way an admin never lands
+     here — and if neither knows, the fresh read below decides. */
+  if (window.SOSRole && SOSRole.isAdmin(SOSRole.known(user.uid))) {
+    window.location.replace('admin.html'); return;
+  }
   currentUid   = user.uid;
   currentEmail = user.email || '';
   // The name, the picture and the role are all painted by session.js into the
@@ -232,6 +239,7 @@ function loadDashboard(uid) {
       localStorage.setItem('sos_uid', uid);
       localStorage.setItem('sos_role', profile.role || 'student');
     } catch (e) {}
+    if (window.SOSRole) SOSRole.remember(uid, profile.role || 'student');
     if (adminRole(profile.role)) { window.location.replace('admin.html'); return; }
 
     document.getElementById('statStreak').textContent = profile.bestStreak || 0;
