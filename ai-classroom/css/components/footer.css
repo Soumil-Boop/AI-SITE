@@ -14,7 +14,13 @@
 body.has-site-footer { display: flex; flex-direction: column; min-height: 100vh; }
 /* Flex items may shrink when space runs short; nothing here should. */
 body.has-site-footer > * { flex-shrink: 0; }
-body.has-site-footer > .site-footer { margin-top: auto; }
+body.has-site-footer > .site-footer { margin-top: auto;
+  /* The home page carries a sky fixed to the window. A fixed element
+     paints above anything that is not positioned, so without this the
+     stars come through the footer. */
+  position: relative;
+  z-index: 2;
+}
 
 /* The page's own content takes the slack, so the space above the footer is
    filled by the page's own background rather than showing a band of body

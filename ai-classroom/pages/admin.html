@@ -9,8 +9,7 @@
        synchronous script waits for every stylesheet declared before it, and
        parsing waits for the script, so putting it lower delays the whole body.
        Nothing else in the head may be moved below it for the same reason. -->
-  <script>(function(){var t;try{t=localStorage.getItem('sos_theme');}catch(e){}
-    document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');})();</script>
+  <script>document.documentElement.setAttribute('data-theme','dark');</script>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
        is still parsing, instead of when the first script or request needs them. -->
@@ -1066,6 +1065,84 @@ function planRef(uid, date) {
   return db.collection('planner').doc(uid).collection('days').doc(date);
 }
 
+/* ── Writing to somebody else's day, safely ──────────────────────
+   This block used to be a plain read-add-write, and all three steps of
+   that were wrong in ways that only show up against the real Firestore
+   rather than against a test.
+
+   The read came from the local cache, because that is what get() does
+   when persistence is on — and persistence is on, two hundred lines up.
+   So the list being added to could be minutes old, and writing it back
+   put the old day on the server: a note the student had made since was
+   simply gone. That is the worst of the three, because nothing anywhere
+   reported it.
+
+   The write could also never finish. An offline tab with persistence
+   queues a write and returns a promise that settles when the server
+   eventually acknowledges it — which, offline, is never. Neither .then
+   nor .catch runs, so the panel sat there with the typed task still in
+   the box and no message, looking exactly like a button that does
+   nothing.
+
+   And when it did fail, what was printed was a guess: "publish
+   firestore.rules", regardless of what Firestore had actually said.
+
+   All three are the same fix. A transaction reads from the server, not
+   the cache, and refuses rather than queues when there is no server to
+   read from. A deadline means something is always reported. And the
+   error is read rather than assumed. */
+function planDeadline(promise, ms) {
+  return new Promise(function (resolve, reject) {
+    var settled = false;
+    var timer = setTimeout(function () {
+      if (settled) return;
+      settled = true;
+      var e = new Error('Firestore did not answer.');
+      e.code = 'deadline-exceeded';
+      reject(e);
+    }, ms);
+    promise.then(function (v) {
+      if (settled) return; settled = true; clearTimeout(timer); resolve(v);
+    }, function (e) {
+      if (settled) return; settled = true; clearTimeout(timer); reject(e);
+    });
+  });
+}
+
+/* Read the day from the server, change it, write it back — as one thing,
+   so nothing can slip in between the read and the write. */
+function planMutate(uid, date, change) {
+  var ref = planRef(uid, date);
+  return planDeadline(db.runTransaction(function (tx) {
+    return tx.get(ref).then(function (snap) {
+      var items = (snap.exists && (snap.data() || {}).items) || [];
+      tx.set(ref, { items: change(items.slice()), updatedAt: Date.now() });
+    });
+  }), 9000);
+}
+
+/* What Firestore actually said, turned into something worth reading. */
+function planTrouble(e) {
+  var code = String((e && e.code) || '');
+  if (/permission/.test(code)) {
+    return 'Firestore refused this. The planner rules are not published yet — ' +
+           'Firebase Console → Firestore Database → Rules, paste firestore.rules, Publish.';
+  }
+  if (/unavailable|deadline/.test(code)) {
+    return 'No answer from Firestore, so nothing was saved. Check the connection and try again.';
+  }
+  if (/not-found/.test(code)) {
+    return 'That student\'s account could not be found, so nothing was saved.';
+  }
+  return 'Not saved. Firestore said: ' + ((e && e.message) || 'something went wrong');
+}
+function planSay(msg, bad) {
+  var el = document.getElementById('planSaid');
+  if (!el) return;
+  el.textContent = msg || '';
+  el.className = 'um-plan-said' + (msg ? ' on' : '') + (bad ? ' bad' : '');
+}
+
 function mountPlanBlock(body, u) {
   var uid = u.uid;
   if (!uid) return;
@@ -1081,6 +1158,7 @@ function mountPlanBlock(body, u) {
       '<input type="text" id="planText" class="um-in um-in-w" maxlength="120" placeholder="What should they do?" aria-label="What should they do?"/>' +
       '<button class="ad-mini" id="planAdd" type="button">Set</button>' +
     '</div>' +
+    '<p class="um-plan-said" id="planSaid" role="status" aria-live="polite"></p>' +
     '<div class="um-plan-list" id="planList"></div>';
   body.appendChild(box);
 
@@ -1098,7 +1176,20 @@ function loadPlanSet(uid) {
   var date = document.getElementById('planDate').value || planToday();
   var list = document.getElementById('planList');
   list.innerHTML = '<p class="um-plan-empty">Loading…</p>';
-  planRef(uid, date).get().then(function(snap){
+  /* From the server, so what is on screen is what the student's account
+     holds rather than what this tab happened to see last. If the server
+     cannot be reached the cached copy is better than an error — but it is
+     labelled, because an admin deciding whether a task saved needs to know
+     which of the two they are looking at. */
+  var ref = planRef(uid, date);
+  var stale = false;
+  planDeadline(ref.get({ source: 'server' }), 9000)
+    .catch(function (e) {
+      if (/permission/.test(String((e && e.code) || ''))) throw e;
+      stale = true;
+      return ref.get();
+    })
+    .then(function(snap){
     var items = (snap.exists && (snap.data() || {}).items) || [];
     var mine = items.filter(function(i){ return i && i.by; });
     if (!mine.length) { list.innerHTML = '<p class="um-plan-empty">Nothing set for this day.</p>'; return; }
@@ -1114,49 +1205,73 @@ function loadPlanSet(uid) {
     [].forEach.call(list.querySelectorAll('.um-plan-drop'), function(b){
       b.addEventListener('click', function(){ dropPlanItem(uid, b.getAttribute('data-text')); });
     });
-  }).catch(function(){
-    list.innerHTML = '<p class="um-plan-empty">Could not read their plan. ' +
-      'Publish firestore.rules if you have not yet.</p>';
+  }).then(function(){
+    if (stale) planSay('Showing this browser\'s last copy — Firestore could not be reached ' +
+                       'just now, so this may be out of date.', true);
+  }).catch(function(e){
+    list.innerHTML = '<p class="um-plan-empty">Could not read their plan.</p>';
+    planSay(planTrouble(e), true);
   });
 }
 
-/* Read, add, write back — so a task set here cannot wipe out whatever the
-   student wrote a moment ago. */
+/* Add one task to the student's day.
+
+   The task is not counted as set until it has been read back out of the
+   account. "It saved" is a claim about the server, and the only honest way
+   to make it is to ask the server. */
 function addPlanItem(uid) {
   var date = document.getElementById('planDate').value || planToday();
   var textEl = document.getElementById('planText');
   var timeEl = document.getElementById('planTime');
+  var btn    = document.getElementById('planAdd');
   var text = (textEl.value || '').trim();
   if (!text) { textEl.focus(); return; }
-  var ref = planRef(uid, date);
-  ref.get().then(function(snap){
-    var items = (snap.exists && (snap.data() || {}).items) || [];
-    items = items.slice();
-    items.push({ at: planTidyTime(timeEl.value), text: text, done: false, by: planAdminName() });
+
+  var item = { at: planTidyTime(timeEl.value), text: text, done: false, by: planAdminName() };
+  btn.disabled = true; btn.textContent = 'Setting…';
+  planSay('');
+
+  planMutate(uid, date, function (items) {
+    items.push(item);
     items.sort(function(a,b){
       if (!a.at && !b.at) return 0;
       if (!a.at) return 1;
       if (!b.at) return -1;
       return a.at < b.at ? -1 : (a.at > b.at ? 1 : 0);
     });
-    return ref.set({ items: items, updatedAt: Date.now() });
+    return items;
   }).then(function(){
+    /* Read it back from the server before saying a word about it. */
+    return planDeadline(planRef(uid, date).get({ source: 'server' }), 9000);
+  }).then(function(snap){
+    var items = (snap.exists && (snap.data() || {}).items) || [];
+    var landed = items.some(function(i){
+      return i && i.by && i.text === item.text && (i.at || '') === (item.at || '');
+    });
+    if (!landed) throw Object.assign(new Error('The account does not have it.'), { code: 'lost' });
     textEl.value = ''; timeEl.value = '';
+    planSay('Set in their plan for ' + date + '.');
     loadPlanSet(uid);
-  }).catch(function(){
-    document.getElementById('planList').innerHTML =
-      '<p class="um-plan-empty">Could not save. Publish firestore.rules if you have not yet.</p>';
+  }).catch(function(e){
+    /* Whatever went wrong, what was typed stays in the box so it does not
+       have to be typed again. */
+    planSay(planTrouble(e), true);
+  }).then(function(){
+    btn.disabled = false; btn.textContent = 'Set';
   });
 }
 
 function dropPlanItem(uid, text) {
   var date = document.getElementById('planDate').value || planToday();
-  var ref = planRef(uid, date);
-  ref.get().then(function(snap){
-    var items = (snap.exists && (snap.data() || {}).items) || [];
-    var out = items.filter(function(i){ return !(i && i.by && i.text === text); });
-    return ref.set({ items: out, updatedAt: Date.now() });
-  }).then(function(){ loadPlanSet(uid); }).catch(function(){});
+  planSay('');
+  planMutate(uid, date, function (items) {
+    return items.filter(function(i){ return !(i && i.by && i.text === text); });
+  }).then(function(){
+    planSay('Taken out of their plan.');
+    loadPlanSet(uid);
+  }).catch(function(e){
+    planSay(planTrouble(e), true);
+  });
 }
 </script>
 <script src="../js/core/utils.js"></script>
