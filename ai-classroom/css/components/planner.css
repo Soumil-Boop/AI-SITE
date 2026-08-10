@@ -86,8 +86,55 @@
 .pl-fold:hover { color: var(--text); border-color: var(--accent); }
 .pl-fold svg { width: 13px; height: 13px; }
 
+/* ── Day · Week · Month ──────────────────────────────────────────
+   A segmented control rather than a dropdown: three options that are
+   switched between constantly should cost one press, not two. */
+.pl-views {
+  display: flex; gap: .2rem; margin: .6rem .8rem 0;
+  padding: .18rem; border-radius: 9px;
+  background: var(--gray-50); border: 1px solid var(--border);
+}
+.pl-views button {
+  flex: 1; padding: .32rem .1rem; border: 0; border-radius: 7px; cursor: pointer;
+  background: none; font-family: inherit; font-size: .7rem; font-weight: 600;
+  letter-spacing: .01em; color: var(--muted); transition: background .16s, color .16s;
+}
+.pl-views button:hover { color: var(--text); }
+.pl-views button[aria-selected="true"] {
+  background: var(--surface); color: var(--text);
+  box-shadow: 0 1px 2px rgba(0,0,0,.28);
+}
+
+/* Back, forward, and what you are looking at */
+.pl-nav {
+  display: flex; align-items: center; gap: .35rem;
+  padding: .55rem .8rem .5rem;
+}
+.pl-nav .pl-range {
+  font-family: 'Space Grotesk', 'Nunito', sans-serif; font-weight: 700;
+  font-size: .82rem; color: var(--text); letter-spacing: -.01em;
+  margin-right: auto; padding-left: .15rem;
+}
+.pl-step {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  width: 24px; height: 24px; border-radius: 7px; cursor: pointer;
+  display: grid; place-items: center; flex-shrink: 0; padding: 0; order: 3;
+}
+.pl-step[data-step="-1"] { order: 2; }
+.pl-step:hover { color: var(--text); border-color: var(--accent); }
+.pl-step svg { width: 13px; height: 13px; }
+.pl-today {
+  order: 1; background: none; border: 1px solid var(--border); cursor: pointer;
+  color: var(--accent); font-family: inherit; font-size: .66rem; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: .22rem .5rem; border-radius: 7px; flex-shrink: 0;
+}
+.pl-today:hover { border-color: var(--accent); }
+.pl-today[hidden] { display: none; }
+
 /* The week strip */
-.pl-days { display: flex; gap: .25rem; padding: .7rem .8rem; border-bottom: 1px solid var(--border); }
+.pl-days { display: flex; gap: .25rem; padding: .2rem .8rem .7rem; border-bottom: 1px solid var(--border); }
+.pl-days[hidden] { display: none; }
 .pl-days button {
   flex: 1; padding: .4rem .1rem .45rem; border: 1px solid transparent; border-radius: 8px;
   background: none; cursor: pointer; display: flex; flex-direction: column;
@@ -112,6 +159,42 @@
 }
 .pl-days button[aria-current="true"] i { background: var(--on-fill); }
 .pl-days button i[hidden] { visibility: hidden; display: block; }
+/* Today, when today is not the day being looked at. */
+.pl-days button.now b { color: var(--accent); }
+.pl-days button.now[aria-current="true"] b { color: var(--on-fill); }
+
+/* ── The month ───────────────────────────────────────────────────
+   Numbers and a dot, nothing else. There is no room in 320px for a
+   line of text in a cell, and a grid that tries becomes unreadable
+   at exactly the moment it has something to say. */
+.pl-grid { padding: .2rem .7rem .7rem; border-bottom: 1px solid var(--border); }
+.pl-grid[hidden] { display: none; }
+.pl-dow, .pl-cells { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.pl-dow span {
+  text-align: center; font-size: .56rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); padding-bottom: .3rem;
+}
+.pl-cells button {
+  position: relative; aspect-ratio: 1 / 1; min-height: 30px;
+  border: 1px solid transparent; border-radius: 7px; cursor: pointer;
+  background: none; font-family: 'Space Grotesk', 'Nunito', sans-serif;
+  font-weight: 600; font-size: .76rem; color: var(--text); line-height: 1;
+  display: grid; place-items: center; padding: 0 0 4px;
+}
+.pl-cells button:hover { background: var(--gray-50); }
+.pl-cells button.out { color: var(--muted); opacity: .45; }
+.pl-cells button.now { color: var(--accent); font-weight: 700; }
+.pl-cells button.on  { background: var(--accent); color: var(--on-fill); border-color: var(--accent); }
+/* The dot sits under the number rather than beside it, so a two-digit
+   date and a one-digit date are still the same shape. */
+.pl-cells button i {
+  position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%);
+  width: 4px; height: 4px; border-radius: 50%; background: var(--accent);
+  opacity: 0;
+}
+.pl-cells button.has i   { opacity: 1; }
+.pl-cells button.clear i { opacity: .35; }        /* everything on it is done */
+.pl-cells button.on i    { background: var(--on-fill); }
 
 /* The list */
 .pl-list { flex: 1; overflow-y: auto; padding: .5rem .55rem; min-height: 5rem;
@@ -146,6 +229,32 @@
 .pl-item .pl-drop:hover { color: var(--accent); }
 
 .pl-empty { padding: 1.6rem 1rem; text-align: center; color: var(--muted); font-size: .82rem; line-height: 1.6; }
+
+/* ── The week, read as one list ──────────────────────────────────
+   Every day is named, including the empty ones. Three blank days is a
+   fact about the week; skipping them makes it look fuller than it is. */
+.pl-dayblock { padding: .1rem 0 .35rem; }
+.pl-dayblock + .pl-dayblock { border-top: 1px solid var(--border); margin-top: .35rem; }
+.pl-dayhead {
+  display: flex; align-items: baseline; gap: .45rem; width: 100%;
+  background: none; border: 0; cursor: pointer; font-family: inherit;
+  padding: .45rem .45rem .3rem; text-align: left;
+}
+.pl-dayhead b {
+  font-family: 'Space Grotesk', 'Nunito', sans-serif; font-weight: 700;
+  font-size: .74rem; letter-spacing: .02em; color: var(--muted);
+}
+.pl-dayhead em {
+  font-style: normal; font-size: .6rem; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--accent);
+}
+.pl-dayblock.now .pl-dayhead b { color: var(--text); }
+.pl-dayblock.on  .pl-dayhead b { color: var(--accent); }
+.pl-dayhead:hover b { color: var(--text); }
+.pl-none {
+  margin: 0; padding: .15rem .6rem .4rem; font-size: .76rem;
+  color: var(--muted); opacity: .7;
+}
 
 /* Adding something */
 .pl-add { display: flex; gap: .35rem; padding: .6rem .7rem .75rem; border-top: 1px solid var(--border); }

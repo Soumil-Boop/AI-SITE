@@ -33,7 +33,12 @@
   function forgetCache(){
     CACHE_KEYS.forEach(function(k){ store(k, null); });
     store('sos_uid', null);
+    store('sos_school_id', null);
     tabStore('sos_tab', null);
+    /* The tab's confirmed role goes with it. It is what keeps an admin on
+       the panel through a failed read, so it must not outlive the sign-in
+       that earned it — otherwise the next person in this tab inherits it. */
+    if (window.SOSRole) SOSRole.forget();
   }
   window.SOSCache = { keys: CACHE_KEYS, forget: forgetCache, uid: function(){ return read('sos_uid'); } };
 
@@ -127,8 +132,14 @@
     if (!el) return;
     if (!user) { el.innerHTML = '<a href="' + P + 'login.html" class="topbar-auth">Sign In</a>'; return; }
     // Both admin levels belong on the panel; only students see the dashboard.
-    var role = (profile && profile.role) || read('sos_role');
-    var isAdmin = role === 'owner' || role === 'schooladmin' || role === 'admin';
+    /* The tab's confirmed answer first: on a page where the profile has not
+       arrived yet, the machine's cache may be a leftover and '' would put
+       "My Dashboard" in an admin's own menu. */
+    var role = (profile && profile.role)
+            || (window.SOSRole && SOSRole.known(user.uid))
+            || read('sos_role');
+    var isAdmin = window.SOSRole ? SOSRole.isAdmin(role)
+                                 : (role === 'owner' || role === 'schooladmin' || role === 'admin');
     var dashHref  = P + (isAdmin ? 'admin.html' : 'dashboard.html');
     var dashLabel = isAdmin ? 'Admin Panel' : 'My Dashboard';
     var title = roleTitle(profile, user);
@@ -233,6 +244,8 @@
           store('sos_photo', profile.photo || null);
           store('sos_role', profile.role || 'student');
           store('sos_school', profile.schoolName || null);
+          if (profile.schoolId) store('sos_school_id', profile.schoolId);
+          if (window.SOSRole) SOSRole.remember(user.uid, profile.role || 'student');
         }
         render(user, profile);
         fire(user, profile);

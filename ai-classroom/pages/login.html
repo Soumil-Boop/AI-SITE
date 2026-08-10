@@ -332,6 +332,7 @@ if (document.readyState === 'loading') {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="../js/core/role.js"></script>
 <script src="../js/geo-data.js"></script>
 
 <script>
@@ -388,8 +389,21 @@ function isAdminRole(role) { return role === 'owner' || role === 'schooladmin' |
 function routeByRole(snap, uid) {
   var data = snap && snap.exists ? snap.data() : {};
   var role = data.role || 'student';
-  cacheProfile(data, uid || (snap && snap.id));
+  var who  = uid || (snap && snap.id);
+  cacheProfile(data, who);
+  SOSRole.remember(who, role);          // stands for the rest of this tab
   window.location.replace(isAdminRole(role) ? 'admin.html' : 'dashboard.html');
+}
+
+/* When the account cannot be read, the one thing we must not do is guess
+   'student'. This used to send everybody to the dashboard, so an admin who
+   hit a refused read — or simply a bad moment on the network — was walked
+   into the student view of their own site. Fall back to what this tab
+   already knows, and if it knows nothing, go to the front page: being on
+   the home page is never wrong, and the sign-in page is a loop. */
+function routeBlind(uid) {
+  var where = SOSRole.home(uid, true);
+  window.location.replace(where || '../index.html');
 }
 
 auth.onAuthStateChanged(function(user) {
@@ -398,7 +412,7 @@ auth.onAuthStateChanged(function(user) {
   // Already-signed-in visitor on the login page → verify role once, then route.
   db.collection('users').doc(user.uid).get()
     .then(function(snap){ routeByRole(snap, user.uid); })
-    .catch(function(){ window.location.replace('dashboard.html'); });
+    .catch(function(){ routeBlind(user.uid); });
 });
 
 function toggleType() {
@@ -458,6 +472,8 @@ function cacheProfile(p, uid) {
     if (p.type)       localStorage.setItem('sos_type', p.type);
     if (p.schoolName) localStorage.setItem('sos_school', p.schoolName);
     localStorage.setItem('sos_role', p.role || 'student');
+    /* And in the tab, which is what survives a failed read later on. */
+    if (uid && window.SOSRole) SOSRole.remember(uid, p.role || 'student');
     localStorage.setItem('sos_enjoys', (p.enjoys || []).join(','));
     localStorage.setItem('sos_hard',   (p.finds_hard || []).join(','));
   } catch (e) {}
@@ -682,15 +698,21 @@ function handleGoogle() {
     // Only trust the form when the sign-up form is the one on screen.
     var onSignUp = document.getElementById('signUpForm');
     onSignUp = !!onSignUp && getComputedStyle(onSignUp).display !== 'none';
+    GOOGLE_UID = cred.user.uid;
     return createProfile(cred.user.uid, cred.user.displayName, cred.user.email, onSignUp, false, null);
   }).then(function() {
-    window.location.href = 'dashboard.html';
+    /* createProfile has just read or written the profile, so the role is
+       known — it used to be thrown away here and everyone, admin or not,
+       was sent to the student dashboard. */
+    var where = SOSRole.home(GOOGLE_UID, true);
+    window.location.href = where || 'dashboard.html';
   }).catch(function(err) {
     dropCurtain();
     console.error(err);
     alert('Google sign-in failed. Please try again.');
   });
 }
+var GOOGLE_UID = null;
 
 function handleGuest() {
   auth.signInAnonymously().then(function(cred) {

@@ -333,6 +333,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="../js/core/role.js"></script>
 
 <script>
 firebase.initializeApp({
@@ -388,17 +389,58 @@ auth.onAuthStateChanged(function(user) {
       localStorage.setItem('sos_uid', user.uid);
       localStorage.setItem('sos_role', MY_ROLE);
     } catch(e){}
-    if (!isAdminRole(MY_ROLE)) { window.location.replace('../index.html'); return; }
+    if (!isAdminRole(MY_ROLE)) {
+      SOSRole.forget();                        // confirmed a student: do not remember otherwise
+      window.location.replace('../index.html');
+      return;
+    }
+    SOSRole.remember(user.uid, MY_ROLE);       // and it stands for the rest of this tab
     if (MY_ROLE === 'schooladmin') {
       if (!p.schoolId) { showNoSchool(); return; }
       MY_SCHOOL = { id: p.schoolId, name: p.schoolName || 'your school' };
+      /* Kept because a school admin's every query needs it, so without it
+         the fall-back above would have a role and still nothing to ask. */
+      try {
+        localStorage.setItem('sos_school_id', p.schoolId);
+        localStorage.setItem('sos_school', MY_SCHOOL.name);
+      } catch (e) {}
     }
     showAdmin();
   }).catch(function(err) {
     console.error('Could not confirm admin access:', err && err.code, err && err.message);
+    /* An admin who has already been confirmed in this tab stays here.
+       Throwing them out to the front page on a failed read is how a bad
+       moment on the network turned into "the site logged me out of my own
+       panel" — and the read fails for reasons that have nothing to do with
+       who they are. Nothing is unlocked by staying: every figure on this
+       page still has to come past Firestore's rules. */
+    var remembered = SOSRole.known(user.uid);
+    if (isAdminRole(remembered)) {
+      MY_ROLE = remembered;
+      if (remembered === 'schooladmin') {
+        var sid = null, snm = '';
+        try { sid = localStorage.getItem('sos_school_id'); snm = localStorage.getItem('sos_school') || ''; } catch (e) {}
+        if (!sid) { showCannotConfirm(err); return; }
+        MY_SCHOOL = { id: sid, name: snm || 'your school' };
+      }
+      showAdmin();
+      return;
+    }
     window.location.replace('../index.html');
   });
 });
+
+/* Shown when the account cannot be reached at all and this tab has nothing
+   to fall back on. It stays on the panel rather than navigating away,
+   because leaving is the thing that loses the session. */
+function showCannotConfirm(err) {
+  var msg = (err && /permission|insufficient/i.test(err.message || '')) ?
+    'Firestore refused the check on your account. If the rules were changed recently, publish firestore.rules again.' :
+    'Could not reach your account just now, so the panel has nothing to show yet.';
+  document.getElementById('adminGate').innerHTML =
+    '<div class="auth-gate-inner"><p>' + adEsc(msg) + '</p>' +
+    '<p><button class="ad-mini" onclick="location.reload()">Try again</button></p></div>';
+}
 
 /* A school admin whose account has no school attached would otherwise see an
    empty table with no explanation. */
