@@ -639,6 +639,25 @@ select.auth-in { cursor: pointer; }
 .um-in-t { width: 5rem; flex-shrink: 0; font-family: 'JetBrains Mono', 'Inter', monospace; font-size: .76rem; }
 .um-in-w { flex: 1; min-width: 11rem; }
 .um-plan-row .ad-mini { flex-shrink: 0; }
+.um-plan-row .ad-mini[disabled] { opacity: .6; cursor: progress; }
+
+/* What happened to the last thing that was set. Empty and out of the layout
+   until there is something to say, so it does not sit there as a blank line
+   waiting to be filled — and it holds its own colour rather than borrowing
+   the list's, because "not saved" needs to look different from a task. */
+.um-plan-said { display: none; }
+.um-plan-said.on {
+  display: block;
+  margin: .7rem 0 0; padding: .5rem .7rem;
+  border-radius: 8px; font-size: .78rem; line-height: 1.55;
+  border: 1px solid var(--accent); color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.um-plan-said.on.bad {
+  border-color: var(--danger, var(--warn));
+  color: var(--danger, var(--warn));
+  background: color-mix(in srgb, var(--danger, var(--warn)) 12%, transparent);
+}
 
 .um-plan-list { margin-top: .8rem; display: flex; flex-direction: column; gap: .3rem; }
 .um-plan-item {

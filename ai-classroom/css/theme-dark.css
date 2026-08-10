@@ -172,24 +172,6 @@ html[data-theme="dark"] .topbar a:hover { color: #fff; }
 html[data-theme="dark"] .topbar .topbar-auth { color: var(--obs-aqua); }
 html[data-theme="dark"] .topbar .topbar-auth:hover { color: #fff; }
 
-/* ── The theme switch itself ─────────────────────────────────── */
-.theme-toggle {
-  display: inline-flex; align-items: center; gap: .42rem;
-  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
-  color: rgba(255,255,255,.82); font-family: 'Inter', sans-serif;
-  font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  padding: .26rem .7rem; border-radius: 100px; cursor: pointer; margin-right: auto;
-  transition: background .18s, color .18s, border-color .18s;
-}
-.theme-toggle:hover { background: rgba(255,255,255,.16); color: #fff; }
-.theme-toggle svg { width: 13px; height: 13px; flex-shrink: 0; }
-html[data-theme="dark"] .theme-toggle {
-  background: rgba(99,230,226,.1); border-color: var(--obs-edge-2); color: var(--obs-aqua);
-}
-html[data-theme="dark"] .theme-toggle:hover { background: rgba(99,230,226,.2); color: #fff; }
-/* The label is for a mouse; on a phone the icon alone has to carry it. */
-@media (max-width: 620px) { .theme-toggle .tt-label { display: none; } }
-
 /* ── Nav ─────────────────────────────────────────────────────── */
 html[data-theme="dark"] nav {
   background: rgba(5,8,14,.82);
@@ -258,10 +240,12 @@ html[data-theme="dark"] .acct-drop a:hover { background: rgba(99,230,226,.1); co
    headline lands. The stars are painted rather than animated — a fixed
    background image costs nothing and does not touch the main thread. */
 html[data-theme="dark"] #home {
-  background:
-    radial-gradient(1100px 620px at 50% 8%, rgba(99,230,226,.10) 0%, transparent 62%),
-    radial-gradient(900px 560px at 78% 34%, rgba(80,120,220,.12) 0%, transparent 66%),
-    linear-gradient(180deg, #070C16 0%, #05080E 46%, #05080E 100%);
+  /* No background of its own any more. The home panel sits inside .sky-wrap
+     with a z-index above the sky, so an opaque background here paints over
+     the whole thing — which is exactly what happened, and why the sky looked
+     like an empty gradient with the stars nowhere to be seen. The two washes
+     that used to be here are in .sky .tide now, where they can move. */
+  background: transparent;
 
   /* Subject hues, restated for the dark ground. These are read by the
      inline background:var(--maths) on each feature icon, so the chips
@@ -274,22 +258,11 @@ html[data-theme="dark"] #home {
   --geography: rgba(242,193,78,.16);
   --brand-mid: rgba(255,122,69,.16);
 }
-/* The star field. One layer, no animation, and it sits under everything. */
-html[data-theme="dark"] #home::before {
-  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .8;
-  background-image:
-    radial-gradient(1px 1px at 12% 18%, #fff, transparent),
-    radial-gradient(1px 1px at 27% 62%, #cfe4ff, transparent),
-    radial-gradient(1.4px 1.4px at 44% 12%, #fff, transparent),
-    radial-gradient(1px 1px at 63% 44%, #bcd8ff, transparent),
-    radial-gradient(1px 1px at 78% 22%, #fff, transparent),
-    radial-gradient(1.6px 1.6px at 88% 68%, #fff, transparent),
-    radial-gradient(1px 1px at 8% 82%, #a9c8ee, transparent),
-    radial-gradient(1px 1px at 35% 88%, #fff, transparent),
-    radial-gradient(1px 1px at 55% 74%, #cfe4ff, transparent),
-    radial-gradient(1px 1px at 70% 92%, #fff, transparent);
-  background-size: 100% 1200px;
-}
+/* The CSS star field that used to live here is gone. The home page now
+   carries a real sky — four hundred stars, seven galaxies, four planets
+   and three comets, fixed behind the whole page — and two star fields on
+   top of each other read as noise rather than as depth. See .sky in
+   index.html. */
 
 /* Hero */
 html[data-theme="dark"] .hero-badge {
@@ -349,13 +322,24 @@ html[data-theme="dark"] .quote-arrow {
 html[data-theme="dark"] .quote-arrow:hover { background: rgba(99,230,226,.16); color: var(--obs-aqua); }
 
 /* What you will find here */
+/* Translucent, so the sky reads through the lower half of the page. Alpha
+   only, no backdrop blur — the thing behind it is moving. */
 html[data-theme="dark"] .home-features {
-  background: var(--obs-void-2); border-top: 1px solid var(--obs-edge);
+  background: rgba(7,12,22,.58); border-top: 1px solid var(--obs-edge);
 }
 html[data-theme="dark"] .home-features .section-title { color: #fff !important; }
 html[data-theme="dark"] .home-features .features-inner > p { color: var(--obs-dim) !important; }
+/* A card over a sky needs a floor of its own. This was a white-on-white
+   gradient, which is fine over a flat panel and thin over a starfield: the
+   body copy measured 5.28:1 against the brighter sky, and 5.81:1 with a
+   dark surface added under the old white lift. Not a failure either way —
+   half a point of margin on a page whose background is now a moving
+   photograph of space, for a card that still lets the sky read between it
+   and its neighbours. */
 html[data-theme="dark"] .feature-card {
-  background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018)),
+    linear-gradient(180deg, rgba(11,17,28,.80), rgba(8,13,22,.72));
   border-color: var(--obs-edge);
 }
 html[data-theme="dark"] .feature-card:hover {

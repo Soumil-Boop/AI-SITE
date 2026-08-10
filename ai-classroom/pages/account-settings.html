@@ -9,8 +9,7 @@
        synchronous script waits for every stylesheet declared before it, and
        parsing waits for the script, so putting it lower delays the whole body.
        Nothing else in the head may be moved below it for the same reason. -->
-  <script>(function(){var t;try{t=localStorage.getItem('sos_theme');}catch(e){}
-    document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');})();</script>
+  <script>document.documentElement.setAttribute('data-theme','dark');</script>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <!-- Start the DNS + TLS handshakes for Firebase and the fonts while the page
        is still parsing, instead of when the first script or request needs them. -->

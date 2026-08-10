@@ -185,12 +185,35 @@
       if (JSON.stringify(next) !== JSON.stringify(mine)) {
         if (next.length) all[date] = next; else delete all[date];
         writeLocal(all);
-        if (date === showing) paint();
+        /* Repainted whichever day this was. A day that is not the one on
+           screen still has a dot on the week strip, and that dot is the
+           only thing that will send anybody to look at it. */
+        paint();
       }
     }).catch(function (e) {
       if (e && /permission|insufficient/i.test(e.message || '')) denied = true;
     });
   }
+  /* The week, not just the day being looked at.
+
+     This was the hole. A day was only ever fetched when it was the day on
+     screen — on opening the panel, or on tapping a date. Work set by a
+     teacher for Thursday therefore did not exist as far as this browser was
+     concerned until Thursday was tapped, and nothing invited anyone to tap
+     it: the dots on the week strip are drawn from this browser's copy, and
+     this browser's copy had never heard of it. So a task that had saved
+     perfectly well was invisible, which from the far side of the screen is
+     indistinguishable from a task that did not save.
+
+     The strip shows yesterday through five days ahead, so those are the
+     days that get read. Seven small documents, once, when the account
+     arrives — not a subscription, because the point is only that the week
+     is honest when it is drawn. */
+  function pullWeek() {
+    if (!docFor(TODAY)) return;
+    for (var n = -1; n <= 5; n++) pullFromAccount(dayShift(TODAY, n));
+  }
+
   function stamp(date) {
     var all = readLocal();
     all.__at = all.__at || {};
@@ -252,7 +275,7 @@
     root.querySelector('.pl-tab').setAttribute('aria-expanded', on ? 'true' : 'false');
     try { localStorage.setItem('sos_plan_open', on ? '1' : '0'); } catch (e) {}
     if (on) {
-      pullFromAccount(showing);
+      pullWeek();
       var t = root.querySelector('.pl-text');
       if (t) t.focus();
     }
@@ -473,7 +496,7 @@
 
     /* The account arrives after the page does. */
     if (window.SOS && typeof SOS.onSession === 'function') {
-      SOS.onSession(function () { paint(); pullFromAccount(showing); });
+      SOS.onSession(function () { paint(); pullWeek(); });
     }
 
     window.SOSPlanner = {
