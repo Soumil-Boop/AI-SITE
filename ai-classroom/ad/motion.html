@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Seek-O-Sphere — the motion, before and after</title>
+<style>
+/* ============================================================
+   Two copies of the real site, side by side, replaying together.
+
+   Motion cannot be judged from a screenshot and it cannot be judged
+   from a description. It can only be judged by watching the same page
+   arrive twice — so this is the actual site in both frames, not a
+   mockup of it: the left frame is index.html, the right is the same
+   file with one extra stylesheet linked. That is the whole change.
+
+   Replay reloads both at the same instant. Entrances only happen once,
+   on load, so a reload is the only honest way to see one again.
+   ============================================================ */
+:root {
+  --ink: #E8EEF6; --dim: rgba(232,238,246,.58); --line: rgba(255,255,255,.10);
+  --accent: #63E6E2; --on-fill: #04222A;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #05080E; color: var(--ink); }
+
+.bar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
+  padding: .85rem 1.2rem; background: rgba(7,11,19,.96);
+  border-bottom: 1px solid var(--line);
+}
+.bar h1 { font-size: .95rem; font-weight: 800; margin: 0 .6rem 0 0; letter-spacing: -.01em; }
+.seg { display: flex; gap: .18rem; padding: .2rem; background: rgba(255,255,255,.05);
+       border: 1px solid var(--line); border-radius: 10px; }
+.seg button {
+  border: 0; background: none; font: inherit; font-size: .78rem; font-weight: 700;
+  color: var(--dim); padding: .38rem .8rem; border-radius: 8px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-fill); }
+.go {
+  border: 0; font: inherit; font-size: .8rem; font-weight: 800; cursor: pointer;
+  background: var(--accent); color: var(--on-fill); padding: .48rem 1.1rem; border-radius: 9px;
+}
+.note { font-size: .74rem; color: var(--dim); margin-left: auto; }
+label.slow { display: flex; align-items: center; gap: .4rem; font-size: .76rem; color: var(--dim); }
+
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line);
+        height: calc(100vh - 58px); }
+.side { display: flex; flex-direction: column; background: #05080E; min-width: 0; }
+.side h2 {
+  margin: 0; padding: .5rem .9rem; font-size: .72rem; font-weight: 800;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--dim);
+  border-bottom: 1px solid var(--line); display: flex; gap: .5rem; align-items: center;
+}
+.side h2 b { color: var(--ink); letter-spacing: 0; text-transform: none; font-size: .8rem; }
+.side.after h2 b { color: var(--accent); }
+iframe { flex: 1; width: 100%; border: 0; background: #05080E; }
+
+@media (max-width: 900px) { .pair { grid-template-columns: 1fr; height: auto; }
+                            iframe { height: 70vh; } }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <h1>Motion — before and after</h1>
+  <div class="seg" id="where">
+    <button data-p="" aria-pressed="true">Home</button>
+    <button data-p="#what" aria-pressed="false">What is AI?</button>
+    <button data-p="#history" aria-pressed="false">History</button>
+    <button data-p="#types" aria-pressed="false">Types</button>
+    <button data-p="#lab" aria-pressed="false">Learning Lab</button>
+  </div>
+  <div class="seg" id="strength">
+    <button data-s="" aria-pressed="true">Quiet</button>
+    <button data-s="m-minimal" aria-pressed="false">Fade only</button>
+    <button data-s="m-none" aria-pressed="false">None</button>
+  </div>
+  <button class="go" id="replay">Replay both</button>
+  <label class="slow"><input type="checkbox" id="slow"/> quarter speed</label>
+  <span class="note">both frames reload together · one animation, every page, the Lab included</span>
+</div>
+
+<div class="pair">
+  <div class="side"><h2>before <b>the site as it is</b></h2>
+    <iframe id="fA" title="before"></iframe></div>
+  <div class="side after"><h2>after <b>one motion system</b></h2>
+    <iframe id="fB" title="after"></iframe></div>
+</div>
+
+<script>
+/* Relative, not absolute. An absolute '/index.html' resolves to the
+   filesystem root when the file is opened by double-clicking rather
+   than through a server, and both frames come up empty with no error
+   to explain why. */
+var BASE_A = '../index.html';
+var BASE_B = '../index-motion.html';
+var page = '';
+/* Three strengths of the same system, so the decision can be made by
+   looking rather than by another round of describing it.
+
+     Quiet      180ms, a 6px rise — what the sheet ships with
+     Fade only  140ms, no movement at all
+     None       content is simply present; only interaction responds
+
+   All three are the same two tokens at different values, which is why
+   switching is a class on <html> rather than three stylesheets. */
+var strength = '';
+
+function load() {
+  /* Cache-busted so a replay really is a fresh load rather than a
+     restored bfcache page with its animations already finished. */
+  var t = '?r=' + Date.now();
+  document.getElementById('fA').src = BASE_A + t + page;
+  document.getElementById('fB').src = BASE_B + t + (strength ? '&m=' + strength : '') + page;
+  /* The strength travels in the URL rather than being applied to the
+     frame afterwards. Setting a class from out here lands it on the
+     document that is about to be replaced by the navigation, so the
+     switcher appeared to do nothing at all — the frame reloaded and
+     came back at the default every time. */
+  if (document.getElementById('slow').checked) setTimeout(applySlow, 380);
+}
+
+/* Quarter speed, applied to both frames equally.
+
+   Not a gimmick: at full speed a 240ms entrance is over before you can
+   look at it, which is the point of it — but it also makes two versions
+   hard to tell apart honestly. Slowing both by the same factor lets you
+   see the SHAPE of the curve, which is the actual difference: one lands
+   and stops, the other lands, overshoots and comes back. */
+function applySlow() {
+  [document.getElementById('fA'), document.getElementById('fB')].forEach(function (f) {
+    try {
+      var d = f.contentDocument;
+      if (!d) return;
+      var s = d.getElementById('__slow') || d.createElement('style');
+      s.id = '__slow';
+      s.textContent = '*,*::before,*::after{animation-duration:var(--__d) !important;' +
+                      'animation-delay:var(--__y) !important;}';
+      /* Multiply rather than replace, so the relative timing survives. */
+      d.querySelectorAll('*').forEach(function (n) {
+        var cs = f.contentWindow.getComputedStyle(n);
+        var dur = parseFloat(cs.animationDuration) || 0;
+        var dly = parseFloat(cs.animationDelay) || 0;
+        if (cs.animationName && cs.animationName !== 'none' &&
+            cs.animationIterationCount !== 'infinite') {
+          n.style.setProperty('--__d', (dur * 4) + 's');
+          n.style.setProperty('--__y', (dly * 4) + 's');
+        }
+      });
+      d.head.appendChild(s);
+    } catch (e) { /* same origin, but a frame may not be ready */ }
+  });
+}
+
+document.getElementById('replay').addEventListener('click', load);
+document.getElementById('slow').addEventListener('change', load);
+document.querySelectorAll('#strength button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    strength = b.dataset.s;
+    document.querySelectorAll('#strength button').forEach(function (x) {
+      x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+    });
+    load();
+  });
+});
+document.querySelectorAll('#where button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    page = b.dataset.p;
+    document.querySelectorAll('#where button').forEach(function (x) {
+      x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+    });
+    load();
+  });
+});
+load();
+</script>
+</body></html>

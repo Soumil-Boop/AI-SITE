@@ -189,9 +189,25 @@ auth.onAuthStateChanged(function(user) {
      confirmed against the account during this very sign-in; the machine's
      can be left over from one that ended. Either way an admin never lands
      here — and if neither knows, the fresh read below decides. */
-  if (window.SOSRole && SOSRole.isAdmin(SOSRole.known(user.uid))) {
-    window.location.replace('admin.html'); return;
-  }
+  /* An admin never stays here. Written out longhand rather than through
+     SOSRole, because if role.js ever fails to load this check must still
+     run — a guard that quietly disappears with its dependency is not a
+     guard. The flag is only ever written after an account has been
+     confirmed an admin, and only sign-out or a confirmed demotion clears
+     it, so a failed read on this page cannot strand an admin here. */
+  try {
+    var _r = null;
+    if (localStorage.getItem('sos_admin_uid') === user.uid) {
+      _r = localStorage.getItem('sos_admin_role');
+    } else if (sessionStorage.getItem('sos_tab_uid') === user.uid) {
+      _r = sessionStorage.getItem('sos_tab_role');
+    } else if (localStorage.getItem('sos_uid') === user.uid) {
+      _r = localStorage.getItem('sos_role');
+    }
+    if (_r === 'owner' || _r === 'admin' || _r === 'schooladmin') {
+      window.location.replace('admin.html'); return;
+    }
+  } catch (e) {}
   currentUid   = user.uid;
   currentEmail = user.email || '';
   // The name, the picture and the role are all painted by session.js into the
@@ -237,10 +253,15 @@ function loadDashboard(uid) {
     // Remember the role and bounce admins to the admin panel.
     try {
       localStorage.setItem('sos_uid', uid);
-      localStorage.setItem('sos_role', profile.role || 'student');
+      if (profile.role) localStorage.setItem('sos_role', profile.role);
     } catch (e) {}
-    if (window.SOSRole) SOSRole.remember(uid, profile.role || 'student');
-    if (adminRole(profile.role)) { window.location.replace('admin.html'); return; }
+    /* Only a role the account actually states is acted on. A profile that
+       comes back without one leaves every stored flag alone — it must not
+       be able to demote anybody. */
+    if (profile.role) {
+      if (window.SOSRole) SOSRole.remember(uid, profile.role);
+      if (adminRole(profile.role)) { window.location.replace('admin.html'); return; }
+    }
 
     document.getElementById('statStreak').textContent = profile.bestStreak || 0;
   }).catch(function(e) {

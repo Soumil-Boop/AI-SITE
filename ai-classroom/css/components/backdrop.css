@@ -1,0 +1,189 @@
+/* ============================================================
+   backdrop.css — the sky, on the reading pages
+
+   Mockup D: the deep field with a section colour laid over it. The sky
+   gives the page depth; the colour says which part of the site you are
+   in. Lilac throughout, as chosen.
+
+   Three things stack, in this order, and the order is the whole trick:
+
+     the sky            drawn, animated, already in the page
+     the tint           a wash of --sig light, strong at the top, gone
+                        before you are reading
+     the scrim          one flat sheet that decides whether any of this
+                        is legible
+
+   The scrim is flat rather than graded on purpose. A gradient means the
+   contrast behind a paragraph is different at every scroll position, and
+   then there is no number to check — and this whole background only
+   shipped because there was a number to check. 0.50 was measured, not
+   chosen: with it, the worst line on the page reads 6.4:1 against a
+   requirement of 4.5.
+
+   Not loaded at all by the sign-in page, account settings, the dashboard
+   or the admin panel. Those are places to get something done, and a
+   starfield behind a form is a distraction with no upside.
+   ============================================================ */
+
+/* The section colour. One value drives the tint, the gutter, the rules
+   under the headings and the eyebrows — so a different colour per
+   section later is one line, not a new stylesheet. */
+:root { --sig: 169, 155, 245; }          /* lilac */
+
+/* ── the tint ──────────────────────────────────────────────────
+   Painted as light falling on the starfield rather than as a film over
+   it: a broad radial at the top where the hero is, fading out entirely
+   by the time the eye reaches body copy. */
+.has-backdrop .sky::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(110% 55% at 50% -6%, rgba(var(--sig), .26) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(var(--sig), .07) 0%, transparent 46%);
+}
+
+/* ── the scrim ─────────────────────────────────────────────────
+   Sits above the sky and below everything you read. The home panel is
+   exempt: it carries no long body copy, its sky was approved at full
+   strength, and dimming it now would change something that was already
+   signed off. */
+.has-backdrop .sky::after {
+  background:
+    radial-gradient(1100px 620px at 50% 22%, rgba(5,8,14,.62),
+                    rgba(5,8,14,.26) 60%, rgba(5,8,14,.10) 100%),
+    linear-gradient(180deg, rgba(5,8,14,.06) 0%, rgba(5,8,14,.16) 100%),
+    rgba(6, 10, 18, .50);
+}
+.has-backdrop .sky-wrap.at-home .sky::after {
+  background:
+    radial-gradient(1100px 620px at 50% 22%, rgba(5,8,14,.62),
+                    rgba(5,8,14,.26) 60%, rgba(5,8,14,.10) 100%),
+    linear-gradient(180deg, rgba(5,8,14,.06) 0%, rgba(5,8,14,.16) 100%);
+}
+
+/* ── the signature ─────────────────────────────────────────────
+   The same colour, said three more times in places that are structural
+   rather than decorative. */
+.has-backdrop .page-hero {
+  background:
+    radial-gradient(120% 150% at 50% -30%, rgba(var(--sig), .20) 0%, transparent 62%),
+    linear-gradient(180deg, #0B1220 0%, #070C16 100%) !important;
+  border-bottom: 1px solid rgba(var(--sig), .40) !important;
+}
+
+/* A hairline down the outside edge of the reading column. It is the one
+   piece that runs the whole height of a section, which is what stops the
+   colour reading as a decoration applied to the top and then forgotten. */
+.has-backdrop .section-inner { position: relative; }
+.has-backdrop .section-inner::before {
+  content: '';
+  position: absolute; left: -1.4rem; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, rgba(var(--sig), .55), rgba(var(--sig), 0));
+}
+
+.has-backdrop .section-inner h2 { position: relative; }
+.has-backdrop .section-inner h2::after {
+  content: ''; display: block;
+  width: 46px; height: 2px; margin-top: .55rem;
+  background: rgb(var(--sig)); opacity: .8;
+}
+
+/* ── the pages themselves ──────────────────────────────────────
+   Panels have to let the sky through. #home was already transparent;
+   the rest were painting over it, which is why the sky only ever showed
+   on the front page. */
+.has-backdrop .panel { background: transparent !important; }
+
+/* Two sections — Study Tools and Ethics — wrap their content in a bare
+   <div> carrying an inline background, and an inline style beats a
+   stylesheet. Matched on being a direct child of a panel rather than on
+   the colour, because the colour is the thing likely to change; the
+   structure is not. Tinted chips deeper in the page keep their fills. */
+.has-backdrop .panel > div[style*="background"] { background: transparent !important; }
+
+/* Anything that was a solid slab over the sky becomes a translucent one,
+   so the stars are visible behind it without going through the text. */
+.has-backdrop .home-features { background: rgba(7, 12, 22, .58); }
+
+/* ── pages that had no sky of their own ────────────────────────
+   index.html wraps its header and home panel together so the sky can be
+   positioned against both. Other pages are not built that way, so the
+   injected sky is fixed to the viewport and everything else is lifted
+   over it. Fixed rather than absolute because these pages are short and
+   an absolute sky would run out before the footer. */
+.sky-standalone { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.sky-standalone .sky { position: absolute; inset: 0; }
+.backdrop-fixed > *:not(.sky-standalone) { position: relative; z-index: 1; }
+/* A fixed element paints above anything that is not positioned, which is
+   how the stars once came through the footer. */
+.backdrop-fixed .site-footer { position: relative; z-index: 2; }
+
+/* index.html hides the sky on every panel but home, in its own head.
+   This is the class that overrules it, added by the script rather than
+   by editing that rule from a distance. */
+.sky-wrap.sky-everywhere .sky { display: block !important; }
+
+/* And showing it is not enough on its own.
+
+   The wrapper holds the header and the home panel only — every other
+   section is a sibling after it. So on the home page the sky can be
+   absolute inside that wrapper and cover exactly the right area, but on
+   any other section the wrapper collapses to the height of the header
+   and an absolute sky covers nothing but the menu. Off home it is fixed
+   to the viewport instead, which is also what the other pages do.
+
+   A fixed element paints above anything that is not positioned, which is
+   how the stars once came through the footer, so everything that has to
+   sit in front of it is given a layer here rather than discovered one
+   screenshot at a time. */
+.has-backdrop .sky-wrap:not(.at-home) .sky { position: fixed; inset: 0; }
+.has-backdrop .panel        { position: relative; z-index: 1; }
+.has-backdrop .brand-marquee{ position: relative; z-index: 2; }
+.has-backdrop .site-footer  { position: relative; z-index: 2; }
+.has-backdrop .topbar,
+.has-backdrop .main-nav,
+.has-backdrop nav           { position: relative; z-index: 3; }
+.has-backdrop .sos-planner  { z-index: 40; }
+
+/* ── Our mission ───────────────────────────────────────────────
+   That page was designed on its own, before any of this: a dark opening,
+   then two lighter bands for the values and the letter. In the dark
+   theme all three are opaque, so the injected sky was behind the page
+   with nothing to show through.
+
+   It is given the same shape as a section on the front page rather than
+   a treatment of its own — the opening stays solid and carries the
+   colour, the reading body opens onto the sky. Anything else and the one
+   page that is about what the site is for would look like it came from a
+   different site. */
+.has-backdrop .msn-hero {
+  background:
+    radial-gradient(1100px 620px at 50% -10%, rgba(var(--sig), .22), transparent 62%),
+    linear-gradient(180deg, #0B1220, #070C16) !important;
+  border-bottom: 1px solid rgba(var(--sig), .40);
+}
+.has-backdrop .msn-values,
+.has-backdrop .msn-letter { background: transparent !important; }
+
+/* The cards keep a floor — a card with nothing under it is not a card —
+   but a translucent one, so the stars carry on behind them instead of
+   stopping at the edge of the grid. */
+.has-backdrop .msn-v { background: rgba(13, 19, 29, .62); }
+.has-backdrop .msn-letter-in { position: relative; }
+
+@media (max-width: 780px) {
+  /* The gutter rule has nowhere to live once the column reaches the edge
+     of the screen. */
+  .has-backdrop .section-inner::before { display: none; }
+}
+
+/* Asked for less movement, given less movement. The sky's own rules
+   handle this too; repeated here because this file is what turns the sky
+   on for pages that never had one. */
+@media (prefers-reduced-motion: reduce) {
+  .has-backdrop .sky *, .has-backdrop .sky {
+    animation: none !important;
+    transition: none !important;
+  }
+}

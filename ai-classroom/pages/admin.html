@@ -383,18 +383,40 @@ auth.onAuthStateChanged(function(user) {
     ? SOS.profileOnce(user.uid)
     : db.collection('users').doc(user.uid).get();
   mine.then(function(snap) {
-    var p = snap.exists ? (snap.data() || {}) : {};
-    MY_ROLE = p.role || 'student';
+    var p = (snap && snap.exists) ? (snap.data() || {}) : null;
+    var stated = p && p.role;                  // what the account actually says
+
+    /* Three states, not two.
+
+       This line used to read `MY_ROLE = p.role || 'student'`, which turned
+       "the account could not be read" into "this person is a student" — and
+       then wrote that word over the cached role, erased the tab's memory and
+       navigated away. One unlucky read and an owner was a student, on their
+       own site, with nothing left anywhere that remembered otherwise. That
+       is the bug that put you on the dashboard.
+
+       An absent role is now UNKNOWN. Unknown never downgrades anybody, never
+       writes to the cache, and never leaves the page. Only a role that the
+       account positively states can do any of those things. */
+    if (!stated) {
+      var held = SOSRole.known(user.uid);
+      if (isAdminRole(held)) { MY_ROLE = held; useRememberedSchool(); showAdmin(); return; }
+      showCannotConfirm(null);                 // stay put and say so
+      return;
+    }
+
+    MY_ROLE = stated;
     try {
       localStorage.setItem('sos_uid', user.uid);
       localStorage.setItem('sos_role', MY_ROLE);
     } catch(e){}
     if (!isAdminRole(MY_ROLE)) {
-      SOSRole.forget();                        // confirmed a student: do not remember otherwise
+      // A positively confirmed student. Only this may clear the flag.
+      SOSRole.forget();
       window.location.replace('../index.html');
       return;
     }
-    SOSRole.remember(user.uid, MY_ROLE);       // and it stands for the rest of this tab
+    SOSRole.remember(user.uid, MY_ROLE);       // and it stands until sign-out
     if (MY_ROLE === 'schooladmin') {
       if (!p.schoolId) { showNoSchool(); return; }
       MY_SCHOOL = { id: p.schoolId, name: p.schoolName || 'your school' };
@@ -417,18 +439,32 @@ auth.onAuthStateChanged(function(user) {
     var remembered = SOSRole.known(user.uid);
     if (isAdminRole(remembered)) {
       MY_ROLE = remembered;
-      if (remembered === 'schooladmin') {
-        var sid = null, snm = '';
-        try { sid = localStorage.getItem('sos_school_id'); snm = localStorage.getItem('sos_school') || ''; } catch (e) {}
-        if (!sid) { showCannotConfirm(err); return; }
-        MY_SCHOOL = { id: sid, name: snm || 'your school' };
-      }
+      if (!useRememberedSchool()) { showCannotConfirm(err); return; }
       showAdmin();
       return;
     }
-    window.location.replace('../index.html');
+    /* Nothing confirmed either way. Staying is the only safe answer: an
+       admin who is bounced from here loses the panel, and a non-admin who
+       stays sees an empty page, because every figure on it still has to get
+       past Firestore's rules. */
+    showCannotConfirm(err);
   });
 });
+
+/* A school admin needs their school id for every query they make, so a
+   remembered role alone is not enough to run the panel on. Returns false
+   when the role is schooladmin and the school is not known. */
+function useRememberedSchool() {
+  if (MY_ROLE !== 'schooladmin') return true;
+  var sid = null, snm = '';
+  try {
+    sid = localStorage.getItem('sos_school_id');
+    snm = localStorage.getItem('sos_school') || '';
+  } catch (e) {}
+  if (!sid) return false;
+  MY_SCHOOL = { id: sid, name: snm || 'your school' };
+  return true;
+}
 
 /* Shown when the account cannot be reached at all and this tab has nothing
    to fall back on. It stays on the panel rather than navigating away,
@@ -436,10 +472,21 @@ auth.onAuthStateChanged(function(user) {
 function showCannotConfirm(err) {
   var msg = (err && /permission|insufficient/i.test(err.message || '')) ?
     'Firestore refused the check on your account. If the rules were changed recently, publish firestore.rules again.' :
-    'Could not reach your account just now, so the panel has nothing to show yet.';
+    (err ? 'Could not reach your account just now, so the panel has nothing to show yet.'
+         : 'Your account did not come back with a role, so there is nothing to open the panel with yet. '
+           + 'Check the role field on your user document in Firestore.');
+  /* A way out, offered rather than taken.
+
+     Nobody is redirected from here any more, because being redirected is
+     how an admin loses the panel. But someone who is genuinely a student
+     and has landed here by accident must not be stuck, so the door is on
+     screen and they open it. Nothing is exposed by their standing here:
+     every figure on this page still has to get past Firestore's rules. */
   document.getElementById('adminGate').innerHTML =
     '<div class="auth-gate-inner"><p>' + adEsc(msg) + '</p>' +
-    '<p><button class="ad-mini" onclick="location.reload()">Try again</button></p></div>';
+    '<p><button class="ad-mini" onclick="location.reload()">Try again</button> ' +
+    '<a class="ad-mini" id="gateOut" href="dashboard.html" ' +
+    'style="text-decoration:none;display:inline-block;margin-left:.4rem;">Go to my dashboard</a></p></div>';
 }
 
 /* A school admin whose account has no school attached would otherwise see an
