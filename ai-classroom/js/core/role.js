@@ -51,16 +51,40 @@
   /* Called the moment a role has been read from the account itself. The
      uid travels with it: a tab that signs out and signs back in as
      somebody else must not inherit the last person's answer. */
+  function lwrite(k, v) {
+    try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {}
+  }
+
   function remember(uid, role) {
     if (!uid || !role) return role || '';
     swrite('sos_tab_uid', uid);
     swrite('sos_tab_role', role);
+    /* And on the machine, not only in the tab.
+
+       sessionStorage dies with the tab, so a second tab, a restored window
+       or a browser that clears it leaves nothing behind — and "nothing"
+       was being read as "student". This flag is written the moment an
+       account is confirmed to be an admin and is cleared by exactly two
+       things: signing out, and a read that positively says this account is
+       not an admin any more. A failed read cannot clear it. */
+    if (isAdmin(role)) {
+      lwrite('sos_admin_uid', uid);
+      lwrite('sos_admin_role', role);
+    }
     return role;
   }
 
   function forget() {
     swrite('sos_tab_uid', null);
     swrite('sos_tab_role', null);
+    lwrite('sos_admin_uid', null);
+    lwrite('sos_admin_role', null);
+  }
+
+  /* Has this account ever been confirmed an admin on this machine? Read by
+     the dashboard before it paints anything. */
+  function confirmedAdmin(uid) {
+    return !!uid && lread('sos_admin_uid') === uid && isAdmin(lread('sos_admin_role'));
   }
 
   /* The best answer available without asking the network, or '' for
@@ -75,6 +99,13 @@
       var tab = sread('sos_tab_role');
       if (tab) return tab;
     }
+    // The machine-level admin flag outranks the general role cache, because
+    // the cache is written on every ordinary page load and the flag is only
+    // written when an account has actually been confirmed.
+    if (lread('sos_admin_uid') === uid) {
+      var flag = lread('sos_admin_role');
+      if (flag) return flag;
+    }
     if (lread('sos_uid') === uid) return lread('sos_role') || '';
     return '';
   }
@@ -88,11 +119,12 @@
   }
 
   window.SOSRole = {
-    roles:    ADMIN_ROLES,
-    isAdmin:  isAdmin,
-    remember: remember,
-    forget:   forget,
-    known:    known,
-    home:     home
+    roles:          ADMIN_ROLES,
+    isAdmin:        isAdmin,
+    remember:       remember,
+    forget:         forget,
+    known:          known,
+    confirmedAdmin: confirmedAdmin,
+    home:           home
   };
 })();

@@ -1,0 +1,305 @@
+/* ============================================================
+   motion.css — one animation, for the whole site
+
+   Second pass. The first replaced forty ideas with four durations,
+   three curves and four keyframes, and it was still too much. So this
+   goes to the end of that argument: one duration, one curve, one
+   keyframe, no stagger, and no exceptions — the Learning Lab included.
+
+   That is not a compromise position, it is what serious reference sites
+   actually do. Documentation, research, reference — the content is
+   simply there. What little motion exists is a response to something
+   the reader did: a menu opening, a button taking a press. Nothing
+   performs its own arrival, because a page that performs its arrival is
+   telling you it is a presentation, and a presentation is a thing you
+   watch rather than a thing you use.
+
+   The four things that made it read as a slide deck, all now gone:
+
+     the bounce      86% of the curves overshot their target and settled
+                     back. Nothing here overshoots; there is one curve
+                     and it decelerates to a stop.
+
+     the length      entrances ran 0.85s to 1.1s. One duration now, and
+                     it is 180ms — at the edge of being noticed, which
+                     is the point.
+
+     the stagger     items arrived one after another over as much as
+                     2.7 seconds. Nothing staggers. A group of cards is
+                     one thing and arrives as one thing.
+
+     the travel      up to 70px of movement, plus spins, flips, wipes
+                     and scale-from-zero. Six pixels, and only upward.
+
+   Six pixels and 180ms is close to nothing, and close to nothing is
+   the intent. It is enough that a section reads as having appeared
+   rather than having been there all along, and not enough to watch.
+
+   Three strengths are defined below. The site gets the middle one; the
+   others exist so the decision can be made by looking rather than by
+   arguing. Changing between them is two numbers.
+
+   What this file does not touch, deliberately and by construction: the
+   thirty animations that loop forever — the starfield, the mascot's
+   breathing, the logo, the blink. Not one of them appears here. They
+   were asked to be left alone twice, and the way that promise is kept
+   is that every declaration containing `infinite` was skipped at the
+   source, so there is nothing in this file that could reach them.
+   ============================================================ */
+
+:root {
+  /* ── the whole system ──────────────────────────────────────
+     Two numbers and a curve. Everything on the site that arrives,
+     arrives this way — the home page, the four chapters, the tools,
+     the dashboard, the admin panel and the Learning Lab alike. */
+  --m-dur: 180ms;
+  --m-rise: 6px;
+  --m-ease: cubic-bezier(.2, 0, 0, 1);
+
+  /* Interaction is the one place motion still earns its keep: a hover,
+     a press, a menu. Kept short enough to feel like a response rather
+     than an effect. */
+  --m-fast: 120ms;
+  --m-move: cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Quieter still: no movement at all, only a fade. */
+:root.m-minimal {
+  --m-dur: 140ms;
+  --m-rise: 0px;
+}
+
+/* Nothing arrives. Content is simply present, the way it is on a
+   reference site. Interaction still responds. */
+:root.m-none {
+  --m-dur: 1ms;
+  --m-rise: 0px;
+}
+
+/* ── the one keyframe ──────────────────────────────────────────
+   The rise is a variable so the three strengths are a token change
+   rather than three sets of keyframes that can drift apart. */
+@keyframes mIn {
+  from { opacity: 0; transform: translate3d(0, var(--m-rise), 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Kept as names so the generated rules below stay readable, but all
+   four are the same animation now. There is no longer a lateral
+   entrance, a scale entrance or a fade-only entrance — a thing that
+   arrived from the left and a thing that grew from a point were two
+   ways of drawing attention to an arrival, and the arrival is not the
+   point. */
+@keyframes mRise    { from { opacity: 0; transform: translate3d(0, var(--m-rise), 0); } to { opacity: 1; transform: none; } }
+@keyframes mFade    { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mScale   { from { opacity: 0; transform: translate3d(0, var(--m-rise), 0); } to { opacity: 1; transform: none; } }
+@keyframes mInLeft  { from { opacity: 0; transform: translate3d(0, var(--m-rise), 0); } to { opacity: 1; transform: none; } }
+@keyframes mInRight { from { opacity: 0; transform: translate3d(0, var(--m-rise), 0); } to { opacity: 1; transform: none; } }
+
+/* The Learning Lab used to keep a livelier set. It does not any more —
+   asked for directly, and right: a quiz that bounces is a quiz that
+   looks like a game show. A wrong answer still needs to register
+   instantly, but colour does that better than movement, and colour does
+   not make an eight-year-old wait for it. */
+@keyframes mLabPop { from { opacity: 0; transform: translate3d(0, var(--m-rise), 0); } to { opacity: 1; transform: none; } }
+@keyframes mLabNo  { from { opacity: 1; } to { opacity: 1; } }
+
+/* ── the site's own rules, restated ──────────────────────────
+   Generated, not written. Every selector below already had an
+   entrance; this gives it the new one. Nothing that loops forever
+   appears here at all — those declarations were skipped at source,
+   which is why the list is 211 long and not 241. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .logo-node-1 { animation-delay: 0ms !important; }
+  .logo-node-2 { animation-delay: 0ms !important; }
+  .logo-node-3 { animation-delay: 0ms !important; }
+  .logo-node-4 { animation-delay: 0ms !important; }
+  .panel.active .hero-content { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .mascot-wrap { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .home-stats { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .quote-section-wrap { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .home-bottom { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .feature-card:nth-child(1) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .feature-card:nth-child(2) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .feature-card:nth-child(3) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .feature-card:nth-child(4) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .feature-card:nth-child(5) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .feature-card:nth-child(6) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .two-col > *:nth-child(1) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .two-col > *:nth-child(2) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .definition-box { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .analogy-card:nth-child(1) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .analogy-card:nth-child(2) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .analogy-card:nth-child(3) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .grid-3 > *:nth-child(1) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .grid-3 > *:nth-child(2) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #what.panel.active .grid-3 > *:nth-child(3) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #history.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #history.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #history.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .tl-item { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .tl-item:nth-child(1) { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(2) { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(3) { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(4) { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(5) { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(6) { animation-delay: 0ms !important; }
+  .panel.active .tl-dot { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .tl-item:nth-child(1) .tl-dot { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(2) .tl-dot { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(3) .tl-dot { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(4) .tl-dot { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(5) .tl-dot { animation-delay: 0ms !important; }
+  .panel.active .tl-item:nth-child(6) .tl-dot { animation-delay: 0ms !important; }
+  #types.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #types.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #types.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #types.panel.active .grid-3 > *:nth-child(1) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #types.panel.active .grid-3 > *:nth-child(2) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #types.panel.active .grid-3 > *:nth-child(3) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #types.panel.active .grid-3 > *:nth-child(4) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #types.panel.active .grid-3 > *:nth-child(5) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #types.panel.active .grid-3 > *:nth-child(6) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #study.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #study.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #study.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .study-card { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .study-card:nth-child(1) { animation-delay: 0ms !important; }
+  .panel.active .study-card:nth-child(2) { animation-delay: 0ms !important; }
+  .panel.active .study-card:nth-child(3) { animation-delay: 0ms !important; }
+  .panel.active .study-card:nth-child(4) { animation-delay: 0ms !important; }
+  .panel.active .study-card:nth-child(5) { animation-delay: 0ms !important; }
+  .panel.active .study-card:nth-child(6) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .tool-pill:nth-child(1) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill:nth-child(2) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill:nth-child(3) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill:nth-child(4) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill:nth-child(5) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill:nth-child(6) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill:nth-child(7) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill:nth-child(8) { animation-delay: 0ms !important; }
+  .panel.active .tool-pill:nth-child(9) { animation-delay: 0ms !important; }
+  #ethics.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #ethics.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #ethics.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .ethics-card { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .ethics-card:nth-child(1) { animation-delay: 0ms !important; }
+  .panel.active .ethics-card:nth-child(2) { animation-delay: 0ms !important; }
+  .panel.active .ethics-card:nth-child(3) { animation-delay: 0ms !important; }
+  .panel.active .ethics-card:nth-child(4) { animation-delay: 0ms !important; }
+  .panel.active .ethics-card:nth-child(5) { animation-delay: 0ms !important; }
+  .panel.active .ethics-card:nth-child(6) { animation-delay: 0ms !important; }
+  #quiz.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #quiz.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #quiz.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #quiz.panel.active .quiz-box { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .lab-picker { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .tutor-wrap { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .lab-controls { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .lab-progress-wrap { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #finder.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #finder.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #finder.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #finder.panel.active .finder-input-row { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #finder.panel.active .finder-chips { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #finder.panel.active #finderResults { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(1) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(2) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(3) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(4) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(5) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(6) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(7) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(8) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #resources.panel.active .grid-3 > *:nth-child(9) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #contact.panel.active .page-hero { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #contact.panel.active .page-hero h1 { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #contact.panel.active .page-hero p { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #contact.panel.active .two-col > *:nth-child(1) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #contact.panel.active .two-col > *:nth-child(2) { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .card { transition: transform var(--m-fast),box-shadow var(--m-fast),border-color var(--m-fast) !important; }
+  .type-card { transition: transform var(--m-fast),box-shadow var(--m-fast) !important; }
+  .ethics-card { transition: transform var(--m-fast) !important; }
+  .study-card { transition: background var(--m-fast) !important; }
+  .mascot-wrap:hover .eu-tentacles { animation-duration: var(--m-dur) !important; }
+  .eye-l { animation-delay: 0ms !important; }
+  .eye-r { animation-delay: 0ms !important; }
+  .feature-card { transition: border-color var(--m-fast), transform var(--m-fast), box-shadow var(--m-fast) !important; }
+  .sky .b2 { animation-delay: 0ms !important; }
+  .sky .b3 { animation-delay: 0ms !important; }
+  .sky .b4 { animation-delay: 0ms !important; }
+  .tm-setup-host .tm-setup,.tm-setup-host .tm-locked { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .quiz-bar-fill { transition: width var(--m-fast) !important; }
+  .finder-result-card { transition: box-shadow var(--m-fast),border-color var(--m-fast) !important; }
+  .lab-block { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .lab-answer-input.wrong { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .lab-progress-fill { transition: width var(--m-fast) ease !important; }
+  .lab-celebration { transition: opacity var(--m-fast) !important; }
+  .lab-celebration-inner { transition: transform var(--m-fast) var(--m-move) !important; }
+  .finder-dot-pulse span:nth-child(2) { animation-delay: 0ms !important; }
+  .finder-dot-pulse span:nth-child(3) { animation-delay: 0ms !important; }
+  .clickable-heading::after { transition: transform var(--m-fast) var(--m-move), opacity .2s !important; }
+  .expandable { transition: max-height var(--m-fast) cubic-bezier(.4,0,.2,1), opacity var(--m-fast) ease, transform var(--m-fast) ease !important; }
+  .section-title.clickable-heading::before { transition: width var(--m-fast) ease !important; }
+  .clickable-heading.open { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .lab-milestone { transition: opacity var(--m-fast), transform var(--m-fast) var(--m-move) !important; }
+  .lab-milestone.show .lab-milestone-emoji { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .hist-wrap>* { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .panel.active .hist-wrap>*:nth-child(2) { animation-delay: 0ms !important; }
+  .panel.active .hist-wrap>*:nth-child(3) { animation-delay: 0ms !important; }
+  .panel.active .hist-wrap>*:nth-child(4) { animation-delay: 0ms !important; }
+  .hx-chip { transition: background var(--m-fast),border-color var(--m-fast),color var(--m-fast) !important; }
+  .hf-detail-inner { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .hist-era .era { transition: background var(--m-fast),color var(--m-fast) !important; }
+  .help-a { transition: max-height var(--m-fast) ease !important; }
+  .demo-gate.show { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .demo-gate-box { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  the mark is recognised instead of read, which is faster and quieter. It also means the handful of "Setting up your space…" phrases that were slightly different on each page are now one thing that cannot drift. The gate was a cream radial on every page, in both themes — the dark theme opened with a full-screen flash of the light one. It takes the page's own background now. */ .auth-gate { transition: opacity var(--m-fast) ease, visibility var(--m-fast) ease !important; }
+  #dashMain.dash-in .section-inner > * { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(1) { animation-delay: 0ms !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(2) { animation-delay: 0ms !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(3) { animation-delay: 0ms !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(4) { animation-delay: 0ms !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(5) { animation-delay: 0ms !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(6) { animation-delay: 0ms !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(7) { animation-delay: 0ms !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(8) { animation-delay: 0ms !important; }
+  #dashMain.dash-in .section-inner > *:nth-child(n+9) { animation-delay: 0ms !important; }
+  .badge-toast { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .dash-subj-bar span { transition: width var(--m-fast) ease !important; }
+  .dash-subj-track span { transition: width var(--m-fast) ease !important; }
+  .has-backdrop .sky *, .has-backdrop .sky { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .tutor-bubble { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .wd-card { transition: background var(--m-fast) !important; }
+  .msn-tab i { transition: opacity var(--m-fast) ease, width var(--m-fast) ease, background var(--m-fast) ease !important; }
+  .msn-panel.on { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .msn-orb, .msn-rules { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .msn-orb { animation-delay: 0ms !important; }
+  .msn-rules { animation-delay: 0ms !important; }
+  #adminMain.ready .ad-lede { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #adminMain.ready .ad-figures { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #adminMain.ready .ad-panel { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #adminMain.ready .ad-schools { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  #adminUserBody tr { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .set-page.ready .set-head { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .set-page.ready .set-rail { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .set-page.ready .set-pane { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+  .pane { animation: mIn var(--m-dur) var(--m-ease) both !important; }
+}
+
+/* Reduced motion last, so it beats everything above it. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

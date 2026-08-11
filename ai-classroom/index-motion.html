@@ -1648,6 +1648,18 @@
      contributes nothing at all. -->
 <link rel="stylesheet" href="css/components/planner.css"/>
 <link rel="stylesheet" href="css/theme-dark.css"/>
+  <!-- preview only: the motion system, as one sheet. Delete this line
+       and the site animates exactly as it did before. -->
+  <link rel="stylesheet" href="motion/motion.css"/>
+  <script>
+    /* Preview only. Reads ?m=m-minimal or ?m=m-none and applies it before
+       anything paints, so the first entrance is already at the chosen
+       strength rather than switching to it a frame later. */
+    (function () {
+      var m = (location.search.match(/[?&]m=([\w-]+)/) || [])[1];
+      if (m === 'm-minimal' || m === 'm-none') document.documentElement.className += ' ' + m;
+    })();
+  </script>
 </head>
 <body>
 
