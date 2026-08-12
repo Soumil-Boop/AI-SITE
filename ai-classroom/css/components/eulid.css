@@ -1,0 +1,344 @@
+/* ============================================================
+   eulid.css — Eulid, on every page
+
+   The first half of this file is lifted verbatim out of index.html: the
+   wrap, the SVG sizing, and the five ambient loops that make him breathe
+   — the float, the tentacle wiggle, the blink, the antenna, the bulb.
+   Nothing in it is changed. Moving it here rather than copying it is the
+   whole point: he is asked to look identical everywhere, and identical
+   is a property of there being one copy, not of two copies agreeing.
+
+   The second half is new — the dock he floats in when summoned, and the
+   speech bubble on the home page.
+   ============================================================ */
+
+/* ── lifted from index.html, unchanged ───────────────────────── */
+.mascot-wrap {
+      width: 210px; flex-shrink: 0; position: relative; z-index: 2;
+      margin: 2.8rem auto 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem;
+    }
+@keyframes mascotFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+.mascot-svg { width: 210px; height: auto; overflow: visible; animation: mascotFloat 5.5s ease-in-out infinite; }
+.eu-tentacles { transform-box: fill-box; transform-origin: center top; animation: euWiggle 4s ease-in-out infinite; }
+@keyframes euWiggle { 0%,100%{ transform: rotate(-1.4deg); } 50%{ transform: rotate(1.4deg); } }
+.mascot-wrap:hover .eu-tentacles { animation-duration: 1.3s; }
+.eu-lid { transform-box: fill-box; transform-origin: center top; transform: scaleY(0); animation: euBlink 5s ease-in-out infinite; }
+@keyframes euBlink { 0%,93%,100%{ transform: scaleY(0); } 96.5%{ transform: scaleY(1); } }
+.eu-bulb { transform-box: fill-box; transform-origin: center; animation: euPulse 2.4s ease-in-out infinite; }
+@keyframes euPulse { 0%,100%{ transform: scale(1); opacity:1; } 50%{ transform: scale(1.18); opacity:.82; } }
+.eulid-pupil { transition: transform .1s ease-out; }
+.mascot-name {
+      font-family:'Space Grotesk','Nunito',sans-serif; font-weight:600; font-size:.78rem; letter-spacing:.24em;
+      color:rgba(255,255,255,.6); text-transform:uppercase; display:inline-flex; align-items:center; gap:.55rem;
+    }
+.mascot-name::before, .mascot-name::after { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); }
+@keyframes blink {
+      0%,90%,100% { transform: scaleY(1); }
+      95%          { transform: scaleY(0.08); }
+    }
+.eye-group { animation: blink 4s ease-in-out infinite; transform-origin: center; }
+.eye-l { animation-delay: 0s; }
+.eye-r { animation-delay: .05s; }
+@keyframes antennaPulse { 0%,100%{fill:var(--accent);r:6} 50%{fill:#fff;r:8} }
+.antenna-dot { animation: antennaPulse 2s ease-in-out infinite; }
+
+/* ============================================================
+   New below this line.
+   ============================================================ */
+
+/* ── the dock ──────────────────────────────────────────────────
+   One fixed box that Eulid is moved INTO when summoned, and out of
+   again when he goes home. He is moved rather than copied, so there is
+   never a second set of those gradient ids in the document — and so the
+   thing floating around the page is provably the same element that was
+   in the hero, not a lookalike.
+
+   left/top are set from script; the transform centres him on the point
+   that was double-clicked, because a drop that lands the corner of a
+   210px box on your cursor does not read as "there". */
+.eulid-dock {
+  position: fixed; z-index: 45;
+  left: 0; top: 0;
+  transform: translate(-50%, -50%);
+  /* The dock is a full-height fixed box, so it must not swallow clicks
+     meant for the page — but Eulid inside it has to stay clickable, or
+     he becomes a picture. None on the box, auto on him. Without the
+     second half he could be dragged exactly once: from his place in the
+     hero, where he was still part of the page, and never again. */
+  pointer-events: none;
+  transition: left .5s cubic-bezier(.2,0,0,1), top .5s cubic-bezier(.2,0,0,1);
+  will-change: left, top;
+}
+.eulid-dock .mascot-wrap { margin: 0; pointer-events: auto; }
+/* He is smaller when he is roaming: at 210px he covers a paragraph. */
+/* Bigger than before. The legs are buttons now, and at 132px each one
+   was about a 20px target with a 9px badge on it — findable with a
+   mouse, not with a thumb. */
+.eulid-dock .mascot-svg { width: 168px; }
+.eulid-dock .mascot-name { font-size: .66rem; letter-spacing: .2em; }
+
+/* His own drift, on the dock rather than on him.
+   Two nested elements on purpose: mascotFloat is already animating the
+   SVG's transform, and a second animation on the same property would
+   replace it rather than add to it — he would stop breathing the moment
+   he started drifting. The dock carries the drift, the SVG keeps the
+   bob, and they compose. */
+.eulid-drift { animation: eulidDrift 9s ease-in-out infinite alternate; }
+@keyframes eulidDrift {
+  0%   { transform: translate3d(-7px, 0, 0) rotate(-1.2deg); }
+  50%  { transform: translate3d(4px, -6px, 0) rotate(.8deg); }
+  100% { transform: translate3d(8px, 3px, 0) rotate(1.4deg); }
+}
+
+/* Arriving. Short, and no bounce — the site's motion system is one
+   fade and a 6px rise, and a mascot that pops is exactly the thing that
+   was taken out of it. */
+@keyframes eulidArrive {
+  from { opacity: 0; transform: scale(.94); }
+  to   { opacity: 1; transform: none; }
+}
+.eulid-dock.arriving .eulid-drift { animation: eulidArrive 200ms cubic-bezier(.2,0,0,1) both; }
+
+/* His place, held open while he is away. Invisible, and exactly his
+   size, so the hero does not collapse the moment he is summoned. */
+.eulid-gap { flex-shrink: 0; pointer-events: none; }
+
+/* ── the speech bubble ─────────────────────────────────────────
+   Home only, and only while he is in his usual place: once he has been
+   summoned the sentence has stopped being an instruction and started
+   being a description of something you already did. */
+.eulid-says {
+  position: absolute; left: calc(100% + .9rem); top: 18%;
+  width: max-content; max-width: 15rem;
+  background: var(--white, #0D131D);
+  border: 1px solid var(--border, rgba(150,185,225,.18));
+  border-radius: 14px; padding: .7rem .9rem;
+  font-size: .82rem; line-height: 1.5; color: var(--text, #E6EDF6);
+  box-shadow: 0 18px 40px -18px rgba(0,0,0,.8);
+  animation: eulidArrive 220ms cubic-bezier(.2,0,0,1) 400ms both;
+}
+/* The tail, drawn as a rotated square rather than a border triangle so
+   it can carry the same 1px edge as the bubble it belongs to. */
+.eulid-says::before {
+  content: ''; position: absolute; left: -6px; top: 50%;
+  width: 11px; height: 11px; margin-top: -6px;
+  background: inherit; border-left: 1px solid var(--border, rgba(150,185,225,.18));
+  border-bottom: 1px solid var(--border, rgba(150,185,225,.18));
+  transform: rotate(45deg); border-radius: 0 0 0 3px;
+}
+.eulid-wrap-rel { position: relative; }
+
+/* On a narrow screen there is no room beside him, so it goes under. */
+@media (max-width: 720px) {
+  .eulid-says {
+    left: 50%; top: calc(100% + .7rem); transform: translateX(-50%);
+    max-width: 12rem; text-align: center;
+  }
+  .eulid-says::before {
+    left: 50%; top: -6px; margin: 0 0 0 -6px;
+    border: 0; border-top: 1px solid var(--border, rgba(150,185,225,.18));
+    border-left: 1px solid var(--border, rgba(150,185,225,.18));
+    border-radius: 3px 0 0 0;
+  }
+  .eulid-dock .mascot-svg { width: 140px; }
+}
+
+/* ── asked for less movement ───────────────────────────────────
+   The drift stops. He still appears where you put him — that is the
+   feature, not the motion — he simply stops wandering afterwards. The
+   ambient loops are left exactly as they are, here as everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  .eulid-drift { animation: none !important; }
+  .eulid-dock { transition: none !important; }
+  .eulid-says { animation: none !important; }
+}
+
+
+/* ============================================================
+   The legs, as tools
+   ============================================================ */
+
+/* Each leg is a button. It needs a hit area a thumb can find, and the
+   tip badge is only a label — the whole leg takes the press, which on a
+   132px Eulid is about a 30px target rather than a 9px one. */
+.eu-leg { cursor: pointer; }
+.eu-leg path { transition: filter 140ms ease, opacity 140ms ease; }
+.eu-leg:hover path,
+.eu-leg:focus-visible path { filter: brightness(1.22); }
+/* The browser draws a rectangular focus ring around an SVG <g>, and a
+   hard-edged box across a curved leg reads as a rendering fault rather
+   than as focus. It is removed in every focus state — :focus as well as
+   :focus-visible, because a click focuses the group too — and replaced
+   by lighting the tip disc, which is round and belongs to the drawing. */
+.eu-leg:focus, .eu-leg:focus-visible { outline: none; }
+.eu-leg:focus-visible .eu-tip-disc { stroke: #fff; stroke-width: 2.5; }
+
+.eu-tip-disc {
+  fill: #0F1720; stroke: rgba(255,255,255,.5); stroke-width: 1.6;
+  transition: fill 140ms ease, stroke 140ms ease;
+}
+.eu-glyph { fill: none; stroke: #E6EDF6; stroke-width: 1.8; }
+.eu-leg:hover .eu-tip-disc { fill: #16202C; stroke: #fff; }
+
+/* The one that is switched on. Colour rather than movement, so a tool
+   being active is legible at a glance and does not twitch while you use
+   it — you are reading with this thing on. */
+.eu-leg.on .eu-tip-disc { fill: var(--accent, #63E6E2); stroke: var(--accent, #63E6E2); }
+.eu-leg.on .eu-glyph { stroke: var(--on-fill, #04222A); }
+.eu-leg.on path { filter: brightness(1.3) saturate(1.2); }
+
+/* ── he is dragged now, not double-clicked ─────────────────────
+   grab/grabbing on the body, but NOT on the legs: a leg says "press
+   me", and a hand that says "pick me up" over a button is a lie about
+   what will happen. */
+.eulid-dock .mascot-svg { cursor: grab; }
+.eulid-dock.dragging .mascot-svg,
+.eulid-dock.dragging { cursor: grabbing; }
+.eulid-dock.dragging { transition: none; }        /* it must track the pointer exactly */
+.eulid-dock.dragging .eulid-drift { animation: none; }
+.mascot-wrap { touch-action: none; }              /* so a drag is not a scroll */
+
+/* ── the label under the pointer ──────────────────────────────── */
+.eu-tipname {
+  position: fixed; z-index: 60; pointer-events: none;
+  background: #0F1720; color: #E6EDF6; border: 1px solid rgba(150,185,225,.26);
+  border-radius: 8px; padding: .3rem .55rem; font-size: .72rem; font-weight: 600;
+  white-space: nowrap; transform: translate(-50%, -140%);
+  box-shadow: 0 10px 24px -10px rgba(0,0,0,.8);
+}
+
+/* ── a tool is running ─────────────────────────────────────────
+   One pill, bottom centre, saying what is on and how to stop. Every
+   tool here is a mode, and an unlabelled mode is the oldest interface
+   bug there is: the pointer behaves oddly and nothing says why. */
+.eu-mode {
+  position: fixed; left: 50%; bottom: 1.1rem; transform: translateX(-50%);
+  z-index: 70; display: flex; align-items: center; gap: .6rem;
+  background: #0F1720; color: #E6EDF6;
+  border: 1px solid rgba(150,185,225,.26); border-radius: 999px;
+  padding: .45rem .5rem .45rem .95rem; font-size: .8rem;
+  box-shadow: 0 18px 40px -16px rgba(0,0,0,.85);
+}
+.eu-mode b { font-weight: 700; }
+.eu-mode .k {
+  font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .68rem;
+  border: 1px solid rgba(150,185,225,.3); border-radius: 5px; padding: .08rem .34rem;
+  color: rgba(230,237,246,.7);
+}
+.eu-mode button {
+  border: 0; background: var(--accent, #63E6E2); color: var(--on-fill, #04222A);
+  font: inherit; font-size: .74rem; font-weight: 700; cursor: pointer;
+  border-radius: 999px; padding: .3rem .8rem;
+}
+
+/* ── 1 · the lens ──────────────────────────────────────────────
+   A round window that shows the thing under the pointer at twice the
+   size. What is inside it is a clone of the single element under the
+   cursor, not a picture of the screen — a browser cannot hand a page a
+   bitmap of itself, and cloning the whole document to scale it would
+   mean copying six hundred kilobytes of markup on every move. Cloning
+   the one element under the pointer is cheap, stays sharp at any zoom
+   because it is still text, and over a paragraph is exactly a
+   magnifying glass. */
+.eu-lens {
+  position: fixed; z-index: 65; pointer-events: none;
+  width: 220px; height: 220px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden; background: var(--parchment, #05080E);
+  border: 2px solid rgba(255,255,255,.5);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.6), 0 24px 50px -18px rgba(0,0,0,.9),
+              inset 0 0 30px rgba(0,0,0,.45);
+}
+.eu-lens-inner { position: absolute; transform-origin: 0 0; }
+body.eu-lens-on { cursor: zoom-in; }
+
+/* ── 2 · the highlighter ───────────────────────────────────────
+   Five colours, chosen dark enough that the text on them still reads —
+   a highlighter that makes the sentence harder to read has removed the
+   only reason to use one. */
+body.eu-mark-on { cursor: crosshair; }
+.eu-hl { border-radius: 3px; padding: .05em 0; }
+.eu-hl[data-c="0"] { background: rgba(255,214,  0,.30); box-shadow: 0 0 0 1px rgba(255,214,0,.35); }
+.eu-hl[data-c="1"] { background: rgba( 99,230,226,.26); box-shadow: 0 0 0 1px rgba(99,230,226,.32); }
+.eu-hl[data-c="2"] { background: rgba(111,220,166,.26); box-shadow: 0 0 0 1px rgba(111,220,166,.32); }
+.eu-hl[data-c="3"] { background: rgba(255,138, 76,.26); box-shadow: 0 0 0 1px rgba(255,138,76,.32); }
+.eu-hl[data-c="4"] { background: rgba(199,155,255,.26); box-shadow: 0 0 0 1px rgba(199,155,255,.32); }
+
+.eu-swatches { display: flex; gap: .3rem; }
+.eu-sw {
+  width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; padding: 0;
+}
+.eu-sw[aria-pressed="true"] { border-color: #fff; }
+.eu-sw[data-c="0"] { background: #FFD600; } .eu-sw[data-c="1"] { background: #63E6E2; }
+.eu-sw[data-c="2"] { background: #6FDCA6; } .eu-sw[data-c="3"] { background: #FF8A4C; }
+.eu-sw[data-c="4"] { background: #C79BFF; }
+
+/* The eraser sits in the same row as the colours, because it answers
+   the same question: what does the next drag do. Drawn as a struck-out
+   swatch rather than given a word, so the row stays a row of choices. */
+.eu-sw-erase {
+  background: rgba(255,255,255,.10); position: relative;
+  border-color: rgba(150,185,225,.4);
+}
+.eu-sw-erase::before, .eu-sw-erase::after {
+  content: ''; position: absolute; left: 50%; top: 50%;
+  width: 13px; height: 2px; margin: -1px 0 0 -6.5px; border-radius: 2px;
+  background: #E6EDF6; transform: rotate(45deg);
+}
+.eu-sw-erase::after { transform: rotate(-45deg); }
+.eu-sw-erase[aria-pressed="true"] { background: #E6EDF6; border-color: #fff; }
+.eu-sw-erase[aria-pressed="true"]::before,
+.eu-sw-erase[aria-pressed="true"]::after { background: #0F1720; }
+
+.eu-clear {
+  font: inherit; font-size: .72rem; font-weight: 600; cursor: pointer;
+  background: none; color: rgba(230,237,246,.72);
+  border: 1px solid rgba(150,185,225,.3); border-radius: 999px;
+  padding: .2rem .6rem; margin-left: .2rem;
+}
+.eu-clear:hover { color: #fff; border-color: rgba(150,185,225,.55); }
+
+/* While the eraser is on, the pointer says so — and a highlight under
+   it says "you can click me" the rest of the time. */
+body.eu-erase-on { cursor: not-allowed; }
+body.eu-mark-on mark.eu-hl { cursor: pointer; }
+body.eu-mark-on mark.eu-hl:hover { outline: 1px dashed rgba(230,237,246,.6); }
+
+/* ── 3 · read aloud ────────────────────────────────────────── */
+body.eu-read-on { cursor: text; }
+.eu-reading { background: rgba(99,230,226,.20); box-shadow: 0 0 0 1px rgba(99,230,226,.3); border-radius: 3px; }
+
+/* ── 5 · the one you set yourself ─────────────────────────── */
+.eu-sheet {
+  position: fixed; z-index: 80; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(26rem, calc(100vw - 2.5rem));
+  background: var(--white, #0D131D); color: var(--text, #E6EDF6);
+  border: 1px solid var(--border, rgba(150,185,225,.18)); border-radius: 16px;
+  padding: 1.3rem; box-shadow: 0 30px 70px -24px rgba(0,0,0,.9);
+}
+.eu-sheet h3 { margin: 0 0 .3rem; font-size: 1rem; font-family: 'Nunito', sans-serif; }
+.eu-sheet p  { margin: 0 0 1rem; font-size: .82rem; color: var(--muted, #93A3B7); line-height: 1.6; }
+.eu-sheet label { display: block; font-size: .74rem; font-weight: 700; margin: .8rem 0 .3rem; }
+.eu-sheet input {
+  width: 100%; box-sizing: border-box; font: inherit; font-size: .85rem;
+  background: var(--parchment, #05080E); color: var(--text, #E6EDF6);
+  border: 1px solid var(--border, rgba(150,185,225,.18)); border-radius: 9px; padding: .5rem .65rem;
+}
+.eu-quick { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+.eu-quick button {
+  font: inherit; font-size: .74rem; cursor: pointer; border-radius: 999px;
+  background: rgba(255,255,255,.06); color: var(--text, #E6EDF6);
+  border: 1px solid var(--border, rgba(150,185,225,.18)); padding: .28rem .7rem;
+}
+.eu-sheet-row { display: flex; gap: .5rem; justify-content: flex-end; margin-top: 1.2rem; }
+.eu-sheet-row button { font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer;
+  border-radius: 999px; padding: .45rem 1rem; border: 1px solid var(--border, rgba(150,185,225,.18));
+  background: none; color: var(--text, #E6EDF6); }
+.eu-sheet-row button.go { background: var(--accent, #63E6E2); color: var(--on-fill, #04222A); border-color: transparent; }
+.eu-scrim { position: fixed; inset: 0; z-index: 79; background: rgba(3,6,11,.6); }
+
+@media (prefers-reduced-motion: reduce) {
+  .eu-leg path, .eu-tip-disc { transition: none !important; }
+}
