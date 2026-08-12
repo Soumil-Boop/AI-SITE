@@ -194,6 +194,7 @@
   <!-- Last stylesheet in the head. Every rule inside is locked behind
        html[data-theme="dark"], so it contributes nothing in the light theme. -->
   <link rel="stylesheet" href="../css/theme-dark.css"/>
+  <link rel="stylesheet" href="../css/components/eulid.css"/>
 </head>
 <body>
 
@@ -1010,5 +1011,6 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paintSubjectChips);
   else paintSubjectChips();
 </script>
+<script src="../js/components/eulid.js" defer></script>
 </body>
 </html>
