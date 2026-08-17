@@ -106,6 +106,10 @@ When adding a check of your own: verify by **rendering and reading pixels**, not
 - **The bleed bug.** Removing a block by searching for the next `</div>` after its opening tag finds the `</div>` that closes a *nested* element, so one closing tag too few is removed, `#home` closes early, and everything after it spills outside every panel and shows on every other section. Locate the end of a nested element with a **depth-counting walker**, never with `indexOf('</div>')`.
 - **Only testing the home page.** See §3.
 - **`visibility: hidden` hides an element's own background.** When measuring what is behind text, use `color: transparent` for anything that paints its own fill, or you measure the button instead of the page.
+- **The mascot's markup exists twice.** `assets/eulid.html` is the copy fetched by every page
+  that does not ship its own; `index.html` carries an inline copy in the hero. Changing a leg,
+  a glyph or a label means changing both, or the button is one thing on the home page and
+  another everywhere else.
 - **Duplicate SVG gradient ids.** Two copies of Eulid in one document means two `id="euBody"`, and every fill in the second silently resolves to the first. There must only ever be one of him.
 - **`Range.surroundContents()` throws** on most real selections. Walk and split text nodes instead. Removing a `<mark>` afterwards needs `parent.normalize()` or the text stays fragmented.
 - **`speechSynthesis` is a read-only accessor** on `window`; stub it with `Object.defineProperty` if you need to.
@@ -144,5 +148,5 @@ Two related decisions already taken: the greeting sentence goes on the page as *
 | Panels | home, what, history, types, study, ethics, lab, finder, resources, help, contact |
 | Live palette | Observatory — void `#05080E`, panel `#0C121C`, ink `#E6EDF6`, dim `#8496AB`, aqua `#63E6E2`, ember `#FF8A4C` |
 | Mascot files | `js/components/eulid.js`, `css/components/eulid.css`, `assets/eulid.html` |
-| Eulid's legs | lens, mark, read, dashboard, custom (left to right) |
+| Eulid's legs | lens, mark, read, dashboard, home (left to right). `home` resets HIS position; it does not navigate. |
 | Question source switch | `QUESTION_SOURCE` in `js/questions-engine.js` — `'json'` or `'api'` |

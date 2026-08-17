@@ -48,7 +48,7 @@ Eulid is more than decoration; he is a small feature in his own right. He lives 
 - **One of him, ever.** On `index.html` the element that floats around is literally the one from the hero, moved. On every other page the markup is fetched once from `assets/eulid.html`. This matters: he is drawn from three gradients addressed by `id`, so two copies in a document means two elements with `id="euBody"` and every fill in the second silently resolves to the first.
 - **Which page is "his" is decided by markup, not by filename** — the script asks whether the page ships its own `.mascot-wrap`, so it does not break when a file is renamed or served from a bare `/`.
 - **Hold and drag** him anywhere. Press and drag are separated by a 4px threshold, so a click on a leg is never read as a drag.
-- **His five legs are tools**, left to right: `lens` (magnifier cursor), `mark` (multi-colour highlighter, with an eraser and a clear-all), `read` (select text and he reads it aloud), `dashboard` (shortcut), `custom` (user-defined). Esc or a second press turns any of them off.
+- **His five legs are tools**, left to right: `lens` (magnifier cursor), `mark` (multi-colour highlighter, with an eraser and a clear-all), `read` (select text and he reads it aloud), `dashboard` (shortcut to your dashboard), `home` (sends **Eulid** back to his usual place — you stay on the page you are reading). Esc or a second press turns any of the modes off.
 - **He follows you and then goes home.** His position lives in `sessionStorage` with a timestamp refreshed while the page is visible, so he follows you around the site, and after half an hour away — or when the tab closes — he returns to his default place.
 
 ---
@@ -229,7 +229,7 @@ Both paths return the same object shape the Lab and Exam Prep renderers expect.
 
 - The site is **dark only**. The Observatory palette in `css/theme-dark.css` replaced the cream-and-terracotta look; the theme switch was removed and `theme.js` now only pins the attribute.
 - **Three access levels** with school scoping enforced by a derived `bucket` field in `firestore.rules`.
-- **Eulid became interactive** — hold and drag, five tool legs (magnifier, highlighter, read-aloud, dashboard shortcut, custom), highlight removal by eraser, per-mark click and clear-all, and one shared copy fetched from `assets/eulid.html` on every page.
+- **Eulid became interactive** — hold and drag, five tool legs (magnifier, highlighter, read-aloud, dashboard shortcut, send-him-home), highlight removal by eraser, per-mark click and clear-all, and one shared copy fetched from `assets/eulid.html` on every page. Signing out returns him to his usual place and closes any open tool.
 - A **study planner** side panel with day / week / month views.
 - **History** rebuilt into an interactive scrubber + focus card + "Guess the Year".
 - Added a searchable **Help Centre**; the standalone Quiz page was retired.

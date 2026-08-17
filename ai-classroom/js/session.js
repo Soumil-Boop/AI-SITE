@@ -23,8 +23,21 @@
   function store(k, v){ try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch(e){} }
   function read(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
 
+  /* Send Eulid back to his usual place. Signing out ends the session, and
+     where he is standing belongs to that session — so he should not still
+     be parked wherever the last person dragged him when the next one
+     arrives. He owns the remembered position, so the call goes through
+     him; clearing the key here is only for the case where his script has
+     not loaded on this page, in which case there is no Eulid to move but
+     the key would still be sitting there for the page we redirect to. */
+  function eulidHome() {
+    try { if (window.SOSEulid && SOSEulid.home) { SOSEulid.home(); return; } } catch(e){}
+    try { sessionStorage.removeItem('sos_eulid_spot'); } catch(e){}
+  }
+
   if (typeof firebase === 'undefined') {
-    window.SOS = { onSession: function(){}, signOut: function(){ window.location.replace(HOME); } };
+    window.SOS = { onSession: function(){},
+                   signOut: function(){ eulidHome(); window.location.replace(HOME); } };
     return;
   }
   if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(CONFIG);
@@ -91,6 +104,10 @@
       store('sos_name', null); store('sos_role', null); store('sos_uid', null);
       // The confirmed-admin flag goes with the session that earned it.
       if (window.SOSRole) SOSRole.forget();
+      // And so does where the mascot was standing. Done before the sign-out
+      // call rather than after it, so the position is already cleared
+      // whichever way the promise lands.
+      eulidHome();
       auth.signOut().then(function(){ window.location.replace(HOME); })
                     .catch(function(){ window.location.replace(HOME); });
     }
@@ -101,16 +118,29 @@
   // clears it), so this reconciles cleanly once auth confirms.
   if (read('sos_name')) render({ displayName: read('sos_name') }, { name: read('sos_name') });
 
+  /* Whether anyone was signed in during this page's life. It is the
+     difference between a sign-out and a visitor who simply never signed
+     in — both arrive here as a null user, but only the first should move
+     the mascot. A guest who drags him somewhere is entitled to keep him
+     there. */
+  var hadUser = false;
+
   auth.onAuthStateChanged(function(user){
     SOS.user = user;
     if (!user) {
       SOS.profile = null; store('sos_name', null); store('sos_photo', null);
       store('sos_role', null); store('sos_uid', null);
+      /* Catches the ways out that do not go through SOS.signOut(): the
+         dashboard's own button, a session that expires, a sign-out in
+         another tab. */
+      if (hadUser) eulidHome();
+      hadUser = false;
       if (window.SOSRole) SOSRole.forget();
       render(null, null);
       callbacks.forEach(function(cb){ try { cb(null, null); } catch(e){} });
       return;
     }
+    hadUser = true;
     // Paint from cache immediately so the name doesn't wait on the network read.
     render(user, { name: read('sos_name') });
     if (db) {
