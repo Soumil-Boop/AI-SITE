@@ -70,7 +70,58 @@
   transition: left .5s cubic-bezier(.2,0,0,1), top .5s cubic-bezier(.2,0,0,1);
   will-change: left, top;
 }
-.eulid-dock .mascot-wrap { margin: 0; pointer-events: auto; }
+/* He used to be somewhere you had put him, so a rectangle of his own
+   that swallowed clicks was a rectangle you had placed there. Now he
+   holds his place while the page moves underneath, and that same
+   rectangle became a 210x257 dead zone following the reader down the
+   article — measured at 625 sample points out of 625 intercepted, with
+   the four empty corners of the box taking clicks along with the rest.
+
+   So the box stops catching anything and the drawing catches it
+   instead. SVG shapes hit-test as `visiblePainted` by default: where
+   he is painted he is grabbable, and where he is merely near, the page
+   underneath gets the click. His label keeps its own hit area so there
+   is still something solid to take hold of below him. */
+.eulid-dock .mascot-wrap { margin: 0; pointer-events: none; }
+.eulid-dock .mascot-svg  { pointer-events: none; }
+.eulid-dock .mascot-svg > * { pointer-events: auto; }
+.eulid-dock .mascot-name { pointer-events: auto; }
+
+/* ── standing in his usual place ───────────────────────────────
+   He is in the dock even at home now, so the dock has to be able to
+   look like the hero: his full 210px and his full-size label, so the
+   home page is the page it always was. The moment he is picked up or
+   sent somewhere this class comes off and he is the smaller roaming
+   version again. */
+.eulid-dock.at-home .mascot-svg  { width: 210px; }
+.eulid-dock.at-home .mascot-name { font-size: .78rem; letter-spacing: .24em; }
+/* The entrance the hero gave him, kept. `.panel.active .mascot-wrap`
+   cannot reach him any more — he is a child of <body> now, not of the
+   panel — and losing it would mean the front page quietly stopped
+   introducing him.
+
+   Once, on the class the script drops after the first arrival, and not
+   on `.arriving`. The fifth leg sends him home too, and elasticPop
+   holds him at scale(0) through its .35s delay: hung off `.arriving` a
+   reset would make him vanish for a third of a second before bouncing
+   back. An entrance is for entering. */
+.eulid-dock.at-home.intro .mascot-wrap {
+  animation: elasticPop 1.1s cubic-bezier(.34,1.6,.64,1) .35s both;
+}
+
+/* ── out of the way ────────────────────────────────────────────
+   Fading rather than hiding: he is still a control, and a control you
+   cannot find is worse than one you can see through. Slow enough to
+   read as him stepping aside and not as a flicker, and instant back to
+   full strength the moment you reach for him — hover and keyboard focus
+   here, dragging in the script. */
+.eulid-dock { transition: left .5s cubic-bezier(.2,0,0,1),
+                          top  .5s cubic-bezier(.2,0,0,1),
+                          opacity .32s ease; }
+.eulid-dock.eulid-shy { opacity: .22; }
+.eulid-dock.eulid-shy:hover,
+.eulid-dock.eulid-shy:focus-within,
+.eulid-dock.eulid-shy.dragging { opacity: 1; }
 /* He is smaller when he is roaming: at 210px he covers a paragraph. */
 /* Bigger than before. The legs are buttons now, and at 132px each one
    was about a 20px target with a 9px badge on it — findable with a
@@ -143,6 +194,14 @@
   }
   .eulid-dock .mascot-svg { width: 140px; }
 }
+
+/* No phone-sized version of the at-home size, though index.html has a
+   `@media(max-width:768px){ .mascot-svg { width:170px } }` that looks
+   like it wants one. That rule never fires: this stylesheet is linked
+   after index.html's inline <style>, and its own `.mascot-svg { width:
+   210px }` matches at the same specificity and wins. He is 210px on a
+   phone today, his slot is measured at 210px, and adding the shrink
+   here would have been the only place on the site where it applied. */
 
 /* ── asked for less movement ───────────────────────────────────
    The drift stops. He still appears where you put him — that is the

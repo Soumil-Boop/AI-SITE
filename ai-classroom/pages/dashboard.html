@@ -576,6 +576,12 @@ function savePreferences() {
    belongs to. It is shown beside that name in the bar at the top. */
 
 function handleSignOut() {
+  /* Eulid goes home with the session. He owns the remembered position,
+     so the call goes through him; the fallback only matters if his
+     script did not load on this page, where there is no mascot to move
+     but the key would still be waiting for the page we land on. */
+  try { if (window.SOSEulid && SOSEulid.home) SOSEulid.home();
+        else sessionStorage.removeItem('sos_eulid_spot'); } catch (e) {}
   auth.signOut().then(function() {
     window.location.replace('../index.html');
   });

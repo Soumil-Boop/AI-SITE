@@ -11,7 +11,9 @@
      addressed by id — two copies means two elements with id="euBody",
      and every fill in the second one silently resolves to the first.
 
-     Double-click anywhere and he appears there and drifts a little.
+     Hold him and drag him anywhere, and his five legs are tools:
+     magnifier, highlighter, read-aloud, your dashboard, and one
+     that puts him back where he started.
 
      He has a home. On index.html that is where he already sits, in the
      hero, in the flow of the page — so "going home" means being put
@@ -47,7 +49,7 @@
   var HAS_OWN = false;
   var ROOT = location.pathname.indexOf('/pages/') !== -1 ? '../' : '';
 
-  var dock, drift, homeParent, homeIndex, saysEl;
+  var dock, drift, saysEl;
 
   /* ── where he stands when nothing has been asked of him ────────
      On the home page this is not a coordinate at all — it is a place in
@@ -56,7 +58,42 @@
      viewport so it survives a resize and a phone. Kept above the
      planner's corner and inside the page's own gutter. */
   function homeSpot() {
-    return { fx: 0.86, fy: 0.72 };
+    return heroSpot || { fx: 0.86, fy: 0.72 };
+  }
+
+  /* On the home page his usual place is a slot in the hero, and that is
+     a position in the DOCUMENT. Held as a fraction of the viewport it
+     has to be the fraction it would be at the top of the page, so
+     pageYOffset is added back in: reload half way down and he is still
+     found where a fresh visitor finds him, not wherever the scroll
+     happened to leave the hero.
+
+     Measured off the gap rather than off him, because the gap carries
+     none of his animation.
+
+     Kept on screen, and by his own size rather than by a round number.
+     A fraction like 0.86 sounds safe and is not: on a 844px phone it
+     puts the bottom of a 257px-tall mascot ten pixels past the bottom
+     edge. His slot really is partly below the fold there — the hero is
+     taller than the screen — and that was fine while he scrolled up
+     into view with it. Now that he holds still it would mean a mascot
+     permanently sliced off by the edge, so on a screen too short for
+     his slot he stands as low as he can while staying whole. On any
+     screen tall enough, which is every desktop, this changes nothing.
+     */
+  var heroSpot = null;
+  function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+  function measureHeroSpot() {
+    if (!HAS_OWN || !gapEl) return;
+    var r = gapEl.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var mx = (r.width / 2 + 6) / window.innerWidth;
+    var my = (r.height / 2 + 6) / window.innerHeight;
+    heroSpot = {
+      fx: clamp((r.left + r.width / 2) / window.innerWidth, mx, 1 - mx),
+      fy: clamp((r.top + window.pageYOffset + r.height / 2) / window.innerHeight,
+                my, 1 - my)
+    };
   }
 
   /* ── remembering ───────────────────────────────────────────── */
@@ -120,54 +157,58 @@
   var gapEl = null;
   function leaveGap(wrap) {
     if (!HAS_OWN || gapEl || !wrap) return;
-    var r = wrap.getBoundingClientRect();
     gapEl = document.createElement('div');
     gapEl.className = 'eulid-gap';
     gapEl.setAttribute('aria-hidden', 'true');
-    gapEl.style.width = r.width + 'px';
-    gapEl.style.height = r.height + 'px';
+    /* offsetWidth/Height rather than getBoundingClientRect. He arrives
+       under a 1.1s pop that scales him, and this now runs at startup
+       rather than only on a drag, so a rect would size his gap to
+       whichever frame of that animation it happened to catch. The
+       layout box is the same at every frame of it. */
+    gapEl.style.width = wrap.offsetWidth + 'px';
+    gapEl.style.height = wrap.offsetHeight + 'px';
     gapEl.style.margin = getComputedStyle(wrap).margin;
     wrap.parentNode.insertBefore(gapEl, wrap);
   }
-  function closeGap() {
-    if (gapEl && gapEl.parentNode) gapEl.parentNode.removeChild(gapEl);
-    gapEl = null;
-  }
-
   function summon(fx, fy) {
     var wrap = document.querySelector('.mascot-wrap');
     if (wrap && wrap.parentNode !== drift) { leaveGap(wrap); drift.appendChild(wrap); }
+    if (HAS_OWN && !heroSpot) measureHeroSpot();
     dock.style.display = '';
+    dock.classList.remove('at-home');
     place(fx, fy, true);
     remember(fx, fy);
     if (saysEl) saysEl.style.display = 'none';
     aim();
+    shy.now();
   }
 
+  /* Going home used to mean going back into the hero's flow, and that
+     is exactly what made him ride the page: an element in the document
+     scrolls with the document. On the home page — and only there, and
+     only until he had been dragged once — he slid up and off the top
+     with everything else.
+
+     So he does not go back into the flow any more. His gap stays open
+     for good, holding his slot at full size so the hero lays out as it
+     always has, and he floats over that slot in the fixed dock instead.
+     At the top of the page the two coincide and nothing looks different;
+     scroll, and the slot leaves with the page while he stays where he
+     is, which is the point. */
   function goHome() {
     forget();
     var wrap = document.querySelector('.mascot-wrap');
-    if (HAS_OWN) {
-      /* Back into the document, at the index he came from — so the hero
-         lays out exactly as it did before he was ever moved. */
-      if (wrap && homeParent) {
-        if (gapEl && gapEl.parentNode === homeParent) homeParent.insertBefore(wrap, gapEl);
-        else {
-          var kids = homeParent.children;
-          if (homeIndex >= kids.length) homeParent.appendChild(wrap);
-          else homeParent.insertBefore(wrap, kids[homeIndex]);
-        }
-      }
-      closeGap();
-      dock.style.display = 'none';
-      if (saysEl) saysEl.style.display = '';
-    } else {
-      if (wrap && wrap.parentNode !== drift) drift.appendChild(wrap);
-      dock.style.display = '';
-      var h = homeSpot();
-      place(h.fx, h.fy, true);
-    }
+    if (wrap && wrap.parentNode !== drift) { leaveGap(wrap); drift.appendChild(wrap); }
+    if (HAS_OWN && !heroSpot) measureHeroSpot();
+    dock.style.display = '';
+    /* at-home restores his hero size and lets his sentence show; he is
+       only small and quiet once you have actually moved him. */
+    dock.classList.toggle('at-home', !!HAS_OWN);
+    if (saysEl) saysEl.style.display = HAS_OWN ? '' : 'none';
+    var h = homeSpot();
+    place(h.fx, h.fy, true);
     aim();
+    shy.now();
   }
 
   /* ── the pupils ────────────────────────────────────────────────
@@ -236,6 +277,7 @@
       if (wrap && wrap.parentNode !== drift) { leaveGap(wrap); drift.appendChild(wrap); }
       dock.style.display = '';
       dock.classList.add('dragging');
+      dock.classList.remove('at-home');
       if (saysEl) saysEl.style.display = 'none';
     }
     e.preventDefault();
@@ -252,7 +294,7 @@
     if (!drag || e.pointerId !== drag.id) return;
     var d = drag; drag = null;
     dock.classList.remove('dragging');
-    if (d.moved) { remember(d.fx, d.fy); return; }
+    if (d.moved) { remember(d.fx, d.fy); shy.now(); return; }
     /* it was a press, not a drag */
     if (d.leg) { Tools.toggle(d.leg.dataset.leg, d.leg); }
   }
@@ -283,7 +325,6 @@
     var activeLeg = null;
     var modeEl = null;
     var HL_KEY = 'sos_eulid_hl_colour';
-    var CUSTOM_KEY = 'sos_eulid_custom';
 
     function label(name) {
       return { lens: 'Magnifier', mark: 'Highlighter', read: 'Read aloud' }[name] || name;
@@ -614,96 +655,22 @@
     /* ── 4 · the dashboard ─────────────────────────────────────── */
     function toDashboard() { location.href = ROOT + 'pages/dashboard.html'; }
 
-    /* ── 5 · yours ─────────────────────────────────────────────
-       Set once and kept in localStorage, so it survives the visit that
-       sessionStorage does not — a shortcut you have to re-enter every
-       time is not a shortcut. Until it is set, pressing it opens the
-       sheet; after that it goes where you sent it, and a long press or
-       the sheet's own button changes it. */
-    var QUICK = [
-      ['Learning Lab', 'index.html#lab'],
-      ['Find My AI Tool', 'index.html#finder'],
-      ['Study Tools', 'index.html#study'],
-      ['Help & Resources', 'index.html#resources'],
-      ['My planner', 'pages/dashboard.html#planner'],
-    ];
-    function customGet() {
-      try { return JSON.parse(localStorage.getItem(CUSTOM_KEY) || 'null'); }
-      catch (e) { return null; }
-    }
-    function customSet(v) {
-      try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(v)); } catch (e) {}
-      applyCustomLabel();
-    }
-    function applyCustomLabel() {
-      var leg = document.querySelector('.eu-leg[data-leg="custom"]');
-      if (!leg) return;
-      var v = customGet();
-      leg.setAttribute('aria-label', v && v.label
-        ? v.label + ' — your own shortcut'
-        : 'Your own shortcut — press to choose what it does');
-    }
+    /* ── 5 · back to his place ─────────────────────────────────
+       It puts EULID back, not you. You stay on the page you were
+       reading; he stops floating wherever he was last dropped and
+       returns to the spot he occupies when the site is first opened —
+       in the hero on the home page, in his corner everywhere else.
 
-    function customSheet() {
-      var scrim = document.createElement('div');
-      scrim.className = 'eu-scrim';
-      var sheet = document.createElement('div');
-      sheet.className = 'eu-sheet';
-      sheet.setAttribute('role', 'dialog');
-      sheet.setAttribute('aria-modal', 'true');
-      var cur = customGet() || { label: '', url: '' };
-      sheet.innerHTML =
-        '<h3>Eulid’s fifth leg</h3>' +
-        '<p>Pick where this one takes you. It is yours — it stays set on this ' +
-        'device until you change it.</p>' +
-        '<label for="euCL">What to call it</label>' +
-        '<input id="euCL" type="text" maxlength="28" placeholder="My revision notes">' +
-        '<label for="euCU">Where it goes</label>' +
-        '<input id="euCU" type="text" placeholder="index.html#lab or https://…">' +
-        '<div class="eu-quick"></div>' +
-        '<div class="eu-sheet-row">' +
-          '<button type="button" data-x="cancel">Cancel</button>' +
-          '<button type="button" class="go" data-x="save">Save</button>' +
-        '</div>';
-      document.body.appendChild(scrim);
-      document.body.appendChild(sheet);
-      var L = sheet.querySelector('#euCL'), U = sheet.querySelector('#euCU');
-      L.value = cur.label || ''; U.value = cur.url || '';
-      var q = sheet.querySelector('.eu-quick');
-      QUICK.forEach(function (item) {
-        var b = document.createElement('button');
-        b.type = 'button'; b.textContent = item[0];
-        b.addEventListener('click', function () { L.value = item[0]; U.value = item[1]; });
-        q.appendChild(b);
-      });
-      function close() {
-        if (sheet.parentNode) sheet.parentNode.removeChild(sheet);
-        if (scrim.parentNode) scrim.parentNode.removeChild(scrim);
-      }
-      sheet.addEventListener('click', function (e) {
-        var x = e.target.dataset && e.target.dataset.x;
-        if (x === 'cancel') close();
-        if (x === 'save') {
-          var url = U.value.trim();
-          /* Only http(s) and same-site paths. A shortcut is a link the
-             page will follow without asking, so javascript: and data:
-             have no business in it. */
-          if (/^(javascript|data|vbscript):/i.test(url)) url = '';
-          customSet({ label: L.value.trim() || 'My shortcut', url: url });
-          close();
-        }
-      });
-      scrim.addEventListener('click', close);
-      L.focus();
-      return close;
-    }
-    var closeSheet = null;
+       Until this existed a drag could not be undone. He stayed where he
+       was put for the rest of the visit unless you waited out the half
+       hour or closed the tab, which is a long time to live with a
+       mascot parked over the thing you are trying to read.
 
-    function custom() {
-      var v = customGet();
-      if (v && v.url) { location.href = /^https?:/i.test(v.url) ? v.url : ROOT + v.url; return; }
-      closeSheet = customSheet();
-    }
+       goHome() is the same reset signing out performs, and it is the
+       one that already knows the difference between the two kinds of
+       home: a place in the document, or a fraction of the viewport. The
+       leg does not need to know which page it is on. */
+    function toHisPlace() { goHome(); }
 
     /* ── the switchboard ─────────────────────────────────────── */
     var MODES = {
@@ -721,7 +688,7 @@
 
     function toggle(name, leg) {
       if (name === 'dashboard') { off(); toDashboard(); return; }
-      if (name === 'custom') { off(); custom(); return; }
+      if (name === 'home') { off(); toHisPlace(); return; }
       if (!MODES[name]) return;
       if (active === name) { off(); return; }
       off();
@@ -731,10 +698,8 @@
     }
 
     function init() {
-      applyCustomLabel();
       document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape') return;
-        if (closeSheet) { closeSheet(); closeSheet = null; }
         if (active) off();
       });
       /* Nothing keeps talking after you have gone. */
@@ -762,6 +727,142 @@
     return { toggle: toggle, off: off, init: init, active: function () { return active; } };
   })();
 
+  /* ── shy ───────────────────────────────────────────────────────
+     He holds his place in the viewport now instead of riding the page,
+     so everything you scroll to passes underneath him. He gets out of
+     the way by going nearly transparent over anything worth reading or
+     looking at, and comes back to full strength over bare background.
+
+     What counts as "in the way" is measured against the page rather
+     than guessed from coordinates. Twenty-one points across his
+     silhouette are hit-tested, the dock's own contents are discarded,
+     and whatever is underneath is asked two questions.
+
+       · Is this point on a line of text? Not "is this a paragraph" — a
+         wide <p> is mostly gutter, and treating its whole box as text
+         would have him fading over empty column margins. The text
+         node's own line boxes are what get tested, so he dims where
+         glyphs actually are and not merely where a block sits.
+
+       · Is it a picture? An <img>, <svg>, <canvas> or <video>, or an
+         element painting a background IMAGE — url() only. Every panel
+         on this site paints a gradient, and a gradient is a
+         background-image too; counting those would leave him faded
+         everywhere, permanently, which is indistinguishable from
+         having broken him.
+
+     Four hits of the twenty-one, because one stray word clipping his
+     outermost tentacle is not a reason to fade a mascot. The stack at
+     each point is walked downwards rather than stopping at the topmost
+     element, so a transparent overlay lying across the page does not
+     hide the text under it from the count.
+
+     Full strength again whenever you are touching him: hovering and
+     keyboard focus are handled in CSS so they cost nothing, dragging
+     here. A control you are using should never be the hardest thing on
+     the page to see. */
+  var shy = (function () {
+    var NEEDED = 3;
+    var raf = 0, on = false;
+
+    /* Fractions of his box, laid out inside an ellipse rather than
+       across the rectangle, so the grid follows his outline and no
+       point is spent on a corner that is empty in every frame of him.
+
+       Thirteen rows, which is what the density has to be: text on this
+       site sets at about a 24px line pitch, and a grid coarser than
+       that can straddle a paragraph and land every one of its points in
+       the space between the lines. A five-row version did exactly that
+       over the feature cards — three hits where he was plainly sitting
+       across a card — and reported him unobstructed. */
+    var PTS = (function () {
+      var out = [], rows = 13, i, j;
+      for (i = 0; i < rows; i++) {
+        var fy = 0.04 + i * (0.92 / (rows - 1));
+        var hw = Math.sqrt(Math.max(0, 1 - Math.pow((fy - 0.5) / 0.54, 2))) * 0.46;
+        var cols = Math.max(1, Math.round(hw / 0.095));
+        for (j = 0; j < cols; j++) {
+          var t = cols === 1 ? 0 : (j / (cols - 1)) * 2 - 1;
+          out.push([0.5 + t * hw, fy]);
+        }
+      }
+      return out;                      /* 53 points */
+    })();
+
+    /* PAD closes the gap between one line of text and the next. A
+       range's client rects are the glyph boxes, not the line boxes, so
+       at a 24px line pitch there is a five-pixel band of leading
+       between them that belongs to the paragraph as much as the glyphs
+       do. Without the padding he could sit squarely across a card of
+       text and score three — every sample point landing in the space
+       BETWEEN two lines — and stay at full strength over something he
+       was plainly covering. Five pixels closes the leading and is far
+       too small to reach the next column: the gutters here are tens of
+       pixels wide. */
+    var PAD = 5;
+    function textAt(el, x, y) {
+      for (var n = el.firstChild; n; n = n.nextSibling) {
+        if (n.nodeType !== 3 || !/\S/.test(n.nodeValue)) continue;
+        var rg = document.createRange();
+        rg.selectNodeContents(n);
+        var rects = rg.getClientRects();
+        for (var i = 0; i < rects.length; i++) {
+          var r = rects[i];
+          if (x >= r.left - PAD && x <= r.right + PAD &&
+              y >= r.top  - PAD && y <= r.bottom + PAD) return true;
+        }
+      }
+      return false;
+    }
+
+    function artAt(el) {
+      var t = el.tagName;
+      if (t === 'IMG' || t === 'VIDEO' || t === 'CANVAS' || t === 'PICTURE') return true;
+      if (el.ownerSVGElement || t === 'svg') return true;
+      var bg = getComputedStyle(el).backgroundImage;
+      return !!bg && bg.indexOf('url(') !== -1;
+    }
+
+    function look() {
+      raf = 0;
+      if (!dock || document.hidden || dock.style.display === 'none') return;
+      if (dock.classList.contains('dragging')) { set(false); return; }
+      var svg = dock.querySelector('.mascot-svg');
+      if (!svg) return;
+      var b = svg.getBoundingClientRect();
+      if (!b.width || !b.height) return;
+
+      var hits = 0;
+      for (var i = 0; i < PTS.length && hits < NEEDED; i++) {
+        var x = b.left + b.width * PTS[i][0];
+        var y = b.top + b.height * PTS[i][1];
+        if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) continue;
+        var stack = document.elementsFromPoint(x, y);
+        for (var j = 0; j < stack.length; j++) {
+          var el = stack[j];
+          if (dock.contains(el)) continue;
+          if (el === document.body || el === document.documentElement) break;
+          if (artAt(el) || textAt(el, x, y)) { hits++; break; }
+        }
+      }
+      set(hits >= NEEDED);
+    }
+
+    function set(v) {
+      if (v === on) return;
+      on = v;
+      dock.classList.toggle('eulid-shy', v);
+    }
+
+    /* One look per frame at most, and the sampling is what costs — not
+       the class change — so it is the sampling that gets throttled. */
+    function now() {
+      if (raf) return;
+      raf = requestAnimationFrame(look);
+    }
+    return { now: now, on: function () { return on; } };
+  })();
+
   /* ── the speech bubble, home only ─────────────────────────── */
   function addBubble(wrap) {
     if (!HAS_OWN || !wrap) return;
@@ -775,16 +876,25 @@
 
   /* ── start ────────────────────────────────────────────────── */
   function start(wrap) {
-    if (HAS_OWN && wrap) {
-      homeParent = wrap.parentNode;
-      homeIndex = Array.prototype.indexOf.call(homeParent.children, wrap);
-      addBubble(wrap);
-    }
+    /* Where he came from in the document used to be recorded here so
+       he could be put back into it. He is not put back any more — his
+       gap holds the slot and he floats over it — so there is nothing
+       left to remember. */
+    if (HAS_OWN && wrap) addBubble(wrap);
     makeDock();
 
     var spot = recall();
     if (spot) summon(spot.fx, spot.fy);
     else goHome();
+    /* The hero's own entrance for him used to come from
+       `.panel.active .mascot-wrap`, which cannot reach him now that he
+       lives under <body>. It is handed to the dock instead, and taken
+       away again once it has played, so that only an arrival on a fresh
+       page gets it — see the note beside the rule. */
+    if (HAS_OWN) {
+      dock.classList.add('intro');
+      setTimeout(function () { dock.classList.remove('intro'); }, 1700);
+    }
 
     document.addEventListener('pointerdown', onDown);
     document.addEventListener('pointermove', onMove, { passive: false });
@@ -805,8 +915,15 @@
       aimState.raf = true;
       requestAnimationFrame(function () { aimState.raf = false; pupilLoop(); });
     }, { passive: true });
-    window.addEventListener('resize', aim, { passive: true });
-    window.addEventListener('scroll', aim, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
+    window.addEventListener('scroll', function () { aim(); shy.now(); },
+                            { passive: true });
+    /* Scroll and resize cover him moving relative to the page. This
+       covers the page moving relative to HIM: switching sections,
+       opening an accordion, an image arriving late. Twenty-one hit
+       tests twice a second is not worth watching the whole document
+       for, and a MutationObserver over a 620KB page would be. */
+    setInterval(function () { if (!document.hidden) shy.now(); }, 500);
 
     /* Keep the clock honest about time away rather than time idle. */
     document.addEventListener('visibilitychange', function () {
@@ -816,7 +933,48 @@
       }
     });
     setInterval(function () { if (!document.hidden) touch(); }, 60000);
+
+    /* ── signing out puts him back ─────────────────────────────
+       Where he is standing is part of a session, and signing out ends
+       the session. So he goes back to his usual place, and any tool he
+       had open closes with him — leaving a magnifier cursor switched on
+       for whoever signs in next would be a small mystery nobody asked
+       for.
+
+       This has to survive the redirect that sign-out performs, and
+       goHome() is what makes it: it calls forget() first, so the
+       remembered spot is gone from sessionStorage before the browser
+       leaves the page, and the page he lands on has nothing to restore
+       him to.
+
+       An event as well as the method below, so a page can announce a
+       sign-out without holding a reference to him. */
+    document.addEventListener('sos:signout', home);
+    window.addEventListener('sos:signout', home);
   }
+
+  /* His slot moves when the hero reflows, so while he is standing over
+     it the fraction is measured again rather than kept. Once he has been
+     dragged it is his own position that matters and the slot is no
+     longer his concern. */
+  function onResize() {
+    aim();
+    if (HAS_OWN && dock && dock.classList.contains('at-home')) {
+      heroSpot = null;
+      measureHeroSpot();
+      var h = homeSpot();
+      place(h.fx, h.fy, false);
+    }
+    shy.now();
+  }
+
+  /* His whole public surface. Small on purpose: session.js should be
+     able to send him home without knowing about docks, gaps or keys. */
+  function home() {
+    try { Tools.off(); } catch (e) {}
+    try { goHome(); } catch (e) { forget(); }
+  }
+  window.SOSEulid = { home: home, forget: forget, KEY: KEY };
 
   function begin() {
     var wrap = document.querySelector('.mascot-wrap');
