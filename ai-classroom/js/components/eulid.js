@@ -51,6 +51,35 @@
 
   var dock, drift, saysEl;
 
+  /* ── holding still, or going with the page ─────────────────────
+     He used to be pinned to the screen everywhere: a fixed box that held
+     its spot while the page scrolled underneath, so his five tools stayed
+     reachable however far down you had read. On the page that ships with
+     him that is no longer what is wanted — he belongs to the hero, and
+     when the hero scrolls away he goes with it, like anything else drawn
+     on the page. Drag him and he still travels with the page rather than
+     the screen; there is a document here to hold him.
+
+     Everywhere else there is no slot for him in the layout and no sensible
+     document position to give him, so those pages keep the pinned corner.
+
+     The saved fraction needs no new units for this. It was always
+     measured with pageYOffset added back in, which makes it a fraction of
+     the DOCUMENT — and an absolutely positioned box resolves a top
+     percentage against the same viewport-sized box at the document
+     origin. The number means the same thing; only the positioning
+     changes. Dragging is the one place that has to learn, because a
+     pointer reports where it is on the SCREEN. */
+  function goesWithPage() {
+    if (!HAS_OWN) return false;
+    /* Shipping with him in the markup is not enough: assets/eulid.html is a
+       bare fragment of him and nothing else, with no layout to scroll and
+       nowhere for him to go. What earns it is a slot inside one of the
+       page's sections — which is the app page, and only the app page. */
+    var slot = gapEl || document.querySelector('.mascot-wrap');
+    return !!(slot && slot.closest && slot.closest('.panel'));
+  }
+
   /* ── where he stands when nothing has been asked of him ────────
      On the home page this is not a coordinate at all — it is a place in
      the document, and he is returned to it rather than parked over it.
@@ -89,10 +118,17 @@
     if (!r.width || !r.height) return;
     var mx = (r.width / 2 + 6) / window.innerWidth;
     var my = (r.height / 2 + 6) / window.innerHeight;
+    /* The vertical clamp above exists because a pinned mascot whose slot sits
+       below the fold would be permanently sliced off by the bottom edge. Once
+       he travels with the page that is no longer true — below the fold simply
+       means you have not scrolled to him yet — and the clamp becomes the
+       reason he stands eighty pixels above his own slot on a short screen.
+       So it applies only where he is still pinned. The horizontal one stays
+       either way: there is no scrolling sideways to bring him back. */
+    var fyRaw = (r.top + window.pageYOffset + r.height / 2) / window.innerHeight;
     heroSpot = {
       fx: clamp((r.left + r.width / 2) / window.innerWidth, mx, 1 - mx),
-      fy: clamp((r.top + window.pageYOffset + r.height / 2) / window.innerHeight,
-                my, 1 - my)
+      fy: goesWithPage() ? fyRaw : clamp(fyRaw, my, 1 - my)
     };
   }
 
@@ -115,6 +151,61 @@
   function forget() {
     try { sessionStorage.removeItem(KEY); } catch (e) {}
   }
+
+  /* ── waiting at home ───────────────────────────────────────────
+     Sending him home used to mean putting him at whatever this page
+     calls his default spot, which on every page but one is a corner of
+     that page — so the fifth leg never took him anywhere, it only
+     tidied him. Now it does what it says: he goes back to the home
+     section of the page that ships with him, and he waits there. He is
+     not on any other section and not on any other page until somebody
+     goes and picks him up.
+
+     This one outlives the tab, unlike his position. His position is
+     where you left him in a session; this is a decision somebody made
+     about where he should be, and closing a tab does not undo it. */
+  var HOME_KEY = 'sos_eulid_athome';
+  function waiting() {
+    try { return localStorage.getItem(HOME_KEY) === '1'; } catch (e) { return false; }
+  }
+  function sendHome() {
+    try { localStorage.setItem(HOME_KEY, '1'); } catch (e) {}
+  }
+  function collect() {
+    try { localStorage.removeItem(HOME_KEY); } catch (e) {}
+  }
+
+  /* Is this the place he waits? One place, not one page: the section
+     his slot is in, on the page whose markup carries him. Asked of the
+     gap rather than of him, because by the time anything asks he has
+     been lifted into the fixed dock and the gap is what is still
+     standing in the hero. A page with no sections at all — his own
+     assets/eulid.html, opened directly — counts as itself. */
+  function atHome() {
+    if (!HAS_OWN) return false;
+    var slot = gapEl || document.querySelector('.mascot-wrap');
+    var panel = slot && slot.closest ? slot.closest('.panel') : null;
+    return panel ? panel.classList.contains('active') : true;
+  }
+
+  /* The one place that decides whether he is on screen. Everything else
+     positions him; this says whether there is anything to position.
+     Fading rather than cutting: a mascot that blinks out of existence
+     reads as a bug, one that walks off reads as him leaving. */
+  var goingTimer = null;
+  function presence(instant) {
+    if (!dock) return;
+    var away = waiting() && !atHome();
+    clearTimeout(goingTimer);
+    if (!away) { dock.classList.remove('going'); dock.style.display = ''; return; }
+    if (dock.style.display === 'none') return;      /* already gone */
+    if (instant) { dock.classList.remove('going'); dock.style.display = 'none'; return; }
+    dock.classList.add('going');
+    goingTimer = setTimeout(function () {
+      dock.style.display = 'none';
+      dock.classList.remove('going');
+    }, 380);
+  }
   /* Touched while the page is on screen, so the half hour counts time
      AWAY rather than time since he was last moved. Without this he would
      go home in the middle of a long read. */
@@ -126,7 +217,7 @@
   /* ── the dock ──────────────────────────────────────────────── */
   function makeDock() {
     dock = document.createElement('div');
-    dock.className = 'eulid-dock';
+    dock.className = 'eulid-dock' + (goesWithPage() ? ' in-page' : '');
     dock.id = DOCK_ID;
     drift = document.createElement('div');
     drift.className = 'eulid-drift';
@@ -273,6 +364,10 @@
         Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < DRAG_SLOP) return;
     if (!drag.moved) {
       drag.moved = true;
+      /* Somebody has come and got him. He follows you again from here.
+         Only ever reachable on the section he waits on, because that is
+         the only place he is drawn while he is waiting. */
+      collect();
       var wrap = document.querySelector('.mascot-wrap');
       if (wrap && wrap.parentNode !== drift) { leaveGap(wrap); drift.appendChild(wrap); }
       dock.style.display = '';
@@ -281,10 +376,19 @@
       if (saysEl) saysEl.style.display = 'none';
     }
     e.preventDefault();
+    /* The pointer reports where it is on the screen. Where he is kept is a
+       fraction of the document, so on a page he scrolls with, how far you
+       have scrolled has to be added in — without it he would jump back up
+       the page by exactly that much the moment you let go. */
+    var sy = goesWithPage() ? window.pageYOffset : 0;
     var fx = (e.clientX + drag.ox) / window.innerWidth;
-    var fy = (e.clientY + drag.oy) / window.innerHeight;
+    var fy = (e.clientY + drag.oy + sy) / window.innerHeight;
+    var lo = (sy / window.innerHeight) + 0.08;
+    var hi = (sy / window.innerHeight) + 0.92;
     fx = Math.min(Math.max(fx, 0.06), 0.94);
-    fy = Math.min(Math.max(fy, 0.08), 0.92);
+    /* Clamped against the part of the page you can actually see, so he can
+       never be dropped somewhere off the screen you dropped him on. */
+    fy = Math.min(Math.max(fy, lo), hi);
     place(fx, fy, false);
     drag.fx = fx; drag.fy = fy;
     aim();
@@ -670,7 +774,13 @@
        one that already knows the difference between the two kinds of
        home: a place in the document, or a fraction of the viewport. The
        leg does not need to know which page it is on. */
-    function toHisPlace() { goHome(); }
+    /* home(), not goHome(). goHome() is the primitive that puts him at
+       whatever this page calls his default spot; home() is the whole
+       act the leg stands for — he goes back to the home section and
+       waits there, off every other page, until somebody collects him.
+       Pressing the leg has to be the same thing session.js gets from
+       SOSEulid.home(), or the leg quietly does less than the API. */
+    function toHisPlace() { home(); }
 
     /* ── the switchboard ─────────────────────────────────────── */
     var MODES = {
@@ -875,6 +985,38 @@
   }
 
   /* ── start ────────────────────────────────────────────────── */
+  /* His home is a section, and sections here are swapped by a class
+     rather than by a page load, so nothing would otherwise tell him he
+     had stopped being at home. Watching the one panel's class is enough
+     and costs nothing next to observing the document. */
+  function watchHome() {
+    if (!HAS_OWN || !window.MutationObserver) return;
+    var slot = gapEl || document.querySelector('.mascot-wrap');
+    var panel = slot && slot.closest ? slot.closest('.panel') : null;
+    if (!panel) return;
+    var was = panel.classList.contains('active');
+    new MutationObserver(function () {
+      var now = panel.classList.contains('active');
+      if (now === was) return;
+      was = now;
+      if (now && waiting()) {
+        /* His slot has only just been laid out again. A fraction taken
+           while the section was display:none is a fraction of nothing,
+           so it is measured afresh rather than trusted. */
+        heroSpot = null;
+        measureHeroSpot();
+        dock.style.display = '';
+        dock.classList.remove('going');
+        dock.classList.add('at-home');
+        if (saysEl) saysEl.style.display = '';
+        var h = homeSpot();
+        place(h.fx, h.fy, true);
+        aim();
+      }
+      presence();
+    }).observe(panel, { attributes: true, attributeFilter: ['class'] });
+  }
+
   function start(wrap) {
     /* Where he came from in the document used to be recorded here so
        he could be put back into it. He is not put back any more — his
@@ -886,6 +1028,10 @@
     var spot = recall();
     if (spot) summon(spot.fx, spot.fy);
     else goHome();
+    /* Instantly, not as a fade: on a fresh page he was never here to
+       walk away from. */
+    watchHome();
+    presence(true);
     /* The hero's own entrance for him used to come from
        `.panel.active .mascot-wrap`, which cannot reach him now that he
        lives under <body>. It is handed to the dock instead, and taken
@@ -930,6 +1076,7 @@
       if (!document.hidden) {
         if (!recall()) goHome();
         else touch();
+        presence(true);
       }
     });
     setInterval(function () { if (!document.hidden) touch(); }, 60000);
@@ -949,8 +1096,8 @@
 
        An event as well as the method below, so a page can announce a
        sign-out without holding a reference to him. */
-    document.addEventListener('sos:signout', home);
-    window.addEventListener('sos:signout', home);
+    document.addEventListener('sos:signout', endSession);
+    window.addEventListener('sos:signout', endSession);
   }
 
   /* His slot moves when the hero reflows, so while he is standing over
@@ -972,9 +1119,30 @@
      able to send him home without knowing about docks, gaps or keys. */
   function home() {
     try { Tools.off(); } catch (e) {}
-    try { goHome(); } catch (e) { forget(); }
+    sendHome();
+    /* If this IS his place, put him in it. If it is not, there is
+       nothing here to put him into — he has gone back to the home page
+       and the only thing left to do on this one is let him leave. The
+       remembered spot goes either way, so the page he is waiting on
+       finds him in his slot rather than wherever he last stood. */
+    if (atHome()) { try { goHome(); } catch (e) { forget(); } }
+    else { forget(); }
+    presence();
   }
-  window.SOSEulid = { home: home, forget: forget, KEY: KEY };
+
+  /* Signing out is not somebody deciding where he should be, it is a
+     session ending — so it clears where he was standing without also
+     parking him. Told apart from the leg on purpose: sign out on the
+     dashboard and he should still be on the dashboard next time, just
+     back in his corner. */
+  function endSession() {
+    try { Tools.off(); } catch (e) {}
+    try { goHome(); } catch (e) { forget(); }
+    presence();
+  }
+
+  window.SOSEulid = { home: home, forget: forget, KEY: KEY,
+                      waiting: waiting, collect: collect, HOME_KEY: HOME_KEY };
 
   function begin() {
     var wrap = document.querySelector('.mascot-wrap');
