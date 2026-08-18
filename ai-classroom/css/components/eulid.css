@@ -401,3 +401,35 @@ body.eu-read-on { cursor: text; }
 @media (prefers-reduced-motion: reduce) {
   .eu-leg path, .eu-tip-disc { transition: none !important; }
 }
+
+
+/* ── leaving for home ──────────────────────────────────────────
+   The fifth leg sends him back to the home section and he waits there,
+   which means he has to stop being on the page you pressed it on. Cut
+   straight to display:none and he blinks out of existence, which reads
+   as a fault rather than as him going somewhere; this is him walking
+   off, and the script hides him for real once it has played.
+
+   Last in the file so it wins against .eulid-shy, which is also two
+   classes deep and would otherwise leave him faintly visible forever. */
+.eulid-dock.going {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.84);
+  pointer-events: none;
+  transition: opacity .34s ease, transform .34s cubic-bezier(.4,0,.7,.2);
+}
+
+
+/* ── going with the page ───────────────────────────────────────
+   On the page that ships with him he is part of that page, not a thing
+   stuck to the glass in front of it: scroll and he scrolls away with the
+   hero he stands in. Absolute rather than fixed is the whole change —
+   his stored top is already a fraction of the document, and an absolute
+   box resolves a top percentage against the same viewport-sized box at
+   the document origin, so the number means what it always meant.
+
+   Pages with no slot for him keep .eulid-dock on its own, and stay pinned.
+   The left/top transition still animates him being SENT somewhere; it is
+   not involved in scrolling, because his top does not change when you
+   scroll — the page moves under a number that stayed still. */
+.eulid-dock.in-page { position: absolute; }
