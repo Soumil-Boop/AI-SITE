@@ -22,11 +22,38 @@
     geography: ['map', 'rough'],
     history:   ['order', 'rough'],
     english:   ['grammar', 'rough'],
+    // the stream subjects the Lab gained. Every subject that has a real
+    // formula sheet behind it gets the sheet; the chemistry-facing ones get
+    // the periodic table. Without these entries they fell through to the
+    // ['rough'] default and showed no tools at all.
+    physics:               ['calc', 'formulae', 'rough'],
+    chemistry:             ['elements', 'formulae', 'calc', 'rough'],
+    biology:               ['formulae', 'rough'],
+    further_maths:         ['calc', 'formulae', 'rough'],
+    statistics:            ['calc', 'formulae', 'rough'],
+    environmental_science: ['formulae', 'rough'],
+    accountancy:           ['calc', 'formulae', 'rough'],
+    business_studies:      ['calc', 'formulae', 'rough'],
+    economics:             ['calc', 'formulae', 'rough'],
+    computer_science:      ['calc', 'rough'],
+    political_science:     ['order', 'rough'],
+    sociology:             ['rough'],
+    psychology:            ['rough'],
     // entrance and government exams
     aptitude:  ['calc', 'formulae', 'rough'],
     gk:        ['map', 'rough'],
     reasoning: ['order', 'rough'],   // no calculator: the point is the reasoning
   };
+
+  /* What the Lab (or Test Mode, or Exam Prep) currently has open. index.html
+     owns that state, so it hands it over rather than the tools reaching into
+     it. Falls back to nothing, and every tool copes with nothing. */
+  function ctx() {
+    try {
+      if (typeof window.SOSToolCtx === 'function') return window.SOSToolCtx() || {};
+    } catch (e) {}
+    return {};
+  }
 
   var META = {
     calc:     { label: 'Calculator', short: 'Calc',     icon: '🧮' },
@@ -76,21 +103,45 @@
         }).join('') + '</div></div>';
     },
 
+    /* The sheet a student actually needs: the formulas for the subject and
+       grade they are working at, not one generic list for everybody. Falls
+       back to the old general list when there is no sheet for that pairing
+       (a language, say) so the tool is never empty. */
     formulae: function () {
-      var rows = [['Area of a circle','πr²'], ['Circumference','2πr'],
-                  ['Pythagoras','a² + b² = c²'], ['Speed','distance ÷ time'],
-                  ['Simple interest','(P × R × T) ÷ 100'],
-                  ['Volume of a cuboid','l × b × h'],
-                  ['Average','sum ÷ how many'], ['Percentage','(part ÷ whole) × 100']];
-      return head('formulae', 'the ones you are allowed') +
-        '<div class="tt-body"><ul class="tt-fs">' + rows.map(function (r) {
-          return '<li><b>' + r[0] + '</b><span>' + r[1] + '</span></li>';
-        }).join('') + '</ul></div>';
+      var c = ctx();
+      var sheets = window.LAB_FORMULAS || {};
+      var subject = c.subject, grade = c.grade;
+      var forSubject = sheets[subject];
+      var topics = forSubject && grade ? forSubject['grade_' + grade] : null;
+
+      if (!topics) {
+        var rows = [['Area of a circle','πr²'], ['Circumference','2πr'],
+                    ['Pythagoras','a² + b² = c²'], ['Speed','distance ÷ time'],
+                    ['Simple interest','(P × R × T) ÷ 100'],
+                    ['Volume of a cuboid','l × b × h'],
+                    ['Average','sum ÷ how many'], ['Percentage','(part ÷ whole) × 100']];
+        return head('formulae', 'general') +
+          '<div class="tt-body"><ul class="tt-fs">' + rows.map(function (r) {
+            return '<li><b>' + r[0] + '</b><span>' + r[1] + '</span></li>';
+          }).join('') + '</ul></div>';
+      }
+
+      var label = (window.LAB_SUBJ_LABEL && window.LAB_SUBJ_LABEL[subject]) || subject;
+      return head('formulae', label + ' · Grade ' + grade) +
+        '<div class="tt-body"><div class="tt-sheet">' + topics.map(function (t) {
+          return '<div class="tt-sheet-topic"><h5>' + esc(t.topic) + '</h5>' +
+            t.items.map(function (it) {
+              return '<div class="tt-sheet-row"><b>' + esc(it.name) + '</b>' +
+                '<code>' + esc(it.formula) + '</code>' +
+                '<span>' + esc(it.note) + '</span></div>';
+            }).join('') + '</div>';
+        }).join('') + '</div></div>';
     },
 
     elements: function () {
-      return head('elements', 'first 36 elements') +
-        '<div class="tt-body"><div class="tt-pt" id="ttPT"></div></div>';
+      return head('elements', 'all 118 elements — tap one') +
+        '<div class="tt-body"><div class="tt-pt" id="ttPT"></div>' +
+        '<div class="tt-el-detail" id="ttElDetail" hidden></div></div>';
     },
 
     map: function () {
@@ -166,17 +217,84 @@
     ['Sc',21,3,4],['Ti',22,4,4],['V',23,5,4],['Cr',24,6,4],['Mn',25,7,4],['Fe',26,8,4],['Co',27,9,4],
     ['Ni',28,10,4],['Cu',29,11,4],['Zn',30,12,4],['Ga',31,13,4],['Ge',32,14,4],['As',33,15,4],
     ['Se',34,16,4],['Br',35,17,4],['Kr',36,18,4]];
+  /* Category -> class, so the table is coloured the way a printed one is. */
+  var PT_SLUG = {
+    'Alkali Metal':'alkali','Alkaline Earth Metal':'alkaline','Transition Metal':'transition',
+    'Lanthanide':'lanth','Actinide':'actin','Metal':'metal','Metalloid':'metalloid',
+    'Nonmetal':'nonmetal','Halogen':'halogen','Noble Gas':'noble'
+  };
+
+  function ptCell(e) {
+    return '<button type="button" class="tt-el pt-' + (PT_SLUG[e.cat] || 'metal') + '"' +
+      ' data-z="' + e.z + '" title="' + esc(e.name) + ' · ' + e.mass + '">' +
+      '<b>' + e.sym + '</b><span>' + e.z + '</span></button>';
+  }
+
   function wireElements() {
     var host = document.getElementById('ttPT'); if (!host) return;
-    var at = {};
-    ELEMENTS.forEach(function (e) { at[e[3] + '-' + e[2]] = e; });
-    var html = '';
-    for (var r = 1; r <= 4; r++) for (var c = 1; c <= 18; c++) {
-      var e = at[r + '-' + c];
-      html += e ? '<i class="tt-el g' + e[3] + '" title="' + e[0] + ' · ' + e[1] + '"><b>' +
-                  e[0] + '</b><span>' + e[1] + '</span></i>' : '<i></i>';
+    var all = window.PT_ELEMENTS;
+
+    /* The old 36-element fallback, kept only for the case where the full
+       table has not loaded — the tool should degrade, not disappear. */
+    if (!all || !all.length) {
+      var at = {};
+      ELEMENTS.forEach(function (e) { at[e[3] + '-' + e[2]] = e; });
+      var html = '';
+      for (var r = 1; r <= 4; r++) for (var c = 1; c <= 18; c++) {
+        var e = at[r + '-' + c];
+        html += e ? '<i class="tt-el g' + e[3] + '" title="' + e[0] + ' · ' + e[1] + '"><b>' +
+                    e[0] + '</b><span>' + e[1] + '</span></i>' : '<i></i>';
+      }
+      host.innerHTML = html;
+      return;
     }
-    host.innerHTML = html;
+
+    var main  = all.filter(function (e) { return e.p !== 'lanth' && e.p !== 'actin'; });
+    var lanth = all.filter(function (e) { return e.p === 'lanth'; }).sort(function(a,b){return a.g-b.g;});
+    var actin = all.filter(function (e) { return e.p === 'actin'; }).sort(function(a,b){return a.g-b.g;});
+
+    var at = {};
+    main.forEach(function (e) { at[e.p + '-' + e.g] = e; });
+    var out = '';
+    for (var row = 1; row <= 7; row++) {
+      for (var col = 1; col <= 18; col++) {
+        var e = at[row + '-' + col];
+        if (e) { out += ptCell(e); }
+        else if (col === 3 && row === 6) { out += '<i class="tt-el tt-el-ph">57-71</i>'; }
+        else if (col === 3 && row === 7) { out += '<i class="tt-el tt-el-ph">89-103</i>'; }
+        else { out += '<i></i>'; }
+      }
+    }
+    /* The f-block sits under the table, the way every printed one does. */
+    out += '<i class="tt-el-gap"></i>';
+    out += '<i class="tt-el-sp"></i><i class="tt-el-sp"></i>';
+    lanth.forEach(function (e) { out += ptCell(e); });
+    out += '<i></i>';
+    out += '<i class="tt-el-sp"></i><i class="tt-el-sp"></i>';
+    actin.forEach(function (e) { out += ptCell(e); });
+    out += '<i></i>';
+    host.innerHTML = out;
+
+    var detail = document.getElementById('ttElDetail');
+    host.addEventListener('click', function (ev) {
+      var btn = ev.target.closest ? ev.target.closest('.tt-el[data-z]') : null;
+      if (!btn || !detail) return;
+      var z = parseInt(btn.getAttribute('data-z'), 10);
+      var el = all.filter(function (x) { return x.z === z; })[0];
+      if (!el) return;
+      var prev = host.querySelector('.tt-el.on');
+      if (prev) prev.classList.remove('on');
+      btn.classList.add('on');
+      detail.hidden = false;
+      detail.innerHTML =
+        '<b>' + esc(el.name) + '</b> <span class="tt-el-cat">' + esc(el.cat) + '</span>' +
+        '<div class="tt-el-stats">' +
+          '<span><i>Number</i>' + el.z + '</span>' +
+          '<span><i>Mass</i>' + el.mass + '</span>' +
+          '<span><i>Config</i>' + esc(el.econf) + '</span>' +
+        '</div>' +
+        '<p>' + esc(el.fact) + '</p>';
+    });
   }
 
   /* The map's outlines are 170KB, so they are fetched the first time somebody
