@@ -1,0 +1,13 @@
+{
+  "_readme": [
+    "Video library for Seek-O-Sphere.",
+    "One flat array; the UI groups it as grade_subject_topic at load.",
+    "'subject' and 'topic' must match the Lab's own keys and topic strings",
+    "(LAB_TOPICS in index.html) so a video, its notes and its practice all",
+    "sit on the same topic.",
+    "provider 'youtube' -> ref is the 11-character video id (embedded).",
+    "provider 'link'    -> ref is a full URL (opened in a new tab, not framed).",
+    "Add entries by hand, or use Add video in the study space."
+  ],
+  "videos": []
+}

@@ -1001,6 +1001,25 @@
     .fs-formula{font-family:'Space Grotesk',monospace;font-size:.85rem;color:var(--brand-mid);
       background:var(--brand-light);border-radius:5px;padding:.16rem .5rem;display:inline-block;margin:.25rem 0;}
     .fs-note{font-size:.83rem;color:var(--muted);line-height:1.5;}
+    /* == EMBED MODE ==============================================
+       study.html loads this page inside itself to run the Lab. In that
+       context every piece of site furniture is a way back out to the
+       marketing site, so all of it is hidden and only the panel remains.
+       Hidden by class/tag because the footer, planner and Eulid dock are
+       injected by script after load and have no markup here to edit. */
+    html.sos-embed .topbar,
+    html.sos-embed nav,
+    html.sos-embed .marquee,
+    html.sos-embed footer.site-footer,
+    html.sos-embed aside.sos-planner,
+    html.sos-embed .eulid-dock,
+    html.sos-embed section.cta-band,
+    html.sos-embed .lab-hero,
+    html.sos-embed .page-hero { display:none !important; }
+    html.sos-embed, html.sos-embed body { background:var(--parchment); }
+    html.sos-embed .section-inner { padding-top:1.1rem; }
+    html.sos-embed .tm-shell { position:fixed; inset:0; }
+
     .lab-tabs{display:flex;gap:0;border-bottom:2px solid var(--gray-100);margin-bottom:2rem;}
     .lab-tab{padding:.75rem 1.5rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;}
     .lab-tab:hover{color:var(--brand);}
@@ -1646,6 +1665,17 @@
       background:var(--gray-50);border:1.5px solid var(--gray-100);border-radius:var(--radius);
       padding:1.15rem 1.35rem;margin-bottom:1.1rem;}
     .atl-setup[hidden]{display:none;}
+    /* ══ GRADE AND CURRICULUM ARE THE ACCOUNT'S, NOT THE PAGE'S ══
+       They are chosen at sign-up and changed only in Account settings, so
+       every control that could alter them here is removed rather than
+       merely disabled — a disabled dropdown still reads as an option. */
+    .atl-change,
+    #labSetupPanel,
+    #epSetupPanel .ep-curriculum,
+    .tm-field.tm-locked-field { display:none !important; }
+    .atl-fixed{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;
+      font-weight:700;color:var(--muted);}
+    .atl-fixed b{color:var(--text);font-weight:800;}
     .atl-field{display:flex;flex-direction:column;gap:.5rem;}
     .atl-field > span{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
     #labPrefAnchor:empty{display:none;}
@@ -2194,7 +2224,7 @@
     <a data-page="types"     onclick="showPage('types')">Types</a>
     <a data-page="study"     onclick="showPage('study')">Study Tools</a>
     <a data-page="ethics"    onclick="showPage('ethics')">Ethics</a>
-    <a data-page="lab"       onclick="showPage('lab')">🧪 Learning Lab</a>
+    <a data-page="lab"       href="study.html" target="_blank" rel="noopener">🧪 Learning Lab</a>
     <a data-page="finder"    onclick="showPage('finder')">Find My AI Tool</a>
     <a data-page="resources" onclick="showPage('resources')">Help &amp; Resources</a>
     <a data-page="contact"   onclick="showPage('contact')">Contact Us</a>
@@ -2540,7 +2570,7 @@
             <h3>Study Tools</h3>
             <p>How to use AI for essays, coding, languages, and maths without getting it wrong.</p>
           </div>
-          <div class="feature-card" onclick="showPage('lab')" role="button" tabindex="0">
+          <div class="feature-card" onclick="window.open('study.html','_blank','noopener')" role="button" tabindex="0">
             <span class="feature-icon" style="background:var(--brand-mid);">🧪</span>
             <h3>Learning Lab</h3>
             <p>Interactive maths with animated blocks and Eulid your AI tutor cheering you on.</p>
@@ -3085,8 +3115,7 @@
       <div class="atl-setline">
         <span class="atl-kick">Pick a subject</span>
         <div class="atl-setnow">
-          <span id="labSetSummary">CBSE (India) &middot; Grade 1</span>
-          <button type="button" class="atl-change" id="labSetToggle" aria-expanded="false" aria-controls="labSetupPanel" onclick="labToggleSetup()">change</button>
+          <span class="atl-fixed" id="labSetSummary">CBSE (India) &middot; Grade 1</span>
         </div>
       </div>
       <div class="atl-setup" id="labSetupPanel" hidden>
@@ -3415,7 +3444,7 @@
               <option value="history">&#128220; History</option>
               <option value="geography">&#127758; Geography</option>
             </select></label>
-          <label class="tm-field"><span>&#127758; Curriculum</span>
+          <label class="tm-field tm-locked-field"><span>&#127758; Curriculum</span>
             <select id="tmCurriculum" onchange="tmRefreshSubjects()">
               <option value="cbse">CBSE (India)</option>
               <option value="icse">ICSE (India)</option>
@@ -3423,7 +3452,7 @@
               <option value="us">US Common Core</option>
               <option value="ib">IB</option>
             </select></label>
-          <label class="tm-field"><span>&#127891; Grade</span>
+          <label class="tm-field tm-locked-field"><span>&#127891; Grade</span>
             <select id="tmAge" onchange="tmRefreshSubjects()">
               <option value="1">Grade 1</option>
               <option value="2">Grade 2</option>
@@ -4183,8 +4212,9 @@ function tmSeedFromLab(track){
         // where the student actually is before their subject is applied —
         // otherwise a stream subject like 'accountancy' has no matching
         // option yet and silently fails to take.
-        if (LAB.curriculum) tmEl('tmCurriculum').value = LAB.curriculum;
-        if (LAB.age)        tmEl('tmAge').value        = LAB.age;
+        var _p = sosProfile();
+        tmEl('tmCurriculum').value = _p.curriculum;
+        tmEl('tmAge').value        = _p.grade;
         tmRefreshSubjects();
         if (LAB.subject)    tmEl('tmSubject').value    = LAB.subject;
       }
@@ -6157,6 +6187,33 @@ function labPaintSubjectTiles(){
   var kick = document.getElementById('labToolsKick');
   if (kick) kick.textContent = 'Tools for ' + (LAB_SUBJ_LABEL[now] || now);
 }
+/* The single source of truth for curriculum and grade: what the student
+   picked when they signed up, mirrored into localStorage by SOS.onSession.
+   Nothing in the Lab may contradict it. */
+function sosProfile(){
+  var cur = 'cbse', grade = '1';
+  try {
+    var c = localStorage.getItem('sos_curriculum');
+    var g = localStorage.getItem('sos_grade') || localStorage.getItem('sos_age');
+    if (c) cur = c;
+    if (g) grade = labGradeToAge(g);
+  } catch(e){}
+  return { curriculum: cur, grade: grade };
+}
+/* Force every control that carries these values back to the profile, wherever
+   it lives — the Lab, Test Mode, or anything added later. */
+function sosApplyProfile(){
+  var p = sosProfile();
+  [['labCurriculum', p.curriculum], ['labAge', p.grade],
+   ['tmCurriculum',  p.curriculum], ['tmAge',  p.grade]].forEach(function(pair){
+    var el = document.getElementById(pair[0]);
+    if (el && [].some.call(el.options, function(o){ return o.value === pair[1]; })) el.value = pair[1];
+  });
+  if (typeof LAB === 'object' && LAB) { LAB.curriculum = p.curriculum; LAB.age = p.grade; }
+  if (typeof TM  === 'object' && TM)  { TM.curriculum  = p.curriculum; TM.age  = p.grade; }
+  return p;
+}
+
 function labToggleSetup(){
   var panel = document.getElementById('labSetupPanel');
   var btn   = document.getElementById('labSetToggle');
@@ -7210,8 +7267,52 @@ window.SOSToolCtx = function(){
   return {};
 };
 
+/* study.html hands a subject over in localStorage when a student clicks one of
+   its subject cards. Consume it once, so a later visit to the Lab is not stuck
+   on whatever was chosen days ago. */
+function labConsumeHandover(){
+  try {
+    var want = localStorage.getItem('sos_open_subject');
+    if (!want) return;
+    localStorage.removeItem('sos_open_subject');
+    if (labSetSubject(want)) labOnSubjectChange();
+  } catch(e){}
+}
+
+/* Embed mode is requested by study.html via ?embed=1, which also names the
+   panel to show in the hash. */
+(function(){
+  try {
+    if (/[?&]embed=1/.test(location.search)) {
+      document.documentElement.classList.add('sos-embed');
+      var want = (location.hash || '#lab').replace('#','') || 'lab';
+      setTimeout(function(){ try { showPage(want); } catch(e){} }, 0);
+    }
+  } catch(e){}
+})();
+
+/* The account's grade and curriculum are applied before anything is drawn,
+   and again once Firebase reports the session, because the profile keys may
+   only land in localStorage at that point. */
+sosApplyProfile();
+try {
+  if (window.SOS && typeof SOS.onSession === 'function') {
+    var _sosPrev = SOS.onSession;
+    SOS.onSession = function(){
+      try { _sosPrev.apply(this, arguments); } catch(e){}
+      try { sosApplyProfile(); labSyncSubjectPicker(false); labUpdateScores(); } catch(e){}
+    };
+  }
+} catch(e){}
+window.addEventListener('storage', function(ev){
+  if (ev && (ev.key === 'sos_grade' || ev.key === 'sos_curriculum')) {
+    try { sosApplyProfile(); labSyncSubjectPicker(false); } catch(e){}
+  }
+});
+
 // Initialise the group + subject tiles (and, through them, the topic dropdown) on page load
 labSyncSubjectPicker(true);
+labConsumeHandover();
 ptRender();
 fsInit();
 try { tmRefreshSubjects(); } catch(e){}
@@ -7636,18 +7737,11 @@ function labApplySavedPrefs(){
     const curSel = document.getElementById('labCurriculum');
     const ageSel = document.getElementById('labAge');
 
-    let cur, age;
-    if (session) {
-      cur = session.curriculum;
-      age = session.age;
-    } else {
-      cur = localStorage.getItem('sos_curriculum');
-      let ageRaw = localStorage.getItem('sos_age');
-      const grade = localStorage.getItem('sos_grade');
-      // Either field might still hold an old age-bucket string ('11-13')
-      // from before grades replaced them — normalise whichever is present.
-      age = grade ? labGradeToAge(grade) : (ageRaw ? labGradeToAge(ageRaw) : null);
-    }
+    /* Curriculum and grade always come from the account, never from the saved
+       session — a session stored before the student moved up a grade must not
+       drag them back down to it. */
+    const prof = sosProfile();
+    let cur = prof.curriculum, age = prof.grade;
 
     let changed = false;
     if (cur && curSel && [].some.call(curSel.options, o => o.value === cur)) { curSel.value = cur; changed = true; }
