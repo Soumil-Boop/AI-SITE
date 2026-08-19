@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Study &mdash; Seek-O-Sphere</title>
+<script>document.documentElement.setAttribute('data-theme','dark');</script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/base/variables.css"/>
+<link rel="stylesheet" href="css/theme-dark.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--parchment);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;
+  display:flex;flex-direction:column;}
+a{text-decoration:none;color:inherit;}
+.bar{display:flex;align-items:center;gap:1.2rem;padding:0 1.4rem;height:56px;background:var(--gray-50);
+  border-bottom:1px solid var(--gray-100);flex:none;}
+.logo{font-family:Nunito,sans-serif;font-weight:900;font-size:1rem;white-space:nowrap;cursor:default;}
+.logo span{color:var(--accent);}
+.nav{display:flex;gap:.15rem;margin-left:.5rem;flex-wrap:wrap;}
+.nav button{background:none;border:none;color:var(--muted);font:inherit;font-size:.83rem;font-weight:700;
+  padding:.45rem .8rem;border-radius:8px;cursor:pointer;}
+.nav button:hover{color:var(--text);background:var(--white);}
+.nav button.on{color:var(--on-fill);background:var(--accent);}
+.barR{margin-left:auto;display:flex;align-items:center;gap:.7rem;}
+.goal{font-size:.72rem;color:var(--faint);font-weight:700;white-space:nowrap;}
+.chip{display:flex;align-items:center;gap:.3rem;font-size:.74rem;font-weight:800;padding:.28rem .6rem;
+  border-radius:20px;background:var(--brand-light);color:var(--brand-mid);}
+.who{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-fill);
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.78rem;}
+.body{flex:1;min-height:0;position:relative;}
+.view{display:none;height:100%;}
+.view.on{display:block;}
+#frameView{height:100%;}
+#frame{width:100%;height:100%;border:0;display:block;background:var(--parchment);}
+.scroller{height:100%;overflow-y:auto;}
+.wrap{max-width:1180px;margin:0 auto;padding:1.5rem 1.4rem 4rem;}
+h1{font-family:Nunito,sans-serif;font-weight:900;font-size:1.5rem;}
+.sub{color:var(--muted);font-size:.86rem;margin-top:.15rem;}
+.kick{font-size:.62rem;letter-spacing:.19em;text-transform:uppercase;color:var(--muted);font-weight:800;
+  display:block;margin:1.7rem 0 .7rem;}
+.card{background:var(--white);border:1px solid var(--gray-100);border-radius:14px;}
+.top2{display:grid;grid-template-columns:1.55fr 1fr;gap:1rem;margin-top:1.1rem;}
+.resume{padding:1.15rem 1.25rem;position:relative;overflow:hidden;}
+.resume::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--accent));}
+.lbl{font-size:.62rem;letter-spacing:.19em;text-transform:uppercase;color:var(--faint);font-weight:800;}
+.resume h3{font-family:Nunito,sans-serif;font-weight:900;font-size:1.15rem;margin:.4rem 0 .1rem;}
+.where{font-size:.8rem;color:var(--muted);}
+.btn{margin-top:.9rem;margin-right:.5rem;padding:.55rem 1.1rem;border:none;border-radius:9px;
+  background:var(--accent);color:var(--on-fill);font:inherit;font-weight:800;font-size:.84rem;
+  cursor:pointer;display:inline-block;}
+.btn.ghost{background:none;border:1px solid var(--gray-200);color:var(--text);}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-top:1rem;}
+.stat{padding:.85rem .95rem;}
+.stat b{display:block;font-family:Nunito,sans-serif;font-weight:900;font-size:1.4rem;line-height:1;}
+.stat span{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:800;}
+.subs{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+.sub-card{padding:.9rem 1rem;cursor:pointer;position:relative;overflow:hidden;transition:.13s;
+  display:block;text-align:left;border:1px solid var(--gray-100);background:var(--white);
+  border-radius:14px;font:inherit;color:inherit;width:100%;}
+.sub-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c);}
+.sub-card:hover{border-color:var(--c);}
+.sub-head{display:flex;align-items:center;gap:.5rem;}
+.sub-head b{font-family:Nunito,sans-serif;font-weight:800;font-size:.92rem;}
+.sub-head .go{margin-left:auto;font-size:.74rem;font-weight:800;color:var(--c);}
+.sub-card small{display:block;margin-top:.3rem;font-size:.7rem;color:var(--faint);font-weight:600;}
+.rows{display:flex;flex-direction:column;}
+.row{display:flex;align-items:center;gap:.85rem;padding:.8rem .95rem;border:1px solid var(--gray-100);
+  border-bottom:none;background:var(--white);cursor:pointer;transition:.12s;text-align:left;
+  font:inherit;color:inherit;width:100%;}
+.row:first-child{border-radius:12px 12px 0 0;}
+.row:last-child{border-bottom:1px solid var(--gray-100);border-radius:0 0 12px 12px;}
+.row:hover{background:var(--gray-50);}
+.ic{width:30px;height:30px;flex:none;border-radius:8px;background:var(--gray-100);
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.rowmain{flex:1;min-width:0;}
+.rowmain b{display:block;font-size:.88rem;font-weight:700;}
+.rowmain span{font-size:.74rem;color:var(--faint);}
+.arw{color:var(--faint);font-weight:800;}
+.note{font-size:.74rem;color:var(--faint);margin-top:.9rem;}
+.note a{color:var(--accent-dark);font-weight:700;}
+/* ══ LIBRARY — videos and notes, together, per topic ══ */
+.libhead{display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:.2rem;}
+.libhead h1{flex:none;}
+.libcount{color:var(--faint);font-size:.78rem;font-weight:700;padding-bottom:.25rem;}
+.picker{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin:1.1rem 0 .3rem;}
+.gradepin{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem .8rem;border-radius:10px;
+  background:var(--gray-50);border:1px solid var(--gray-100);font-size:.82rem;font-weight:800;
+  color:var(--text);white-space:nowrap;}
+.gradepin small{color:var(--faint);font-weight:700;font-size:.7rem;}
+.picker select,.picker input{background:var(--white);color:var(--text);border:1px solid var(--gray-100);
+  border-radius:10px;padding:.55rem .75rem;font:inherit;font-size:.84rem;font-weight:700;}
+.picker select{min-width:140px;}
+.picker input{font-weight:500;min-width:190px;flex:1;max-width:280px;}
+.picker input::placeholder{color:var(--faint);}
+.picker .spacer{flex:1;}
+.tbtn{padding:.55rem .9rem;border-radius:10px;border:1px solid var(--gray-200);background:none;
+  color:var(--muted);font:inherit;font-weight:700;font-size:.8rem;cursor:pointer;white-space:nowrap;}
+.tbtn:hover{border-color:var(--accent);color:var(--text);}
+.tbtn.on{background:var(--accent);border-color:var(--accent);color:var(--on-fill);}
+
+.topicwrap{display:flex;flex-direction:column;gap:.5rem;margin-top:1.1rem;}
+.topic{border:1px solid var(--gray-100);border-radius:14px;background:var(--white);overflow:hidden;
+  position:relative;transition:border-color .13s;}
+.topic::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c);opacity:0;transition:.13s;}
+.topic.filled::before{opacity:1;}
+.topic:hover{border-color:color-mix(in srgb,var(--c) 45%,transparent);}
+.topic>summary{cursor:pointer;list-style:none;padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;}
+.topic>summary::-webkit-details-marker{display:none;}
+.tnum{width:26px;height:26px;flex:none;border-radius:8px;background:var(--gray-100);color:var(--faint);
+  display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:800;}
+.topic.filled .tnum{background:color-mix(in srgb,var(--c) 24%,var(--white));color:var(--c);}
+.tname{flex:1;min-width:0;font-size:.9rem;font-weight:700;}
+.tchips{display:flex;gap:.35rem;flex:none;}
+.tchip{display:flex;align-items:center;gap:.28rem;font-size:.68rem;font-weight:800;padding:.22rem .5rem;
+  border-radius:20px;background:var(--gray-100);color:var(--muted);}
+.tchip.v{background:var(--accent-light);color:var(--accent-dark);}
+.tchip.n{background:var(--brand-light);color:var(--brand-mid);}
+.tchip.none{background:none;border:1px dashed var(--gray-200);color:var(--faint);font-weight:700;}
+.caret{color:var(--faint);font-size:.7rem;flex:none;transition:transform .13s;}
+.topic[open] .caret{transform:rotate(90deg);color:var(--c);}
+.tbody{padding:0 .95rem .9rem;border-top:1px solid var(--gray-100);}
+
+.sect{margin-top:.85rem;}
+.sect-h{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;}
+.sect-h b{font-size:.6rem;letter-spacing:.19em;text-transform:uppercase;color:var(--muted);font-weight:800;}
+.sect-h .line{flex:1;height:1px;background:var(--gray-100);}
+.sect-h button{font-size:.7rem;font-weight:800;padding:.25rem .6rem;border-radius:7px;cursor:pointer;
+  border:1px solid var(--gray-200);background:none;color:var(--muted);font-family:inherit;}
+.sect-h button:hover{border-color:var(--accent);color:var(--accent-dark);}
+
+.item{display:flex;gap:.75rem;align-items:center;padding:.5rem .55rem;border-radius:10px;
+  border:1px solid var(--gray-100);background:var(--gray-50);cursor:pointer;text-align:left;
+  font:inherit;color:inherit;width:100%;margin-bottom:.35rem;}
+.item:hover{border-color:var(--c);}
+.vthumb{width:84px;height:47px;flex:none;border-radius:7px;object-fit:cover;background:var(--gray-100);}
+.nicon{width:34px;height:34px;flex:none;border-radius:9px;background:var(--brand-light);color:var(--brand-mid);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.imain{flex:1;min-width:0;}
+.imain b{display:block;font-size:.83rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.imain span{font-size:.69rem;color:var(--faint);}
+.flag{font-size:.62rem;font-weight:800;padding:.18rem .45rem;border-radius:5px;flex:none;
+  background:var(--good-tint);color:var(--good-2);}
+.blank{padding:.7rem .2rem;color:var(--faint);font-size:.78rem;}
+
+.addpanel{margin-top:.6rem;padding:.8rem .85rem;border:1px dashed var(--gray-200);border-radius:12px;}
+.addpanel .row2{display:flex;gap:.5rem;flex-wrap:wrap;}
+.addpanel input,.addpanel textarea{flex:1;min-width:180px;background:var(--white);color:var(--text);
+  border:1px solid var(--gray-100);border-radius:9px;padding:.5rem .65rem;font:inherit;font-size:.82rem;}
+.addpanel textarea{min-height:82px;resize:vertical;width:100%;font-family:inherit;line-height:1.55;}
+.addpanel .go{padding:.5rem 1rem;border:none;border-radius:9px;background:var(--accent);
+  color:var(--on-fill);font:inherit;font-weight:800;font-size:.8rem;cursor:pointer;}
+.msg{font-size:.74rem;margin-top:.5rem;font-weight:700;}
+.msg.ok{color:var(--good-2);} .msg.bad{color:var(--danger);}
+
+.player{margin:1rem 0;}
+.frame16{position:relative;width:100%;padding-top:56.25%;border-radius:14px;overflow:hidden;
+  background:#000;border:1px solid var(--gray-100);}
+.frame16 iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.playhead{display:flex;align-items:center;gap:.7rem;margin-top:.7rem;flex-wrap:wrap;}
+.playhead b{font-family:Nunito,sans-serif;font-weight:900;font-size:1rem;flex:1;min-width:180px;}
+.reader{margin:1rem 0;padding:1.1rem 1.25rem;border:1px solid var(--gray-100);border-radius:14px;
+  background:var(--white);border-top:2px solid var(--brand);}
+.reader h3{font-family:Nunito,sans-serif;font-weight:900;font-size:1.05rem;margin-bottom:.15rem;}
+.reader .meta{font-size:.72rem;color:var(--faint);font-weight:700;margin-bottom:.7rem;}
+.reader pre{white-space:pre-wrap;font-family:inherit;font-size:.88rem;line-height:1.7;color:var(--muted);}
+.empty-lib{padding:2rem 1.2rem;text-align:center;border:1px dashed var(--gray-200);border-radius:14px;margin-top:1.1rem;}
+.empty-lib b{display:block;font-family:Nunito,sans-serif;font-weight:900;font-size:1rem;margin-bottom:.3rem;}
+/* ── attachments: photos and PDFs of handwritten notes ── */
+.drop{margin-top:.55rem;border:1px dashed var(--gray-200);border-radius:11px;padding:.75rem .85rem;
+  display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;transition:.13s;}
+.drop.over{border-color:var(--accent);background:var(--accent-light);}
+.drop .pick{padding:.45rem .85rem;border-radius:9px;border:1px solid var(--gray-200);background:var(--white);
+  color:var(--text);font:inherit;font-weight:800;font-size:.78rem;cursor:pointer;}
+.drop .pick:hover{border-color:var(--accent);}
+.drop .hint{font-size:.72rem;color:var(--faint);flex:1;min-width:150px;}
+.filelist{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem;}
+.filechip{display:flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:700;padding:.3rem .5rem;
+  border-radius:8px;background:var(--gray-50);border:1px solid var(--gray-100);color:var(--muted);}
+.filechip i{font-style:normal;color:var(--accent-dark);}
+.filechip button{background:none;border:none;color:var(--faint);cursor:pointer;font:inherit;
+  font-size:.85rem;line-height:1;padding:0 .1rem;}
+.filechip button:hover{color:var(--danger);}
+.pages{display:flex;flex-direction:column;gap:.7rem;margin-top:.9rem;}
+.page{border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;background:var(--gray-50);}
+.page img{display:block;width:100%;height:auto;}
+.page embed,.page iframe{display:block;width:100%;height:70vh;border:0;background:#fff;}
+.page .cap{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;font-size:.72rem;
+  color:var(--faint);font-weight:700;border-top:1px solid var(--gray-100);}
+.page .cap a{color:var(--accent-dark);font-weight:800;}
+.usage{font-size:.7rem;color:var(--faint);margin-top:.8rem;}
+/* The two sections read as different places: notes are ember, videos aqua. */
+.pane-note  .tchip.n,.pane-note .nicon{background:var(--brand-light);color:var(--brand-mid);}
+.pane-note  .libhead h1::after{content:'';display:inline-block;width:7px;height:7px;border-radius:2px;
+  background:var(--brand);margin-left:.5rem;vertical-align:middle;}
+.pane-video .libhead h1::after{content:'';display:inline-block;width:7px;height:7px;border-radius:2px;
+  background:var(--accent);margin-left:.5rem;vertical-align:middle;}
+.pane-note  .tbtn.on{background:var(--brand);border-color:var(--brand);color:var(--on-fill);}
+.pane-note  .sect-h button:hover{border-color:var(--brand);color:var(--brand-mid);}
+.pane-note  .addpanel .go{background:var(--brand);}
+.pane-note  .topic[open] .caret{color:var(--brand);}
+.imain .rem{display:block;font-size:.72rem;color:var(--muted);font-style:italic;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:.1rem 0;}
+.rembox{background:var(--brand-light);border-left:3px solid var(--brand);border-radius:0 9px 9px 0;
+  padding:.55rem .8rem;font-size:.83rem;color:var(--brand-mid);font-style:italic;margin-bottom:.8rem;}
+.addpanel .filerow{margin-top:.5rem;}
+.addpanel .filerow select{flex:1;min-width:130px;background:var(--white);color:var(--text);
+  border:1px solid var(--gray-100);border-radius:9px;padding:.5rem .6rem;font:inherit;
+  font-size:.8rem;font-weight:700;}
+.empty-lib span{font-size:.82rem;color:var(--faint);}
+@media(max-width:900px){.top2{grid-template-columns:1fr;}.stats,.subs{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- The shell. There is deliberately no link out to index.html anywhere here:
+     this tab is the study environment, and the Lab runs inside it. -->
+<div class="bar">
+  <span class="logo">Seek-O-<span>Sphere</span></span>
+  <nav class="nav">
+    <button class="on" data-v="home"     onclick="show('home',this)">Dashboard</button>
+    <button           data-v="subjects"  onclick="show('home',this,'#subjects')">My Subjects</button>
+    <button           data-v="notes"     onclick="showView('note',this)">Notes</button>
+    <button           data-v="videos"    onclick="showView('video',this)">Videos</button>
+    <button           data-v="practice"  onclick="openLab('lab',this)">Practice</button>
+    <button           data-v="tests"     onclick="openLab('lab',this)">Tests</button>
+    <button           data-v="progress"  onclick="openFrame('pages/dashboard.html',this)">Progress</button>
+  </nav>
+  <div class="barR">
+    <span class="goal" id="goalChip">&nbsp;</span>
+    <span class="chip" id="streakChip" hidden>&#128293; <b id="streakN">0</b></span>
+    <span class="who" id="who">?</span>
+  </div>
+</div>
+
+<div class="body">
+  <!-- the study home -->
+  <div class="view on" id="homeView"><div class="scroller"><div class="wrap">
+    <h1 id="hello">Your study space</h1>
+    <p class="sub" id="helloSub">Everything you are working on, in one place.</p>
+
+    <div class="top2">
+      <div class="card resume" id="resumeCard">
+        <span class="lbl">Continue where you left off</span>
+        <h3 id="resumeTitle">Nothing yet</h3>
+        <p class="where" id="resumeWhere">Start a subject below and this will remember where you were.</p>
+        <button class="btn" id="resumeBtn" onclick="openLab('lab')">Start practising &rarr;</button>
+      </div>
+      <div class="card resume" style="--c:var(--brand)">
+        <span class="lbl">Today</span>
+        <h3>Practice set</h3>
+        <p class="where">A run of questions matched to your curriculum and grade.</p>
+        <button class="btn" onclick="openLab('lab')">Start</button>
+        <p class="note">Your score and run are kept for the session.</p>
+      </div>
+    </div>
+
+    <span class="kick">This session</span>
+    <div class="stats">
+      <div class="card stat"><b id="sScore">0</b><span>Score</span></div>
+      <div class="card stat"><b id="sStreak">0</b><span>Best run</span></div>
+      <div class="card stat"><b id="sAnswered">0</b><span>Answered</span></div>
+      <div class="card stat"><b id="sAcc">&mdash;</b><span>Accuracy</span></div>
+    </div>
+
+    <span class="kick" id="subjects">Your subjects</span>
+    <div class="subs" id="subjGrid"></div>
+
+    <span class="kick">Go further</span>
+    <div class="rows">
+      <button class="row" onclick="openLab('lab')"><span class="ic">&#9202;</span>
+        <div class="rowmain"><b>Take a timed test</b><span>Test mode &mdash; nothing is marked until you submit</span></div><span class="arw">&rsaquo;</span></button>
+      <button class="row" onclick="openLab('lab')"><span class="ic">&#128218;</span>
+        <div class="rowmain"><b>Reference</b><span>Periodic table and formula sheets for your grade</span></div><span class="arw">&rsaquo;</span></button>
+      <button class="row" onclick="openLab('lab')"><span class="ic">&#128221;</span>
+        <div class="rowmain"><b>Entrance &amp; government exams</b><span>CUET, Railways, Bank PO, SSC, UPSC</span></div><span class="arw">&rsaquo;</span></button>
+      <button class="row" onclick="openFrame('pages/dashboard.html')"><span class="ic">&#128202;</span>
+        <div class="rowmain"><b>Your dashboard</b><span>Saved progress, badges and history</span></div><span class="arw">&rsaquo;</span></button>
+    </div>
+
+    <p class="note" id="signedOutNote">Signed out? This session is not saved.
+      <a href="pages/login.html">Create a free account</a> to keep progress.</p>
+  </div></div></div>
+
+  <div class="view pane-note" id="notesView"><div class="scroller"><div class="wrap">
+    <div class="libhead">
+      <h1>My notes</h1>
+      <span class="libcount" id="nCount"></span>
+    </div>
+    <p class="sub">Your own notes — typed, photographed or scanned — filed by grade, subject and topic.</p>
+
+    <div class="picker">
+      <span class="gradepin" id="nGradePin"></span>
+      <select id="nSubject" onchange="renderView('note')"></select>
+      <input id="nSearch" type="search" placeholder="Search topics…" oninput="renderView('note')"/>
+      <span class="spacer"></span>
+      <button class="tbtn" id="nAll" onclick="setFilter('note',false,this)">All topics</button>
+      <button class="tbtn" id="nHas" onclick="setFilter('note',true,this)">With notes</button>
+    </div>
+
+    <div class="reader" id="reader" hidden>
+      <h3 id="rTitle"></h3>
+      <div class="meta" id="rMeta"></div>
+      <p class="rembox" id="rRem" hidden></p>
+      <pre id="rBody"></pre>
+      <div class="pages" id="rPages"></div>
+      <p class="usage" id="rUsage"></p>
+      <div class="playhead"><span class="spacer"></span>
+        <button class="tbtn" onclick="deleteNote()">Delete</button>
+        <button class="tbtn" onclick="closeReader()">Close</button></div>
+    </div>
+    <div class="topicwrap" id="nWrap"></div>
+  </div></div></div>
+
+  <div class="view pane-video" id="videosView"><div class="scroller"><div class="wrap">
+    <div class="libhead">
+      <h1>Video library</h1>
+      <span class="libcount" id="vCount"></span>
+    </div>
+    <p class="sub">Videos kept against the grade, subject and topic they teach, so you are not hunting for the right one.</p>
+
+    <div class="picker">
+      <span class="gradepin" id="vGradePin"></span>
+      <select id="vSubject" onchange="renderView('video')"></select>
+      <input id="vSearch" type="search" placeholder="Search topics…" oninput="renderView('video')"/>
+      <span class="spacer"></span>
+      <button class="tbtn" id="vAll" onclick="setFilter('video',false,this)">All topics</button>
+      <button class="tbtn" id="vHas" onclick="setFilter('video',true,this)">With videos</button>
+    </div>
+
+    <div class="player" id="player" hidden>
+      <div class="frame16"><iframe id="vFrame" title="Video" allowfullscreen
+        allow="accelerometer; encrypted-media; picture-in-picture"></iframe></div>
+      <div class="playhead"><b id="vTitle"></b>
+        <button class="tbtn" onclick="markWatched()" id="watchBtn">Mark watched</button>
+        <button class="tbtn" onclick="closePlayer()">Close</button></div>
+    </div>
+    <div class="topicwrap" id="vWrap"></div>
+  </div></div></div>
+
+  <!-- whatever is being studied, running inside this tab -->
+  <div class="view" id="frameView"><iframe id="frame" title="Study area"></iframe></div>
+</div>
+
+<script>
+/* ── the shell ─────────────────────────────────────────────────────
+   Views are swapped in place. Nothing here navigates the tab away, so
+   the study space cannot be exited back to the marketing site. */
+function markNav(btn){
+  document.querySelectorAll('.nav button').forEach(function(b){ b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+}
+function show(view, btn, anchor){
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
+  var id = /View$/.test(view) ? view : (view === 'home' ? 'homeView' : 'frameView');
+  document.getElementById(id).classList.add('on');
+  markNav(btn);
+  if (anchor) { var el = document.querySelector(anchor); if (el) el.scrollIntoView({behavior:'smooth'}); }
+}
+function openFrame(src, btn){
+  var f = document.getElementById('frame');
+  if (src.indexOf('embed=1') !== -1) {
+    f.onload = function(){ applyContext(f.contentWindow); f.onload = null; };
+  }
+  f.src = src;
+  show('frame', btn);
+}
+/* index.html in embed mode: its own nav, footer, planner and hero are hidden,
+   so it reads as part of this page rather than as the site.
+   Once it is loaded it is reused rather than reloaded — re-assigning the same
+   src does nothing anyway, and a reload would throw away the student's
+   session. Same origin, so the frame can simply be called into. */
+/* Put the embedded Lab into the curriculum and grade this shell is showing. */
+function applyContext(w){
+  var c = window.SOS_CTX; if (!w || !c) return;
+  try {
+    var cs = w.document.getElementById('labCurriculum');
+    var gs = w.document.getElementById('labAge');
+    if (cs && c.curriculum) cs.value = c.curriculum;
+    if (gs && c.grade)      gs.value = c.grade;
+    if (typeof w.labUpdateSubjects === 'function') w.labUpdateSubjects();
+    if (c.subject && typeof w.labSetSubject === 'function' && w.labSetSubject(c.subject)
+        && typeof w.labOnSubjectChange === 'function') w.labOnSubjectChange();
+  } catch(e){}
+}
+function labWindow(){
+  try {
+    var w = document.getElementById('frame').contentWindow;
+    return (w && typeof w.showPage === 'function') ? w : null;
+  } catch(e){ return null; }
+}
+function openLab(panel, btn){
+  panel = panel || 'lab';
+  var w = labWindow();
+  if (w) { try { w.showPage(panel); } catch(e){} document.getElementById('frame').focus(); show('frame', btn); }
+  else   { openFrame('index.html?embed=1#' + panel, btn); }
+  if (!btn) markNav(document.querySelector('.nav button[data-v="practice"]'));
+}
+function goHome(){ show('home', document.querySelector('.nav button[data-v="home"]')); }
+function showLibrary(btn){ showView('note', btn); }   /* kept: earlier links called this */
+
+/* ══ LIBRARY ═══════════════════════════════════════════════════════
+   Notes and videos are two separate sections with their own grade,
+   subject, search and filter state. One renderer drives both, so a fix
+   to either is a fix to both — but a student in Notes never has videos
+   in the way, and vice versa. Both file against grade_subject_topic. */
+var LIB = { topics:null, curated:[], videos:[], notes:[], current:null, currentNote:null };
+var K_VID = 'sos_videos_local', K_NOTE = 'sos_notes_local', K_WATCH = 'sos_videos_watched';
+
+var VIEWS = {
+  video: { kind:'video', p:'v', view:'videosView', grade:'10', subject:'maths',
+           search:'', onlyHas:false },
+  note:  { kind:'note',  p:'n', view:'notesView',  grade:'10', subject:'maths',
+           search:'', onlyHas:false }
+};
+function el(id){ return document.getElementById(id); }
+function libKey(g,s,t){ return g + '_' + s + '_' + t; }          // grade_subject_topic
+function readLS(k){ try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch(e){ return []; } }
+function writeLS(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function allVideos(){ return LIB.curated.concat(LIB.videos); }
+function isWatched(v){ return readLS(K_WATCH).indexOf('youtube:' + v.ref) !== -1; }
+
+function youtubeId(url){
+  var m = String(url||'').match(
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function loadLibrary(){
+  LIB.videos = readLS(K_VID);
+  LIB.notes  = readLS(K_NOTE);
+  return Promise.all([
+    fetch('data/topics.json').then(function(r){ return r.json(); })
+      .then(function(d){ LIB.topics = d; }).catch(function(){ LIB.topics = {subjects:{},topics:{}}; }),
+    fetch('data/videos.json').then(function(r){ return r.json(); })
+      .then(function(d){ LIB.curated = (d && d.videos) || []; }).catch(function(){ LIB.curated = []; })
+  ]);
+}
+function topicsFor(subject, grade){
+  var t = (LIB.topics.topics || {})[subject] || {};
+  return t[grade] || t[String(grade)] || [];
+}
+var LIB_HUE = { maths:'--maths', science:'--science', english:'--english',
+                history:'--history', geography:'--geography' };
+
+/* Grade and curriculum belong to the account. They are shown, never offered. */
+function fillPickers(V){
+  var s = el(V.p + 'Subject'), pin = el(V.p + 'GradePin');
+  var subs = LIB.topics.subjects || {};
+  s.innerHTML = Object.keys(subs).map(function(k){
+    return '<option value="' + k + '">' + subs[k] + '</option>'; }).join('');
+  var ctx = window.SOS_CTX || {};
+  V.grade = String(ctx.grade || '1');
+  s.value = (ctx.subject && subs[ctx.subject]) ? ctx.subject : 'maths';
+  V.subject = s.value;
+  if (pin) pin.innerHTML = 'Grade ' + esc(V.grade) +
+    (ctx.curriculumLabel ? ' <small>' + esc(ctx.curriculumLabel) + '</small>' : '');
+  setFilter(V.kind, false, el(V.p + 'All'));
+}
+function setFilter(kind, on, btn){
+  var V = VIEWS[kind];
+  V.onlyHas = on;
+  [V.p + 'All', V.p + 'Has'].forEach(function(id){ var b = el(id); if (b) b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  renderView(kind);
+}
+
+function renderView(kind){
+  var V = VIEWS[kind];
+  V.subject = el(V.p + 'Subject').value;
+  V.search  = (el(V.p + 'Search').value || '').trim().toLowerCase();
+
+  var items = kind === 'video' ? allVideos() : LIB.notes;
+  var listed = topicsFor(V.subject, V.grade);
+
+  /* anything filed against a topic this grade no longer lists still shows,
+     or it would be quietly orphaned */
+  var extra = [];
+  items.forEach(function(x){
+    if (x.grade === V.grade && x.subject === V.subject &&
+        listed.indexOf(x.topic) === -1 && extra.indexOf(x.topic) === -1) extra.push(x.topic);
+  });
+  var topics = listed.concat(extra);
+
+  var by = {};
+  items.forEach(function(x){ var k = libKey(x.grade,x.subject,x.topic);
+    (by[k] = by[k] || []).push(x); });
+
+  var total = 0;
+  topics.forEach(function(t){ total += (by[libKey(V.grade,V.subject,t)] || []).length; });
+  var word = kind === 'video' ? 'video' : 'note';
+  el(V.p + 'Count').textContent = topics.length + ' topics · ' + total + ' ' +
+    word + (total === 1 ? '' : 's');
+
+  var hue = LIB_HUE[V.subject] || (kind === 'video' ? '--accent' : '--brand');
+  var host = el(V.p + 'Wrap');
+  if (!topics.length) {
+    host.innerHTML = '<div class="empty-lib"><b>Nothing listed for this grade and subject</b>' +
+      '<span>Pick another combination above.</span></div>';
+    return;
+  }
+
+  var html = topics.map(function(t, i){
+    var k = libKey(V.grade, V.subject, t);
+    var xs = by[k] || [];
+    if (V.onlyHas && !xs.length) return '';
+    if (V.search && t.toLowerCase().indexOf(V.search) === -1) return '';
+    var chip = xs.length
+      ? '<span class="tchip ' + (kind === 'video' ? 'v">▶ ' : 'n">✎ ') + xs.length + '</span>'
+      : '<span class="tchip none">empty</span>';
+    var rows = xs.length
+      ? xs.map(kind === 'video' ? videoRow : noteRow).join('')
+      : '<div class="blank">' + (kind === 'video' ? 'No video yet.' : 'No notes yet.') + '</div>';
+    return '<details class="topic' + (xs.length ? ' filled' : '') + '" style="--c:var(' + hue + ')"' +
+      ' data-k="' + esc(k) + '"><summary>' +
+        '<span class="tnum">' + (i + 1) + '</span>' +
+        '<span class="tname">' + esc(t) + '</span>' +
+        '<span class="tchips">' + chip + '</span>' +
+        '<span class="caret">▶</span></summary>' +
+      '<div class="tbody"><div class="sect"><div class="sect-h">' +
+        '<b>' + (kind === 'video' ? 'Videos' : 'Notes') + '</b><span class="line"></span>' +
+        '<button onclick="' + (kind === 'video' ? 'addVideoForm' : 'addNoteForm') +
+          '(\'' + esc(t) + '\')">+ Add ' + word + '</button></div>' +
+        rows + '</div><div id="form_' + cssId(k) + '"></div></div></details>';
+  }).join('');
+
+  host.innerHTML = html || '<div class="empty-lib"><b>Nothing matches</b>' +
+    '<span>Try a different search, or switch back to all topics.</span></div>';
+}
+function cssId(k){ return k.replace(/[^A-Za-z0-9]/g,'_'); }
+
+function videoRow(v){
+  return '<button class="item" onclick="playVideo(\'' + v.ref + '\')">' +
+    '<img class="vthumb" src="https://i.ytimg.com/vi/' + v.ref + '/mqdefault.jpg" alt="" loading="lazy"/>' +
+    '<span class="imain"><b>' + esc(v.title || 'Untitled') + '</b><span>' +
+      ([v.channel, v.duration, v.lang].filter(Boolean).map(esc).join(' · ') || 'YouTube') +
+    '</span></span>' + (isWatched(v) ? '<span class="flag">Watched</span>' : '') + '</button>';
+}
+function stamp(x){
+  var ms = x.createdAt || (x.uploadedAt ? Date.parse(x.uploadedAt) : 0);
+  if (!ms) return '';
+  var d = new Date(ms);
+  return d.toLocaleDateString(undefined, {day:'numeric', month:'short', year:'numeric'}) +
+         ', ' + d.toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit'});
+}
+function noteRow(x){
+  return '<button class="item" onclick="openNote(\'' + x.id + '\')">' +
+    '<span class="nicon">' + (x.source === 'scan' ? '📄' : '✎') + '</span>' +
+    '<span class="imain"><b>' + esc(x.title || 'Untitled note') + '</b>' +
+      (x.reminder ? '<span class="rem">' + esc(x.reminder) + '</span>' : '') +
+      '<span>' + (x.source === 'scan' ? 'Scanned' : 'Typed') +
+        ((x.pages && x.pages.length) ? ' · ' + x.pages.length +
+          (x.pages.length === 1 ? ' page' : ' pages') : '') +
+        ' · Uploaded ' + stamp(x) +
+      '</span></span></button>';
+}
+
+/* forms open inside the topic they belong to, in whichever section is showing */
+function formHost(kind, topic){
+  var V = VIEWS[kind];
+  var e = el('form_' + cssId(libKey(V.grade, V.subject, topic)));
+  if (e) e.scrollIntoView({behavior:'smooth', block:'nearest'});
+  return e;
+}
+function addVideoForm(topic){
+  var e = formHost('video', topic); if (!e) return;
+  e.innerHTML = '<div class="addpanel"><div class="row2">' +
+    '<input id="fUrl" type="url" placeholder="YouTube link"/>' +
+    '<input id="fTitle" type="text" placeholder="Title"/>' +
+    '<button class="go" onclick="saveVideo(\'' + esc(topic) + '\')">Add</button>' +
+    '<button class="tbtn" onclick="closeForm(\'video\',\'' + esc(topic) + '\')">Cancel</button>' +
+    '</div><p class="msg" id="fMsg"></p></div>';
+  e.querySelector('#fUrl').focus();
+}
+function closeForm(kind, topic){ var e = formHost(kind, topic); if (e) e.innerHTML = ''; }
+
+function saveVideo(topic){
+  var V = VIEWS.video, msg = el('fMsg');
+  var id = youtubeId(el('fUrl').value.trim());
+  var title = el('fTitle').value.trim();
+  msg.className = 'msg bad';
+  if (!id)    { msg.textContent = 'That does not look like a YouTube link.'; return; }
+  if (!title) { msg.textContent = 'Give it a title so it can be found later.'; return; }
+  if (allVideos().some(function(v){ return v.ref === id && v.grade === V.grade
+        && v.subject === V.subject && v.topic === topic; })) {
+    msg.textContent = 'Already filed under this topic.'; return; }
+  LIB.videos.push({ grade:V.grade, subject:V.subject, topic:topic, provider:'youtube',
+                    ref:id, title:title, channel:'', duration:'', lang:'', covers:'',
+                    addedAt: Date.now() });
+  writeLS(K_VID, LIB.videos);
+  reopen('video', topic);
+}
+function reopen(kind, topic){
+  var V = VIEWS[kind], k = libKey(V.grade, V.subject, topic);
+  renderView(kind);
+  var d = el(V.p + 'Wrap').querySelector('.topic[data-k="' + k.replace(/"/g,'\\"') + '"]');
+  if (d) { d.open = true; d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+}
+
+/* ── viewing ── */
+function playVideo(ref){
+  var v = allVideos().filter(function(x){ return x.ref === ref; })[0];
+  if (!v) return;
+  LIB.current = v;
+  el('vFrame').src = 'https://www.youtube-nocookie.com/embed/' + v.ref + '?rel=0&modestbranding=1';
+  el('vTitle').textContent = v.title || 'Video';
+  el('watchBtn').textContent = isWatched(v) ? 'Watched ✓' : 'Mark watched';
+  el('player').hidden = false;
+  el('player').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closePlayer(){ var f = el('vFrame'); if (f) f.src = '';
+                        var p = el('player'); if (p) p.hidden = true; }
+function markWatched(){
+  if (!LIB.current) return;
+  var w = readLS(K_WATCH), id = 'youtube:' + LIB.current.ref;
+  if (w.indexOf(id) === -1) w.push(id);
+  writeLS(K_WATCH, w);
+  el('watchBtn').textContent = 'Watched ✓';
+  renderView('video');
+}
+
+var libReady = false;
+function showView(kind, btn){
+  show(VIEWS[kind].view, btn);
+  if (libReady) { renderView(kind); return; }
+  libReady = true;
+  loadLibrary().then(function(){
+    fillPickers(VIEWS.note); fillPickers(VIEWS.video);
+    renderView('note'); renderView('video');
+  });
+}
+
+/* ── attachments ────────────────────────────────────────────────────
+   Files live in IndexedDB rather than localStorage: a photographed page
+   is megabytes, and localStorage is a ~5MB string store that would fall
+   over on the second upload. IndexedDB holds real blobs, needs no
+   backend and costs nothing. Each note keeps a `pages` list of ids, which
+   is the same shape Firebase Storage paths will take when notes sync. */
+var PENDING = [];
+var MAX_FILE = 25 * 1024 * 1024;   // a phone photo is ~2-5MB; a scanned PDF larger
+
+function fmtSize(b){
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(0) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+function okType(f){ return /^image\//.test(f.type) || f.type === 'application/pdf'; }
+
+function queueFiles(fileList){
+  var msg = document.getElementById('fMsg');
+  var added = 0, skipped = [];
+  Array.prototype.forEach.call(fileList || [], function(f){
+    if (!okType(f))        { skipped.push(f.name + ' (not an image or PDF)'); return; }
+    if (f.size > MAX_FILE) { skipped.push(f.name + ' (over ' + fmtSize(MAX_FILE) + ')'); return; }
+    PENDING.push(f); added++;
+  });
+  paintFileList();
+  if (msg) {
+    if (skipped.length) { msg.className = 'msg bad'; msg.textContent = 'Skipped: ' + skipped.join(', '); }
+    else if (added)     { msg.className = 'msg ok';  msg.textContent = added + (added === 1 ? ' page ready.' : ' pages ready.'); }
+  }
+}
+function paintFileList(){
+  var el = document.getElementById('fList'); if (!el) return;
+  el.innerHTML = PENDING.map(function(f, i){
+    return '<span class="filechip"><i>' + (f.type === 'application/pdf' ? 'PDF' : 'IMG') + '</i>' +
+      esc(f.name) + ' · ' + fmtSize(f.size) +
+      '<button type="button" title="Remove" onclick="unqueue(' + i + ')">×</button></span>';
+  }).join('');
+}
+function unqueue(i){ PENDING.splice(i, 1); paintFileList(); }
+
+function wireDrop(){
+  var d = document.getElementById('fDrop'); if (!d) return;
+  ['dragenter','dragover'].forEach(function(e){
+    d.addEventListener(e, function(ev){ ev.preventDefault(); d.classList.add('over'); }); });
+  ['dragleave','drop'].forEach(function(e){
+    d.addEventListener(e, function(ev){ ev.preventDefault(); d.classList.remove('over'); }); });
+  d.addEventListener('drop', function(ev){
+    if (ev.dataTransfer && ev.dataTransfer.files) queueFiles(ev.dataTransfer.files); });
+}
+
+/* ── the blob store ── */
+var IDB_NAME = 'sos-notes', IDB_STORE = 'files';
+function idb(){
+  return new Promise(function(res, rej){
+    var r = indexedDB.open(IDB_NAME, 1);
+    r.onupgradeneeded = function(){
+      if (!r.result.objectStoreNames.contains(IDB_STORE)) r.result.createObjectStore(IDB_STORE);
+    };
+    r.onsuccess = function(){ res(r.result); };
+    r.onerror   = function(){ rej(r.error); };
+  });
+}
+function idbPut(id, blob){
+  return idb().then(function(db){ return new Promise(function(res, rej){
+    var tx = db.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).put(blob, id);
+    tx.oncomplete = function(){ res(id); }; tx.onerror = function(){ rej(tx.error); };
+  }); });
+}
+function idbGet(id){
+  return idb().then(function(db){ return new Promise(function(res, rej){
+    var rq = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(id);
+    rq.onsuccess = function(){ res(rq.result || null); }; rq.onerror = function(){ rej(rq.error); };
+  }); });
+}
+function idbDel(id){
+  return idb().then(function(db){ return new Promise(function(res){
+    var tx = db.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).delete(id);
+    tx.oncomplete = function(){ res(); }; tx.onerror = function(){ res(); };
+  }); });
+}
+function addNoteForm(topic){
+  var el = formHost('note', topic); if (!el) return;
+  PENDING = [];
+  el.innerHTML = '<div class="addpanel">' +
+    '<div class="row2"><input id="fTitle" type="text" placeholder="Note title"/></div>' +
+    '<div class="row2"><input id="fWhat" type="text" ' +
+      'placeholder="Remind yourself what is in here — e.g. \'formulas + 3 solved sums\'"/></div>' +
+    '<div class="row2 filerow">' +
+      '<select id="fSubject" onchange="formTopics()"></select>' +
+      '<select id="fTopic"></select>' +
+    '</div>' +
+    '<textarea id="fBody" placeholder="Type or paste your notes… (optional if you attach pages)"></textarea>' +
+    '<div class="drop" id="fDrop">' +
+      '<button type="button" class="pick" onclick="document.getElementById(\'fFiles\').click()">Choose files</button>' +
+      '<span class="hint">Photos of handwritten pages (JPG, PNG, HEIC) or a PDF — or drag them here.</span>' +
+      '<input id="fFiles" type="file" multiple accept="image/*,application/pdf" hidden ' +
+        'onchange="queueFiles(this.files)"/>' +
+    '</div>' +
+    '<div class="filelist" id="fList"></div>' +
+    '<div class="row2" style="margin-top:.6rem;"><span style="flex:1"></span>' +
+    '<button class="go" onclick="saveNote(\'' + esc(topic) + '\')">Save note</button>' +
+    '<button class="tbtn" onclick="closeForm(\'note\',\'' + esc(topic) + '\')">Cancel</button></div>' +
+    '<p class="msg" id="fMsg"></p></div>';
+  wireDrop();
+  fillFormPickers(topic);
+  el.querySelector('#fTitle').focus();
+}
+
+/* The note is filed wherever the student says, not merely wherever they
+   happened to be looking when they pressed Add. */
+function fillFormPickers(topic){
+  var s = document.getElementById('fSubject');
+  if (!s) return;
+  var V = VIEWS.note;
+  var subs = LIB.topics.subjects || {};
+  s.innerHTML = Object.keys(subs).map(function(k){
+    return '<option value="' + k + '">' + subs[k] + '</option>'; }).join('');
+  s.value = V.subject;
+  formTopics(topic);
+}
+function formTopics(want){
+  var s = document.getElementById('fSubject'), t = document.getElementById('fTopic');
+  if (!s || !t) return;
+  var list = topicsFor(s.value, VIEWS.note.grade);
+  t.innerHTML = list.map(function(x){
+    return '<option value="' + esc(x) + '">' + esc(x) + '</option>'; }).join('')
+    || '<option value="">(no topics listed)</option>';
+  if (typeof want === 'string' && list.indexOf(want) !== -1) t.value = want;
+}
+
+function saveNote(topic){
+  var msg = document.getElementById('fMsg');
+  var title = document.getElementById('fTitle').value.trim();
+  var body  = document.getElementById('fBody').value.trim();
+  var what  = (document.getElementById('fWhat') || {}).value || '';
+  var sSel  = document.getElementById('fSubject'), tSel = document.getElementById('fTopic');
+  var toGrade   = VIEWS.note.grade;
+  var toSubject = sSel ? sSel.value : VIEWS.note.subject;
+  var toTopic   = (tSel && tSel.value) ? tSel.value : topic;
+  msg.className = 'msg bad';
+  if (!title)                     { msg.textContent = 'Give the note a title.'; return; }
+  if (!toTopic)                   { msg.textContent = 'Choose a topic to file it under.'; return; }
+  if (!body && !PENDING.length)   { msg.textContent = 'Type something, or attach a page.'; return; }
+
+  var noteId = 'n' + Date.now() + Math.floor(Math.random()*1000);
+  var files  = PENDING.slice();
+  msg.className = 'msg'; msg.textContent = files.length ? 'Saving pages…' : '';
+
+  var puts = files.map(function(f, i){
+    var fid = noteId + '_p' + (i + 1);
+    return idbPut(fid, f).then(function(){
+      return { fileId:fid, name:f.name, type:f.type, size:f.size };
+    });
+  });
+
+  Promise.all(puts).then(function(pages){
+    LIB.notes.push({ id:noteId, grade:toGrade, subject:toSubject, topic:toTopic,
+                     title:title, reminder:what.trim(),
+                     source: pages.length ? 'scan' : 'typed',
+                     text:body, pages:pages,
+                     transcript:null, transcriptStatus:'none',
+                     createdAt: Date.now(), uploadedAt: new Date().toISOString() });
+    writeLS(K_NOTE, LIB.notes);
+    PENDING = [];
+    /* If it was filed somewhere other than where they were looking, follow it
+       there — otherwise the note appears to have vanished. */
+    if (toSubject !== VIEWS.note.subject) {
+      document.getElementById('nSubject').value = toSubject;
+    }
+    reopen('note', toTopic);
+  }).catch(function(){
+    msg.className = 'msg bad';
+    msg.textContent = 'Could not save the pages on this device — there may be no space left.';
+  });
+}
+/* object URLs are made only while a note is open, and revoked on close,
+   so a long session does not leak memory */
+var OPEN_URLS = [];
+function releaseUrls(){
+  OPEN_URLS.forEach(function(u){ try { URL.revokeObjectURL(u); } catch(e){} });
+  OPEN_URLS = [];
+}
+function openNote(id){
+  var x = LIB.notes.filter(function(v){ return v.id === id; })[0];
+  if (!x) return;
+  LIB.currentNote = x;
+  closePlayer(); releaseUrls();
+  var pages = x.pages || [];
+  document.getElementById('rTitle').textContent = x.title;
+  var subjLabel = ((LIB.topics.subjects || {})[x.subject]) || x.subject;
+  document.getElementById('rMeta').textContent =
+    (x.source === 'scan' ? 'Scanned' : 'Typed') +
+    (pages.length ? ' · ' + pages.length + (pages.length === 1 ? ' page' : ' pages') : '') +
+    ' · Uploaded ' + stamp(x) +
+    ' · Grade ' + x.grade + ' · ' + subjLabel + ' · ' + x.topic;
+  var rem = document.getElementById('rRem');
+  if (rem) { rem.textContent = x.reminder || ''; rem.hidden = !x.reminder; }
+  document.getElementById('rBody').textContent = x.text || '';
+  var host = document.getElementById('rPages');
+  host.innerHTML = pages.length ? '<div class="blank">Loading pages…</div>' : '';
+  if (pages.length) renderPages(pages, host);
+  document.getElementById('reader').hidden = false;
+  document.getElementById('reader').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function renderPages(pages, host){
+  Promise.all(pages.map(function(p){ return idbGet(p.fileId); })).then(function(blobs){
+    var html = '';
+    blobs.forEach(function(b, i){
+      var p = pages[i];
+      if (!b) { html += '<div class="page"><div class="cap">' + esc(p.name) +
+                        ' — missing on this device</div></div>'; return; }
+      var url = URL.createObjectURL(b); OPEN_URLS.push(url);
+      var body = (p.type === 'application/pdf')
+        ? '<iframe src="' + url + '" title="' + esc(p.name) + '"></iframe>'
+        : '<img src="' + url + '" alt="' + esc(p.name) + '" loading="lazy"/>';
+      html += '<div class="page">' + body + '<div class="cap">' +
+              (p.type === 'application/pdf' ? 'PDF' : 'Page ' + (i + 1)) + ' · ' +
+              esc(p.name) + ' · ' + fmtSize(p.size || 0) +
+              '<span style="flex:1"></span>' +
+              '<a href="' + url + '" download="' + esc(p.name) + '">Download</a></div></div>';
+    });
+    host.innerHTML = html;
+    showUsage();
+  }).catch(function(){
+    host.innerHTML = '<div class="blank">Could not read the pages from this device.</div>';
+  });
+}
+function showUsage(){
+  var el = document.getElementById('rUsage'); if (!el || !navigator.storage || !navigator.storage.estimate) return;
+  navigator.storage.estimate().then(function(e){
+    if (!e || !e.usage) return;
+    el.textContent = 'Pages are stored on this device · about ' + fmtSize(e.usage) + ' used.';
+  }).catch(function(){});
+}
+function closeReader(){
+  releaseUrls();
+  var host = document.getElementById('rPages'); if (host) host.innerHTML = '';
+  document.getElementById('reader').hidden = true;
+}
+function deleteNote(){
+  if (!LIB.currentNote) return;
+  var x = LIB.currentNote;
+  Promise.all((x.pages || []).map(function(p){ return idbDel(p.fileId); })).then(function(){
+    LIB.notes = LIB.notes.filter(function(v){ return v.id !== x.id; });
+    writeLS(K_NOTE, LIB.notes);
+    LIB.currentNote = null;
+    closeReader(); renderView('note');
+  });
+}
+
+var libReady = false;
+
+function esc(s){ return String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+
+/* ── real saved data only ──────────────────────────────────────────
+   sos_lab_session is what the Lab writes; sos_curriculum / sos_grade
+   come from sign-up. Nothing on this page is invented. */
+(function(){
+  function get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  var S = null;
+  try { S = JSON.parse(get('sos_lab_session') || 'null'); } catch(e){ S = null; }
+
+  var CUR = { cbse:'CBSE (India)', icse:'ICSE (India)', uk:'UK National Curriculum',
+              us:'US Common Core', ib:'IB' };
+  var LABELS = { maths:'Math', science:'Science', english:'English', history:'History',
+    geography:'Geography', hindi:'Hindi', computer_science:'Computer Science',
+    general_knowledge:'General Knowledge', physics:'Physics', chemistry:'Chemistry',
+    biology:'Biology', accountancy:'Accountancy', business_studies:'Business Studies',
+    economics:'Economics', political_science:'Political Science', sociology:'Sociology',
+    psychology:'Psychology', further_maths:'Further Maths', environmental_science:'Environmental Science',
+    statistics:'Statistics', sanskrit:'Sanskrit', french:'French', spanish:'Spanish',
+    german:'German', mandarin:'Mandarin', art:'Art & Design', music:'Music',
+    physical_education:'Physical Education', design_technology:'Design & Technology',
+    artificial_intelligence:'Artificial Intelligence' };
+  /* Only the five subjects the dark theme actually lifts carry a hue; the rest
+     use the signal colour, so nothing renders a light-theme value on near-black. */
+  var HUE = { maths:'--maths', science:'--science', english:'--english',
+              history:'--history', geography:'--geography' };
+
+  /* The account decides these two. A session saved before the student moved
+     up a grade must not pull them back to it. */
+  var curriculum = get('sos_curriculum') || (S && S.curriculum) || 'cbse';
+  var grade      = get('sos_grade')      || (S && S.age)        || '1';
+  /* The Lab only restores saved preferences for signed-in students, so a guest
+     would land on Grade 1 while this bar said Grade 10. The shell hands its own
+     context over instead, and the two always agree. */
+  window.SOS_CTX = { curriculum: curriculum, grade: grade,
+                     curriculumLabel: (CUR[curriculum] || curriculum),
+                     subject: (S && S.subject) || '' };
+
+  document.getElementById('goalChip').textContent =
+    (CUR[curriculum] || 'CBSE (India)') + (grade ? ' · Grade ' + grade : '');
+
+  if (S && S.subject) {
+    document.getElementById('hello').textContent = 'Welcome back';
+    document.getElementById('helloSub').textContent = 'Pick up where you stopped, or start something new.';
+    document.getElementById('resumeTitle').textContent = S.topic || (LABELS[S.subject] || S.subject);
+    document.getElementById('resumeWhere').textContent =
+      (LABELS[S.subject] || S.subject) + (grade ? ' · Grade ' + grade : '');
+    document.getElementById('resumeBtn').textContent = 'Resume →';
+    var h = HUE[S.subject];
+    if (h) document.getElementById('resumeCard').style.setProperty('--c','var(' + h + ')');
+  }
+
+  var score = (S && S.score) || 0, run = (S && S.streak) || 0, ans = (S && S.answered) || 0;
+  document.getElementById('sScore').textContent = score;
+  document.getElementById('sStreak').textContent = run;
+  document.getElementById('sAnswered').textContent = ans;
+  document.getElementById('sAcc').textContent = ans ? Math.round(score / ans * 100) + '%' : '—';
+  if (run > 0) { document.getElementById('streakChip').hidden = false;
+                 document.getElementById('streakN').textContent = run; }
+
+  var list = ['maths','science','english','history','geography'];
+  if (S && S.subject && list.indexOf(S.subject) === -1) list.unshift(S.subject);
+  document.getElementById('subjGrid').innerHTML = list.map(function(s){
+    var hue = HUE[s] || '--accent';
+    return '<button class="sub-card" style="--c:var(' + hue + ')" onclick="pickSubject(\'' + s + '\')">' +
+      '<div class="sub-head"><b>' + (LABELS[s] || s) + '</b><span class="go">Practice →</span></div>' +
+      '<small>' + (S && S.subject === s ? 'Last worked on' : 'Open in the Lab') + '</small></button>';
+  }).join('');
+})();
+
+/* Hand the subject to the Lab. If the Lab is already running in the frame it
+   is told directly; otherwise the choice is left in localStorage for the Lab
+   to pick up as it loads. */
+function pickSubject(s){
+  var w = labWindow();
+  if (w && typeof w.labSetSubject === 'function') {
+    try {
+      localStorage.removeItem('sos_open_subject');
+      if (w.labSetSubject(s) && typeof w.labOnSubjectChange === 'function') w.labOnSubjectChange();
+      w.showPage('lab');
+      show('frame');
+      markNav(document.querySelector('.nav button[data-v="practice"]'));
+      return;
+    } catch(e){}
+  }
+  try { localStorage.setItem('sos_open_subject', s); } catch(e){}
+  openLab('lab');
+}
+</script>
+</body>
+</html>
