@@ -1010,6 +1010,7 @@
     html.sos-embed .topbar,
     html.sos-embed nav,
     html.sos-embed .marquee,
+    html.sos-embed .brand-marquee,
     html.sos-embed footer.site-footer,
     html.sos-embed aside.sos-planner,
     html.sos-embed .eulid-dock,
@@ -7295,20 +7296,119 @@ function labConsumeHandover(){
    and again once Firebase reports the session, because the profile keys may
    only land in localStorage at that point. */
 sosApplyProfile();
-try {
-  if (window.SOS && typeof SOS.onSession === 'function') {
-    var _sosPrev = SOS.onSession;
-    SOS.onSession = function(){
-      try { _sosPrev.apply(this, arguments); } catch(e){}
-      try { sosApplyProfile(); labSyncSubjectPicker(false); labUpdateScores(); } catch(e){}
-    };
-  }
-} catch(e){}
+/* SOS.onSession(cb) REGISTERS a callback — it does not fire one. Wrapping it
+   (as this once did) re-applied the profile whenever something registered and
+   never when the session actually resolved, which is why a signed-in student
+   could still be shown Grade 1. Register properly instead.
+
+   But window.SOS does not exist yet at this point in the file: js/session.js
+   is a <script src> much further down (search for it), and a script tag
+   loads and runs in place, in document order — so anything up here that
+   registers the instant SOS exists is checking before it ever does, and the
+   registration silently never happens, on every single load. DOMContentLoaded
+   is the fix: the parser cannot fire it without every earlier synchronous
+   script, session.js included, having already run — the same reasoning
+   tmWatchResume above already relies on. */
+function sosOnSessionSafe(cb){
+  if (window.SOS && typeof SOS.onSession === 'function') { SOS.onSession(cb); return; }
+  document.addEventListener('DOMContentLoaded', function(){
+    try { if (window.SOS && typeof SOS.onSession === 'function') SOS.onSession(cb); } catch(e){}
+  });
+}
+sosOnSessionSafe(function(){
+  try { sosApplyProfile(); labSyncSubjectPicker(false); labUpdateScores(); } catch(e){}
+});
 window.addEventListener('storage', function(ev){
   if (ev && (ev.key === 'sos_grade' || ev.key === 'sos_curriculum')) {
     try { sosApplyProfile(); labSyncSubjectPicker(false); } catch(e){}
   }
 });
+
+/* ══ SYLLABUS ══════════════════════════════════════════════════════
+   A school can publish the topic list it actually teaches. This page has
+   Firebase, study.html does not — and study.html is always opened from
+   here — so the fetch happens here and the result is cached for it.
+   Read-only: nothing is written from a student's session. */
+function sosCacheSyllabus(){
+  try {
+    var school = localStorage.getItem('sos_school_id');
+    /* Every silent early exit gets a console line too — "nothing happened"
+       and "it failed" look identical to a student, and both look like "the
+       topic never showed up" from the outside. This is the only way to
+       tell them apart without a debugger attached. */
+    if (!school) { try { console.warn('[syllabus] skipped: this account has no school on it (sos_school_id is empty) — check the account is actually joined to one'); } catch(e2){} return; }
+    if (!(window.SOS && SOS.db)) { try { console.warn('[syllabus] skipped: Firestore is not available on this page yet'); } catch(e2){} return; }
+    SOS.db.collection('syllabus').doc(school).collection('subjects').get()
+      .then(function(snap){
+        var out = {};
+        snap.forEach(function(d){
+          var t = d.data() && d.data().topics;
+          if (Array.isArray(t) && t.length) out[d.id] = t;
+        });
+        localStorage.setItem('sos_syllabus_school', JSON.stringify(out));
+        try { console.info('[syllabus] loaded for school ' + school + ':', Object.keys(out).length, 'grade+subject lists set —', out); } catch(e2){}
+      }).catch(function(e){
+        /* Silent to the student otherwise — a session must never surface a
+           raw Firestore error. But "the admin set it and nobody sees it" is
+           exactly the failure this hides, and the only distinguishing fact
+           (permission-denied means the syllabus rules aren't published)
+           lives in e.code. Console-only, never shown in the UI. */
+        try { console.warn('[syllabus] could not load school syllabus for ' + school + ':', e && e.code, e && e.message); } catch(e2){}
+      });
+  } catch(e){}
+}
+sosOnSessionSafe(sosCacheSyllabus);
+/* == OWN SYLLABUS (cross-device) =====================================
+   A student's own added topics -- and their choice to hide the standard
+   fallback list -- are kept locally by study.html (sos_syllabus_own), one
+   record per grade+subject with its own updatedAt. This mirrors that key
+   to Firestore once per session: whichever side, this device or the
+   student's Firestore record, was touched more recently for a given
+   grade+subject wins and is copied onto the other. That is what makes a
+   topic added on one device show up -- and a topic removed on one device
+   stay removed -- on the next. */
+function sosSyncOwnSyllabus(){
+  try {
+    if (!(window.SOS && SOS.db && SOS.user)) return;
+    var uid = SOS.user.uid;
+    var local = {};
+    try { local = JSON.parse(localStorage.getItem('sos_syllabus_own') || '{}'); } catch(e){}
+    var col = SOS.db.collection('ownSyllabus').doc(uid).collection('subjects');
+    col.get().then(function(snap){
+      var merged = {}, batch = SOS.db.batch(), dirty = false, seen = {};
+      snap.forEach(function(d){
+        var remote = d.data() || {};
+        var loc = local[d.id];
+        var locTopics = Array.isArray(loc) ? loc : ((loc && loc.topics) || []);
+        var locHide   = Array.isArray(loc) ? false : !!(loc && loc.hideBase);
+        var locAt     = Array.isArray(loc) ? 0 : ((loc && loc.updatedAt) || 0);
+        var remAt     = remote.updatedAt || 0;
+        seen[d.id] = true;
+        if (locAt > remAt) {
+          merged[d.id] = { topics: locTopics, hideBase: locHide, updatedAt: locAt };
+          batch.set(d.ref, merged[d.id]);
+          dirty = true;
+        } else {
+          merged[d.id] = { topics: remote.topics || [], hideBase: !!remote.hideBase, updatedAt: remAt };
+        }
+      });
+      Object.keys(local).forEach(function(k){
+        if (seen[k]) return;
+        var loc = local[k];
+        var topics = Array.isArray(loc) ? loc : ((loc && loc.topics) || []);
+        var hideBase = Array.isArray(loc) ? false : !!(loc && loc.hideBase);
+        var at = Array.isArray(loc) ? Date.now() : ((loc && loc.updatedAt) || Date.now());
+        if (!topics.length && !hideBase) return;
+        merged[k] = { topics: topics, hideBase: hideBase, updatedAt: at };
+        batch.set(col.doc(k), merged[k]);
+        dirty = true;
+      });
+      localStorage.setItem('sos_syllabus_own', JSON.stringify(merged));
+      if (dirty) batch.commit().catch(function(){});
+    }).catch(function(){});
+  } catch(e){}
+}
+sosOnSessionSafe(sosSyncOwnSyllabus);
 
 // Initialise the group + subject tiles (and, through them, the topic dropdown) on page load
 labSyncSubjectPicker(true);
@@ -7900,8 +8000,18 @@ document.addEventListener('DOMContentLoaded', function() {
   var K_EXAM  = 'sos_demo_exam';          // ...and its own one-time exam choice
   var K_HIST  = 'sos_demo_hist_years';
 
-  var demoAuthed = false;
-  try { demoAuthed = !!localStorage.getItem('sos_name'); } catch(e){}
+  /* Whether this browser is signed in. sos_name only lands if the profile
+     actually carries a name, so an account without one used to read as a
+     guest and keep the demo banner up forever. Any of these is proof of a
+     real session, and SOS.user is the live answer once auth resolves. */
+  function demoSignedIn(){
+    try {
+      if (window.SOS && SOS.user) return true;
+      return !!(localStorage.getItem('sos_name') || localStorage.getItem('sos_uid') ||
+                localStorage.getItem('sos_curriculum'));
+    } catch(e){ return false; }
+  }
+  var demoAuthed = demoSignedIn();
 
   /* The demo question bank: five fixed questions per subject, in a fixed
      order, so every guest who picks a subject sees the same five however
@@ -8321,6 +8431,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   window.demoGateOnShow = function(id){
+    if (!demoAuthed && demoSignedIn()) grant();          // auth may have landed since
     if (!GATED[id] || demoAuthed){ hideBanner(); hideGate(); return; }
     // The Lab panel holds both tabs, so it is only fully spent when neither has anything left.
     if (id === 'lab' && labLeft() <= 0 && exLeft() <= 0){ hideBanner(); showGate(); return; }
@@ -8357,8 +8468,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  /* session.js fires its callback list once, at the moment auth resolves.
+     Anything registering after that never hears, so a signed-in student could
+     be left staring at the demo banner. Watch briefly as a backstop. */
+  function watchAuth(){
+    if (demoAuthed) return;
+    var tries = 0;
+    var t = setInterval(function(){
+      if (demoSignedIn()) { grant(); clearInterval(t); }
+      else if (++tries > 24) clearInterval(t);          // ~12s then give up
+    }, 500);
+  }
+
   function boot(){
-    inject(); wrapLab();
+    inject(); wrapLab(); watchAuth();
     if (!demoAuthed && lockedSubject()) applySubjectLock();
     if (!demoAuthed && lockedExam()) applyExamLock();
     if (window.SOS && typeof SOS.onSession === 'function'){

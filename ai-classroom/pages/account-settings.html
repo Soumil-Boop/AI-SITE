@@ -701,7 +701,14 @@
         bucket: 'school:' + d.schoolId
       }, { merge: true }).then(function() {
         PROFILE.schoolId = d.schoolId; PROFILE.schoolName = d.name;
-        try { localStorage.setItem('sos_school', d.name || ''); } catch(e){}
+        // The Lab needs this the same way session.js sets it on every sign-in
+        // (it reads the school's syllabus by this id) — without it, joining
+        // here and then opening the Lab in the same session, with no reload
+        // in between, would look for a school id that was never cached.
+        try {
+          localStorage.setItem('sos_school', d.name || '');
+          localStorage.setItem('sos_school_id', d.schoolId);
+        } catch(e){}
         paintSchool(PROFILE);
         setMsg('schoolMsg', 'Joined ' + (d.name || 'your school') + '.', true);
       });

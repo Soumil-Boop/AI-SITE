@@ -221,6 +221,87 @@
       .ad-search input { width:100%; }
       .ad-search { width:100%; }
     }
+
+    /* ── syllabus drawer ── */
+    .syl-open{border:1px solid var(--border);background:var(--white);color:var(--text);
+      font:800 .82rem 'Nunito',sans-serif;padding:.55rem 1rem;border-radius:10px;cursor:pointer;}
+    .syl-open:hover{border-color:var(--accent);color:var(--accent-dark);}
+    .ad-schools .ad-shead{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
+    .ad-schools .ad-shead>div{flex:1;min-width:240px;}
+    .syl-scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:70;}
+    .syl-drawer{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--white);
+      border-top:1px solid var(--border);border-radius:18px 18px 0 0;padding:.6rem 1.25rem 1.15rem;
+      max-height:78vh;display:flex;flex-direction:column;gap:.6rem;
+      box-shadow:0 -18px 50px -20px rgba(0,0,0,.6);animation:sylUp .22s ease-out both;}
+    .syl-drawer[hidden]{display:none;}
+    @keyframes sylUp{from{transform:translateY(101%)}to{transform:translateY(0)}}
+    @media(prefers-reduced-motion:reduce){.syl-drawer{animation:none}}
+    .syl-grip{width:38px;height:4px;border-radius:3px;background:var(--gray-200);margin:.1rem auto .3rem;}
+    .syl-top{display:flex;align-items:flex-start;gap:1rem;}
+    .syl-top h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.1rem;color:var(--text);}
+    .syl-top p{font-size:.8rem;color:var(--muted);margin-top:.1rem;}
+    .syl-x{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.5rem;
+      line-height:1;cursor:pointer;padding:0 .25rem;}
+    .syl-x:hover{color:var(--text);}
+    .syl-controls{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap;}
+    .syl-count{font-size:.76rem;font-weight:700;color:var(--muted);margin-left:auto;}
+        .syl-msg{font-size:.76rem;color:var(--muted);}
+    .syl-msg.bad{color:#B24E33;font-weight:700;}
+    .syl-msg.ok{color:#5F7355;font-weight:700;}
+    .syl-actions{display:flex;gap:.6rem;flex-wrap:wrap;}
+
+    /* Subject rail + editor: a scrollable, grouped list of every subject at
+       the picked grade (with its topic count) down the side, so setting a
+       syllabus is "scan for what's missing" rather than flipping a dropdown
+       through subjects one at a time blindly. Click one to edit it. Below
+       900px there's no room for two columns side by side, so the rail sits
+       above the editor instead of beside it. */
+    .syl-body{display:flex;flex-direction:column;gap:.7rem;flex:1;min-height:0;}
+    .syl-rail{display:flex;flex-direction:column;gap:.5rem;max-height:150px;flex-shrink:0;
+      border-bottom:1px solid var(--gray-100);padding-bottom:.6rem;}
+    .syl-search{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:9px;
+      color:var(--text);padding:.5rem .7rem;font:inherit;font-size:.8rem;flex-shrink:0;}
+    .syl-search::placeholder{color:var(--muted);}
+    .syl-list{overflow-y:auto;display:flex;flex-direction:column;gap:.15rem;}
+    .syl-group{font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+      color:var(--muted);padding:.5rem .3rem .15rem;}
+    .syl-group:first-child{padding-top:0;}
+    .syl-cov-empty{font-size:.8rem;color:var(--muted);padding:.3rem 0;}
+    .syl-cov-empty.bad{color:#B24E33;}
+    .syl-item{display:flex;align-items:center;gap:.5rem;width:100%;border:none;background:none;
+      color:var(--text);border-radius:8px;padding:.4rem .5rem;font:600 .8rem 'Inter',sans-serif;
+      cursor:pointer;text-align:left;}
+    .syl-item:hover{background:var(--gray-50);}
+    .syl-item.on{background:var(--accent);color:var(--on-fill);}
+    .syl-dot{width:6px;height:6px;border-radius:50%;background:var(--gray-200);flex-shrink:0;}
+    .syl-item.set .syl-dot{background:var(--green);}
+    .syl-item.on .syl-dot{background:var(--on-fill);opacity:.45;}
+    .syl-item .cnt{margin-left:auto;font-size:.72rem;color:var(--muted);}
+    .syl-item.on .cnt{color:var(--on-fill);opacity:.75;}
+
+    .syl-main{flex:1;min-height:0;display:flex;flex-direction:column;}
+    .syl-empty{margin:auto;font-size:.82rem;color:var(--muted);text-align:center;padding:1.5rem 1rem;}
+    .syl-editor{display:flex;flex-direction:column;gap:.6rem;flex:1;min-height:0;}
+    .syl-editor[hidden]{display:none;}
+    .syl-editor-head{display:flex;align-items:center;gap:.6rem;}
+    .syl-editor-head b{font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;color:var(--text);}
+
+    /* Line-numbered textarea: the number next to a line is the position that
+       topic will show at for students, so typing a fifteenth topic shows
+       "15" land next to it right away, not only after saving. */
+    .syl-numbox{flex:1;min-height:120px;display:flex;background:var(--gray-50);
+      border:1px solid var(--gray-100);border-radius:11px;overflow:hidden;}
+    .syl-linenos{flex-shrink:0;width:2.2rem;padding:.75rem .4rem .75rem 0;overflow:hidden;
+      text-align:right;color:var(--muted);font:.86rem/1.75 'JetBrains Mono',ui-monospace,monospace;
+      white-space:pre;user-select:none;}
+    .syl-numbox textarea{flex:1;min-width:0;background:none;border:none;color:var(--text);
+      padding:.75rem .85rem .75rem .3rem;font:inherit;font-size:.86rem;line-height:1.75;resize:none;}
+    .syl-numbox textarea:focus{outline:none;}
+    @media(min-width:900px){.syl-drawer{left:auto;right:1.25rem;width:640px;border-radius:18px;
+      bottom:1.25rem;max-height:74vh;}
+      .syl-body{flex-direction:row;gap:1rem;}
+      .syl-rail{max-height:none;border-bottom:none;border-right:1px solid var(--gray-100);
+        padding-bottom:0;padding-right:.8rem;width:190px;flex-shrink:0;}}
   </style>
   <!-- Last stylesheet in the head. Every rule inside is locked behind
        html[data-theme="dark"], so it contributes nothing in the light theme. -->
@@ -271,6 +352,8 @@
         </div>
         <div class="ad-tools">
           <select class="ad-select" id="adSchoolFilter" onchange="filterUsers()" style="display:none;" aria-label="Filter by school"></select>
+          <button class="syl-open" id="sylOpenBtn2" onclick="sylToggle()" hidden aria-expanded="false"
+            aria-controls="sylDrawer">&#9998; Set syllabus</button>
           <div class="ad-search">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
             <label for="adminSearch" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Search members</label>
@@ -309,8 +392,14 @@
 
     <!-- Owner only: create schools, hand out join codes, appoint admins. -->
     <section class="ad-schools" id="adSchools" style="display:none;">
-      <h2>Schools</h2>
-      <p class="sub">Each school gets a join code. Students who enter it at sign-up become that school&rsquo;s students, and only its admin can see them.</p>
+      <div class="ad-shead">
+        <div>
+          <h2>Schools</h2>
+          <p class="sub">Each school gets a join code. Students who enter it at sign-up become that school&rsquo;s students, and only its admin can see them.</p>
+        </div>
+        <button class="syl-open" id="sylOpenBtn" onclick="sylToggle()" aria-expanded="false"
+          aria-controls="sylDrawer">&#9998; Set syllabus</button>
+      </div>
       <div class="ad-scards" id="adSchoolCards"></div>
     </section>
 
@@ -362,6 +451,255 @@ var USER_LIST = null;   // the member list, started in parallel with the role ch
    owner so your existing account keeps working without a migration. */
 var MY_ROLE   = null;
 var MY_SCHOOL = null;    // { id, name } for a school admin, null for the owner
+
+/* A permission error here almost always means the syllabus rules have not
+   been deployed yet; Firestore only says "Missing or insufficient
+   permissions", so spell out the actual fix. */
+function sylExplain(e, what){
+  var m = (e && e.message) || 'unknown error';
+  if (/permission/i.test(m)) {
+    return 'Could not ' + what + ' \u2014 Firestore refused the request. The syllabus rules are ' +
+           'probably not deployed yet: run  firebase deploy --only firestore:rules';
+  }
+  return 'Could not ' + what + ' the syllabus: ' + m;
+}
+
+/* == SYLLABUS EDITOR =================================================
+   Written to syllabus/{schoolId}/subjects/{grade}_{subject}. The rules
+   let an admin write only their own school's, so this cannot reach
+   another school even if the ids were tampered with.
+
+   The school used to come from the members-table filter -- a control this
+   drawer doesn't own, and one that can be sitting on the wrong school (or
+   "All schools") when the owner opens this. Setting a syllabus that way
+   either silently failed ("Pick a school first") or, worse, landed on
+   whatever school the filter happened to be on -- never visibly wrong, just
+   never reaching the students it was meant for. The drawer now keeps its
+   own school choice. */
+var SYL_SUBJECTS = null;     // { key: label }, for every subject a syllabus can hold
+var SYL_ALL = {};            // { "10_science": [...] } -- the picked school's whole syllabus
+var SYL_SUBJECT = '';        // subject open in the editor right now, '' when it's closed
+function sylSchoolId(){
+  if (MY_SCHOOL) return MY_SCHOOL.id;
+  var sel = document.getElementById('sylSchool');
+  return (sel && sel.value) || '';
+}
+/* One button does both. Its label and aria-expanded follow the drawer, so it
+   never claims to open something that is already open. */
+function sylToggle(){
+  var d = document.getElementById('sylDrawer');
+  if (d && d.hidden) sylOpen(); else sylClose();
+}
+function sylButtons(open){
+  document.querySelectorAll('.syl-open').forEach(function(b){
+    b.innerHTML = open ? '✕ Close syllabus' : '✎ Set syllabus';
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+}
+function sylOpen(){
+  /* Build here too. Whatever the page did on load, the controls are correct
+     by the time anyone actually looks at them. */
+  try { sylInit(); } catch(e){}
+  document.getElementById('sylScrim').hidden = false;
+  document.getElementById('sylDrawer').hidden = false;
+  sylButtons(true);
+  document.getElementById('sylWho').textContent = MY_SCHOOL
+    ? 'What ' + MY_SCHOOL.name + ' teaches, per subject and grade'
+    : 'Pick a school, then a grade, to see and edit what it teaches';
+  sylCloseEditor();
+  sylLoadAll();
+}
+function sylClose(){
+  document.getElementById('sylScrim').hidden = true;
+  document.getElementById('sylDrawer').hidden = true;
+  sylButtons(false);
+}
+/* The full list is fetched, but the control is never left empty waiting for
+   it -- an empty rail looks broken, and the fetch can fail. */
+function sylFallback(){
+  return { maths:'Math', science:'Science', english:'English', history:'History',
+    geography:'Geography', physics:'Physics', chemistry:'Chemistry', biology:'Biology',
+    computer_science:'Computer Science', economics:'Economics', accountancy:'Accountancy',
+    business_studies:'Business Studies', hindi:'Hindi' };
+}
+/* Thirty subjects in one flat list is a wall to scan. Grouping them the way
+   a school timetable would puts related ones together; anything that isn't
+   in this map (a subject added to topics.json later, say) still shows, just
+   under "Other" rather than being silently dropped. */
+var SYL_GROUP_ORDER = ['Core', 'Humanities & social sciences', 'Commerce', 'Sciences & tech', 'Languages', 'Arts & PE'];
+var SYL_GROUP_OF = {
+  maths:'Core', science:'Core', english:'Core',
+  history:'Humanities & social sciences', geography:'Humanities & social sciences',
+  political_science:'Humanities & social sciences', sociology:'Humanities & social sciences',
+  psychology:'Humanities & social sciences', general_knowledge:'Humanities & social sciences',
+  economics:'Commerce', accountancy:'Commerce', business_studies:'Commerce',
+  physics:'Sciences & tech', chemistry:'Sciences & tech', biology:'Sciences & tech',
+  environmental_science:'Sciences & tech', statistics:'Sciences & tech',
+  further_maths:'Sciences & tech', computer_science:'Sciences & tech', artificial_intelligence:'Sciences & tech',
+  hindi:'Languages', sanskrit:'Languages', french:'Languages', spanish:'Languages',
+  german:'Languages', mandarin:'Languages',
+  art:'Arts & PE', music:'Arts & PE', physical_education:'Arts & PE', design_technology:'Arts & PE'
+};
+function sylGroupedSubjects(){
+  var subs = SYL_SUBJECTS || sylFallback();
+  var byGroup = {};
+  Object.keys(subs).forEach(function(k){
+    var g = SYL_GROUP_OF[k] || 'Other';
+    (byGroup[g] = byGroup[g] || []).push(k);
+  });
+  return SYL_GROUP_ORDER.concat(['Other'])
+    .filter(function(g){ return byGroup[g] && byGroup[g].length; })
+    .map(function(g){ return { label: g, keys: byGroup[g] }; });
+}
+function sylInit(){
+  var g = document.getElementById('sylGrade'), schoolSel = document.getElementById('sylSchool');
+  if (!g || !schoolSel) return;                // drawer not parsed yet -- a later call gets it
+
+  // The owner picks a school here; a school admin's is fixed, so the picker
+  // would only ever offer the one they're already in. Repainted on every
+  // open (not just once) so a school created moments ago is choosable
+  // without a full page reload.
+  schoolSel.hidden = !!MY_SCHOOL;
+  if (!MY_SCHOOL) {
+    var keep = schoolSel.value;
+    schoolSel.innerHTML = '<option value="">Pick a school…</option>' +
+      SCHOOLS.map(function(s){ return '<option value="' + adEsc(s.id) + '">' + adEsc(s.name) + '</option>'; }).join('');
+    if (keep && SCHOOLS.some(function(s){ return s.id === keep; })) schoolSel.value = keep;
+  }
+
+  try {
+    document.querySelectorAll('.syl-open').forEach(function(b){
+      if (b.id === 'sylOpenBtn2') b.hidden = !(typeof MY_SCHOOL !== 'undefined' && MY_SCHOOL);
+    });
+  } catch(e){}
+
+  if (g.options.length) return;               // grade list + subject map: built once
+  var o = ''; for (var i = 1; i <= 12; i++) o += '<option value="' + i + '">Grade ' + i + '</option>';
+  g.innerHTML = o;
+  SYL_SUBJECTS = sylFallback();
+  fetch('../data/topics.json').then(function(r){ return r.json(); }).then(function(d){
+    if (d && d.subjects && Object.keys(d.subjects).length) {
+      SYL_SUBJECTS = d.subjects; sylPaintCoverage();
+    }
+  }).catch(function(){});
+}
+/* The drawer is written after the scripts, so build once the document is. */
+if (document.readyState === 'loading')
+  document.addEventListener('DOMContentLoaded', function(){ try { sylInit(); } catch(e){} });
+else { try { sylInit(); } catch(e){} }
+
+function sylOnSchoolChange(){ sylCloseEditor(); sylLoadAll(); }
+function sylOnGradeChange(){ sylCloseEditor(); sylPaintCoverage(); }
+
+/* One read of the whole school's syllabus rather than one per subject: the
+   rail needs every subject's count at once, and re-fetching on every click
+   would make clicking through subjects feel laggy. */
+function sylLoadAll(){
+  var school = sylSchoolId(), host = document.getElementById('sylCov');
+  SYL_ALL = {};
+  if (!school) {
+    host.innerHTML = '<p class="syl-cov-empty">Pick a school above to see and edit its syllabus.</p>';
+    return;
+  }
+  host.innerHTML = '<p class="syl-cov-empty">Loading…</p>';
+  db.collection('syllabus').doc(school).collection('subjects').get().then(function(snap){
+    snap.forEach(function(d){ SYL_ALL[d.id] = (d.data() && d.data().topics) || []; });
+    sylPaintCoverage();
+  }).catch(function(e){
+    host.innerHTML = '<p class="syl-cov-empty bad">' + adEsc(sylExplain(e, 'load')) + '</p>';
+  });
+}
+function sylPaintCoverage(){
+  var host = document.getElementById('sylCov'); if (!host) return;
+  if (!sylSchoolId()) { host.innerHTML = '<p class="syl-cov-empty">Pick a school above to see and edit its syllabus.</p>'; return; }
+  var grade = document.getElementById('sylGrade').value;
+  var subs = SYL_SUBJECTS || sylFallback();
+  var q = ((document.getElementById('sylSearch') || {}).value || '').trim().toLowerCase();
+  var html = sylGroupedSubjects().map(function(grp){
+    var rows = grp.keys.filter(function(k){
+      return !q || (subs[k] || k).toLowerCase().indexOf(q) !== -1;
+    }).map(function(k){
+      var n = (SYL_ALL[grade + '_' + k] || []).length;
+      return '<button type="button" class="syl-item' + (k === SYL_SUBJECT ? ' on' : '') + (n ? ' set' : '') +
+        '" data-k="' + adEsc(k) + '" onclick="sylOpenEditor(this.dataset.k)"><span class="syl-dot"></span>' +
+        adEsc(subs[k] || k) + '<span class="cnt n">' + (n || '—') + '</span></button>';
+    }).join('');
+    return rows ? '<div class="syl-group">' + adEsc(grp.label) + '</div>' + rows : '';
+  }).join('');
+  host.innerHTML = html || '<p class="syl-cov-empty">No subject matches "' + adEsc(q) + '".</p>';
+}
+function sylDocRef(subject){
+  var school = sylSchoolId(); if (!school) return null;
+  var key = document.getElementById('sylGrade').value + '_' + subject;
+  return db.collection('syllabus').doc(school).collection('subjects').doc(key);
+}
+/* The number beside a line is the position that topic will show at for
+   students -- a live preview of "topic 1, topic 2, ... topic N" rather than
+   something only visible after saving. Blank lines still get a number here
+   (it is one physical line of the textarea, like a code editor's gutter);
+   sylSave() is what actually drops blank lines before anything is written. */
+function sylPaintLineNumbers(){
+  var ta = document.getElementById('sylText'), gut = document.getElementById('sylLinenos');
+  if (!ta || !gut) return;
+  var lines = ta.value.split('\n').length, out = '';
+  for (var i = 1; i <= lines; i++) out += i + (i < lines ? '\n' : '');
+  gut.textContent = out;
+}
+function sylOnTextInput(){ sylPaintLineNumbers(); }
+function sylSyncGutter(){
+  var ta = document.getElementById('sylText'), gut = document.getElementById('sylLinenos');
+  if (ta && gut) gut.scrollTop = ta.scrollTop;
+}
+function sylOpenEditor(subject){
+  SYL_SUBJECT = subject;
+  var subs = SYL_SUBJECTS || sylFallback(), grade = document.getElementById('sylGrade').value;
+  var t = SYL_ALL[grade + '_' + subject] || [];
+  document.getElementById('sylEditTitle').textContent = (subs[subject] || subject) + ' · Grade ' + grade;
+  document.getElementById('sylText').value = t.join('\n');
+  document.getElementById('sylCount').textContent =
+    t.length ? t.length + (t.length === 1 ? ' topic saved' : ' topics saved') : 'Not set yet';
+  document.getElementById('sylMsg').className = 'syl-msg';
+  document.getElementById('sylMsg').textContent = 'One topic per line. Students see these in the order you write them.';
+  document.getElementById('sylEmpty').hidden = true;
+  document.getElementById('sylEditor').hidden = false;
+  document.getElementById('sylText').scrollTop = 0;
+  sylPaintLineNumbers();
+  sylSyncGutter();
+  sylPaintCoverage();                          // highlights the active row
+}
+function sylCloseEditor(){
+  SYL_SUBJECT = '';
+  var ed = document.getElementById('sylEditor'); if (ed) ed.hidden = true;
+  var em = document.getElementById('sylEmpty'); if (em) em.hidden = false;
+  sylPaintCoverage();
+}
+function sylSave(){
+  var subject = SYL_SUBJECT, ref = sylDocRef(subject), msg = document.getElementById('sylMsg'),
+      btn = document.getElementById('sylSaveBtn');
+  if (!ref) { msg.textContent = 'Pick a school first.'; return; }
+  var topics = document.getElementById('sylText').value.split('\n')
+    .map(function(x){ return x.trim(); }).filter(Boolean);
+  /* Same topic twice would produce two identical rows in the Lab. */
+  var seen = {}, clean = [];
+  topics.forEach(function(t){ if (!seen[t]) { seen[t] = 1; clean.push(t); } });
+  msg.className = 'syl-msg'; msg.textContent = 'Saving…';
+  btn.disabled = true;
+  ref.set({ topics: clean, updatedAt: Date.now(),
+            updatedBy: (firebase.auth().currentUser || {}).uid || null }, { merge: true })
+    .then(function(){
+      SYL_ALL[document.getElementById('sylGrade').value + '_' + subject] = clean;
+      document.getElementById('sylCount').textContent =
+        clean.length ? clean.length + (clean.length === 1 ? ' topic saved' : ' topics saved') : 'Cleared';
+      msg.className = 'syl-msg ok';
+      msg.textContent = 'Saved. Students will see this next time they open the Lab.';
+      btn.disabled = false;
+      sylPaintCoverage();
+    })
+    .catch(function(e){
+      msg.className = 'syl-msg bad'; msg.textContent = sylExplain(e,'save');
+      btn.disabled = false;
+    });
+}
 var SCHOOLS   = [];      // owner only
 
 function isOwnerRole(r)  { return r === 'owner' || r === 'admin'; }
@@ -421,6 +759,7 @@ auth.onAuthStateChanged(function(user) {
     if (MY_ROLE === 'schooladmin') {
       if (!p.schoolId) { showNoSchool(); return; }
       MY_SCHOOL = { id: p.schoolId, name: p.schoolName || 'your school' };
+      try { sylInit(); } catch(e){}
       /* Kept because a school admin's every query needs it, so without it
          the fall-back above would have a role and still nothing to ask. */
       try {
@@ -464,6 +803,7 @@ function useRememberedSchool() {
   } catch (e) {}
   if (!sid) return false;
   MY_SCHOOL = { id: sid, name: snm || 'your school' };
+  try { sylInit(); } catch(e){}
   return true;
 }
 
@@ -1372,5 +1712,47 @@ function dropPlanItem(uid, text) {
 <script src="../js/core/theme.js"></script>
 <script src="../js/core/footer.js"></script>
 <script src="../js/components/eulid.js" defer></script>
+
+<!-- ══ SYLLABUS DRAWER ═══════════════════════════════════════════════
+     A slide-up panel rather than a section of the page: setting a topic
+     list is an occasional job, and it was crowding the members table. -->
+<div class="syl-scrim" id="sylScrim" hidden onclick="sylClose()"></div>
+<aside class="syl-drawer" id="sylDrawer" hidden aria-label="Syllabus">
+  <div class="syl-grip"></div>
+  <header class="syl-top">
+    <div><h3>Syllabus</h3><p id="sylWho">What your school teaches, per subject and grade</p></div>
+    <button class="syl-x" onclick="sylClose()" aria-label="Close">&times;</button>
+  </header>
+  <div class="syl-controls">
+    <select class="ad-select" id="sylSchool" onchange="sylOnSchoolChange()" aria-label="School"></select>
+    <select class="ad-select" id="sylGrade" onchange="sylOnGradeChange()" aria-label="Grade"></select>
+  </div>
+
+  <div class="syl-body">
+    <!-- Every subject at the picked grade, grouped and searchable, with its
+         topic count -- so setting a syllabus is "scan for what's missing"
+         rather than blindly flipping through a dropdown one at a time. -->
+    <div class="syl-rail">
+      <input class="syl-search" id="sylSearch" type="search" placeholder="Find a subject…" oninput="sylPaintCoverage()"/>
+      <div class="syl-list" id="sylCov"></div>
+    </div>
+    <div class="syl-main">
+      <p class="syl-empty" id="sylEmpty">Pick a subject on the left to see and edit its topics.</p>
+      <div class="syl-editor" id="sylEditor" hidden>
+        <div class="syl-editor-head"><b id="sylEditTitle"></b><span class="syl-count" id="sylCount"></span></div>
+        <div class="syl-numbox">
+          <div class="syl-linenos" id="sylLinenos" aria-hidden="true">1</div>
+          <textarea id="sylText" placeholder="Real Numbers&#10;Quadratic Equations&#10;Arithmetic Progressions"
+            oninput="sylOnTextInput()" onscroll="sylSyncGutter()"></textarea>
+        </div>
+        <p class="syl-msg" id="sylMsg">One topic per line, in the order students should see them.</p>
+        <div class="syl-actions">
+          <button class="btn btn-primary" id="sylSaveBtn" onclick="sylSave()">Save syllabus</button>
+          <button class="btn btn-secondary" onclick="sylCloseEditor()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
 </body>
 </html>

@@ -254,6 +254,28 @@ service cloud.firestore {
       );
     }
 
+    // ── Syllabus (per school → per grade+subject) ──────────────
+    // The topic list a school actually teaches. Every signed-in student may
+    // read it — a student needs their own school's list, and reading another
+    // school's topic names exposes no student data. Writing is restricted to
+    // the admin of that same school, so an admin still cannot reach beyond
+    // their own school; the owner may set any of them.
+    match /syllabus/{schoolId}/{document=**} {
+      allow read:  if isSignedIn();
+      allow write: if isOwner() || (isSchoolAdmin() && mySchoolId() == schoolId);
+    }
+
+    // ── A student's own syllabus additions (per user → per grade+subject) ──
+    // Topics a student adds beyond what their school teaches, plus their
+    // choice to hide the standard fallback list when no school syllabus is
+    // set. Mirrored here so it follows the student across devices — but
+    // unlike planner and progress above, strictly the student's own: no
+    // owner or admin override. It is personal study material, not
+    // something staff need to see or set.
+    match /ownSyllabus/{uid}/{document=**} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
     // ── Practice progress (per user → per day/subject) ────────
     // Yours to write. Readable by you, by the owner, and by the admin of
     // the school you belong to — the get() below is what ties a progress
