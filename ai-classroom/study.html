@@ -46,7 +46,7 @@ a{text-decoration:none;color:inherit;}
 #frameView{height:100%;}
 #frame{width:100%;height:100%;border:0;display:block;background:var(--parchment);}
 .scroller{height:100%;overflow-y:auto;}
-.wrap{max-width:1180px;margin:0 auto;padding:1.5rem 1.4rem 4rem;}
+.wrap{max-width:1600px;margin:0 auto;padding:1.5rem 1.6rem 4rem;}
 h1{font-family:Nunito,sans-serif;font-weight:900;font-size:1.5rem;}
 .sub{color:var(--muted);font-size:.86rem;margin-top:.15rem;}
 .kick{font-size:.62rem;letter-spacing:.19em;text-transform:uppercase;color:var(--muted);font-weight:800;
@@ -276,50 +276,45 @@ h1{font-family:Nunito,sans-serif;font-weight:900;font-size:1.5rem;}
    the shell — the rail, the top bar, the WorkHub. The view markup and
    every id underneath are untouched, so notes, videos, the syllabus
    editor and the grade lock all still find what they reach for. */
-#sky{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;display:block;}
-.deep{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-.neb{position:absolute;border-radius:50%;filter:blur(60px);}
-.neb-a{width:900px;height:700px;top:-22%;left:-14%;
-  background:radial-gradient(circle,rgba(99,230,226,.16),transparent 68%);
-  animation:nebDrift 34s ease-in-out infinite alternate;}
-.neb-b{width:820px;height:640px;bottom:-26%;right:-12%;
-  background:radial-gradient(circle,rgba(255,138,76,.13),transparent 68%);
-  animation:nebDrift 42s ease-in-out infinite alternate-reverse;}
-.neb-c{width:620px;height:520px;top:38%;left:52%;
-  background:radial-gradient(circle,rgba(199,155,255,.10),transparent 70%);
-  animation:nebDrift 50s ease-in-out infinite alternate;}
-@keyframes nebDrift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(40px,-30px,0) scale(1.12)}}
-.orb{position:absolute;border-radius:50%;}
-.orb-1{width:300px;height:300px;top:-120px;right:4%;
-  background:radial-gradient(circle at 34% 28%,#4FB9B3,#0C3A40 62%,#071F24);
-  box-shadow:0 0 120px 14px rgba(99,230,226,.16), inset -22px -18px 50px rgba(0,0,0,.55);}
-.orbring{position:absolute;top:-120px;right:4%;width:300px;height:300px;
-  display:grid;place-items:center;animation:orbSpin 90s linear infinite;}
-.orbring i{width:430px;height:104px;border:2px solid rgba(99,230,226,.30);border-radius:50%;
-  transform:rotate(-19deg);display:block;box-shadow:0 0 22px rgba(99,230,226,.14);}
-@keyframes orbSpin{to{transform:rotate(360deg)}}
-.orb-2{width:84px;height:84px;bottom:9%;left:4%;
-  background:radial-gradient(circle at 38% 30%,var(--brand-mid),#5A2A12 70%,#20100A);
-  box-shadow:0 0 60px 8px rgba(255,138,76,.16), inset -8px -6px 20px rgba(0,0,0,.5);}
-.orb-3{width:14px;height:14px;top:31%;left:13%;background:var(--accent-dark);opacity:.55;
-  box-shadow:0 0 18px 4px rgba(99,230,226,.45);}
-@media(prefers-reduced-motion:reduce){.neb,.orbring{animation:none!important;}}
+/* Full bleed. The shell is the whole window rather than a card floating in
+   one: the pages it shows were built to fill a browser, and a rounded box
+   with a starfield behind it both shrank them and cost a blur and an
+   animation frame on every paint for scenery nobody could see. */
+/* One sky, owned by the shell, behind every part of it — the rail, the top
+   bar and whatever page is in the frame. The frame paints nothing of its own
+   in shell mode, so this shows through the pages too rather than stopping at
+   the sidebar's edge. Painted, not animated: it costs one gradient at load
+   and nothing per frame. */
+html,body{height:100%;}
+/* Matched to theme-dark.css, which sets html[data-theme="dark"] body and would
+   otherwise win on specificity and wipe the sky straight back off again. */
+html[data-theme="dark"] body,body{padding:0;margin:0;overflow:hidden;background:var(--parchment);
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%,rgba(230,237,246,.55),transparent),
+    radial-gradient(1.4px 1.4px at 68% 9%,rgba(230,237,246,.45),transparent),
+    radial-gradient(1px 1px at 38% 58%,rgba(230,237,246,.5),transparent),
+    radial-gradient(1px 1px at 86% 44%,rgba(230,237,246,.4),transparent),
+    radial-gradient(1.4px 1.4px at 26% 82%,rgba(230,237,246,.42),transparent),
+    radial-gradient(1px 1px at 56% 33%,rgba(230,237,246,.32),transparent),
+    radial-gradient(1px 1px at 8% 66%,rgba(230,237,246,.36),transparent),
+    radial-gradient(1.4px 1.4px at 94% 74%,rgba(230,237,246,.4),transparent),
+    radial-gradient(1100px 620px at 8% -12%,rgba(99,230,226,.13),transparent 66%),
+    radial-gradient(900px 520px at 94% 110%,rgba(255,138,76,.10),transparent 66%);
+  background-attachment:fixed;}
+.app-shell{display:flex;height:100vh;width:100%;background:transparent;overflow:hidden;}
 
-html,body{background:var(--parchment);}
-body{padding:1.1rem;}
-.app-shell{position:relative;z-index:2;display:flex;height:calc(100vh - 2.2rem);
-  background:rgba(8,12,20,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(150,185,225,.14);border-radius:20px;overflow:hidden;
-  box-shadow:0 40px 90px -34px rgba(0,0,0,.85), 0 0 0 1px rgba(99,230,226,.05);}
-
-.side{width:226px;flex-shrink:0;display:flex;flex-direction:column;padding:1.1rem .85rem;
-  border-right:1px solid rgba(150,185,225,.12);background:rgba(5,8,14,.5);overflow-y:auto;}
+/* The rail is a <nav>, and theme-dark.css paints every nav a solid slab with a
+   blur behind it — which is why asking for transparent by class alone did
+   nothing. Named by element and class so it actually outranks that. */
+.side,html[data-theme="dark"] nav.side{width:226px;flex-shrink:0;display:flex;flex-direction:column;
+  padding:1.1rem .85rem;border-right:1px solid rgba(150,185,225,.10);background:transparent;
+  backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;overflow-y:auto;
+  position:static;height:auto;}
 .side .brandrow{display:flex;align-items:center;gap:.55rem;padding:.15rem .35rem 1rem;}
 .side .brandrow .mk{width:34px;height:34px;flex-shrink:0;border-radius:11px;background:var(--accent-light);
   border:1px solid rgba(99,230,226,.35);display:grid;place-items:center;}
 .side .brandrow .mk svg{width:22px;height:22px;}
 .side .brandrow b{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:-.01em;}
-.side .brandrow small{display:block;font-size:.66rem;color:var(--faint);font-weight:500;}
 
 .side .nav{display:flex;flex-direction:column;gap:.1rem;}
 .side .nav button{display:flex;align-items:center;gap:.6rem;border:none;background:none;text-align:left;
@@ -344,22 +339,69 @@ body{padding:1.1rem;}
 .eucard{border:1px solid rgba(99,230,226,.22);border-radius:14px;padding:.75rem;
   background:linear-gradient(160deg,rgba(99,230,226,.10),rgba(13,19,29,.5));
   display:flex;align-items:center;gap:.6rem;text-align:left;width:100%;cursor:pointer;}
-.eucard svg{width:38px;height:auto;flex-shrink:0;}
+.eucard svg{width:38px;height:41px;flex-shrink:0;}
 .eucard b{display:block;font:800 .76rem 'Nunito',sans-serif;color:var(--text);}
 .eucard span{font-size:.66rem;color:var(--muted);line-height:1.35;display:block;}
 
 .main{flex:1;min-width:0;display:flex;flex-direction:column;}
-.bar{background:none;border-bottom:1px solid rgba(150,185,225,.12);padding:.8rem 1.25rem;
-  position:static;box-shadow:none;height:auto;gap:.7rem;}
+.bar{background:transparent;border-bottom:1px solid rgba(150,185,225,.10);padding:.7rem 1.25rem;
+  position:static;box-shadow:none;height:auto;gap:.7rem;align-items:center;}
+/* The frame is glass too, so the shell's sky is the one background on screen. */
+#frame{background:transparent;}
+
+/* The wordmark, with the celestial O back in the middle of it. */
+.brandrow .wordmark{display:flex;align-items:center;gap:.1rem;font-family:'Space Grotesk',sans-serif;
+  font-weight:700;font-size:1rem;letter-spacing:-.01em;color:var(--text);white-space:nowrap;}
+.brandrow .wordmark > span:first-child{color:var(--accent);}
+.brandrow .logo-mark{width:26px;height:26px;flex-shrink:0;margin:0 .1rem;}
+/* The school's crest sits beside the Seek-O-Sphere wordmark, never instead of
+   it: whose site this is stays legible, and whose school it is sits next to
+   it. The rule is drawn only when there is a crest, so a learner with no
+   school gets a wordmark with nothing bolted on rather than an empty slot. */
+.crest-lockup{display:flex;align-items:center;gap:.5rem;}
+.crest-lockup .bar{width:1px;height:20px;background:var(--gray-200);flex-shrink:0;}
+.crest-lockup img{max-height:26px;max-width:74px;display:block;}
+.hub-crest{display:flex;align-items:center;gap:.55rem;margin-bottom:.35rem;}
+.hub-crest img{max-height:30px;max-width:88px;display:block;}
+.hub-crest span{font-size:.74rem;font-weight:700;color:var(--muted);}
+.brandrow{flex-direction:column;align-items:flex-start;gap:.15rem;}
+
+/* Every small Eulid is a <use> of one symbol, so they cannot drift apart. */
+.eu-ico{width:38px;height:41px;flex-shrink:0;display:block;}
+.eu-ico.sm{width:22px;height:24px;}
+
+/* Folding the rail away. Not a cosmetic width change: it is taken out of the
+   layout so the page it is next to genuinely gets the whole window. */
+.railtog{width:30px;height:30px;border-radius:8px;border:1px solid var(--gray-100);
+  background:var(--gray-50);color:var(--muted);display:grid;place-items:center;cursor:pointer;
+  flex-shrink:0;}
+.railtog:hover{border-color:var(--accent);color:var(--accent-dark);}
+.railtog svg{width:15px;height:15px;}
+.app-shell.rail-off .side{display:none;}
+.topbar-help{font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;padding:.3rem .55rem;
+  border-radius:8px;}
+.topbar-help:hover{color:var(--text);background:rgba(255,255,255,.06);}
+/* session.js paints the account menu into #acctMenu; these keep it legible on
+   glass rather than on the solid bar it was written for. */
+#acctMenu .acct-trigger{background:rgba(255,255,255,.06);border:1px solid var(--gray-100);
+  color:var(--text);font:700 .76rem 'Inter',sans-serif;padding:.4rem .7rem;border-radius:100px;
+  display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;}
+#acctMenu .acct-trigger:hover{border-color:var(--accent);color:var(--accent-dark);}
+#acctMenu .acct-wrap{position:relative;}
+#acctMenu .acct-drop{position:absolute;right:0;top:calc(100% + .4rem);min-width:170px;z-index:60;
+  background:var(--white);border:1px solid var(--gray-100);border-radius:11px;padding:.3rem;
+  display:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.8);}
+#acctMenu .acct-wrap:hover .acct-drop,#acctMenu .acct-wrap:focus-within .acct-drop{display:block;}
+#acctMenu .acct-drop a{display:block;padding:.45rem .6rem;border-radius:8px;font-size:.78rem;
+  color:var(--text);text-decoration:none;}
+#acctMenu .acct-drop a:hover{background:var(--gray-50);color:var(--accent-dark);}
+#acctMenu .topbar-auth{font-size:.78rem;font-weight:700;color:var(--accent);text-decoration:none;}
 .who-chip{display:flex;align-items:center;gap:.55rem;padding:.32rem .6rem .32rem .35rem;
   border:1px solid var(--gray-100);border-radius:100px;background:var(--gray-50);}
 .who-chip .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(145deg,var(--accent),#2E9C98);
   color:var(--on-fill);display:grid;place-items:center;font:800 .7rem 'Nunito',sans-serif;}
 .who-chip .t{font-size:.78rem;font-weight:700;line-height:1.2;}
 .who-chip .t span{display:block;font-size:.64rem;color:var(--faint);font-weight:500;}
-.cta-go{border:none;border-radius:100px;background:var(--accent);color:var(--on-fill);
-  font:700 .78rem 'Inter',sans-serif;padding:.55rem 1.05rem;cursor:pointer;
-  box-shadow:0 6px 20px -6px rgba(99,230,226,.55);}
 .icb{width:34px;height:34px;border-radius:10px;border:1px solid var(--gray-100);background:var(--gray-50);
   color:var(--muted);display:grid;place-items:center;cursor:pointer;}
 .icb svg{width:15px;height:15px;}
@@ -385,16 +427,24 @@ body{padding:1.1rem;}
   font:800 .7rem 'Nunito',sans-serif;flex-shrink:0;}
 .acard .lab{font-size:.62rem;color:var(--faint);font-weight:600;line-height:1.3;}
 .acard .lab b{display:block;font-size:.8rem;color:var(--text);font-weight:700;}
-.acard .k{font-size:.62rem;color:var(--faint);font-weight:600;}
-.acard .v{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.55rem;letter-spacing:-.02em;line-height:1.1;}
-.acard .chg{display:inline-flex;align-items:center;gap:.25rem;font-size:.66rem;font-weight:700;margin-top:.15rem;color:var(--faint);}
-.acard svg.spark{display:block;width:100%;height:42px;margin-top:.3rem;}
+.acard .k{display:block;font-size:.62rem;color:var(--faint);font-weight:600;
+  letter-spacing:.04em;text-transform:uppercase;}
+/* Block, not inline. As spans these three ran together on one line, which is
+   how "Topics with notes" ended up printed through the middle of "0%". */
+.acard .v{display:block;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.5rem;
+  letter-spacing:-.02em;line-height:1.15;margin-top:.1rem;}
+.acard .chg{display:block;font-size:.66rem;font-weight:600;margin-top:.2rem;color:var(--faint);}
+.acard svg.spark{display:block;width:100%;height:34px;margin-top:.5rem;}
+/* Nothing filed yet is a sentence, not a zero and a flat line pretending to
+   be a trend. */
+.acard.blank .v{font-size:1rem;color:var(--muted);font-family:'Inter',sans-serif;font-weight:600;}
+.acard .go-hint{display:block;margin-top:.5rem;font-size:.66rem;font-weight:700;color:var(--accent);}
 
 .promo{border:1px solid rgba(99,230,226,.24);border-radius:15px;padding:.95rem;
   background:linear-gradient(165deg,rgba(99,230,226,.18),rgba(199,155,255,.10) 55%,rgba(13,19,29,.6));
   display:flex;flex-direction:column;}
 .promo .ph{display:flex;align-items:center;gap:.45rem;margin-bottom:.5rem;}
-.promo .ph svg{width:22px;height:auto;}
+.promo .ph svg{width:22px;height:24px;flex-shrink:0;}
 .promo .ph b{font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;}
 .promo .ph .new{margin-left:auto;font-size:.6rem;font-weight:800;background:rgba(255,255,255,.14);
   border-radius:100px;padding:.12rem .45rem;color:var(--text);}
@@ -450,60 +500,101 @@ body{padding:1.1rem;}
 
 <!-- The shell. There is deliberately no link out to index.html anywhere here:
      this tab is the study environment, and the Lab runs inside it. -->
-<!-- The sky the home page uses, carried through the Lab so the two read as
-     one place. Painted behind a translucent console window. -->
-<canvas id="sky" aria-hidden="true"></canvas>
-<div class="deep" aria-hidden="true">
-  <div class="neb neb-a"></div><div class="neb neb-b"></div><div class="neb neb-c"></div>
-  <div class="orb orb-1"></div><div class="orbring"><i></i></div>
-  <div class="orb orb-2"></div><div class="orb orb-3"></div>
-</div>
-
-<!-- The shell. There is deliberately no link out to index.html in the rail:
+<!-- The shell.<!-- The shell. There is deliberately no link out to index.html in the rail:
      this tab is the study environment, and the Lab runs inside it. -->
+<!-- Eulid, once. Every small Eulid on this page is a <use> of this, so
+     none of them can drift away from the mascot in the hero. -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <radialGradient id="euMB" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#9BBA82"/><stop offset="1" stop-color="#586B4E"/></radialGradient>
+    <radialGradient id="euME" cx="50%" cy="38%" r="72%"><stop offset="0" stop-color="#FBF3E4"/><stop offset="1" stop-color="#ECDBC0"/></radialGradient>
+    <linearGradient id="euMD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".26"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".04"/></linearGradient>
+    <symbol id="eulidMark" viewBox="0 0 240 260">
+      <path fill="url(#euMB)" d="M84 152 q-42 18 -56 66 q-5 17 10 20 q15 3 18 -14 q7 -42 38 -56 z"/>
+      <path fill="url(#euMB)" d="M102 160 q-30 34 -40 64 q-6 17 9 21 q14 4 17 -12 q6 -36 30 -60 z"/>
+      <path fill="url(#euMB)" d="M120 164 q-14 40 -12 78 q1 17 15 16 q13 -1 12 -18 q-3 -40 8 -72 z"/>
+      <path fill="url(#euMB)" d="M138 160 q30 34 40 64 q6 17 -9 21 q-14 4 -17 -12 q-6 -36 -30 -60 z"/>
+      <path fill="url(#euMB)" d="M156 152 q42 18 56 66 q5 17 -10 20 q-15 3 -18 -14 q-7 -42 -38 -56 z"/>
+      <circle cx="120" cy="104" r="88" fill="url(#euMD)" stroke="rgba(255,255,255,.42)" stroke-width="2"/>
+      <path d="M58 76 q-18 -18 -8 -36 q20 6 24 32 z" fill="url(#euMB)"/>
+      <path d="M182 76 q18 -18 8 -36 q-20 6 -24 32 z" fill="url(#euMB)"/>
+      <circle cx="120" cy="104" r="66" fill="url(#euMB)"/>
+      <ellipse cx="68" cy="122" rx="10" ry="6.5" fill="#C0562F" opacity=".22"/>
+      <ellipse cx="172" cy="122" rx="10" ry="6.5" fill="#C0562F" opacity=".22"/>
+      <ellipse cx="120" cy="98" rx="34" ry="39" fill="url(#euME)"/>
+      <ellipse cx="120" cy="102" rx="15" ry="23" fill="#26324C"/>
+      <circle cx="127" cy="90" r="5.5" fill="#fff"/>
+      <circle cx="114" cy="112" r="2.6" fill="#fff" opacity=".6"/>
+      <path d="M104 148 q16 15 32 0" stroke="#3E2B1E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M120 40 q0 -18 10 -24" stroke="#586B4E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <circle cx="131" cy="14" r="6.5" fill="#C0562F"/>
+    </symbol>
+  </defs>
+</svg>
+
 <div class="app-shell">
   <nav class="side">
     <div class="brandrow">
-      <span class="mk"><svg viewBox="0 0 40 44" aria-hidden="true"><defs><radialGradient id="smB" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#9BBA82"/><stop offset="1" stop-color="#586B4E"/></radialGradient><radialGradient id="smE" cx="50%" cy="38%" r="72%"><stop offset="0" stop-color="#FBF3E4"/><stop offset="1" stop-color="#ECDBC0"/></radialGradient></defs><path d="M12 27 q-7 3 -9 11" stroke="url(#smB)" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M28 27 q7 3 9 11" stroke="url(#smB)" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M20 29 q-2 6 -2 11" stroke="url(#smB)" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="19" r="12" fill="url(#smB)"/><ellipse cx="20" cy="17.5" rx="6.2" ry="7.1" fill="url(#smE)"/><ellipse cx="20" cy="18.2" rx="2.7" ry="4.2" fill="#26324C"/><circle cx="21.3" cy="16" r="1" fill="#fff"/><path d="M20 7 q0 -3.2 1.8 -4.3" stroke="#586B4E" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="22" cy="2.4" r="1.7" fill="#C0562F"/></svg></span>
-      <span><b>Seek-O-Sphere</b><small id="goalChipSide">&nbsp;</small></span>
+      <span class="crest-lockup" id="crestLockup"></span>
+      <span class="wordmark"><span>Seek-</span><svg class="logo-mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="shSpace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#3A241A"/><stop offset="1" stop-color="#17100A"/></radialGradient><radialGradient id="shEarth" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#3E6E88"/><stop offset="1" stop-color="#284B60"/></radialGradient><radialGradient id="shSun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE08A"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA580C"/></radialGradient></defs><circle cx="32" cy="32" r="31" fill="url(#shSpace)"/><circle cx="32" cy="32" r="31" fill="none" stroke="#C0562F" stroke-width="1" opacity=".45"/><circle cx="32" cy="32" r="22" fill="none" stroke="#CDB79E" stroke-width="1" opacity=".4"/><circle cx="32" cy="10" r="8" fill="#F97316" opacity=".22"/><circle cx="32" cy="10" r="5" fill="url(#shSun)"/><circle cx="48" cy="16" r="2.7" fill="#C0562F"/><g transform="rotate(20 54 32)"><ellipse cx="54" cy="32" rx="5.4" ry="1.8" fill="none" stroke="#E0B15A" stroke-width="1.2"/></g><circle cx="54" cy="32" r="3.1" fill="#DDAE52"/><circle cx="48" cy="48" r="2.7" fill="#AC8F62"/><circle cx="32" cy="54" r="3" fill="#E8A579"/><circle cx="16" cy="48" r="3.5" fill="#8C6E7A"/><circle cx="10" cy="32" r="2.5" fill="#7A8C72"/><circle cx="16" cy="16" r="2.3" fill="#C9B79E"/><circle cx="32" cy="32" r="8" fill="url(#shEarth)"/><path d="M27 29 q3 -1 5 1 q2 2 -1 3 q-3 1 -4 -1 q-1 -2 0 -3 Z" fill="#6E8467"/><ellipse cx="29" cy="29" rx="2.4" ry="1.6" fill="#fff" opacity=".28"/></svg><span>-Sphere</span></span>
     </div>
+
+    <div class="grouphead">Study</div>
     <div class="nav">
-      <button class="on" data-v="home"     onclick="show('home',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/></svg>WorkHub</button>
+      <button data-v="home"     onclick="show('home',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/></svg>WorkHub</button>
       <button           data-v="subjects"  onclick="show('home',this,'#subjects')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 8h7M8 12h7"/></svg>My Subjects</button>
       <button           data-v="notes"     onclick="showView('note',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg>Notes</button>
       <button           data-v="videos"    onclick="showView('video',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M17 10l4-3v10l-4-3z"/></svg>Videos</button>
-      <button           data-v="practice"  onclick="openLab('lab',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11l3 3L21 5"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>Practice</button>
+      <button           data-v="test"      onclick="openTest(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11l3 3L21 5"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>Test Mode</button>
     </div>
     <div class="grouphead">Active study</div>
     <div id="sideSubjects"></div>
+    <!-- The rest of the site, in the same rail. These three open index.html in
+         the frame wearing shell chrome, so each looks exactly as it does on
+         its own — the shell just supplies the nav around it. -->
+    <div class="grouphead">Site</div>
+    <div class="nav">
+      <button class="on" data-v="site-home" onclick="openSite('home',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/></svg>Home</button>
+      <button data-v="site-help" onclick="openSite('resources',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 113 2.5v1.5"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>Resources</button>
+      <button data-v="site-contact" onclick="openSite('contact',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Contact Us</button>
+    </div>
     <div class="side-fill"></div>
     <button class="eucard" onclick="askEulid()">
-      <svg viewBox="0 0 40 44" aria-hidden="true"><defs><radialGradient id="scB" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#9BBA82"/><stop offset="1" stop-color="#586B4E"/></radialGradient><radialGradient id="scE" cx="50%" cy="38%" r="72%"><stop offset="0" stop-color="#FBF3E4"/><stop offset="1" stop-color="#ECDBC0"/></radialGradient></defs><path d="M12 27 q-7 3 -9 11" stroke="url(#scB)" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M28 27 q7 3 9 11" stroke="url(#scB)" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M20 29 q-2 6 -2 11" stroke="url(#scB)" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="19" r="12" fill="url(#scB)"/><ellipse cx="20" cy="17.5" rx="6.2" ry="7.1" fill="url(#scE)"/><ellipse cx="20" cy="18.2" rx="2.7" ry="4.2" fill="#26324C"/><circle cx="21.3" cy="16" r="1" fill="#fff"/><path d="M20 7 q0 -3.2 1.8 -4.3" stroke="#586B4E" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="22" cy="2.4" r="1.7" fill="#C0562F"/></svg>
+      <svg class="eu-ico" aria-hidden="true"><use href="#eulidMark"/></svg>
       <span><b>Ask Eulid</b><span>Hints, read-aloud and a nudge when you stall.</span></span>
     </button>
   </nav>
 
   <div class="main">
     <div class="bar">
-      <div class="who-chip"><span class="av" id="who">?</span>
-        <span class="t" id="whoName">Signed out<span id="goalChip">&nbsp;</span></span></div>
-      <button class="cta-go" onclick="openLab('lab')">Start practice</button>
+      <button class="railtog" id="railTog" onclick="toggleRail()"
+        aria-label="Hide the sidebar" aria-expanded="true" title="Hide the sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+      </button>
       <div class="barR">
         <span class="chip" id="streakChip" hidden>&#128293; <b id="streakN">0</b></span>
+        <a class="topbar-help" onclick="openSite('resources',document.querySelector('.nav button[data-v=&quot;site-help&quot;]'))">Help</a>
+        <!-- Filled by session.js once Firebase reports the session: "Hi, <name>"
+             with the dashboard, account settings and log out beneath it, or a
+             Sign In link when nobody is signed in. Same markup, same script and
+             the same menu the rest of the site has always used. -->
+        <div id="acctMenu"><a href="pages/login.html" class="topbar-auth">Sign In</a></div>
         <span class="icb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></span>
       </div>
     </div>
 
 <div class="body">
   <!-- the study home -->
-  <div class="view on" id="homeView"><div class="scroller"><div class="wrap">
+  <div class="view" id="homeView"><div class="scroller"><div class="wrap">
+    <div class="hub-crest" id="hubCrest" hidden></div>
     <div class="eyebrow"><b id="helloSub">Everything you are working on, in one place.</b></div>
     <div class="h-row">
       <h1 id="hello">Your study space</h1>
       <!-- The way out. This tab is opened fresh from the site, so closing it
            returns the student to the tab they came from; if it was opened
            some other way there is nothing to close, and we navigate instead. -->
-      <button class="backsite" onclick="backToSite()">&larr; Back to site</button>
+      <button class="backsite" onclick="backToSite()">Home</button>
     </div>
 
     <!-- Three subjects, then Eulid. Every figure on these cards is counted
@@ -512,10 +603,10 @@ body{padding:1.1rem;}
     <div class="toprow">
       <div class="acard-slot" id="topCards" style="display:contents"></div>
       <div class="promo">
-        <div class="ph"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><radialGradient id="pmB" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#9BBA82"/><stop offset="1" stop-color="#586B4E"/></radialGradient><radialGradient id="pmE" cx="50%" cy="38%" r="72%"><stop offset="0" stop-color="#FBF3E4"/><stop offset="1" stop-color="#ECDBC0"/></radialGradient></defs><circle cx="20" cy="22" r="12" fill="url(#pmB)"/><ellipse cx="20" cy="20.5" rx="6.2" ry="7.1" fill="url(#pmE)"/><ellipse cx="20" cy="21.2" rx="2.7" ry="4.2" fill="#26324C"/><circle cx="21.3" cy="19" r="1" fill="#fff"/><path d="M20 10 q0 -3.2 1.8 -4.3" stroke="#586B4E" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="22" cy="5.4" r="1.7" fill="#C0562F"/></svg><b>Eulid</b><span class="new">Here</span></div>
+        <div class="ph"><svg class="eu-ico sm" aria-hidden="true"><use href="#eulidMark"/></svg><b>Eulid</b><span class="new">Here</span></div>
         <h3 id="euLine">Pick a subject and I will keep up</h3>
         <p id="euSub">Hints when you want one, the answer explained either way, and your notes a click from the question.</p>
-        <div class="pb"><button class="a" onclick="openLab('lab')">Start a run</button>
+        <div class="pb"><button class="a" onclick="openTest()">Start a test</button>
           <button class="b" onclick="askEulid()">What can Eulid do?</button></div>
       </div>
     </div>
@@ -530,7 +621,7 @@ body{padding:1.1rem;}
           <div class="big"><span id="sAcc">&mdash;</span>
             <em>accuracy over <span id="sAnswered">0</span> questions</em></div>
           <div class="acts">
-            <button class="p" id="resumeBtn" onclick="openLab('lab')">Start practising &rarr;</button>
+            <button class="p" id="resumeBtn" onclick="openTest()">Start a test &rarr;</button>
             <button class="s" onclick="showView('note')">Add a note</button>
             <button class="s" onclick="showView('video')">Watch a video</button>
           </div>
@@ -557,8 +648,6 @@ body{padding:1.1rem;}
 
     <span class="kick">Go further</span>
     <div class="rows">
-      <button class="row" onclick="openLab('lab')"><span class="ic">&#9202;</span>
-        <div class="rowmain"><b>Take a timed test</b><span>Test mode &mdash; nothing is marked until you submit</span></div><span class="arw">&rsaquo;</span></button>
       <button class="row" onclick="openLab('lab')"><span class="ic">&#128218;</span>
         <div class="rowmain"><b>Reference</b><span>Periodic table and formula sheets for your grade</span></div><span class="arw">&rsaquo;</span></button>
       <button class="row" onclick="openFrame('pages/dashboard.html')"><span class="ic">&#128202;</span>
@@ -696,23 +785,53 @@ function labWindow(){
     return (w && typeof w.showPage === 'function') ? w : null;
   } catch(e){ return null; }
 }
+/* Practice and the three site pages are all index.html in the same frame,
+   wearing different chrome. Reusing the frame rather than reloading it is
+   what lets a student look something up on Help and come back to a run they
+   were half way through — a fresh src would throw the run away. */
+function openPanel(panel, btn, mode){
+  var w = labWindow();
+  if (w) {
+    try { if (typeof w.sosSetChrome === 'function') w.sosSetChrome(mode); w.showPage(panel); } catch(e){}
+    document.getElementById('frame').focus();
+    show('frame', btn);
+  } else {
+    openFrame('index.html?' + (mode === 'embed' ? 'embed=1' : 'shell=1') + '#' + panel, btn);
+  }
+}
+/* Test Mode is the one thing the Lab is for now, so the rail opens the test
+   setup rather than the practice panel. The engine lives in the frame; this
+   shows it and asks it to open, waiting for the load when the frame is cold.
+   A subject can be handed over so picking one from WorkHub sets up a test on
+   it rather than dropping the student somewhere generic. */
+function openTest(btn, subject){
+  var f = document.getElementById('frame'), w = labWindow();
+  if (w) {
+    try { w.sosSetChrome('embed'); w.sosOpenTestMode(subject || ''); } catch(e){}
+    f.focus();
+    show('frame', btn);
+  } else {
+    /* addEventListener rather than onload: openFrame sets its own onload to
+       hand the grade over, and assigning here would quietly replace it. */
+    f.addEventListener('load', function once(){
+      f.removeEventListener('load', once);
+      try { f.contentWindow.sosOpenTestMode(subject || ''); } catch(e){}
+    });
+    openFrame('index.html?embed=1#lab', btn);
+  }
+  if (!btn) markNav(document.querySelector('.nav button[data-v="test"]'));
+}
 function openLab(panel, btn){
   panel = panel || 'lab';
-  var w = labWindow();
-  if (w) { try { w.showPage(panel); } catch(e){} document.getElementById('frame').focus(); show('frame', btn); }
-  else   { openFrame('index.html?embed=1#' + panel, btn); }
-  if (!btn) markNav(document.querySelector('.nav button[data-v="practice"]'));
+  openPanel(panel, btn, 'embed');
+  if (!btn) markNav(document.querySelector('.nav button[data-v="test"]'));
 }
+/* Home, Help & Resources and Contact Us, shown as they are on their own. */
+function openSite(panel, btn){ openPanel(panel, btn, 'shell'); }
 function goHome(){ show('home', document.querySelector('.nav button[data-v="home"]')); }
-/* Leaving the study space. It normally opens in its own tab from the site, so
-   the tidiest exit is to close this tab and reveal the one behind it. A tab
-   the script did not open cannot be closed, so fall back to navigating. */
-function backToSite(){
-  try {
-    window.close();
-    setTimeout(function(){ location.href = 'index.html'; }, 120);
-  } catch(e){ location.href = 'index.html'; }
-}
+/* The shell is the site now, so there is nowhere to go "back" to: the front
+   page is one of its own views. */
+function backToSite(){ openSite('home', document.querySelector('.nav button[data-v="site-home"]')); }
 function showLibrary(btn){ showView('note', btn); }   /* kept: earlier links called this */
 
 /* ══ LIBRARY ═══════════════════════════════════════════════════════
@@ -883,7 +1002,7 @@ function removeOwnTopic(t){
   refreshAfterSyllabus();
 }
 var LIB_HUE = { maths:'--maths', science:'--science', english:'--english',
-                history:'--history', geography:'--geography' };
+                physics:'--physics', chemistry:'--chemistry', biology:'--biology' };
 
 /* Grade and curriculum belong to the account. They are shown, never offered. */
 function fillPickers(V){
@@ -1353,20 +1472,15 @@ function esc(s){ return String(s == null ? '' : s)
    account settings reached from it) while this tab stays open. Without
    re-running this, a long-lived study.html tab would keep the grade it
    had when it first loaded, no matter what the account was updated to. */
-var LABELS = { maths:'Math', science:'Science', english:'English', history:'History',
-  geography:'Geography', hindi:'Hindi', computer_science:'Computer Science',
-  general_knowledge:'General Knowledge', physics:'Physics', chemistry:'Chemistry',
-  biology:'Biology', accountancy:'Accountancy', business_studies:'Business Studies',
-  economics:'Economics', political_science:'Political Science', sociology:'Sociology',
-  psychology:'Psychology', further_maths:'Further Maths', environmental_science:'Environmental Science',
-  statistics:'Statistics', sanskrit:'Sanskrit', french:'French', spanish:'Spanish',
-  german:'German', mandarin:'Mandarin', art:'Art & Design', music:'Music',
-  physical_education:'Physical Education', design_technology:'Design & Technology',
-  artificial_intelligence:'Artificial Intelligence' };
-/* Only the five subjects the dark theme actually lifts carry a hue; the rest
-   use the signal colour, so nothing renders a light-theme value on near-black. */
-var ACCT_HUE = { maths:'--maths', science:'--science', english:'--english',
-            history:'--history', geography:'--geography' };
+/* The six subjects the site teaches. Kept in step with SUBJECTS_LIVE in
+   index.html and with data/topics.json -- a label here for a subject the
+   other two have dropped would put a name on a rail that leads nowhere. */
+var LABELS = { maths:'Math', english:'English', science:'Science',
+  physics:'Physics', chemistry:'Chemistry', biology:'Biology' };
+/* Every one of the six carries a hue lifted for the dark ground, so nothing
+   falls through to a light-theme value on near-black. */
+var ACCT_HUE = { maths:'--maths', english:'--english', science:'--science',
+            physics:'--physics', chemistry:'--chemistry', biology:'--biology' };
 /* sos_grade is written from the account profile, where it reads "Grade 10",
    not "10" — so it is normalised here. Left raw it produced "Grade Grade 10"
    in the bar and matched no topic list at all. */
@@ -1395,10 +1509,11 @@ function paintAccountContext(){
                      curriculumLabel: (CUR[curriculum] || curriculum),
                      subject: (S && S.subject) || '' };
 
-  var goal = (CUR[curriculum] || 'CBSE (India)') + (grade ? ' · Grade ' + grade : '');
-  document.getElementById('goalChip').textContent = goal;
-  var side = document.getElementById('goalChipSide');
-  if (side) side.textContent = goal;
+  /* The curriculum and grade are no longer written anywhere in the chrome.
+     SOS_CTX above still carries them — Notes, Videos and the test all read it
+     — so this only stops them being announced, it does not stop them being
+     known. Written unguarded, this threw once the chip was taken out and took
+     the rest of the repaint down with it. */
 
   /* The rail and the top bar both name the student, so the console does not
      open on a stranger's account without saying so. Nothing is invented: an
@@ -1415,31 +1530,43 @@ function paintAccountContext(){
   // may not even exist at the current grade, so it is treated the same as
   // no session at all rather than shown under today's grade label.
   var current = S && (!S.age || acctGradeNum(S.age) === grade);
+  /* Opening a subject writes a session before a single question is answered,
+     so "current" only means the saved state still belongs to this grade. It is
+     not evidence of work, and treating it as such is what had the page telling
+     a student who had done nothing that they left off mid-topic fourteen
+     minutes ago. Something has to have actually happened. */
+  var worked = !!(current && ((S.answered || 0) > 0 || (S.score || 0) > 0 || (S.streak || 0) > 0));
 
   document.getElementById('hello').textContent = current ? 'Welcome back' : 'Your study space';
   document.getElementById('helloSub').textContent = current
     ? 'Pick up where you stopped, or start something new.'
     : 'Everything you are working on, in one place.';
   var meta = document.getElementById('resumeMeta');
-  if (current && S.subject) {
+  if (worked && S.subject) {
     document.getElementById('resumeTitle').textContent = S.topic || (LABELS[S.subject] || S.subject);
     document.getElementById('resumeWhere').textContent =
       (LABELS[S.subject] || S.subject) + (grade ? ' · Grade ' + grade : '');
     if (meta) meta.textContent = 'Last worked on' + (S.ts ? ' · ' + acctAgo(S.ts) : '');
-    document.getElementById('resumeBtn').textContent = 'Resume →';
+    document.getElementById('resumeBtn').textContent = 'Test this topic →';
     var h = ACCT_HUE[S.subject];
     document.getElementById('resumeCard').style.setProperty('--c', h ? 'var(' + h + ')' : 'var(--accent)');
   } else {
-    document.getElementById('resumeTitle').textContent = 'Nothing yet';
-    document.getElementById('resumeWhere').textContent = 'Start a subject below and this will remember where you were.';
-    if (meta) meta.textContent = 'Nothing saved yet';
-    document.getElementById('resumeBtn').textContent = 'Start practising →';
+    /* Two empty states, because they are two different situations: a subject
+       was opened but nothing answered, versus nothing at all. */
+    var picked = current && S && S.subject ? (LABELS[S.subject] || S.subject) : '';
+    document.getElementById('resumeTitle').textContent = picked
+      ? 'No questions answered yet' : 'Nothing yet';
+    document.getElementById('resumeWhere').textContent = picked
+      ? 'You opened ' + picked + ' but have not sat a test on it. Take one and this will start keeping track.'
+      : 'Take a test, add a note or save a video, and what you have done shows up here.';
+    if (meta) meta.textContent = picked ? 'Nothing answered yet' : 'Nothing saved yet';
+    document.getElementById('resumeBtn').textContent = 'Start a test →';
     document.getElementById('resumeCard').style.setProperty('--c', 'var(--accent)');
   }
 
-  var score = current ? ((S && S.score) || 0) : 0;
-  var run   = current ? ((S && S.streak) || 0) : 0;
-  var ans   = current ? ((S && S.answered) || 0) : 0;
+  var score = worked ? ((S && S.score) || 0) : 0;
+  var run   = worked ? ((S && S.streak) || 0) : 0;
+  var ans   = worked ? ((S && S.answered) || 0) : 0;
   document.getElementById('sScore').textContent = score;
   document.getElementById('sStreak').textContent = run;
   document.getElementById('sAnswered').textContent = ans;
@@ -1447,17 +1574,57 @@ function paintAccountContext(){
   document.getElementById('streakChip').hidden = !(run > 0);
   if (run > 0) document.getElementById('streakN').textContent = run;
 
-  var list = ['maths','science','english','history','geography'];
+  /* Physics, Chemistry and Biology only start at Grade 11, so the grid is
+     filtered by what this grade actually has topics for rather than showing
+     all six to everyone — a card that opens onto an empty topic list is a
+     dead end, and a Grade 5 student has no use for three of them.
+     topicsFor() is used rather than the built-in list so a school that has
+     published its own topics for a subject brings that subject back. */
+  var list = ['maths','english','science','physics','chemistry','biology']
+    .filter(function(s){
+      try { return topicsFor(s, grade).length > 0; } catch(e){ return true; }
+    });
+  // Nothing matched means the topic data never loaded, not that the grade is
+  // empty. Fall back to all six rather than painting a blank page.
+  if (!list.length) list = ['maths','english','science','physics','chemistry','biology'];
   if (current && S.subject && list.indexOf(S.subject) === -1) list.unshift(S.subject);
   document.getElementById('subjGrid').innerHTML = list.map(function(s){
     var hue = ACCT_HUE[s] || '--accent';
     return '<button class="sub-card" style="--c:var(' + hue + ')" onclick="pickSubject(\'' + s + '\')">' +
-      '<div class="sub-head"><b>' + (LABELS[s] || s) + '</b><span class="go">Practice →</span></div>' +
-      '<small>' + (current && S.subject === s ? 'Last worked on' : 'Open in the Lab') + '</small></button>';
+      '<div class="sub-head"><b>' + (LABELS[s] || s) + '</b><span class="go">Test →</span></div>' +
+      '<small>' + (worked && S.subject === s ? 'Last worked on' : 'Set up a test') + '</small></button>';
   }).join('');
 
-  try { paintConsole(S, current, grade); } catch(e){}
+  try { paintConsole(S, worked, grade); } catch(e){}
+  try { paintCrest(); } catch(e){}
 }
+/* The crest is drawn from the cached copy of the signed-in student's own
+   school and nothing else. Absent means absent: the slots are emptied rather
+   than filled with a placeholder, so a learner without a school never sees a
+   frame where a badge would go. */
+function paintCrest(){
+  var crest = '', name = '';
+  try {
+    crest = localStorage.getItem('sos_school_crest') || '';
+    name  = localStorage.getItem('sos_school') || '';
+    if (!localStorage.getItem('sos_school_id')) crest = '';
+  } catch(e){}
+
+  var lock = document.getElementById('crestLockup');
+  if (lock) lock.innerHTML = crest
+    ? '<img src="' + crest + '" alt="' + esc(name || 'Your school') + '"/><i class="bar"></i>'
+    : '';
+
+  var hub = document.getElementById('hubCrest');
+  if (hub) {
+    hub.hidden = !crest;
+    hub.innerHTML = crest
+      ? '<img src="' + crest + '" alt="' + esc(name || 'Your school') + '"/>' +
+        (name ? '<span>' + esc(name) + '</span>' : '')
+      : '';
+  }
+}
+
 function acctAgo(ts){
   var m = Math.round((Date.now() - ts) / 60000);
   if (m < 1)  return 'just now';
@@ -1475,13 +1642,18 @@ function acctAgo(ts){
 function consoleSubjects(grade){
   var subs = (LIB.topics && LIB.topics.subjects) || {};
   var keys = Object.keys(subs);
-  if (!keys.length) keys = ['maths','science','english','history','geography'];
+  if (!keys.length) keys = ['maths','english','science','physics','chemistry','biology'];
   return keys.map(function(k){
     var topics = 0;
     try { topics = topicsFor(k, grade).length; } catch(e){}
     var notes = LIB.notes.filter(function(n){ return n.grade === grade && n.subject === k; }).length;
     var vids  = allVideos().filter(function(v){ return v.grade === grade && v.subject === k; }).length;
     return { k:k, label:(subs[k] || LABELS[k] || k), topics:topics, notes:notes, videos:vids };
+  }).filter(function(s){
+    // A subject with no topics at this grade and nothing filed against it has
+    // nothing to show — the stream subjects below Grade 11, mostly. One note
+    // or one video is enough to keep it, so a student never loses their own work.
+    return s.topics > 0 || s.notes > 0 || s.videos > 0;
   }).sort(function(a,b){ return (b.notes + b.videos) - (a.notes + a.videos) || b.topics - a.topics; });
 }
 function paintConsole(S, current, grade){
@@ -1493,10 +1665,20 @@ function paintConsole(S, current, grade){
       var hue = ACCT_HUE[s.k] || '--accent';
       var filed = s.notes + s.videos;
       var pct = s.topics ? Math.round(s.notes / s.topics * 100) : 0;
-      return '<button class="acard" onclick="pickSubject(\'' + s.k + '\')">' +
-        '<span class="top"><span class="ico" style="background:var(--accent-light);color:var(' + hue + ')">' +
+      var head = '<span class="top"><span class="ico" style="background:var(--accent-light);color:var(' + hue + ')">' +
           esc(s.label.slice(0,2)) + '</span>' +
-        '<span class="lab">Curriculum<b>' + esc(s.label) + '</b></span></span>' +
+        '<span class="lab">Curriculum<b>' + esc(s.label) + '</b></span></span>';
+      /* An untouched subject gets an invitation, not a 0% and a trend line
+         drawn from no data. A chart of nothing is worse than no chart. */
+      if (!filed) {
+        return '<button class="acard blank" onclick="pickSubject(\'' + s.k + '\')">' + head +
+          '<span class="k">Not started</span>' +
+          '<span class="v">Nothing filed yet</span>' +
+          '<span class="chg">' + s.topics + (s.topics === 1 ? ' topic' : ' topics') +
+            ' listed for your grade</span>' +
+          '<span class="go-hint">Take a test →</span></button>';
+      }
+      return '<button class="acard" onclick="pickSubject(\'' + s.k + '\')">' + head +
         '<span class="k">Topics with notes</span>' +
         '<span class="v">' + pct + '%</span>' +
         '<span class="chg">' + s.notes + ' of ' + s.topics + ' topics · ' +
@@ -1527,6 +1709,11 @@ function paintConsole(S, current, grade){
     if (current && S && S.topic) {
       line.textContent = 'You stopped on ' + S.topic;
       sub.textContent = 'Pick it back up and I will hint when you want one, and explain either way.';
+    } else if (S && S.topic) {
+      /* A topic was opened but nothing answered on it. "You stopped on" here
+         would be inventing a session that never happened. */
+      line.textContent = 'Ready when you are';
+      sub.textContent = 'You looked at ' + S.topic + ' but have not answered anything yet. Sit a test and I will explain every answer.';
     } else if (open) {
       line.textContent = 'Nothing filed under ' + open.label + ' yet';
       sub.textContent = open.topics + ' topics are listed for your grade. Start anywhere and I will keep up.';
@@ -1539,6 +1726,24 @@ function paintConsole(S, current, grade){
 /* Eulid is a real component with a real API, so this hands him back rather
    than faking a chat: if he has been sent home from another page he is
    collected, put back on screen here, and his own tools take over. */
+/* Fold the rail away so a page gets the whole window, and remember the
+   choice — someone who works with it closed should not have to close it
+   again on every visit. Nothing is destroyed: the same button brings it
+   back, and it is a button rather than a drag handle so it works the same
+   on a phone. */
+function toggleRail(off){
+  var shell = document.querySelector('.app-shell'), btn = document.getElementById('railTog');
+  if (typeof off !== 'boolean') off = !shell.classList.contains('rail-off');
+  shell.classList.toggle('rail-off', off);
+  if (btn) {
+    btn.setAttribute('aria-expanded', off ? 'false' : 'true');
+    var label = off ? 'Show the sidebar' : 'Hide the sidebar';
+    btn.setAttribute('aria-label', label); btn.title = label;
+  }
+  try { localStorage.setItem('sos_rail_off', off ? '1' : '0'); } catch(e){}
+}
+try { if (localStorage.getItem('sos_rail_off') === '1') toggleRail(true); } catch(e){}
+
 function askEulid(){
   try {
     if (window.SOSEulid && typeof SOSEulid.collect === 'function') SOSEulid.collect();
@@ -1578,57 +1783,27 @@ if (!libReady) {
   });
 }
 
-/* ── the sky ───────────────────────────────────────────────────────
-   Drawn once, synchronously, then animated. Left inside the animation loop
-   alone it would stay empty until the first frame is served, and a tab
-   opened in the background is served none — so a student could come back
-   to a blank sky. */
+/* The front door. The home page is the first thing anyone meets — it is a view
+   of this shell like any other, shown in the frame the way Help, Contact and
+   Practice are. WorkHub is one click away in the rail rather than the thing a
+   visitor lands on.
+
+   A hash is honoured on the way in, because the account and admin pages still
+   link to #resources and #contact, and arriving at Home when you asked for the
+   help page is the kind of small wrongness nobody reports and everyone
+   notices. Anything unrecognised falls back to home. */
 (function(){
-  var cv = document.getElementById('sky'); if (!cv || !cv.getContext) return;
-  var cx = cv.getContext('2d');
-  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var stars = [], W = 0, H = 0, tries = 0;
-  function size(){
-    var d = window.devicePixelRatio || 1;
-    /* This script runs while the document is still parsing, and a page that is
-       not being displayed yet — a background tab, a hidden frame — reports no
-       size at all until it is. Measured once and trusted, that wrote a canvas
-       0 pixels wide and left the sky permanently blank, because the events
-       that would have corrected it had already gone by. So a zero measure is
-       not accepted: it simply asks again until the page has a size to give. */
-    W = window.innerWidth || cv.clientWidth;
-    H = window.innerHeight || cv.clientHeight;
-    if ((!W || !H) && tries++ < 60) { setTimeout(function(){ size(); draw(0); }, 100); return; }
-    cv.width = W * d; cv.height = H * d; cx.setTransform(d,0,0,d,0,0);
-    stars = [];
-    var n = Math.round(W * H / 7000);
-    for (var i = 0; i < n; i++) stars.push({
-      x: Math.random()*W, y: Math.random()*H,
-      r: Math.random()*1.15 + .25, a: Math.random()*.6 + .18,
-      s: Math.random()*.014 + .003, p: Math.random()*Math.PI*2,
-      d: Math.random()*.05 + .012
-    });
+  var SITE = { home:'site-home', resources:'site-help', contact:'site-contact' };
+  var want = (location.hash || '').replace('#','');
+  if (want === 'lab' || want === 'practice' || want === 'test') {
+    openTest(document.querySelector('.nav button[data-v="test"]'));
+    return;
   }
-  function draw(t){
-    cx.clearRect(0,0,W,H);
-    for (var i=0;i<stars.length;i++){
-      var s = stars[i];
-      var a = still ? s.a : s.a + Math.sin(t*s.s + s.p) * .3;
-      if (a < .04) a = .04;
-      cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.2832);
-      cx.fillStyle = 'rgba(230,237,246,' + a.toFixed(3) + ')'; cx.fill();
-      if (!still){ s.y -= s.d; if (s.y < -2){ s.y = H + 2; s.x = Math.random()*W; } }
-    }
-  }
-  function loop(t){ draw(t); requestAnimationFrame(loop); }
-  window.addEventListener('resize', function(){ size(); draw(0); });
-  /* Once more after load, in case the first measure happened mid-parse. */
-  window.addEventListener('load', function(){ size(); draw(0); });
-  size(); draw(0);
-  if (!still) requestAnimationFrame(loop);
+  if (!SITE[want]) want = 'home';
+  openSite(want, document.querySelector('.nav button[data-v="' + SITE[want] + '"]'));
 })();
 
-/* A grade or curriculum change made in another tab on this device (the
+/* A grade or curriculum change made in another tab/* A grade or curriculum change made in another tab on this device (the
    main site, or account settings opened from it) fires here even though
    this tab did not cause it — that is what lets an already-open study
    tab catch up without the student having to reload it. A tab restored
@@ -1636,7 +1811,8 @@ if (!libReady) {
    on phones) does not re-run its scripts at all, so pageshow's persisted
    flag is caught too, and repaints from whatever the account holds now. */
 window.addEventListener('storage', function(ev){
-  if (ev && (ev.key === 'sos_grade' || ev.key === 'sos_curriculum' || ev.key === 'sos_age')) acctRepaint();
+  if (ev && (ev.key === 'sos_grade' || ev.key === 'sos_curriculum' || ev.key === 'sos_age' ||
+             ev.key === 'sos_school_crest' || ev.key === 'sos_school' || ev.key === 'sos_school_id')) acctRepaint();
 });
 window.addEventListener('pageshow', function(ev){
   if (ev && ev.persisted) acctRepaint();
@@ -1650,18 +1826,21 @@ function pickSubject(s){
   if (w && typeof w.labSetSubject === 'function') {
     try {
       localStorage.removeItem('sos_open_subject');
-      if (w.labSetSubject(s) && typeof w.labOnSubjectChange === 'function') w.labOnSubjectChange();
-      w.showPage('lab');
-      show('frame');
-      markNav(document.querySelector('.nav button[data-v="practice"]'));
+      openTest(document.querySelector('.nav button[data-v="test"]'), s);
       return;
     } catch(e){}
   }
   try { localStorage.setItem('sos_open_subject', s); } catch(e){}
-  openLab('lab');
+  openTest(document.querySelector('.nav button[data-v="test"]'), s);
 }
 </script>
 
+<!-- Auth only, no Firestore: this page needs to know who is signed in so the
+     account menu can say so. Everything that actually reads or writes data
+     still happens in the frame, which loads Firestore for itself. -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="js/session.js"></script>
 <script src="js/components/eulid.js" defer></script>
 </body>
 </html>

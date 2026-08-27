@@ -996,7 +996,7 @@
     wipeProgress(CURRENT_USER.uid)
       .then(function(){ return SOS.db.collection('users').doc(CURRENT_USER.uid).delete(); })
       .then(function(){ return CURRENT_USER.delete(); })
-      .then(function(){ window.location.href = '../index.html'; })
+      .then(function(){ window.location.href = '../study.html'; })
       .catch(function(e){
         document.getElementById('modalErr').textContent = (e.code === 'auth/requires-recent-login')
           ? 'For security, please sign out and sign in again before deleting your account.'

@@ -68,7 +68,7 @@
       <div class="dash-empty-emoji">📊</div>
       <strong>No practice yet</strong>
       <p>Head to the Lab and answer a few questions — your graphs, per-subject progress, streaks and session history will appear here automatically.</p>
-      <a class="btn btn-primary" href="../index.html#lab">Go to the Lab →</a>
+      <a class="btn btn-primary" href="../study.html#lab">Go to the Lab →</a>
     </div>
 
     <div id="dashProgress" style="display:none;">
@@ -176,7 +176,7 @@ function revealDashboard() {
 
 auth.onAuthStateChanged(function(user) {
   if (!user) {
-    window.location.href = '../index.html';
+    window.location.href = '../study.html';
     return;
   }
   // Admins belong on the admin panel — fast-path from cache so there's no
@@ -583,7 +583,7 @@ function handleSignOut() {
   try { if (window.SOSEulid && SOSEulid.home) SOSEulid.home();
         else sessionStorage.removeItem('sos_eulid_spot'); } catch (e) {}
   auth.signOut().then(function() {
-    window.location.replace('../index.html');
+    window.location.replace('../study.html');
   });
 }
 
@@ -599,7 +599,7 @@ function confirmDeleteAccount() {
   db.collection('users').doc(currentUid).delete().then(function() {
     return auth.currentUser.delete();
   }).then(function() {
-    window.location.href = '../index.html';
+    window.location.href = '../study.html';
   }).catch(function(e) {
     document.getElementById('deleteError').textContent = 'Please sign out and sign in again before deleting.';
   });
