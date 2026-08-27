@@ -112,6 +112,9 @@ html[data-theme="dark"] {
   --history:      #7FB4FF;
   --english:      #C79BFF;
   --geography:    #F2C14E;
+  --physics:      #7FB4FF;
+  --chemistry:    #F2C14E;
+  --biology:      #FF9DB8;
 
   /* Right, wrong, and the practice heatmap. The heatmap keeps its idea —
      one hue getting stronger the more you did — but climbs out of the dark

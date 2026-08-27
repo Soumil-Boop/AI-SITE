@@ -4,6 +4,25 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Seek-O-Sphere</title>
+  <!-- ══ NOT A PAGE ANY MORE ══════════════════════════════════════════
+       This file is the engine: the question generator, the topic tables,
+       Test Mode, the periodic table and the formula sheets all live here,
+       and study.html runs them by loading this inside itself. What it is
+       no longer is somewhere to visit. Asked for directly it hands over to
+       the shell before anything paints — first thing in the head, ahead of
+       every stylesheet, and the document is hidden in the same breath so
+       not one frame of the old site can appear. Inside the frame the query
+       string says embed=1 or shell=1 and none of this runs. -->
+  <script>
+    (function(){
+      try {
+        if (window.top === window.self && !/[?&](embed|shell)=1/.test(location.search)) {
+          document.documentElement.style.display = 'none';
+          location.replace('study.html' + location.hash);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <!-- Which look to paint, decided before the page paints. This has to be a
        plain inline script and it has to sit above the stylesheet links: a
        synchronous script waits for every stylesheet declared before it, and
@@ -1010,6 +1029,7 @@
     html.sos-embed .topbar,
     html.sos-embed nav,
     html.sos-embed .marquee,
+    html.sos-embed .brand-marquee,
     html.sos-embed footer.site-footer,
     html.sos-embed aside.sos-planner,
     html.sos-embed .eulid-dock,
@@ -1019,6 +1039,42 @@
     html.sos-embed, html.sos-embed body { background:var(--parchment); }
     html.sos-embed .section-inner { padding-top:1.1rem; }
     html.sos-embed .tm-shell { position:fixed; inset:0; }
+
+    /* == SHELL MODE ==============================================
+       The same page inside study.html, but showing Home, Help &
+       Resources or Contact Us rather than the Lab. Those three are
+       meant to look exactly as they always have, so unlike embed mode
+       this hides only what the shell already provides one of — the
+       site nav and a second Eulid. The marquee, the heroes, the CTA
+       band and the footer all stay, because they are the pages. */
+    /* == PRACTICE IS GONE =======================================
+       Test Mode is what the Lab is for now, so the practice interface —
+       the subject picker, the question card, the session tally and the
+       tool dock — is not shown at all.
+
+       Not deleted, though, and deliberately so: the test seeds itself from
+       these same controls. #labSubject, #labCurriculum, #labAge and
+       #labTopic are read by tmSeedFromLab, tmRefreshSubjects and
+       sosApplyProfile, and the tiles write to them. Taking the markup out
+       would take the settings a test is built from with it.
+
+       !important because the tiles are shown and hidden from script, which
+       writes an inline display no selector can outrank. */
+    #labTabCurriculum .atl-setline,
+    #labTabCurriculum #labGroupTiles,
+    #labTabCurriculum #labSubjectTiles,
+    #labTabCurriculum #labSubject,
+    #labTabCurriculum .atl-row { display:none !important; }
+
+    html.sos-shell .topbar,
+    html.sos-shell nav,
+    html.sos-shell aside.sos-planner,
+    html.sos-shell .eulid-dock { display:none !important; }
+    /* theme-dark.css is the last stylesheet in this head and sets
+       html[data-theme="dark"] body, which ties with html.sos-shell body on
+       specificity and wins on order. Naming the theme attribute here outranks
+       it, so the shell behind this frame is the one background on screen. */
+    html.sos-shell[data-theme], html.sos-shell[data-theme] body { background:transparent; }
 
     .lab-tabs{display:flex;gap:0;border-bottom:2px solid var(--gray-100);margin-bottom:2rem;}
     .lab-tab{padding:.75rem 1.5rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;}
@@ -2219,13 +2275,7 @@
   </div>
   <div class="nav-links" id="navLinks">
     <a data-page="home"      onclick="showPage('home')">Home</a>
-    <a data-page="what"      onclick="showPage('what')">What is AI?</a>
-    <a data-page="history"   onclick="showPage('history')">History</a>
-    <a data-page="types"     onclick="showPage('types')">Types</a>
-    <a data-page="study"     onclick="showPage('study')">Study Tools</a>
-    <a data-page="ethics"    onclick="showPage('ethics')">Ethics</a>
-    <a data-page="lab"       href="study.html" target="_blank" rel="noopener">🧪 Learning Lab</a>
-    <a data-page="finder"    onclick="showPage('finder')">Find My AI Tool</a>
+    <a data-page="lab"       href="study.html">🧪 Learning Lab</a>
     <a data-page="resources" onclick="showPage('resources')">Help &amp; Resources</a>
     <a data-page="contact"   onclick="showPage('contact')">Contact Us</a>
   </div>
@@ -2419,8 +2469,7 @@
       <h1 class="hero-title">The Friendliest Way to Learn <em>Artificial Intelligence</em></h1>
       <p class="hero-sub">No jargon. No confusion. Just clear lessons, real tools, and a friendly alien named Eulid who actually wants you to succeed , whether you are 8 or 80.</p>
       <div class="hero-ctas">
-        <button class="btn btn-primary" onclick="showPage('what')">Start Learning Now</button>
-        <button class="btn btn-outline" onclick="showPage('finder')">Find My AI Tool</button>
+        <button class="btn btn-primary" onclick="location.href='study.html'">Open the Learning Lab</button>
       </div>
     </div>
 
@@ -2543,545 +2592,10 @@
   <!-- HOME BOTTOM CONTENT -->
   <div class="home-bottom">
 
-    <!-- WHAT WE OFFER -->
-    <div class="home-features">
-      <div class="features-inner">
-        <span class="eyebrow">What You Will Find Here</span>
-        <h2 class="section-title" style="color:var(--brand-dark);">Everything You Need to Actually Understand AI</h2>
-        <p style="color:var(--muted);max-width:620px;line-height:1.7;">From the basics to the advanced , we cover it all in plain English, with interactive tools and a tutor that never loses patience.</p>
-        <div class="features-grid">
-          <div class="feature-card" onclick="showPage('what')" role="button" tabindex="0">
-            <span class="feature-icon" style="background:var(--maths);">🧠</span>
-            <h3>What is AI?</h3>
-            <p>Start with the fundamentals , what it is, what it is not, and how it actually works.</p>
-          </div>
-          <div class="feature-card" onclick="showPage('history')" role="button" tabindex="0">
-            <span class="feature-icon" style="background:var(--history);">📜</span>
-            <h3>History of AI</h3>
-            <p>From Alan Turing's 1950 paper to ChatGPT , the full story in a timeline.</p>
-          </div>
-          <div class="feature-card" onclick="showPage('types')" role="button" tabindex="0">
-            <span class="feature-icon" style="background:var(--science);">🔬</span>
-            <h3>Types of AI</h3>
-            <p>Machine learning, neural networks, generative AI , demystified with real examples.</p>
-          </div>
-          <div class="feature-card" onclick="showPage('study')" role="button" tabindex="0">
-            <span class="feature-icon" style="background:var(--geography);">📚</span>
-            <h3>Study Tools</h3>
-            <p>How to use AI for essays, coding, languages, and maths without getting it wrong.</p>
-          </div>
-          <div class="feature-card" onclick="window.open('study.html','_blank','noopener')" role="button" tabindex="0">
-            <span class="feature-icon" style="background:var(--brand-mid);">🧪</span>
-            <h3>Learning Lab</h3>
-            <p>Interactive maths with animated blocks and Eulid your AI tutor cheering you on.</p>
-          </div>
-          <div class="feature-card" onclick="showPage('finder')" role="button" tabindex="0">
-            <span class="feature-icon" style="background:var(--english);">🔍</span>
-            <h3>Find My AI Tool</h3>
-            <p>Type what you need and get matched with the perfect AI tool from 129 options.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div><!-- end home-bottom -->
 </div><!-- end #home -->
 </div><!-- /.sky-wrap -->
 
-<!-- ══════════════════════════════════════
-     WHAT IS AI
-══════════════════════════════════════ -->
-<div id="what" class="panel">
-<div class="page-hero"><h1>What Is Artificial Intelligence?</h1><p>AI is not magic , it is maths, data, and computing power working together to make machines seem smart.</p></div>
-  <div class="section-inner">
-    <div class="page-illus-row">
-      <div class="page-illus-text">
-        <span class="eyebrow">Start Here</span>
-        <h2>So what actually is AI?</h2>
-        <p>Artificial Intelligence is when a computer learns to do things that normally need a human brain , like recognising faces, understanding language, or making decisions. It learns from examples, not rules someone typed in.</p>
-        <p>Think of teaching a child what a "cat" looks like by showing them thousands of photos. AI works the same way , millions of examples, patterns spotted, behaviour learned.</p>
-      </div>
-      <img class="page-illus-svg" src="assets/images/what-is-ai/what-is-ai_3.png" alt="An AI robot explaining concepts to a student, with brain, globe and growth icons"/>
-    </div>
-    <div class="two-col">
-      <div>
-        <h2 class="section-title">The Definition</h2>
-        <div class="definition-box"><p><strong>Artificial Intelligence (AI)</strong> is the ability of a computer or machine to do things that normally require human intelligence, like learning, problem-solving, understanding language, and recognising patterns.</p></div>
-        <div class="analogy-card"><span class="analogy-icon">🐶</span><div><strong>Think of it like training a dog</strong>You show a dog what "sit" means over and over. AI learns the same way, from lots of examples, until it gets good at a task.</div></div>
-        <div class="analogy-card"><span class="analogy-icon">🎵</span><div><strong>Like a music recommendation</strong>When Spotify suggests a song you love, that is AI noticing your patterns and predicting what you will enjoy next.</div></div>
-        <div class="analogy-card"><span class="analogy-icon">📷</span><div><strong>Like face unlock on your phone</strong>Your phone's camera learned what your face looks like and recognises it every time. That is AI at work.</div></div>
-      </div>
-      <div class="illus-slab">
-        <svg class="illus illus-inset" viewBox="0 0 340 260" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" role="img" aria-label="Examples going in, a pattern forming, a prediction coming out"><g fill="none" stroke="var(--border)" stroke-width="1.4">
-     <path d="M44 62 L150 130 M44 130 L150 130 M44 198 L150 130 M150 130 L268 78 M150 130 L268 182"/></g>
-  <g fill="var(--faint)"><circle cx="44" cy="62" r="9"/><circle cx="44" cy="130" r="9"/>
-     <circle cx="44" cy="198" r="9"/></g>
-  <circle cx="150" cy="130" r="26" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
-  <circle cx="150" cy="130" r="11" fill="var(--accent)"/>
-  <g fill="var(--brand)"><circle cx="268" cy="78" r="9"/><circle cx="268" cy="182" r="9"/></g>
-  <g font-family="Inter,sans-serif" font-size="11" fill="var(--faint)" text-anchor="middle">
-    <text x="44" y="232">examples</text><text x="150" y="232">pattern</text><text x="268" y="232">prediction</text>
-  </g></svg>
-        <p>AI combines data, algorithms and computing power to simulate intelligent behaviour.</p>
-      </div>
-    </div>
-    <div style="margin-top:3rem;">
-      <h2 class="section-title clickable-heading" onclick="toggleHeading(this,event)">AI In Everyday Life</h2>
-      <div class="expandable open">
-        <div class="expandable-inner">
-          <p>AI is already all around you , you probably use it dozens of times every day without realising it.</p>
-        </div>
-      </div>
-      <div class="grid-3" style="margin-top:1.5rem;">
-        <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)">
-          <span class="tc-icon"><svg class="tc-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 12a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H18l-8 6v-6a4 4 0 0 1-4-4z"/><path d="M13 15h14M13 20h9"/></svg></span>
-          <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Language</h3>
-          <div class="expandable open"><div class="expandable-inner"><p>Chatbots, translation tools, voice assistants like Siri, and AI writing tools all use natural language processing to understand and generate human language.</p></div></div>
-          <span class="tc-tag tc-blue">NLP</span>
-        </div>
-        <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)">
-          <span class="tc-icon"><svg class="tc-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 20s6-9 16-9 16 9 16 9-6 9-16 9S4 20 4 20z"/><circle cx="20" cy="20" r="5"/></svg></span>
-          <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Vision</h3>
-          <div class="expandable open"><div class="expandable-inner"><p>Face ID, Google Photos, self-driving cars, and medical imaging all use computer vision to interpret the visual world in real time.</p></div></div>
-          <span class="tc-tag tc-green">Computer Vision</span>
-        </div>
-        <div class="type-card tc-purple" style="background:var(--blush);" onclick="addRipple(event,this)">
-          <span class="tc-icon">🎯</span>
-          <h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommendations</h3>
-          <div class="expandable open"><div class="expandable-inner"><p>Netflix, Spotify, YouTube, and TikTok all use AI to predict what you want to watch, listen to, or read next based on your behaviour.</p></div></div>
-          <span class="tc-tag tc-purple">ML</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════ HISTORY ══════════════════════════════════════ -->
-<div id="history" class="panel">
-<div class="page-hero"><h1>The History of AI</h1><p>Built by brilliant minds over decades of discovery, setbacks, and breakthroughs.</p></div>
-  <div class="hist-stage">
-   <div class="hist-atmos" aria-hidden="true"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span><span class="orb o4"></span></div>
-   <div class="section-inner">
-<style>
-.hist-stage .section-inner{max-width:none;padding-left:2rem;padding-right:2rem;}
-.hist-wrap{max-width:1720px;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;position:relative;z-index:1;}
-.hist-card{background:var(--surface);border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);}
-.panel.active .hist-wrap>*{animation:histRise .7s cubic-bezier(.22,.68,0,1.1) both;}
-.panel.active .hist-wrap>*:nth-child(2){animation-delay:.08s;}
-.panel.active .hist-wrap>*:nth-child(3){animation-delay:.16s;}
-.panel.active .hist-wrap>*:nth-child(4){animation-delay:.24s;}
-@keyframes histRise{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
-.hx{padding:1.5rem 1.6rem;}
-.hx-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
-.hx-micro{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.35rem;}
-.hx-headline{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.15rem;color:var(--text);line-height:1.25;}
-.hx-yearctrl{display:flex;align-items:center;gap:.55rem;flex-shrink:0;}
-.hx-year{font-family:'Nunito',sans-serif;font-weight:900;font-size:44px;line-height:1;color:var(--accent);min-width:2.6ch;text-align:center;}
-.hx-step{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gray-200);background:var(--surface);color:var(--accent);font-size:1.35rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,color .2s;}
-.hx-step:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:var(--on-fill);}
-.hx-step:disabled{opacity:.35;cursor:default;}
-.hx-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:var(--gray-200);margin:1.4rem 0 .45rem;outline:none;}
-.hx-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:var(--shadow-sm);cursor:pointer;}
-.hx-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid #fff;cursor:pointer;}
-.hx-ticks{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);font-weight:600;}
-.hx-divider{height:1px;background:var(--gray-100);margin:1.25rem 0;}
-.hx-lm-label{font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.65rem;}
-.hx-chips{display:flex;flex-wrap:wrap;gap:.4rem;}
-.hx-chip{position:relative;border:1.5px solid var(--gray-200);background:var(--surface);color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;padding:.32rem .72rem;border-radius:100px;cursor:pointer;transition:background .25s,border-color .25s,color .25s;}
-.hx-chip:hover{border-color:var(--accent);}
-.hx-chip.active{background:var(--accent);border-color:var(--accent);color:var(--on-fill);}
-.hx-chip[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#3E2B1E;color:#fff;font-size:.7rem;font-weight:600;white-space:nowrap;padding:.35rem .55rem;border-radius:8px;z-index:5;box-shadow:var(--shadow-md);pointer-events:none;}
-.hf{background:linear-gradient(160deg,#3A1B0D,#2A1206);border:1.5px solid #7A4A2E;color:#F3E7D3;padding:1.6rem 1.7rem;}
-.hf-top{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap;}
-.hf-pill{background:var(--accent);color:var(--on-fill);font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;padding:.25rem .8rem;border-radius:100px;}
-.hf-badge{background:rgba(224,169,63,.18);color:#F0C36A;border:1px solid rgba(224,169,63,.4);font-weight:800;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:.24rem .6rem;border-radius:100px;}
-.hf-counter{margin-left:auto;font-size:.76rem;color:rgba(243,231,211,.6);font-weight:600;}
-.hf-headline{font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;line-height:1.25;color:#fff;margin-bottom:.5rem;}
-.hf-summary{font-size:1rem;line-height:1.6;color:rgba(243,231,211,.85);}
-.hf-thennow{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.1rem;}
-.hf-tn{border-radius:var(--radius);padding:.9rem 1rem;}
-.hf-tn span{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;}
-.hf-tn p{font-size:.9rem;line-height:1.5;}
-.hf-then{background:rgba(230,219,201,.12);}
-.hf-then span{color:#CDB79E;} .hf-then p{color:rgba(243,231,211,.8);}
-.hf-now{background:var(--accent);} .hf-now span{color:var(--on-fill-soft);} .hf-now p{color:var(--on-fill);}
-.hf-actions{display:flex;align-items:center;gap:1.1rem;margin-top:1.2rem;flex-wrap:wrap;}
-.hf-readmore{background:var(--accent);color:var(--on-fill);border:none;font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;padding:.6rem 1.2rem;border-radius:100px;cursor:pointer;transition:background .2s;}
-.hf-readmore:hover{background:var(--accent-dark);}
-.hf-nextlink{color:rgba(243,231,211,.72);font-weight:600;font-size:.88rem;cursor:pointer;text-decoration:none;}
-.hf-nextlink:hover{color:#fff;}
-.hf-detail-inner{margin-top:1rem;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1rem 1.15rem;font-size:.95rem;line-height:1.65;color:rgba(243,231,211,.92);animation:hfRise .24s ease both;}
-@keyframes hfRise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
-.hq{padding:1.5rem 1.6rem;}
-.hq-head{display:flex;align-items:center;gap:.8rem;margin-bottom:1.1rem;}
-.hq-trophy{font-size:1.8rem;}
-.hq-head h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.15rem;color:var(--text);}
-.hq-score{font-size:.8rem;color:var(--muted);font-weight:600;}
-.hq-q{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text);margin-bottom:1rem;line-height:1.4;}
-.hq-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;}
-.hq-opt{border:1.5px solid var(--gray-200);background:var(--surface);color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;padding:.7rem;border-radius:100px;cursor:pointer;transition:background .2s,border-color .2s,color .2s;}
-.hq-opt:hover:not(:disabled){border-color:var(--accent);}
-.hq-opt:disabled{cursor:default;}
-.hq-opt.correct{background:var(--green);border-color:var(--green);color:var(--on-fill);}
-.hq-opt.wrong{background:var(--brand-mid);border-color:var(--brand-mid);color:var(--on-fill);}
-.hq-explain{margin-top:1rem;font-size:.92rem;line-height:1.55;color:var(--muted);}
-.hq-next{margin-top:1rem;background:var(--accent);color:var(--on-fill);border:none;font-family:'Inter',sans-serif;font-weight:600;padding:.6rem 1.3rem;border-radius:100px;cursor:pointer;}
-.hq-next:hover{background:var(--accent-dark);}
-@media(max-width:600px){.hx-year{font-size:34px;}.hf-thennow{grid-template-columns:1fr;}.hq-opts{grid-template-columns:1fr;}}
-
-/* immersive stage + atmosphere */
-.hist-stage{position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% -8%,#F5EAD7 0%,#EFE6D8 55%,#E8DBC4 100%);padding:2.4rem 0 3.2rem;}
-.hist-atmos{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
-.hist-atmos .orb{position:absolute;border-radius:50%;filter:blur(48px);}
-.hist-atmos .o1{width:340px;height:340px;background:#E9B48F;top:-70px;left:-90px;opacity:.34;}
-.hist-atmos .o2{width:260px;height:260px;background:#B98FA6;top:240px;right:-70px;opacity:.26;}
-.hist-atmos .o3{width:300px;height:300px;background:#9DBB80;bottom:-90px;left:8%;opacity:.22;}
-.hist-atmos .o4{width:220px;height:220px;background:#E0B15A;bottom:140px;right:14%;opacity:.20;}
-/* intro hero */
-.hist-intro{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:1.6rem 2.2rem;background:rgba(255,255,255,.6);backdrop-filter:blur(5px);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1.7rem 2.2rem;box-shadow:var(--shadow-sm);}
-.hist-intro-eulid{width:100px;flex-shrink:0;}
-.hist-intro-eulid svg{width:100px;height:auto;filter:drop-shadow(0 6px 12px rgba(62,43,30,.22));animation:histFloat 5.5s ease-in-out infinite;}
-@keyframes histFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
-.hist-eyebrow{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.3rem;}
-.hist-intro-text h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--text);line-height:1.2;margin-bottom:.4rem;}
-.hist-intro-text p{color:var(--muted);font-size:1rem;line-height:1.6;margin-bottom:0;max-width:70ch;}
-.hist-stats{display:flex;flex-direction:column;gap:1rem;padding-left:2rem;border-left:1.5px solid var(--border);}
-.hist-stat b{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--accent);display:block;line-height:1;}
-.hist-stat span{font-size:.74rem;color:var(--muted);font-weight:600;}
-/* era ribbon (timeline spine) */
-.hist-era{display:flex;gap:0;background:var(--surface);border:1.5px solid var(--gray-100);border-radius:100px;padding:.4rem;box-shadow:var(--shadow-sm);}
-.hist-era .era{flex:1;border:none;background:none;cursor:pointer;padding:.55rem .5rem;border-radius:100px;text-align:center;transition:background .25s,color .25s;}
-.hist-era .era b{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--text);line-height:1.15;}
-.hist-era .era span{font-size:.66rem;color:var(--muted);font-weight:600;}
-.hist-era .era:hover{background:var(--gray-50);}
-.hist-era .era.active{background:var(--accent);}
-.hist-era .era.active b{color:var(--on-fill);} .hist-era .era.active span{color:var(--on-fill-soft);}
-/* two-column lower */
-.hist-lower{display:grid;grid-template-columns:1.55fr 1fr;gap:1.5rem;align-items:start;}
-@media(max-width:860px){.hist-lower{grid-template-columns:1fr;}.hist-intro{grid-template-columns:1fr;text-align:center;justify-items:center;}.hist-intro-text p{margin-left:auto;margin-right:auto;}.hist-stats{flex-direction:row;justify-content:center;border-left:none;padding-left:0;gap:1.8rem;}.hist-era{flex-wrap:wrap;border-radius:var(--radius-lg);}.hist-era .era{flex:1 1 45%;}}
-</style>
-<div class="hist-wrap">
-  <div class="hist-intro">
-    <div class="hist-intro-eulid"><svg viewBox="0 0 96 112" xmlns="http://www.w3.org/2000/svg" aria-label="Eulid"><defs><radialGradient id="hEuB" cx="42%" cy="32%" r="72%"><stop offset="0" stop-color="#B4CE95"/><stop offset="1" stop-color="#6E8A5A"/></radialGradient><radialGradient id="hEuD" cx="40%" cy="26%" r="78%"><stop offset="0" stop-color="#EDF7FF" stop-opacity=".55"/><stop offset="1" stop-color="#BFE0EC" stop-opacity=".10"/></radialGradient><radialGradient id="hEuE" cx="42%" cy="36%" r="70%"><stop offset="0" stop-color="#FFFEF8"/><stop offset="1" stop-color="#F3E7CE"/></radialGradient></defs><g fill="#7E9E63"><path d="M35 80 q-9 14 -4 26 q3 5 7 0 q-4 -13 5 -24 Z"/><path d="M49 84 q0 17 0 24 q0 5 4 1 q3 -13 1 -25 Z"/><path d="M63 80 q10 12 6 26 q-2 6 -7 1 q3 -14 -5 -24 Z"/></g><ellipse cx="19" cy="47" rx="7.5" ry="12" fill="#7E9E63"/><ellipse cx="79" cy="47" rx="7.5" ry="12" fill="#7E9E63"/><circle cx="49" cy="47" r="31" fill="url(#hEuB)"/><ellipse cx="30" cy="56" rx="6.4" ry="4.2" fill="#E58A56" opacity=".55"/><ellipse cx="68" cy="56" rx="6.4" ry="4.2" fill="#E58A56" opacity=".55"/><ellipse cx="49" cy="45" rx="15.5" ry="16.5" fill="url(#hEuE)"/><circle cx="51" cy="47" r="7.8" fill="#26324C"/><circle cx="54" cy="44" r="2.7" fill="#fff"/><circle cx="46" cy="50" r="1.4" fill="#fff" opacity=".85"/><path d="M42 63 q7 6 14 0" stroke="#4A5C39" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="49" cy="46" r="34" fill="url(#hEuD)" stroke="#EDF7FF" stroke-opacity=".35" stroke-width="1.5"/><path d="M49 13 q-2 -6 3 -9" stroke="#6E8A5A" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="53" cy="3.6" r="4.4" fill="#C0562F"/><circle cx="51.5" cy="2.4" r="1.5" fill="#F3C9A0"/></svg></div>
-    <div class="hist-intro-text">
-      <span class="hist-eyebrow">A guided journey</span>
-      <h2>Travel through 77 years of AI with Eulid</h2>
-      <p>From Alan Turing&#39;s 1950 question to the models you use today &mdash; step through the milestones one year at a time, or jump to a landmark.</p>
-    </div>
-    <div class="hist-stats"><div class="hist-stat"><b>77</b><span>years, 1950&ndash;2026</span></div><div class="hist-stat"><b>12</b><span>landmark moments</span></div><div class="hist-stat"><b>1</b><span>year at a time</span></div></div>
-  </div>
-  <div class="hist-era" id="histEra">
-    <button class="era" data-a="1950" data-b="1968" data-go="1956"><b>Foundations</b><span>1950&ndash;1968</span></button>
-    <button class="era" data-a="1969" data-b="1993" data-go="1973"><b>The AI Winters</b><span>1969&ndash;1993</span></button>
-    <button class="era" data-a="1994" data-b="2011" data-go="1997"><b>Machine Learning</b><span>1994&ndash;2011</span></button>
-    <button class="era" data-a="2012" data-b="2019" data-go="2012"><b>Deep Learning</b><span>2012&ndash;2019</span></button>
-    <button class="era" data-a="2020" data-b="2026" data-go="2022"><b>Generative Era</b><span>2020&ndash;2026</span></button>
-  </div>
-  <div class="hist-card hx">
-    <div class="hx-top">
-      <div><span class="hx-micro">One year at a time &middot; 1950 to 2026</span><h2 class="hx-headline" id="hxHeadline">&nbsp;</h2></div>
-      <div class="hx-yearctrl"><button class="hx-step" id="hxPrev" aria-label="Previous year">&lsaquo;</button><span class="hx-year" id="hxYear">1950</span><button class="hx-step" id="hxNext" aria-label="Next year">&rsaquo;</button></div>
-    </div>
-    <input type="range" min="1950" max="2026" step="1" value="1950" id="hxSlider" class="hx-slider" aria-label="Year"/>
-    <div class="hx-ticks"><span>1950</span><span>1965</span><span>1980</span><span>1995</span><span>2010</span><span>2026</span></div>
-    <div class="hx-divider"></div>
-    <div class="hx-lm-label">Landmarks</div>
-    <div class="hx-chips" id="hxChips"></div>
-  </div>
-  <div class="hist-lower">
-  <div class="hist-card hf" id="histFocus"></div>
-  <div class="hist-card hq">
-    <div class="hq-head"><span class="hq-trophy">&#127942;</span><div><h3>Guess the Year</h3><span class="hq-score" id="hqScore">0 correct out of 0</span></div></div>
-    <div class="hq-q" id="hqQ"></div>
-    <div class="hq-opts" id="hqOpts"></div>
-    <div class="hq-explain" id="hqExplain"></div>
-    <button class="hq-next" id="hqNext" style="display:none;">Next question &rarr;</button>
-  </div>
-  </div>
-</div>
-<script>
-(function(){
-  var MIN=1950,MAX=2026,year=1950;
-  var LM=[1950,1956,1973,1986,1997,2006,2012,2016,2017,2020,2022,2024];
-  var TIP={1950:"Turing Test",1956:"Dartmouth: AI named",1973:"Lighthill Report",1986:"Backpropagation",1997:"Deep Blue beats Kasparov",2006:"Deep learning reborn",2012:"AlexNet",2016:"AlphaGo",2017:"The Transformer",2020:"GPT-3",2022:"ChatGPT",2024:"AI Act & Nobel Prizes"};
-  var HIST={
-1950:{h:"Turing asks: can machines think?",s:"Alan Turing publishes 'Computing Machinery and Intelligence' and proposes the Turing Test.",then:"A 'thinking machine' was pure philosophy — no computer had ever held a conversation.",now:"You can chat with an AI that answers in fluent sentences from the phone in your pocket.",full:"British mathematician Alan Turing, at the University of Manchester, published 'Computing Machinery and Intelligence' in the journal Mind. Instead of the slippery question 'can machines think?', he proposed the Imitation Game — now the Turing Test — where a machine passes if a human judge cannot tell it from a person in conversation. It reframed intelligence as observable behaviour and set the agenda for the entire field."},
-1951:{h:"The first neural-network machine",s:"Marvin Minsky and Dean Edmonds build SNARC, a 40-neuron machine that learns like a rat in a maze."},
-1952:{h:"A computer learns to play checkers",s:"IBM's Arthur Samuel starts a checkers program that improves itself from its own experience."},
-1953:{h:"Turing's paper chess player",s:"Turing and colleagues design Turochamp, a chess algorithm run by hand — strategy before machines could run it."},
-1954:{h:"Machine translation goes public",s:"The Georgetown–IBM experiment translates 60 Russian sentences to English, sparking huge optimism."},
-1955:{h:"The Logic Theorist is born",s:"Newell, Simon and Shaw build a program that proves mathematical theorems — arguably the first AI program."},
-1956:{h:"AI gets its name",s:"The Dartmouth Summer Workshop coins the term 'Artificial Intelligence' and launches the field.",then:"Scientists studying 'thinking machines' had no shared name or community.",now:"'AI' is a household word and a global industry worth hundreds of billions.",full:"Over the summer of 1956, John McCarthy, Marvin Minsky, Claude Shannon and Nathaniel Rochester gathered a small group at Dartmouth College in New Hampshire. McCarthy coined the phrase 'artificial intelligence' in the funding proposal. The workshop did not solve intelligence, but it united researchers under one banner and is universally regarded as the founding moment of AI as a discipline."},
-1957:{h:"The Perceptron and the GPS",s:"Frank Rosenblatt designs the Perceptron; Newell and Simon unveil the General Problem Solver."},
-1958:{h:"LISP, the language of AI",s:"John McCarthy creates LISP, the programming language that powered AI research for decades."},
-1959:{h:"'Machine learning' gets its name",s:"Arthur Samuel coins 'machine learning'; McCarthy and Minsky found the MIT AI Lab."},
-1960:{h:"Teaching machines with error",s:"Widrow and Hoff's ADALINE learns by minimising error — an ancestor of modern training."},
-1961:{h:"Robots enter the factory",s:"Unimate, the first industrial robot, starts work on a General Motors assembly line."},
-1962:{h:"Foundations of neural nets",s:"Rosenblatt publishes 'Principles of Neurodynamics', formalising how perceptrons learn."},
-1963:{h:"AI gets serious funding",s:"ARPA funds MIT's Project MAC, pouring resources into early AI research."},
-1964:{h:"Talking to computers in English",s:"Bobrow's STUDENT solves algebra word problems written in plain English."},
-1965:{h:"ELIZA, the first chatbot",s:"Joseph Weizenbaum's ELIZA mimics a therapist so well that users pour out their feelings to it."},
-1966:{h:"The first language-AI winter",s:"The ALPAC report declares machine translation a failure, cutting US funding for years."},
-1967:{h:"Expert reasoning begins",s:"Work starts on DENDRAL at Stanford — AI that reasons about chemistry like a human expert."},
-1968:{h:"AI on the big screen",s:"HAL 9000 in '2001: A Space Odyssey' fixes AI in the public imagination."},
-1969:{h:"A famous setback for neural nets",s:"Minsky and Papert's 'Perceptrons' exposes the limits of simple networks; SRI's Shakey robot debuts."},
-1970:{h:"A computer that understands blocks",s:"Winograd's SHRDLU converses about a world of blocks, understanding and following instructions."},
-1971:{h:"Encoding human knowledge",s:"Early expert systems take shape as researchers turn human know-how into computer rules."},
-1972:{h:"MYCIN and Prolog",s:"Stanford's MYCIN diagnoses infections; Colmerauer creates Prolog, the logic-programming language."},
-1973:{h:"The Lighthill Report freezes AI",s:"A damning UK government report triggers the first 'AI winter' of slashed funding.",then:"Governments had poured money into grand promises of human-level machines.",now:"AI ships real products every day, funded by the biggest companies on Earth.",full:"Sir James Lighthill's report to the British Science Research Council concluded that AI had failed to deliver on its bold promises and that its methods would not scale to real problems. Its central critique was the 'combinatorial explosion' — the way possibilities multiply beyond any computer's reach. UK funding was gutted, the pessimism spread internationally, and the first AI winter set in."},
-1974:{h:"The winter deepens",s:"Funding dries up on both sides of the Atlantic as early promises go unmet."},
-1975:{h:"Frames for common sense",s:"Minsky proposes 'frames' — structured knowledge — to give machines everyday understanding."},
-1976:{h:"Machines that discover",s:"Lenat's AM rediscovers mathematical concepts on its own; computers help prove the four-colour theorem."},
-1977:{h:"Knowledge is power",s:"Feigenbaum argues that expert knowledge, not clever search, is the key to capable AI."},
-1978:{h:"A Nobel for how we decide",s:"AI pioneer Herbert Simon wins the Nobel in Economics for his work on bounded rationality."},
-1979:{h:"A car drives itself across a room",s:"The Stanford Cart navigates a cluttered room autonomously — slowly — using vision."},
-1980:{h:"The expert-systems boom",s:"The first AAAI conference meets as businesses rush to deploy rule-based expert systems."},
-1981:{h:"Japan bets big on AI",s:"Japan launches the ambitious Fifth Generation Computer project, spurring a global race."},
-1982:{h:"Networks that remember",s:"John Hopfield shows how simple connected units can store and recall patterns."},
-1983:{h:"Rules go commercial",s:"Expert systems like XCON save companies millions, fuelling a young AI industry."},
-1984:{h:"'AI winter' gets its name",s:"Researchers warn at AAAI of a coming bust; Lenat begins Cyc to hand-code common sense."},
-1985:{h:"Neural nets learn to read aloud",s:"Sejnowski's NETtalk learns to pronounce English text, reviving interest in neural networks."},
-1986:{h:"Backpropagation revives neural nets",s:"Rumelhart, Hinton and Williams show how multi-layer networks can learn — the engine of deep learning.",then:"Neural networks were a dead end — no one knew how to train the useful multi-layer kind.",now:"Backpropagation trains billion-parameter models that see, talk and create.",full:"In a 1986 Nature paper, David Rumelhart, Geoffrey Hinton and Ronald Williams popularised backpropagation — an efficient way to adjust every weight in a multi-layer network by sending errors backward from the output. Though the idea had earlier roots, their clear demonstration reignited neural-network research after the 'Perceptrons' slump. It remains the fundamental algorithm behind virtually every deep-learning model today."},
-1987:{h:"The second AI winter",s:"The market for specialised Lisp machines collapses and AI funding contracts again."},
-1988:{h:"AI learns from statistics",s:"IBM's Candide applies probability to translation; Judea Pearl formalises reasoning under uncertainty."},
-1989:{h:"Neural nets read your mail",s:"Yann LeCun trains a convolutional network to read handwritten ZIP codes for the postal service."},
-1990:{h:"Learning by reward",s:"Reinforcement learning matures — agents learn from trial, error and reward."},
-1991:{h:"Intelligence as behaviour",s:"Rodney Brooks argues intelligence emerges from embodied action, not just abstract symbols."},
-1992:{h:"A champion at backgammon",s:"Tesauro's TD-Gammon teaches itself to play backgammon at world-class level."},
-1993:{h:"Robots leave the lab",s:"Mobile, behaviour-based robots start moving into messy real-world settings."},
-1994:{h:"Checkers, essentially solved",s:"Chinook becomes the first program to win a human world championship in a board game."},
-1995:{h:"The support vector machine",s:"Cortes and Vapnik's SVMs give machine learning a powerful, reliable new tool."},
-1996:{h:"Kasparov wins — this time",s:"IBM's Deep Blue loses its first match to world chess champion Garry Kasparov."},
-1997:{h:"Deep Blue beats the world champion",s:"IBM's Deep Blue defeats Garry Kasparov; Hochreiter and Schmidhuber invent the LSTM.",then:"Beating the human chess champion needed a one-tonne, room-sized IBM supercomputer.",now:"A stronger chess engine runs instantly inside a browser tab on your phone.",full:"In May 1997, IBM's Deep Blue defeated reigning world champion Garry Kasparov 3½–2½ in New York — the first time a computer beat a world champion under tournament conditions. The same year, Sepp Hochreiter and Jürgen Schmidhuber published the LSTM, a network that could remember information across long sequences and would later power translation and speech recognition. One event made headlines; the other quietly shaped the next two decades."},
-1998:{h:"The blueprint for modern vision",s:"LeCun's LeNet-5 sets the template for the convolutional networks that now dominate image AI."},
-1999:{h:"The GPU arrives",s:"NVIDIA ships the first GPU — graphics hardware that would later supercharge deep learning."},
-2000:{h:"Humanoid robots walk",s:"Honda's ASIMO shows off steady bipedal walking, hinting at robots among us."},
-2001:{h:"AI in the culture",s:"Spielberg's 'A.I.' reflects growing fascination as the web floods AI with data."},
-2002:{h:"AI vacuums your floor",s:"iRobot's Roomba brings autonomous robots into millions of ordinary homes."},
-2003:{h:"Data at web scale",s:"The explosion of online data quietly sets the stage for learning-based AI."},
-2004:{h:"The self-driving challenge",s:"DARPA's Grand Challenge sends robot cars into the desert — none finish, but the race is on."},
-2005:{h:"A robot car finishes the race",s:"Stanford's 'Stanley' completes the DARPA Grand Challenge, proving self-driving is possible."},
-2006:{h:"Deep learning is reborn",s:"Geoffrey Hinton shows how to train deep networks, coining the modern 'deep learning' era.",then:"Deep neural networks were considered too hard to train to be useful.",now:"Deep learning powers search, translation, chatbots and image generators worldwide.",full:"In 2006, Geoffrey Hinton and colleagues published work on 'deep belief networks', showing deep neural networks could be trained layer by layer and actually work. It rebranded and revived the field as 'deep learning'. Combined with more data and faster GPUs, this insight set off the chain of breakthroughs that would explode a few years later — the quiet turning point before the storm."},
-2007:{h:"The data to learn from",s:"Fei-Fei Li begins ImageNet, and NVIDIA's CUDA lets researchers harness GPUs for AI."},
-2008:{h:"AI starts to listen",s:"Statistical speech recognition improves sharply, reaching phones and call centres."},
-2009:{h:"ImageNet opens the floodgates",s:"A dataset of millions of labelled images is released, fuelling the coming vision revolution."},
-2010:{h:"Progress becomes a sport",s:"The ImageNet challenge and the founding of Kaggle make AI progress measurable and competitive."},
-2011:{h:"Watson wins Jeopardy!, Siri arrives",s:"IBM Watson beats human Jeopardy! champions; Apple's Siri puts a talking assistant in every pocket."},
-2012:{h:"AlexNet ignites the revolution",s:"A deep network crushes the ImageNet contest and modern AI takes off.",then:"Computer vision limped along with hand-crafted features and modest accuracy.",now:"AI recognises faces, tumours and street signs better than people can.",full:"At the 2012 ImageNet competition, AlexNet — built by Alex Krizhevsky, Ilya Sutskever and Geoffrey Hinton and trained on two GPUs — cut the image-recognition error rate almost in half, leaving traditional methods far behind. The result was so decisive that within a couple of years nearly every vision system switched to deep learning. It is widely seen as the spark of the modern AI boom."},
-2013:{h:"Words become math",s:"Google's word2vec turns language into vectors; DeepMind's agents learn Atari games from raw pixels."},
-2014:{h:"Machines that imagine",s:"Ian Goodfellow invents GANs, letting AI generate realistic images; Google acquires DeepMind."},
-2015:{h:"Open tools, open research",s:"Google releases TensorFlow, OpenAI is founded, and ResNet makes very deep networks trainable."},
-2016:{h:"AlphaGo beats a Go legend",s:"DeepMind's AlphaGo defeats Lee Sedol at Go — a milestone thought to be decades away.",then:"Go's astronomical complexity was seen as a stronghold of human intuition.",now:"Self-taught AI surpasses the best humans at Go, chess and shogi alike.",full:"In March 2016, DeepMind's AlphaGo beat 18-time world champion Lee Sedol 4–1 in Seoul. Go has more possible positions than there are atoms in the universe, so brute force is hopeless; AlphaGo combined deep neural networks with search and learned partly by playing itself. Its move 37 in game two — alien yet brilliant — stunned experts and showed AI could be genuinely creative, not merely fast."},
-2017:{h:"The Transformer changes everything",s:"Google's 'Attention Is All You Need' introduces the architecture behind modern AI.",then:"Language models read word by word and forgot the start of long passages.",now:"Transformers read whole documents at once and power every major chatbot.",full:"In 2017, eight researchers at Google published 'Attention Is All You Need', introducing the Transformer. By using 'attention' to weigh every word against every other in parallel, it dropped the slow, sequential processing of older networks and scaled beautifully with data and compute. Every headline model since — GPT, BERT, Claude, Gemini — is a Transformer. Few papers have reshaped a field so completely."},
-2018:{h:"Pretraining takes over",s:"Google's BERT and OpenAI's GPT show that models pretrained on vast text transfer to almost any task."},
-2019:{h:"Bigger, more fluent language",s:"GPT-2 writes eerily coherent paragraphs, raising both excitement and safety concerns."},
-2020:{h:"GPT-3 stuns the world",s:"OpenAI's 175-billion-parameter model writes essays, code and poetry from a prompt.",then:"Language AI needed retraining for each new task it was asked to do.",now:"One model handles email, code, translation and tutoring from plain instructions.",full:"In 2020 OpenAI released GPT-3, with 175 billion parameters trained on much of the public internet. Its leap was 'few-shot' learning: give it a couple of examples in the prompt and it adapts on the fly, no retraining required. The same year, DeepMind's AlphaFold 2 essentially solved protein-structure prediction, a 50-year biology grand challenge. AI had become general-purpose and scientifically serious at once."},
-2021:{h:"AI learns to draw and code",s:"DALL·E turns text into images and GitHub Copilot writes code alongside programmers."},
-2022:{h:"ChatGPT puts AI in everyone's hands",s:"A free chatbot reaches 100 million users in two months and changes daily life.",then:"Powerful AI lived in research papers and developer APIs, out of public reach.",now:"Anyone can ask an AI to explain, write or plan — for free, in seconds.",full:"OpenAI launched ChatGPT in November 2022 as a free research preview. Built on the GPT-3.5 line and refined with human feedback, it could hold a natural conversation, write essays and debug code — and it reached an estimated 100 million users within two months, the fastest-growing consumer app in history. Alongside image generators like Stable Diffusion and Midjourney, 2022 turned generative AI from a niche into a cultural moment."},
-2023:{h:"The generative-AI gold rush",s:"GPT-4, Claude, LLaMA and a wave of new tools push AI into work, school and search."},
-2024:{h:"Regulation and a Nobel Prize",s:"The EU passes the first major AI law, and AI pioneers win Nobel Prizes.",then:"AI raced ahead with almost no laws and little mainstream scientific recognition.",now:"Governments now regulate AI and the Nobel committee honours its founders.",full:"In 2024 the European Union approved the AI Act, the world's first comprehensive law governing artificial intelligence by risk level. The same year, the Nobel Prizes recognised AI's scientific impact: Geoffrey Hinton and John Hopfield won the Physics prize for foundational work on neural networks, while Demis Hassabis and John Jumper (with David Baker) won the Chemistry prize for AlphaFold's protein-structure breakthrough. AI had arrived as both a regulated technology and mainstream science."},
-2025:{h:"The age of reasoning and agents",s:"AI models learn to reason step by step and act on their own as software agents."},
-2026:{h:"Your turn",s:"Seventy-seven years of ideas led to this moment — the next milestone could be one you build."}
-  };
-
-  var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});};
-  var $=function(id){return document.getElementById(id);};
-  var elYear=$("hxYear"),elHead=$("hxHeadline"),elSlider=$("hxSlider"),elPrev=$("hxPrev"),elNext=$("hxNext"),chipsWrap=$("hxChips"),focus=$("histFocus"),eraWrap=$("histEra");
-
-  LM.forEach(function(y){
-    var c=document.createElement("button");
-    c.className="hx-chip"; c.textContent=y; c.setAttribute("data-y",y); c.setAttribute("data-tip",TIP[y]||"");
-    c.addEventListener("click",function(){render(y);});
-    chipsWrap.appendChild(c);
-  });
-  [].forEach.call(eraWrap.children,function(bt){ bt.addEventListener("click",function(){ render(+bt.getAttribute("data-go")); }); });
-
-  function render(y){
-    y=Math.max(MIN,Math.min(MAX,y));
-    // Guests may open a limited number of distinct years; the gate vetoes the rest.
-    if(window.demoHistoryGate && !window.demoHistoryGate(y)) return;
-    year=y;
-    var d=HIST[y]||{h:"",s:""}, isLM=LM.indexOf(y)!==-1, n=y-MIN+1;
-    elYear.textContent=y; elSlider.value=y; elHead.textContent=d.h||"";
-    elPrev.disabled=(y<=MIN); elNext.disabled=(y>=MAX);
-    var kids=chipsWrap.children;
-    for(var i=0;i<kids.length;i++){ kids[i].classList.toggle("active", +kids[i].getAttribute("data-y")===y); }
-    var eras=eraWrap.children; for(var j=0;j<eras.length;j++){ var ea=+eras[j].getAttribute("data-a"),eb=+eras[j].getAttribute("data-b"); eras[j].classList.toggle("active", y>=ea&&y<=eb); }
-    var html='<div class="hf-top"><span class="hf-pill">'+y+'</span>'
-      + (isLM?'<span class="hf-badge">Landmark moment</span>':'')
-      + '<span class="hf-counter">Year '+n+' of 77</span></div>'
-      + '<h3 class="hf-headline">'+esc(d.h)+'</h3>'
-      + '<p class="hf-summary">'+esc(d.s)+'</p>';
-    if(isLM && d.then){
-      html+='<div class="hf-thennow"><div class="hf-tn hf-then"><span>Then</span><p>'+esc(d.then)+'</p></div>'
-          + '<div class="hf-tn hf-now"><span>Now</span><p>'+esc(d.now)+'</p></div></div>';
-    }
-    html+='<div class="hf-actions">';
-    if(d.full){ html+='<button class="hf-readmore" type="button">Read the full explanation</button>'; }
-    html+='<a class="hf-nextlink">Next year &rarr;</a></div><div id="hfDetail"></div>';
-    focus.innerHTML=html;
-    var rm=focus.querySelector(".hf-readmore"), nl=focus.querySelector(".hf-nextlink"), det=$("hfDetail");
-    if(rm){ rm.addEventListener("click",function(){
-      if(det.innerHTML){ det.innerHTML=""; rm.textContent="Read the full explanation"; }
-      else { det.innerHTML='<div class="hf-detail-inner">'+esc(d.full)+'</div>'; rm.textContent="Hide explanation"; }
-    }); }
-    nl.addEventListener("click",function(){ render(year+1); });
-  }
-
-  elSlider.addEventListener("input",function(){ render(+elSlider.value); });
-  elPrev.addEventListener("click",function(){ render(year-1); });
-  elNext.addEventListener("click",function(){ render(year+1); });
-
-  /* Guess the Year */
-  var QUIZ=[
-    {q:"When did IBM's Deep Blue first defeat world chess champion Garry Kasparov in a match?",opts:[1991,1997,2004,2011],a:1997,e:"May 1997, in New York — the first time a computer beat a reigning world champion under tournament rules."},
-    {q:"Which year gave Artificial Intelligence its name, at the Dartmouth workshop?",opts:[1950,1956,1969,1974],a:1956,e:"John McCarthy coined 'artificial intelligence' in the proposal for the 1956 Dartmouth Summer Workshop."},
-    {q:"AlexNet kicked off the deep-learning revolution by winning ImageNet in…",opts:[2006,2012,2016,2020],a:2012,e:"AlexNet nearly halved the image-recognition error rate at the 2012 ImageNet competition."},
-    {q:"ChatGPT launched to the public in…",opts:[2018,2020,2022,2024],a:2022,e:"OpenAI released ChatGPT in November 2022; it reached 100 million users within two months."}
-  ];
-  var qi=0,correct=0,answered=0;
-  var hqQ=$("hqQ"),hqOpts=$("hqOpts"),hqExplain=$("hqExplain"),hqNext=$("hqNext"),hqScore=$("hqScore");
-  function renderQ(){
-    var it=QUIZ[qi];
-    hqQ.textContent=it.q; hqExplain.textContent=""; hqNext.style.display="none"; hqOpts.innerHTML="";
-    it.opts.forEach(function(o){
-      var b=document.createElement("button"); b.className="hq-opt"; b.textContent=o;
-      b.addEventListener("click",function(){ answer(o,b,it); });
-      hqOpts.appendChild(b);
-    });
-    hqScore.textContent=correct+" correct out of "+answered;
-  }
-  function answer(o,btn,it){
-    var kids=hqOpts.children;
-    for(var i=0;i<kids.length;i++){ kids[i].disabled=true; if(+kids[i].textContent===it.a) kids[i].classList.add("correct"); }
-    answered++; if(o===it.a){ correct++; } else { btn.classList.add("wrong"); }
-    hqExplain.textContent=it.e; hqScore.textContent=correct+" correct out of "+answered;
-    hqNext.style.display="inline-flex";
-  }
-  hqNext.addEventListener("click",function(){ qi=(qi+1)%QUIZ.length; renderQ(); });
-
-  render(1950); renderQ();
-})();
-</script>
-   </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════ TYPES ══════════════════════════════════════ -->
-<div id="types" class="panel">
-<div class="page-hero"><h1>Types of AI</h1><p>AI is not one thing. It is a whole family of technologies, each with its own strengths.</p></div>
-  <div class="section-inner">
-    <div class="page-illus-row" style="margin-bottom:2rem;">
-      <div class="page-illus-text">
-        <h2>AI is not one thing , it is a whole family</h2>
-        <p>When people say "AI" they might mean a system that recognises your face, a chatbot that writes essays, or a robot that learns to walk by falling over thousands of times. These are all AI , but very different types.</p>
-        <p>Explore all six types below. Click any card to expand the details.</p>
-      </div>
-      <img class="page-illus-svg" src="assets/images/types/types_2.png" alt="A glowing dark hub connected to six AI technologies — a robotic arm, a neural network, a data cube, a signal wave, an orbiting model and a stacked-data hologram"/>
-    </div>
-    <div class="grid-3">
-      <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon"><svg class="tc-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="10" r="3"/><circle cx="8" cy="20" r="3"/><circle cx="8" cy="30" r="3"/><circle cx="22" cy="20" r="4.5"/><circle cx="34" cy="14" r="2.6"/><circle cx="34" cy="26" r="2.6"/><path d="M11 10 L18 19M11 20h6.5M11 30 L18 22M26.5 18 L31.6 15M26.5 22 L31.6 25"/></svg></span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Machine Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI systems that learn from data without being explicitly programmed. The more data they see, the smarter they get , like learning to spot spam emails from millions of examples.</p></div></div><span class="tc-tag tc-blue">Learning from data</span></div>
-      <div class="type-card tc-coral" style="background:var(--accent-light);" onclick="addRipple(event,this)"><span class="tc-icon"><svg class="tc-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="20" cy="20" r="13"/><path d="M20 7v26M7 20h26M11 11 L29 29M29 11 L11 29"/><circle cx="20" cy="20" r="3" fill="currentColor" stroke="none"/></svg></span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Neural Networks</h3><div class="expandable open"><div class="expandable-inner"><p>Inspired by the human brain, layers of connected nodes process information. They are behind face recognition, voice assistants, and the large language models powering today's chatbots.</p></div></div><span class="tc-tag tc-coral">Brain-inspired</span></div>
-      <div class="type-card tc-purple" style="background:var(--blush);" onclick="addRipple(event,this)"><span class="tc-icon">💬</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Natural Language Processing</h3><div class="expandable open"><div class="expandable-inner"><p>AI that understands and generates human language , powering chatbots, translation tools, voice assistants, and AI writing tools like Claude and ChatGPT.</p></div></div><span class="tc-tag tc-purple">Language and text</span></div>
-      <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)"><span class="tc-icon">👁️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Computer Vision</h3><div class="expandable open"><div class="expandable-inner"><p>AI that can see and interpret images and video. Used in medical imaging to detect diseases, in self-driving cars to navigate roads, and in facial recognition systems.</p></div></div><span class="tc-tag tc-green">Seeing the world</span></div>
-      <div class="type-card tc-gold" style="background:var(--accent-light);" onclick="addRipple(event,this)"><span class="tc-icon"><svg class="tc-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M20 5 l3.6 9.4 9.4 3.6 -9.4 3.6 -3.6 9.4 -3.6 -9.4 -9.4 -3.6 9.4 -3.6z" fill="currentColor" stroke="none"/><path d="M31 27 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6z" fill="currentColor" stroke="none" opacity=".6"/></svg></span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Generative AI</h3><div class="expandable open"><div class="expandable-inner"><p>AI that creates new content , text, images, music, code, and video. Claude, ChatGPT, DALL·E, Midjourney, and Suno all fall into this rapidly growing category.</p></div></div><span class="tc-tag tc-gold">Creating content</span></div>
-      <div class="type-card" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon"><svg class="tc-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 32 C 8 18, 20 18, 20 26 C 20 34, 32 32, 32 16"/><circle cx="32" cy="12" r="3.4" fill="currentColor" stroke="none"/><path d="M6 34h30"/></svg></span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Reinforcement Learning</h3><div class="expandable open"><div class="expandable-inner"><p>AI that learns by trial and error, receiving rewards for good decisions and penalties for bad ones. This is how AI learned to master chess, Go, and control robots.</p></div></div><span class="tc-tag tc-blue">Trial and reward</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════ STUDY TOOLS ══════════════════════════════════════ -->
-<div id="study" class="panel">
-<div class="page-hero"><h1>How to Use AI in Your Studies</h1><p>AI is one of the most powerful tools a student has ever had. Here is how to use it responsibly.</p></div>
-  <div style="background:var(--brand-dark);padding:1px 0;">
-    <div class="section-inner">
-      <div class="page-illus-row" style="margin-bottom:2.5rem;">
-      <div class="page-illus-text on-dark">
-        <h2 style="color:#fff;">AI is the most powerful study tool students have ever had</h2>
-        <p style="color:rgba(255,255,255,.7);">Used well, AI can explain anything, quiz you on any topic, give feedback on your writing, walk you through math problems, and practise a foreign language with you , all at your pace, any time of day.</p>
-        <p style="color:rgba(255,255,255,.7);">Used badly, it does your work for you and you learn nothing. The six tips below help you stay on the right side of that line.</p>
-      </div>
-      <img class="page-illus-svg" src="assets/images/study-tools/study-tools_2.png" alt="A student climbing a glowing staircase toward a floating book, surrounded by panels showing AI study tools"/>
-    </div>
-    <div class="grid-3" style="margin-bottom:3rem;">
-        <div class="study-card"><span class="sc-num">01</span><h3>Research and Summarising</h3><p>Ask AI to explain complex topics in simple terms, summarise long articles, or give you a quick overview before you dive deeper.</p></div>
-        <div class="study-card"><span class="sc-num">02</span><h3>Writing and Feedback</h3><p>Get feedback on essays, check grammar, brainstorm ideas, or understand how to improve your arguments , then rewrite in your own words.</p></div>
-        <div class="study-card"><span class="sc-num">03</span><h3>Math and Problem Solving</h3><p>AI can walk you through math problems step by step, explain where you went wrong, or generate practice problems to sharpen your skills.</p></div>
-        <div class="study-card"><span class="sc-num">04</span><h3>Learning New Languages</h3><p>Chat with AI in a foreign language to practice conversation, ask for translations, or get grammar explained clearly.</p></div>
-        <div class="study-card"><span class="sc-num">05</span><h3>Coding and Technology</h3><p>AI is an incredible coding tutor. It can explain code line by line, help you debug errors, and generate starter code to learn from.</p></div>
-        <div class="study-card"><span class="sc-num">06</span><h3>Creative Projects</h3><p>Generate ideas for stories, artwork, music lyrics, and presentations. Use AI as a creative collaborator, not a replacement for your own voice.</p></div>
-      </div>
-      <h2 class="section-title on-dark-h" style="color:#fff;margin-bottom:1.5rem;">AI Tools Worth Knowing</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
-        <a class="tool-pill" href="https://claude.ai" target="_blank"><span class="tp-icon">🤖</span><div><strong>Claude</strong><span>Writing, research and analysis</span></div></a>
-        <a class="tool-pill" href="https://chat.openai.com" target="_blank"><span class="tp-icon">💬</span><div><strong>ChatGPT</strong><span>General purpose AI assistant</span></div></a>
-        <a class="tool-pill" href="https://www.khanacademy.org/khan-labs" target="_blank"><span class="tp-icon">📚</span><div><strong>Khanmigo</strong><span>AI tutor by Khan Academy</span></div></a>
-        <a class="tool-pill" href="https://copilot.microsoft.com" target="_blank"><span class="tp-icon">🪟</span><div><strong>Microsoft Copilot</strong><span>AI in Word, Excel and more</span></div></a>
-        <a class="tool-pill" href="https://www.grammarly.com" target="_blank"><span class="tp-icon">✏️</span><div><strong>Grammarly</strong><span>AI writing and grammar tool</span></div></a>
-        <a class="tool-pill" href="https://www.canva.com" target="_blank"><span class="tp-icon">🎨</span><div><strong>Canva AI</strong><span>Design and image generation</span></div></a>
-        <a class="tool-pill" href="https://notebooklm.google.com" target="_blank"><span class="tp-icon">📓</span><div><strong>NotebookLM</strong><span>AI notebook by Google</span></div></a>
-        <a class="tool-pill" href="https://www.duolingo.com" target="_blank"><span class="tp-icon">🦉</span><div><strong>Duolingo</strong><span>AI-powered language learning</span></div></a>
-        <a class="tool-pill" href="https://www.deepl.com" target="_blank"><span class="tp-icon">🌍</span><div><strong>DeepL</strong><span>Accurate AI translation</span></div></a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════ ETHICS ══════════════════════════════════════ -->
-<div id="ethics" class="panel">
-  <div class="page-hero"><h1>Using AI Responsibly</h1><p>AI is a powerful tool, and like all powerful tools, it comes with responsibilities.</p></div>
-  <div style="background:var(--gray-50);padding:1px 0;">
-    <div class="section-inner">
-      <div class="page-illus-row flip" style="margin-bottom:2rem;">
-        <div class="page-illus-text">
-          <h2>Using AI the right way matters</h2>
-          <p>AI is powerful , and that means using it carelessly can have real consequences, from academic dishonesty to spreading misinformation. The good news is that being a responsible AI user is not complicated. It just takes a little awareness.</p>
-          <p>The six principles below are the foundation of responsible AI use for any student.</p>
-        </div>
-        <div class="page-illus-photo">
-          <img class="page-illus-svg" src="assets/images/ethics/ethics_2.png" alt="Scales of justice beside a laptop — using AI responsibly and fairly"/>
-          <span class="illus-caption">⚖️ Fairness, honesty &amp; privacy</span>
-          <svg class="illus-eulid corner-br" viewBox="0 0 96 108" xmlns="http://www.w3.org/2000/svg" aria-label="Eulid the alien tutor">
-            <defs>
-              <radialGradient id="euMBody" cx="42%" cy="34%" r="70%"><stop offset="0" stop-color="#AEC98F"/><stop offset="1" stop-color="#6E8A5A"/></radialGradient>
-              <radialGradient id="euMDome" cx="40%" cy="28%" r="75%"><stop offset="0" stop-color="#EAF6FF" stop-opacity=".55"/><stop offset="1" stop-color="#BFE0EC" stop-opacity=".12"/></radialGradient>
-              <radialGradient id="euMEye" cx="42%" cy="36%" r="70%"><stop offset="0" stop-color="#FFFDF6"/><stop offset="1" stop-color="#F3E7CE"/></radialGradient>
-            </defs>
-            <g fill="#7E9E63">
-              <path d="M36 78 q-8 14 -3 24 q3 5 6 0 q-3 -12 4 -22 Z"/>
-              <path d="M49 82 q0 16 0 22 q0 5 4 1 q2 -12 1 -23 Z"/>
-              <path d="M62 78 q9 12 5 24 q-2 5 -6 1 q2 -13 -4 -22 Z"/>
-            </g>
-            <ellipse cx="20" cy="46" rx="7" ry="11" fill="#7E9E63"/>
-            <ellipse cx="78" cy="46" rx="7" ry="11" fill="#7E9E63"/>
-            <circle cx="49" cy="46" r="30" fill="url(#euMBody)"/>
-            <ellipse cx="30" cy="55" rx="6" ry="4" fill="#E08A5A" opacity=".55"/>
-            <ellipse cx="68" cy="55" rx="6" ry="4" fill="#E08A5A" opacity=".55"/>
-            <ellipse cx="49" cy="44" rx="15" ry="16" fill="url(#euMEye)"/>
-            <circle cx="51" cy="46" r="7.5" fill="#26324C"/>
-            <circle cx="54" cy="43" r="2.6" fill="#fff"/>
-            <circle cx="46" cy="49" r="1.3" fill="#fff" opacity=".85"/>
-            <path d="M42 62 q7 6 14 0" stroke="#4A5C39" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-            <circle cx="49" cy="45" r="33" fill="url(#euMDome)" stroke="#EAF6FF" stroke-opacity=".35" stroke-width="1.5"/>
-            <path d="M49 13 q-2 -6 3 -9" stroke="#6E8A5A" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-            <circle cx="53" cy="3.5" r="4.2" fill="#C0562F"/>
-            <circle cx="51.6" cy="2.4" r="1.4" fill="#F3C9A0"/>
-          </svg>
-        </div>
-      </div>
-      <div class="grid-3">
-        <div class="ethics-card" style="border-top-color:var(--accent);" onclick="addRipple(event,this)"><span class="ec-icon">🎓</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Academic Integrity</h3><div class="expandable open"><div class="expandable-inner"><p>Using AI to do your work and submitting it as your own is dishonest. Use AI to help you learn, not to replace your thinking. Always check your school's AI policy before using it for assignments.</p></div></div></div>
-        <div class="ethics-card" style="border-top-color:var(--brand);" onclick="addRipple(event,this)"><span class="ec-icon">🔍</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Fact-Check Everything</h3><div class="expandable open"><div class="expandable-inner"><p>AI can hallucinate , confidently stating false information. Always verify important facts from AI with trusted sources like books, academic papers, or reputable websites before relying on them.</p></div></div></div>
-        <div class="ethics-card" style="border-top-color:var(--purple);" onclick="addRipple(event,this)"><span class="ec-icon">🔒</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Privacy and Safety</h3><div class="expandable open"><div class="expandable-inner"><p>Never share personal information, passwords, or sensitive details with AI tools. Be aware of what data apps collect and get a parent or guardian's guidance if you are unsure.</p></div></div></div>
-        <div class="ethics-card" style="border-top-color:var(--green);" onclick="addRipple(event,this)"><span class="ec-icon">⚖️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Bias and Fairness</h3><div class="expandable open"><div class="expandable-inner"><p>AI learns from human-created data which can contain biases. AI systems can reflect and amplify those biases , affecting everything from hiring decisions to medical diagnoses.</p></div></div></div>
-        <div class="ethics-card" style="border-top-color:var(--accent-dark);" onclick="addRipple(event,this)"><span class="ec-icon">🤝</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Giving Credit</h3><div class="expandable open"><div class="expandable-inner"><p>If you use AI to help shape an idea or draft, be transparent about it when your school or workplace asks. Honesty about your process builds trust and avoids accusations of dishonesty later.</p></div></div></div>
-        <div class="ethics-card" style="border-top-color:var(--brand-mid);" onclick="addRipple(event,this)"><span class="ec-icon">🌱</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Environmental Impact</h3><div class="expandable open"><div class="expandable-inner"><p>Training and running large AI models uses significant electricity and water for cooling data centres. Being mindful of how often and why you use AI is part of using it responsibly.</p></div></div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════ QUIZ ══════════════════════════════════════ -->
 <!-- ══════════════════════════════════════ LAB ══════════════════════════════════════ -->
 <div id="lab" class="panel">
   <div class="lab-hero">
@@ -3093,9 +2607,8 @@
 
     <!-- TABS -->
     <div class="lab-tabs">
-      <button class="lab-tab active" onclick="labSwitchTab('curriculum',this)">🎓 Curriculum Lab</button>
-      <button class="lab-tab" onclick="labSwitchTab('examprep',this)">📝 Entrance &amp; Government Exams</button>
-      <button class="lab-tab" onclick="labSwitchTab('reference',this)">📚 Reference</button>
+      <button class="lab-tab active" onclick="labSwitchTab('curriculum',this)">📝 Test</button>
+        <button class="lab-tab" onclick="labSwitchTab('reference',this)">📚 Reference</button>
     </div>
 
     <!-- ══ TAB 1: CURRICULUM LAB ══ -->
@@ -3105,7 +2618,7 @@
            banner competing with the practice card for attention. -->
       <div class="lab-test-invite" id="labInviteCurr">
         <span class="lti-ico">&#9201;</span>
-        <span class="lti-line">Ready to sit a timed test on this? <b>Nothing is marked until you submit.</b></span>
+        <span class="lti-line">Sit a timed test on any subject. <b>Nothing is marked until you submit.</b></span>
         <button type="button" class="lti-go" onclick="tmOpenSetup('curriculum', this)">Test mode &rarr;</button>
       </div>
 
@@ -3240,140 +2753,6 @@
     </div>
 
     <!-- ══ TAB 2: EXAM PREP ══ -->
-    <div class="lab-tab-content" id="labTabExamprep">
-
-      <!-- The way into a test — its own small area near the top, not a
-           banner competing with the practice card for attention. -->
-      <div class="lab-test-invite" id="labInviteExam">
-        <span class="lti-ico">&#9201;</span>
-        <span class="lti-line">A timed paper for CUET, Railways, Bank PO, SSC or UPSC. <b>Nothing is marked until you submit.</b></span>
-        <button type="button" class="lti-go" onclick="tmOpenSetup('exam', this)">Test mode &rarr;</button>
-      </div>
-
-      <div class="atl-setline">
-        <span class="atl-kick">Pick an exam</span>
-        <div class="atl-setnow">
-          <span id="epSetSummary">Medium &middot; 60 seconds a question</span>
-          <button type="button" class="atl-change" id="epSetToggle" aria-expanded="false" aria-controls="epSetupPanel" onclick="epToggleSetup()">change</button>
-        </div>
-      </div>
-      <div class="atl-setup" id="epSetupPanel" hidden>
-        <label class="atl-field"><span>&#127919; Difficulty</span>
-          <select class="lab-ctrl-select" id="epDifficulty" onchange="epSetupSummary()">
-            <option value="easy">Easy</option>
-            <option value="medium" selected>Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </label>
-        <label class="atl-field"><span>&#9201;&#65039; Timer</span>
-          <select class="lab-ctrl-select" id="epTimerSetting" onchange="epSetupSummary()">
-            <option value="0">No timer</option>
-            <option value="30">30 seconds</option>
-            <option value="60" selected>60 seconds</option>
-            <option value="90">90 seconds</option>
-            <option value="120">2 minutes</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="atl-tiles" id="epExamTiles" role="group" aria-label="Exam">
-        <button type="button" class="atl-tile active" data-exam="cuet" style="--tile:var(--maths);" onclick="epSelectExam('cuet',this)"><i class="atl-bar"></i><span class="atl-ic">&#127891;</span><b>CUET</b><small>Common University</small></button>
-        <button type="button" class="atl-tile" data-exam="railways" style="--tile:var(--history);" onclick="epSelectExam('railways',this)"><i class="atl-bar"></i><span class="atl-ic">&#128644;</span><b>Railways</b><small>RRB</small></button>
-        <button type="button" class="atl-tile" data-exam="bankpo" style="--tile:var(--science);" onclick="epSelectExam('bankpo',this)"><i class="atl-bar"></i><span class="atl-ic">&#127974;</span><b>Bank PO</b><small>Probationary Officer</small></button>
-        <button type="button" class="atl-tile" data-exam="ssc" style="--tile:var(--english);" onclick="epSelectExam('ssc',this)"><i class="atl-bar"></i><span class="atl-ic">&#128203;</span><b>SSC</b><small>Staff Selection</small></button>
-        <button type="button" class="atl-tile" data-exam="upsc" style="--tile:var(--geography);" onclick="epSelectExam('upsc',this)"><i class="atl-bar"></i><span class="atl-ic">&#127963;&#65039;</span><b>UPSC</b><small>Prelims</small></button>
-      </div>
-
-      <div class="atl-subjrow" id="epSubjectPicker" role="group" aria-label="Subject">
-        <button class="lab-pick active" data-subject="gk"        onclick="epSetSubject('gk',this)">&#127760; GK</button>
-        <button class="lab-pick"        data-subject="aptitude"  onclick="epSetSubject('aptitude',this)">&#128290; Aptitude</button>
-        <button class="lab-pick"        data-subject="reasoning" onclick="epSetSubject('reasoning',this)">&#129513; Reasoning</button>
-        <button class="lab-pick"        data-subject="english"   onclick="epSetSubject('english',this)">&#128214; English</button>
-      </div>
-
-      <div class="atl-row">
-        <div class="atl-card">
-          <div class="atl-cardhead" id="epMetaRow">
-            <span class="atl-topicchip static" id="epSubjectBadge">GK</span>
-            <span class="atl-badge" id="epExamBadge">CUET</span>
-            <span class="atl-badge" id="epDiffBadge">Medium</span>
-            <span class="atl-spacer"></span>
-            <span class="atl-crumb" id="epQCount">Question 1</span>
-          </div>
-
-          <div class="ep-timer-wrap" id="epTimerWrap" style="display:none;">
-            <div>
-              <div class="ep-timer-label">Time remaining</div>
-              <div class="ep-timer" id="epTimerDisplay">60s</div>
-            </div>
-            <div class="ep-timer-bar"><div class="ep-timer-fill" id="epTimerFill" style="width:100%;"></div></div>
-          </div>
-
-          <div class="atl-split">
-            <div class="atl-index">
-              <span class="atl-n" id="epQNum">&mdash;</span>
-              <span class="atl-of">no question yet</span>
-              <span class="atl-vr"></span>
-            </div>
-            <div class="atl-qwrap">
-              <div class="ep-loading" id="epLoading" style="display:none;">
-                <div class="finder-dot-pulse"><span></span><span></span><span></span></div>
-                <span>Generating your question...</span>
-              </div>
-
-              <div class="atl-empty" id="epEmpty">
-                <span class="atl-empty-ic">&#127919;</span>
-                <b>Ready when you are</b>
-                <p>Pick an exam and a subject above, then press <strong>New Question</strong>. Every question is written to the pattern of the real paper, and explained afterwards.</p>
-              </div>
-
-              <div class="lab-question-card" id="epQuestionCard" style="display:none;">
-                <div class="lab-question-text" id="epQuestionText"></div>
-                <div class="lab-options wide" id="epOptions"></div>
-                <div class="tm-panels" id="epPanels"></div>
-                <div class="lab-feedback" id="epFeedback"></div>
-                <div class="lab-explanation" id="epExplanation"></div>
-              </div>
-
-              <div class="tutor-wrap">
-                <div class="tutor-avatar">&#129302;</div>
-                <div class="tutor-bubble" id="epTutorBubble">Hi! I am Eulid. Pick your exam and subject above, then hit <strong>New Question</strong> to begin!</div>
-              </div>
-
-              <div class="lab-controls">
-                <button class="btn btn-secondary" onclick="epGenerate()">&#127922; New Question</button>
-                <button class="btn btn-ghost" onclick="epShowExplanation()" id="epExplainBtn" style="display:none;">&#128214; Explain</button>
-                <button class="btn btn-ghost" onclick="epReset()">&#128260; Reset Score</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="atl-side">
-          <div class="atl-panel">
-            <span class="atl-kick">This session</span>
-            <div class="atl-stats">
-              <div class="atl-stat"><span class="atl-v good" id="epCorrect">0</span><span class="atl-k">Correct</span></div>
-              <div class="atl-stat"><span class="atl-v bad" id="epWrong">0</span><span class="atl-k">Wrong</span></div>
-              <div class="atl-stat"><span class="atl-v" id="epAccuracy">&mdash;</span><span class="atl-k">Accuracy</span></div>
-              <div class="atl-stat"><span class="atl-v hot" id="epStreak">0 &#128293;</span><span class="atl-k">Streak</span></div>
-            </div>
-            <div class="lab-progress-wrap">
-              <span class="lab-progress-label">Session progress</span>
-              <div class="lab-progress-bg"><div class="lab-progress-fill" id="epProgressFill" style="width:0%"></div></div>
-              <div class="lab-progress-text" id="epProgressText">0 answered</div>
-            </div>
-          </div>
-          <div class="atl-panel" id="epToolsPanel">
-            <span class="atl-kick">Tools</span>
-            <aside class="tm-dock ep-dock atl-dock" id="epDock" aria-label="Tools"></aside>
-          </div>
-        </aside>
-      </div>
-
-    </div>
-
-    <!-- ══ TAB 3: REFERENCE ══ -->
     <div class="lab-tab-content" id="labTabReference">
       <p class="ref-intro">A quick place to look things up — the full periodic table and
         grade-specific formula sheets, right where you are working.</p>
@@ -3430,8 +2809,6 @@
         <div class="tm-track" role="group" aria-label="What you are testing on">
           <button type="button" class="tm-trk active" data-track="curriculum" onclick="tmPickTrack('curriculum',this)">
             &#127891; School (Grades 1&ndash;12)</button>
-          <button type="button" class="tm-trk" data-track="exam" onclick="tmPickTrack('exam',this)">
-            &#128221; Entrance &amp; Government Exams</button>
         </div>
 
         <!-- School curriculum -->
@@ -3544,116 +2921,8 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════ FINDER ══════════════════════════════════════ -->
-<div id="finder" class="panel">
-  <div class="page-hero"><span class="eyebrow">AI-Powered Recommendation</span><h1>Find My AI Tool</h1><p>Describe what you need in plain English and our AI recommends the best tools for you.</p></div>
-  <div class="section-inner">
-    <div class="page-illus-row flip" style="margin-bottom:2rem;">
-      <div class="page-illus-text">
-        <span class="eyebrow">Powered by AI</span>
-        <h2>Real AI matching, not just keywords</h2>
-        <p>Unlike a basic search bar, this finder uses Claude AI to understand what you actually mean. Filter by curriculum, age and subject to get recommendations right for your stage of learning.</p>
-      </div>
-      <svg class="illus" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" aria-label="AI search bar with result cards">
-        <rect width="400" height="200" fill="var(--surface)" rx="20"/>
-        <rect x="20" y="20" width="260" height="44" rx="22" fill="var(--gray-100)"/>
-        <rect x="20" y="20" width="260" height="44" rx="22" fill="none" stroke="var(--accent)" stroke-width="2"/>
-        <circle cx="50" cy="42" r="12" fill="none" stroke="var(--faint)" stroke-width="2"/>
-        <line x1="58" y1="50" x2="66" y2="58" stroke="var(--faint)" stroke-width="2" stroke-linecap="round"/>
-        <rect x="75" y="34" width="120" height="7" rx="3" fill="var(--gray-200)"/>
-        <rect x="288" y="27" width="80" height="30" rx="15" fill="var(--accent)"/>
-        <text x="328" y="46" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="11" fill="var(--on-fill)">Search</text>
-        <rect x="20" y="82" width="110" height="90" rx="10" fill="var(--gray-100)"/>
-        <rect x="20" y="82" width="110" height="90" rx="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
-        <rect x="20" y="82" width="66" height="16" rx="6" fill="var(--accent)"/>
-        <text x="53" y="93" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="8" fill="var(--on-fill)">Best Match</text>
-        <text x="40" y="115" text-anchor="middle" font-size="18">🤖</text>
-        <text x="85" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="var(--text)">Claude</text>
-        <rect x="28" y="140" width="44" height="12" rx="6" fill="var(--accent-light)"/>
-        <text x="50" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="var(--good)">Free</text>
-        <rect x="145" y="82" width="100" height="90" rx="10" fill="var(--gray-100)"/>
-        <rect x="145" y="82" width="100" height="90" rx="10" fill="none" stroke="var(--gray-200)" stroke-width="1.5"/>
-        <text x="165" y="115" text-anchor="middle" font-size="18">📚</text>
-        <text x="205" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="var(--text)">Khanmigo</text>
-        <rect x="153" y="140" width="44" height="12" rx="6" fill="var(--accent-light)"/>
-        <text x="175" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="var(--good)">Free</text>
-        <rect x="260" y="82" width="120" height="90" rx="10" fill="var(--gray-100)"/>
-        <rect x="260" y="82" width="120" height="90" rx="10" fill="none" stroke="var(--gray-200)" stroke-width="1.5"/>
-        <text x="280" y="115" text-anchor="middle" font-size="18">✨</text>
-        <text x="320" y="110" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="var(--text)">Gemini</text>
-        <rect x="268" y="140" width="44" height="12" rx="6" fill="var(--accent-light)"/>
-        <text x="290" y="150" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="700" font-size="8" fill="var(--good)">Free</text>
-      </svg>
-    </div>
-
-    <!-- FILTERS -->
-    <div class="finder-filters">
-      <div class="finder-filter-group">
-        <span class="finder-filter-label">🌍 Curriculum</span>
-        <select class="finder-filter-select" id="finderCurriculum">
-          <option value="any">Any curriculum</option>
-          <option value="cbse">CBSE</option>
-          <option value="icse">ICSE</option>
-          <option value="uk">UK National Curriculum</option>
-          <option value="us">US Common Core</option>
-          <option value="ib">IB</option>
-        </select>
-      </div>
-      <div class="finder-filter-group">
-        <span class="finder-filter-label">🎓 Grade</span>
-        <select class="finder-filter-select" id="finderAge">
-          <option value="any">Any grade</option>
-          <option value="1">Grade 1</option>
-          <option value="2">Grade 2</option>
-          <option value="3">Grade 3</option>
-          <option value="4">Grade 4</option>
-          <option value="5">Grade 5</option>
-          <option value="6">Grade 6</option>
-          <option value="7">Grade 7</option>
-          <option value="8">Grade 8</option>
-          <option value="9">Grade 9</option>
-          <option value="10">Grade 10</option>
-          <option value="11">Grade 11</option>
-          <option value="12">Grade 12</option>
-        </select>
-      </div>
-      <div class="finder-filter-group">
-        <span class="finder-filter-label">📚 Subject</span>
-        <select class="finder-filter-select" id="finderSubject">
-          <option value="any">Any subject</option>
-          <option value="maths">Math</option>
-          <option value="science">Science</option>
-          <option value="english">English</option>
-          <option value="history">History</option>
-          <option value="geography">Geography</option>
-          <option value="coding">Coding</option>
-          <option value="languages">Languages</option>
-        </select>
-      </div>
-    </div>
-
-    <div style="margin-bottom:.5rem;"><span class="finder-ai-badge">✨ Powered by Claude AI</span></div>
-    <div class="finder-input-row">
-      <input type="text" id="finderInput" class="finder-input" placeholder="e.g. 'help me write a CBSE essay' or 'free coding tool for beginners'" onkeydown="if(event.key==='Enter'){event.preventDefault();runFinderSearch();}"/>
-      <button class="btn btn-primary" onclick="runFinderSearch()">Search →</button>
-    </div>
-    <div class="finder-chips">
-      <span class="finder-chip-label">Try:</span>
-      <button class="finder-chip" onclick="quickFinderSearch('help me write a CBSE essay on climate change')">CBSE essay help</button>
-      <button class="finder-chip" onclick="quickFinderSearch('best free AI for coding for beginners')">Free coding help</button>
-      <button class="finder-chip" onclick="quickFinderSearch('AI tutor for UK GCSE maths revision')">GCSE maths tutor</button>
-      <button class="finder-chip" onclick="quickFinderSearch('IB geography study tool')">IB Geography</button>
-      <button class="finder-chip" onclick="quickFinderSearch('generate images for science project')">Science project images</button>
-    </div>
-    <div id="finderResults" class="finder-results">
-      <div class="finder-empty"><span class="fe-icon">🔎</span><p>Describe what you need above and our AI will find the right tools for you.</p></div>
-    </div>
-  </div>
-</div>
-
 <!-- ══════════════════════════════════════ RESOURCES ══════════════════════════════════════ -->
 <div id="resources" class="panel">
-  <div class="page-hero"><span class="eyebrow">We Have Got You</span><h1>Help and Resources</h1><p>Stuck on something, or want to explore further? Here is where to look next.</p></div>
   <div class="section-inner">
     <div class="page-illus-row" style="margin-bottom:2rem;">
       <div class="page-illus-text">
@@ -3664,7 +2933,7 @@
       </div>
       <img class="page-illus-svg" src="assets/images/resources/resources_2.png" alt="Four ways to keep learning — books, videos, courses and a glossary"/>
     </div>
-    <div class="definition-box"><p><strong>New to AI?</strong> Start with "What is AI?" and "History" in the menu above, then take the quiz to test what you have learned.</p></div>
+    <div class="definition-box"><p><strong>New to AI?</strong> Open the Lab from the menu, pick a subject and answer a few questions — Eulid explains every answer, so the explaining happens as you go.</p></div>
     <div class="grid-3" style="margin-top:2rem;">
       <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">📺</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Videos</h3><div class="expandable open"><div class="expandable-inner"><p>3Blue1Brown's neural network series and Crash Course AI , both free , are excellent video explainers. Search for them on YouTube and start with whichever topic interests you most.</p></div></div></div>
       <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)"><span class="tc-icon">📖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Reading</h3><div class="expandable open"><div class="expandable-inner"><p>"AI Superpowers" by Kai-Fu Lee and "Life 3.0" by Max Tegmark are two of the most accessible books on the topic for students and curious adults.</p></div></div></div>
@@ -3741,8 +3010,8 @@
     <div class="help-cats" id="helpCats">
 
       <section class="help-cat"><h2><span>&#128640;</span>Getting started</h2>
-        <div class="help-item"><button class="help-q">What is Seek-O-Sphere?</button><div class="help-a"><p>Seek-O-Sphere is a free site that teaches artificial intelligence to everyone, ages 8 to 80. Read the chapters (What is AI?, History, Types, Ethics), practise in the interactive Lab, test yourself with quizzes, and use "Find My AI Tool" to pick the right tool for a task.</p></div></div>
-        <div class="help-item"><button class="help-q">I'm brand new — where should I start?</button><div class="help-a"><p>Start with <a onclick="showPage('what')">What is AI?</a> for the basics, then try a few questions in the <a onclick="showPage('lab')">Lab</a>. Create a free account so the Lab can save your progress, streaks and per-subject scores to your Dashboard.</p></div></div>
+        <div class="help-item"><button class="help-q">What is Seek-O-Sphere?</button><div class="help-a"><p>Seek-O-Sphere is a free site that teaches artificial intelligence to everyone, ages 8 to 80. Practise in the Lab, keep your notes and videos filed by topic, and let Eulid explain anything that does not land the first time. Use it to pick the right tool for a task.</p></div></div>
+        <div class="help-item"><button class="help-q">I'm brand new — where should I start?</button><div class="help-a"><p>Open the <a onclick="showPage('lab')">Lab</a>, pick your subject and answer a few questions. Create a free account so the Lab can save your progress, streaks and per-subject scores to your Dashboard.</p></div></div>
         <div class="help-item"><button class="help-q">Do I need an account to use the site?</button><div class="help-a"><p>No — you can browse and learn without one. An account is only needed if you want the Lab to save your progress and show it on your Dashboard across devices.</p></div></div>
         <div class="help-item"><button class="help-q">Is it really free?</button><div class="help-a"><p>Yes. Seek-O-Sphere is free for students of all ages — no payment or subscription.</p></div></div>
       </section>
@@ -3781,7 +3050,7 @@
       <section class="help-cat"><h2><span>&#128737;</span>Safety &amp; responsible use</h2>
         <div class="help-item"><button class="help-q">Is my data safe?</button><div class="help-a"><p>We store only what's needed to run your account and show your progress. As a rule, never share passwords or personal details with any AI tool, here or elsewhere.</p></div></div>
         <div class="help-item"><button class="help-q">Is this suitable for children?</button><div class="help-a"><p>Yes — everything is written to be friendly and age-appropriate for ages 8 to 80. Parents and teachers can read the "For Teachers and Parents" section on the <a onclick="showPage('resources')">Resources</a> page.</p></div></div>
-        <div class="help-item"><button class="help-q">How do I use AI responsibly?</button><div class="help-a"><p>See the <a onclick="showPage('ethics')">Using AI Responsibly</a> chapter — it covers academic honesty, fact-checking AI, privacy, bias and knowing AI's limits.</p></div></div>
+        <div class="help-item"><button class="help-q">How do I use AI responsibly?</button><div class="help-a"><p>See the Using AI Responsibly chapter — it covers academic honesty, fact-checking AI, privacy, bias and knowing AI's limits.</p></div></div>
       </section>
 
       <section class="help-cat"><h2><span>&#128172;</span>Still need help?</h2>
@@ -3837,7 +3106,6 @@
 </div>
 
 <div id="contact" class="panel">
-  <div class="page-hero"><span class="eyebrow">We Would Love to Hear From You</span><h1>Get in Touch</h1><p>Questions, feedback, or ideas for new topics? Send us a message below.</p></div>
   <div class="section-inner">
     <div class="page-illus-row flip" style="margin-bottom:2rem;">
       <div class="page-illus-text">
@@ -4006,7 +3274,7 @@
   </div>
 </div>
 
-<script src="js/questions-engine.js"></script>
+<script src="js/questions-api.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════════
    TEST MODE
@@ -4226,6 +3494,29 @@ function tmSeedFromLab(track){
   } catch (e) {}
 }
 
+/* The shell's Test Mode item comes through here. The setup panel is anchored
+   to the invitation inside the Curriculum tab — it is moved next to whichever
+   invite opened it — so this drives that same control rather than growing a
+   second way of opening the same thing that could drift out of step with it. */
+function sosOpenTestMode(subject){
+  try {
+    showPage('lab');
+    if (subject) { try { if (labSetSubject(subject)) labOnSubjectChange(); } catch(e){} }
+    var invite = document.getElementById('labInviteCurr');
+    var btn = invite && invite.querySelector('.lti-go');
+    if (!btn) return;
+    if (!invite.classList.contains('open')) tmOpenSetup('curriculum', btn);
+    if (subject) {
+      var s = document.getElementById('tmSubject');
+      if (s && [].some.call(s.options, function(o){ return o.value === subject; })) {
+        s.value = subject;
+        try { tmSyncSummary(); } catch(e){}
+      }
+    }
+    var setup = document.getElementById('tmSetup');
+    if (setup && setup.scrollIntoView) setup.scrollIntoView({ behavior:'smooth', block:'center' });
+  } catch(e){}
+}
 function tmPickTrack(track, btn){
   TM.track = track;
   var all = document.querySelectorAll('.tm-track .tm-trk');
@@ -4304,10 +3595,7 @@ async function tmBuild(count){
     var recent = out.map(function(x){ return x.question; });
     var q;
     try {
-      q = (TM.track === 'exam')
-        ? await provideExamQuestion({ exam: TM.exam, subject: TM.subject,
-                                      difficulty: TM.difficulty, recent: recent })
-        : await provideLabQuestion({ subject: TM.subject, curriculum: TM.curriculum,
+      q = await provideLabQuestion({ subject: TM.subject, curriculum: TM.curriculum,
                                      age: TM.age, topic: topic, recent: recent });
     } catch (e) { continue; }
     if (!q || !q.question || seen[q.question]) continue;
@@ -5250,9 +4538,7 @@ document.addEventListener('DOMContentLoaded', function(){
     SOS.onSession(function(user){ tmApplyAccess(!!user); });
   }
   labPaintDock();
-  epPaintDock();
   try { labSetupSummary(); labPaintTileCounts(); labPaintSubjectTiles(); } catch(e){}
-  try { epSetupSummary(); } catch(e){}
 });
 </script>
 
@@ -6001,7 +5287,22 @@ Object.keys(LAB_ALL_SUBJECTS).forEach(function(k){ LAB_SUBJ_LABEL[k] = LAB_ALL_S
    core subjects plus whatever that board actually adds this early — Hindi
    for CBSE, General Knowledge for the rest, Computer Science once a school
    would realistically be teaching it. */
+/* The site teaches six subjects. The rest were removed rather than left on a
+   menu with nothing behind them. Filtered in the one place that decides what a
+   grade is offered, so the subject tiles, the test setup and the syllabus all
+   agree without three separate lists to keep in step. */
+const SUBJECTS_LIVE = ['maths', 'english', 'science', 'physics', 'chemistry', 'biology'];
+
 function labGroupsFor(curriculum, gradeStr){
+  return labGroupsForAll(curriculum, gradeStr)
+    .map(function(g){
+      return { id: g.id, label: g.label,
+               subjects: g.subjects.filter(function(s){ return SUBJECTS_LIVE.indexOf(s) !== -1; }) };
+    })
+    .filter(function(g){ return g.subjects.length; });
+}
+
+function labGroupsForAll(curriculum, gradeStr){
   const g = parseInt(gradeStr, 10) || 1;
   const CORE = ['maths','science','english','history','geography'];
 
@@ -6311,11 +5612,6 @@ function labSwitchTab(tab, btn) {
   // The tools render to fixed ids (one calculator, one pad, ...), so the
   // Curriculum and Exam Prep panels can never both hold a live copy of the
   // same tool at once — leaving one open, tab away, is treated as closing it.
-  if (tab === 'curriculum' && typeof EP_TOOLS_OPEN !== 'undefined' && EP_TOOLS_OPEN.length) {
-    EP_TOOLS_OPEN = []; epPaintPanels();
-  } else if (tab === 'examprep' && typeof LAB_TOOLS_OPEN !== 'undefined' && LAB_TOOLS_OPEN.length) {
-    LAB_TOOLS_OPEN = []; labPaintPanels();
-  }
 }
 
 /* Topics available for one subject at the current curriculum + age. */
@@ -7279,15 +6575,25 @@ function labConsumeHandover(){
   } catch(e){}
 }
 
-/* Embed mode is requested by study.html via ?embed=1, which also names the
-   panel to show in the hash. */
+/* This page runs inside study.html in one of two dresses, and the shell can
+   change which one without reloading the frame — that is what lets a student
+   step from Practice to Home and back without losing the run they are in the
+   middle of. 'embed' strips the page back to the panel for the Lab; 'shell'
+   hides only the nav and the second Eulid so Home, Help & Resources and
+   Contact Us look exactly as they do on their own. */
+function sosSetChrome(mode){
+  var d = document.documentElement;
+  d.classList.toggle('sos-embed', mode === 'embed');
+  d.classList.toggle('sos-shell', mode === 'shell');
+}
 (function(){
   try {
-    if (/[?&]embed=1/.test(location.search)) {
-      document.documentElement.classList.add('sos-embed');
-      var want = (location.hash || '#lab').replace('#','') || 'lab';
-      setTimeout(function(){ try { showPage(want); } catch(e){} }, 0);
-    }
+    var embed = /[?&]embed=1/.test(location.search);
+    var shell = /[?&]shell=1/.test(location.search);
+    if (!embed && !shell) return;
+    sosSetChrome(embed ? 'embed' : 'shell');
+    var want = (location.hash || (embed ? '#lab' : '#home')).replace('#','') || (embed ? 'lab' : 'home');
+    setTimeout(function(){ try { showPage(want); } catch(e){} }, 0);
   } catch(e){}
 })();
 
@@ -7295,20 +6601,155 @@ function labConsumeHandover(){
    and again once Firebase reports the session, because the profile keys may
    only land in localStorage at that point. */
 sosApplyProfile();
-try {
-  if (window.SOS && typeof SOS.onSession === 'function') {
-    var _sosPrev = SOS.onSession;
-    SOS.onSession = function(){
-      try { _sosPrev.apply(this, arguments); } catch(e){}
-      try { sosApplyProfile(); labSyncSubjectPicker(false); labUpdateScores(); } catch(e){}
-    };
-  }
-} catch(e){}
+/* SOS.onSession(cb) REGISTERS a callback — it does not fire one. Wrapping it
+   (as this once did) re-applied the profile whenever something registered and
+   never when the session actually resolved, which is why a signed-in student
+   could still be shown Grade 1. Register properly instead.
+
+   But window.SOS does not exist yet at this point in the file: js/session.js
+   is a <script src> much further down (search for it), and a script tag
+   loads and runs in place, in document order — so anything up here that
+   registers the instant SOS exists is checking before it ever does, and the
+   registration silently never happens, on every single load. DOMContentLoaded
+   is the fix: the parser cannot fire it without every earlier synchronous
+   script, session.js included, having already run — the same reasoning
+   tmWatchResume above already relies on. */
+function sosOnSessionSafe(cb){
+  if (window.SOS && typeof SOS.onSession === 'function') { SOS.onSession(cb); return; }
+  document.addEventListener('DOMContentLoaded', function(){
+    try { if (window.SOS && typeof SOS.onSession === 'function') SOS.onSession(cb); } catch(e){}
+  });
+}
+sosOnSessionSafe(function(){
+  try { sosApplyProfile(); labSyncSubjectPicker(false); labUpdateScores(); } catch(e){}
+});
 window.addEventListener('storage', function(ev){
   if (ev && (ev.key === 'sos_grade' || ev.key === 'sos_curriculum')) {
     try { sosApplyProfile(); labSyncSubjectPicker(false); } catch(e){}
   }
 });
+
+/* ══ SYLLABUS ══════════════════════════════════════════════════════
+   A school can publish the topic list it actually teaches. This page has
+   Firebase, study.html does not — and study.html is always opened from
+   here — so the fetch happens here and the result is cached for it.
+   Read-only: nothing is written from a student's session. */
+/* ══ SCHOOL CREST ════════════════════════════════════════
+   A school can carry its own crest, and its own people see it beside the
+   Seek-O-Sphere mark — never instead of it. Two rules decide who sees what,
+   and both are worth stating plainly:
+
+   The id comes from the signed-in profile and nowhere else. Not a query
+   string, not a filter, not anything a page can be told — so there is no
+   arrangement of the URL that shows one school another school's crest.
+
+   No school means no crest, not a blank frame. A learner who joined without
+   a code sees a page that never had one in it.
+
+   Cached here because study.html carries auth but not Firestore: this page
+   runs inside it and is the only half of the pair that can read the doc. */
+function sosCacheCrest(){
+  try {
+    var school = localStorage.getItem('sos_school_id');
+    if (!school) { localStorage.removeItem('sos_school_crest'); return; }
+    if (!(window.SOS && SOS.db)) return;
+    SOS.db.collection('schools').doc(school).get()
+      .then(function(snap){
+        var d = (snap && snap.exists && snap.data()) || {};
+        if (d.crest) localStorage.setItem('sos_school_crest', d.crest);
+        else localStorage.removeItem('sos_school_crest');
+        if (d.name) localStorage.setItem('sos_school', d.name);
+      })
+      .catch(function(e){
+        /* Silent to the student, but a permission error here means the rule
+           letting a member read their own school has not been published —
+           which looks exactly like a school that never set a crest. */
+        try { console.warn('[crest] could not read school ' + school + ':', e && e.code, e && e.message); } catch(e2){}
+      });
+  } catch(e){}
+}
+sosOnSessionSafe(sosCacheCrest);
+
+function sosCacheSyllabus(){
+  try {
+    var school = localStorage.getItem('sos_school_id');
+    /* Every silent early exit gets a console line too — "nothing happened"
+       and "it failed" look identical to a student, and both look like "the
+       topic never showed up" from the outside. This is the only way to
+       tell them apart without a debugger attached. */
+    if (!school) { try { console.warn('[syllabus] skipped: this account has no school on it (sos_school_id is empty) — check the account is actually joined to one'); } catch(e2){} return; }
+    if (!(window.SOS && SOS.db)) { try { console.warn('[syllabus] skipped: Firestore is not available on this page yet'); } catch(e2){} return; }
+    SOS.db.collection('syllabus').doc(school).collection('subjects').get()
+      .then(function(snap){
+        var out = {};
+        snap.forEach(function(d){
+          var t = d.data() && d.data().topics;
+          if (Array.isArray(t) && t.length) out[d.id] = t;
+        });
+        localStorage.setItem('sos_syllabus_school', JSON.stringify(out));
+        try { console.info('[syllabus] loaded for school ' + school + ':', Object.keys(out).length, 'grade+subject lists set —', out); } catch(e2){}
+      }).catch(function(e){
+        /* Silent to the student otherwise — a session must never surface a
+           raw Firestore error. But "the admin set it and nobody sees it" is
+           exactly the failure this hides, and the only distinguishing fact
+           (permission-denied means the syllabus rules aren't published)
+           lives in e.code. Console-only, never shown in the UI. */
+        try { console.warn('[syllabus] could not load school syllabus for ' + school + ':', e && e.code, e && e.message); } catch(e2){}
+      });
+  } catch(e){}
+}
+sosOnSessionSafe(sosCacheSyllabus);
+/* == OWN SYLLABUS (cross-device) =====================================
+   A student's own added topics -- and their choice to hide the standard
+   fallback list -- are kept locally by study.html (sos_syllabus_own), one
+   record per grade+subject with its own updatedAt. This mirrors that key
+   to Firestore once per session: whichever side, this device or the
+   student's Firestore record, was touched more recently for a given
+   grade+subject wins and is copied onto the other. That is what makes a
+   topic added on one device show up -- and a topic removed on one device
+   stay removed -- on the next. */
+function sosSyncOwnSyllabus(){
+  try {
+    if (!(window.SOS && SOS.db && SOS.user)) return;
+    var uid = SOS.user.uid;
+    var local = {};
+    try { local = JSON.parse(localStorage.getItem('sos_syllabus_own') || '{}'); } catch(e){}
+    var col = SOS.db.collection('ownSyllabus').doc(uid).collection('subjects');
+    col.get().then(function(snap){
+      var merged = {}, batch = SOS.db.batch(), dirty = false, seen = {};
+      snap.forEach(function(d){
+        var remote = d.data() || {};
+        var loc = local[d.id];
+        var locTopics = Array.isArray(loc) ? loc : ((loc && loc.topics) || []);
+        var locHide   = Array.isArray(loc) ? false : !!(loc && loc.hideBase);
+        var locAt     = Array.isArray(loc) ? 0 : ((loc && loc.updatedAt) || 0);
+        var remAt     = remote.updatedAt || 0;
+        seen[d.id] = true;
+        if (locAt > remAt) {
+          merged[d.id] = { topics: locTopics, hideBase: locHide, updatedAt: locAt };
+          batch.set(d.ref, merged[d.id]);
+          dirty = true;
+        } else {
+          merged[d.id] = { topics: remote.topics || [], hideBase: !!remote.hideBase, updatedAt: remAt };
+        }
+      });
+      Object.keys(local).forEach(function(k){
+        if (seen[k]) return;
+        var loc = local[k];
+        var topics = Array.isArray(loc) ? loc : ((loc && loc.topics) || []);
+        var hideBase = Array.isArray(loc) ? false : !!(loc && loc.hideBase);
+        var at = Array.isArray(loc) ? Date.now() : ((loc && loc.updatedAt) || Date.now());
+        if (!topics.length && !hideBase) return;
+        merged[k] = { topics: topics, hideBase: hideBase, updatedAt: at };
+        batch.set(col.doc(k), merged[k]);
+        dirty = true;
+      });
+      localStorage.setItem('sos_syllabus_own', JSON.stringify(merged));
+      if (dirty) batch.commit().catch(function(){});
+    }).catch(function(){});
+  } catch(e){}
+}
+sosOnSessionSafe(sosSyncOwnSyllabus);
 
 // Initialise the group + subject tiles (and, through them, the topic dropdown) on page load
 labSyncSubjectPicker(true);
@@ -7319,374 +6760,34 @@ try { tmRefreshSubjects(); } catch(e){}
 
 
 /* ══════════════════════════════════════
-   EXAM PREP CENTRE
-   AI-generated questions for CUET, Railways, Bank PO, SSC, UPSC
-   Infinite questions, timed mode, instant explanations
-══════════════════════════════════════ */
-
-const EP = {
-  exam: 'cuet',
-  subject: 'gk',
-  difficulty: 'medium',
-  timerSeconds: 60,
-  correct: 0,
-  wrong: 0,
-  streak: 0,
-  qCount: 0,
-  current: null,
-  isLoading: false,
-  timerInterval: null,
-  timeLeft: 0,
-  recentQuestions: [],
-};
-
-const EP_EXAM_NAMES = {
-  cuet:     'CUET',
-  railways: 'Railways RRB',
-  bankpo:   'Bank PO',
-  ssc:      'SSC',
-  upsc:     'UPSC Prelims',
-};
-
-const EP_SUBJECT_NAMES = {
-  gk:        'General Knowledge',
-  aptitude:  'Quantitative Aptitude',
-  reasoning: 'Logical Reasoning',
-  english:   'English Language',
-};
-
-const EP_EXAM_CONTEXT = {
-  cuet:     'CUET (Common University Entrance Test) for undergraduate admissions in India. Questions follow NTA CUET pattern.',
-  railways: 'Indian Railways RRB NTPC / Group D recruitment exam. Questions follow RRB pattern including GK, Math and Reasoning.',
-  bankpo:   'Bank PO (IBPS PO / SBI PO) recruitment exam. Questions follow banking sector patterns including data interpretation.',
-  ssc:      'SSC CGL/CHSL/MTS exam by Staff Selection Commission India. Questions follow SSC pattern.',
-  upsc:     'UPSC Civil Services Preliminary Examination GS Paper I. Questions follow UPSC standard — analytical and conceptual.',
-};
-
-const EP_SUBJECT_CONTEXT = {
-  gk:        'General Knowledge and Current Affairs — history, geography, polity, science, economy, sports, awards, recent events.',
-  aptitude:  'Quantitative Aptitude — number systems, percentages, ratio, time-speed-distance, profit-loss, simple/compound interest, data interpretation.',
-  reasoning: 'Logical Reasoning and Analytical Ability — series, analogies, coding-decoding, blood relations, direction sense, puzzles, syllogisms.',
-  english:   'English Language — reading comprehension, vocabulary, grammar, fill in the blanks, error spotting, sentence rearrangement, idioms.',
-};
-
-/* These two cleared '.ep-card' and '.ep-subj' — classes no element on the
-   page has ever carried, so the previous pick was never un-highlighted and
-   two exams could look chosen at once. They now clear the real thing. */
-function epSelectExam(exam, el) {
-  EP.exam = exam;
-  document.querySelectorAll('#epExamTiles .atl-tile').forEach(c => {
-    c.classList.remove('active'); c.setAttribute('aria-pressed','false');
-  });
-  if (el) { el.classList.add('active'); el.setAttribute('aria-pressed','true'); }
-  document.getElementById('epExamBadge').textContent = EP_EXAM_NAMES[exam];
-}
-
-function epSetSubject(subject, btn) {
-  EP.subject = subject;
-  document.querySelectorAll('#epSubjectPicker .lab-pick').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  document.getElementById('epSubjectBadge').textContent = EP_SUBJECT_NAMES[subject];
-  epPaintDock();
-}
-
-function epToggleSetup(){
-  var panel = document.getElementById('epSetupPanel');
-  var btn   = document.getElementById('epSetToggle');
-  if (!panel || !btn) return;
-  var open = panel.hasAttribute('hidden');
-  if (open) panel.removeAttribute('hidden'); else panel.setAttribute('hidden','');
-  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  btn.textContent = open ? 'done' : 'change';
-}
-function epSetupSummary(){
-  var d = document.getElementById('epDifficulty');
-  var t = document.getElementById('epTimerSetting');
-  var s = document.getElementById('epSetSummary');
-  if (!d || !t || !s) return;
-  var dName = d.selectedOptions[0] ? d.selectedOptions[0].text : '';
-  var tName = t.selectedOptions[0] ? t.selectedOptions[0].text : '';
-  s.textContent = dName + ' \u00b7 ' + (t.value === '0' ? 'no timer' : tName + ' a question');
-  var badge = document.getElementById('epDiffBadge');
-  if (badge) badge.textContent = dName;
-}
-
-/* Same practice-tools pattern as the Curriculum Lab, wired to EP.subject
-   instead of LAB.subject — every exam subject is multiple choice, so
-   there's no "except maths" carve-out to make here. */
-var EP_TOOLS_OPEN = [];
-var EP_TOOLS_WORK = null;
-function epToolsFor(){ return window.SOSTestTools ? SOSTestTools.forSubject(EP.subject) : []; }
-function epWork(){
-  if (!EP_TOOLS_WORK) EP_TOOLS_WORK = SOSTestTools.newStore();
-  return EP_TOOLS_WORK;
-}
-function epPaintDock(){
-  var dock = document.getElementById('epDock');
-  if (!dock) return;
-  var list = epToolsFor();
-  if (!list.length) { dock.innerHTML = ''; dock.style.display = 'none'; return; }
-  dock.style.display = '';
-  dock.innerHTML = '<span class="tm-dock-lab">Tools</span>' + list.map(function(t){
-    var m = SOSTestTools.meta[t];
-    return '<button type="button" data-ep-tool="' + t + '" title="' + m.label + '" ' +
-           'aria-pressed="' + (EP_TOOLS_OPEN.indexOf(t) !== -1) + '" ' +
-           'class="' + (EP_TOOLS_OPEN.indexOf(t) !== -1 ? 'on' : '') + '">' +
-           m.icon + '<small>' + m.short + '</small></button>';
-  }).join('');
-}
-function epPaintPanels(){
-  var host = document.getElementById('epPanels');
-  if (!host || !window.SOSTestTools) return;
-  host.innerHTML = EP_TOOLS_OPEN.map(function(t){
-    return '<div class="tt" data-tool="' + t + '">' + SOSTestTools.html(t) + '</div>';
-  }).join('');
-  var store = epWork();
-  EP_TOOLS_OPEN.forEach(function(t){ SOSTestTools.wire(t, store); });
-  epPaintDock();
-}
-function epToggleTool(t){
-  var at = EP_TOOLS_OPEN.indexOf(t);
-  if (at === -1) EP_TOOLS_OPEN.push(t); else EP_TOOLS_OPEN.splice(at, 1);
-  epPaintPanels();
-}
-
-function epStopTimer() {
-  if (EP.timerInterval) { clearInterval(EP.timerInterval); EP.timerInterval = null; }
-}
-
-function epStartTimer(seconds) {
-  epStopTimer();
-  if (!seconds) return;
-  EP.timeLeft = seconds;
-  const wrap = document.getElementById('epTimerWrap');
-  const display = document.getElementById('epTimerDisplay');
-  const fill = document.getElementById('epTimerFill');
-  wrap.style.display = 'flex';
-
-  function tick() {
-    const pct = (EP.timeLeft / seconds) * 100;
-    display.textContent = EP.timeLeft + 's';
-    fill.style.width = pct + '%';
-    // colour states
-    const cls = EP.timeLeft <= 10 ? 'danger' : EP.timeLeft <= 20 ? 'warning' : '';
-    display.className = 'ep-timer' + (cls ? ' ' + cls : '');
-    fill.className = 'ep-timer-fill' + (cls ? ' ' + cls : '');
-    if (EP.timeLeft <= 0) {
-      epStopTimer();
-      epTimeUp();
-      return;
-    }
-    EP.timeLeft--;
-  }
-  tick();
-  EP.timerInterval = setInterval(tick, 1000);
-}
-
-function epTimeUp() {
-  document.querySelectorAll('.ep-opt').forEach(b => b.disabled = true);
-  document.getElementById('epFeedback').style.color = 'var(--accent-dark)';
-  document.getElementById('epFeedback').textContent = "⏰ Time's up! The answer was: " + (EP.current ? EP.current.answer : '');
-  // highlight correct
-  if (EP.current) {
-    document.querySelectorAll('.ep-opt').forEach(b => {
-      if (b.getAttribute('data-val') === EP.current.answer) b.classList.add('correct');
-    });
-  }
-  EP.wrong++; EP.streak = 0;
-  document.getElementById('epExplainBtn').style.display = 'inline-flex';
-  epUpdateScores();
-  setTimeout(epGenerate, 2800);
-}
-
-async function epGenerate() {
-  if (EP.isLoading) return;
-  epStopTimer();
-
-  EP.difficulty = document.getElementById('epDifficulty').value;
-  EP.timerSeconds = parseInt(document.getElementById('epTimerSetting').value) || 0;
-  EP.qCount++;
-
-  EP.isLoading = true;
-  const epLoadEl = document.getElementById('epLoading'); if(epLoadEl) epLoadEl.style.display = 'flex';
-  const epEmptyEl = document.getElementById('epEmpty'); if (epEmptyEl) epEmptyEl.style.display = 'none';
-  const epQN = document.getElementById('epQNum');
-  if (epQN) epQN.textContent = EP.qCount < 10 ? '0' + EP.qCount : String(EP.qCount);
-  document.getElementById('epQuestionCard').style.display = 'none';
-  document.getElementById('epExplainBtn').style.display = 'none';
-
-  const genBtn = document.querySelector('button[onclick="epGenerate()"]');
-  if (genBtn) { genBtn.disabled = true; genBtn.textContent = '⏳ Generating...'; }
-
-  // A fresh question gets a fresh scratch pad; the tools that were open stay open.
-  EP_TOOLS_WORK = null;
-  epPaintPanels();
-
-  // Update badges
-  document.getElementById('epExamBadge').textContent = EP_EXAM_NAMES[EP.exam];
-  document.getElementById('epSubjectBadge').textContent = EP_SUBJECT_NAMES[EP.subject];
-  document.getElementById('epDiffBadge').textContent = EP.difficulty.charAt(0).toUpperCase() + EP.difficulty.slice(1);
-  document.getElementById('epQCount').textContent = 'Question ' + EP.qCount;
-  document.getElementById('epTimerWrap').style.display = 'none';
-
-  const recentCtx = EP.recentQuestions.length
-    ? '\nDo NOT repeat these recent questions: ' + EP.recentQuestions.slice(-5).join(' | ')
-    : '';
-
-  const prompt = `You are an expert question setter for Indian competitive exams.
-Generate ONE ${EP.difficulty} difficulty multiple choice question for the ${EP_EXAM_CONTEXT[EP.exam]}
-Subject area: ${EP_SUBJECT_CONTEXT[EP.subject]}
-${recentCtx}
-
-Requirements:
-- Realistic exam-style question matching actual ${EP_EXAM_NAMES[EP.exam]} pattern
-- Exactly 4 options (A, B, C, D)
-- Only one correct answer
-- Include a clear explanation of why the answer is correct
-- ${EP.difficulty === 'hard' ? 'Make it genuinely challenging — conceptual or analytical, not just factual.' : EP.difficulty === 'easy' ? 'Keep it straightforward and factual.' : 'Moderate difficulty — requires some thought.'}
-
-Respond ONLY with this exact JSON (no markdown, no extra text):
-{
-  "question": "The question text",
-  "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
-  "answer": "Option A text",
-  "explanation": "Clear explanation of why the answer is correct, with relevant context."
-}`;
-
-  try {
-    const q = await provideExamQuestion({
-      exam: EP.exam,
-      subject: EP.subject,
-      difficulty: EP.difficulty,
-      recent: EP.recentQuestions
-    });
-
-    EP.current = q;
-    EP.recentQuestions.push(q.question);
-    if (EP.recentQuestions.length > 10) EP.recentQuestions.shift();
-
-    // Render question
-    document.getElementById('epQuestionText').textContent = q.question;
-    document.getElementById('epFeedback').textContent = '';
-    const expl = document.getElementById('epExplanation');
-    expl.textContent = ''; expl.classList.remove('show');
-
-    const letters = ['A','B','C','D'];
-    const opts = document.getElementById('epOptions');
-    opts.innerHTML = '';
-    q.options.forEach((o, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'ep-opt';
-      btn.setAttribute('data-val', o);
-      btn.innerHTML = `<span class="ep-opt-letter">${letters[i]}</span>${o}`;
-      btn.onclick = () => epCheckAnswer(o, btn);
-      opts.appendChild(btn);
-    });
-
-    const epLoadEl2 = document.getElementById('epLoading'); if(epLoadEl2) epLoadEl2.style.display = 'none';
-    document.getElementById('epQuestionCard').style.display = 'block';
-
-    // Start timer
-    epStartTimer(EP.timerSeconds);
-
-  } catch(err) {
-    const epLoadEl2 = document.getElementById('epLoading'); if(epLoadEl2) epLoadEl2.style.display = 'none';
-    document.getElementById('epQuestionCard').style.display = 'block';
-    document.getElementById('epQuestionText').textContent = 'Could not load question. Please check your connection and try again.';
-    document.getElementById('epOptions').innerHTML = '';
-    console.error('Exam prep API error:', err);
-  } finally {
-    EP.isLoading = false;
-    if (genBtn) { genBtn.disabled = false; genBtn.textContent = '🎲 New Question'; }
-  }
-}
-
-function epCheckAnswer(choice, btn) {
-  if (!EP.current) return;
-  if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
-  epStopTimer();
-
-  const correct = EP.current.answer;
-  const isRight = choice.trim() === correct.trim();
-
-  document.querySelectorAll('.ep-opt').forEach(b => {
-    b.disabled = true;
-    if (b.getAttribute('data-val') === correct) b.classList.add('correct');
-  });
-
-  if (isRight) {
-    btn.classList.add('correct');
-    EP.correct++; EP.streak++;
-    recordProgress('exam', EP.subject, (EP_SUBJECT_NAMES[EP.subject]||EP.subject), true, EP.streak);
-    document.getElementById('epFeedback').style.color = 'var(--green)';
-    document.getElementById('epFeedback').textContent = EP.streak >= 5
-      ? '🔥 Correct! ' + EP.streak + ' in a row!'
-      : '✅ Correct!';
-    epUpdateScores();
-    if (EP.correct % 10 === 0) labMilestone(EP.correct);
-    setTimeout(epGenerate, 1600);
-  } else {
-    btn.classList.add('wrong');
-    EP.wrong++; EP.streak = 0;
-    recordProgress('exam', EP.subject, (EP_SUBJECT_NAMES[EP.subject]||EP.subject), false, 0);
-    document.getElementById('epFeedback').style.color = 'var(--accent-dark)';
-    document.getElementById('epFeedback').textContent = '❌ Wrong — the correct answer is highlighted above.';
-    epUpdateScores();
-  }
-  document.getElementById('epExplainBtn').style.display = 'inline-flex';
-}
-
-function epShowExplanation() {
-  if (!EP.current) return;
-  const expl = document.getElementById('epExplanation');
-  expl.textContent = '📖 ' + (EP.current.explanation || 'No explanation available.');
-  expl.classList.toggle('show');
-  // Use same lab-explanation styling (already has that class in HTML)
-}
-
-function epUpdateScores() {
-  document.getElementById('epCorrect').textContent = EP.correct;
-  document.getElementById('epWrong').textContent = EP.wrong;
-  const total = EP.correct + EP.wrong;
-  const acc = total ? Math.round((EP.correct / total) * 100) + '%' : '—';
-  document.getElementById('epAccuracy').textContent = acc;
-  document.getElementById('epStreak').textContent = EP.streak + ' 🔥';
-  const p = Math.min((total / 10) * 100, 100);
-  document.getElementById('epProgressFill').style.width = p + '%';
-  document.getElementById('epProgressText').textContent = total + ' answered this session';
-}
-
-function epCelebrate() {
-  const CELEB_E2 = ['🎉','⭐','🏆','🌟','💫','🎊'];
-  const CELEB_T2 = ['Correct!','Brilliant!','Spot On!','Well Done!','Superstar!'];
-  document.getElementById('celebEmoji').textContent = CELEB_E2[Math.floor(Math.random()*CELEB_E2.length)];
-  document.getElementById('celebText').textContent = CELEB_T2[Math.floor(Math.random()*CELEB_T2.length)];
-  const c = document.getElementById('labCelebration');
-  c.classList.add('show');
-  setTimeout(() => c.classList.remove('show'), 1800);
-}
-
-function epReset() {
-  epStopTimer();
-  EP.correct = 0; EP.wrong = 0; EP.streak = 0; EP.qCount = 0;
-  EP.recentQuestions = []; EP.current = null;
-  epUpdateScores();
-  const epEmptyBack = document.getElementById('epEmpty');
-  if (epEmptyBack) epEmptyBack.style.display = '';
-  const epQNBack = document.getElementById('epQNum');
-  if (epQNBack) epQNBack.textContent = '—';
-  document.getElementById('epQuestionCard').style.display = 'none';
-  document.getElementById('epTimerWrap').style.display = 'none';
-  document.getElementById('epExplainBtn').style.display = 'none';
-  document.getElementById('epFeedback').textContent = '';
-  const tb = document.getElementById('epTutorBubble');
-  if(tb) tb.innerHTML = 'Hi! I am Eulid. Pick your exam and subject above, then hit <strong>New Question</strong> to begin!';
-}
-
-
-/* ══════════════════════════════════════
+   CONTACT FORM/* ══════════════════════════════════════
    CONTACT FORM
 ══════════════════════════════════════ */
+/* The expandable cards on Resources call this from their markup, and it has
+   never existed — every heading threw a ReferenceError on click, which is why
+   nothing ever opened or closed. The panels ship marked open, so the page read
+   as merely static rather than broken. The heading carries the same class so
+   its caret turns with the panel. */
+function toggleHeading(el, ev){
+  try { if (ev && ev.stopPropagation) ev.stopPropagation(); } catch(e){}
+  var panel = el.nextElementSibling;
+  while (panel && !panel.classList.contains('expandable')) panel = panel.nextElementSibling;
+  if (!panel) return;
+  el.classList.toggle('open', panel.classList.toggle('open'));
+}
+/* The markup ships the panels open but the headings closed, so the carets all
+   pointed the wrong way. Line them up once, on load. */
+(function(){
+  function sync(){
+    document.querySelectorAll('.clickable-heading').forEach(function(el){
+      var panel = el.nextElementSibling;
+      while (panel && !panel.classList.contains('expandable')) panel = panel.nextElementSibling;
+      if (panel) el.classList.toggle('open', panel.classList.contains('open'));
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
 function submitContact(e){e.preventDefault();document.getElementById('contact-form-wrap').style.display='none';document.getElementById('form-success').style.display='block';}
 function resetContactForm(){document.getElementById('contactForm').reset();document.getElementById('contact-form-wrap').style.display='';document.getElementById('form-success').style.display='none';}
 /* ══ INITIALISE ON LOAD ══ */
@@ -7900,8 +7001,18 @@ document.addEventListener('DOMContentLoaded', function() {
   var K_EXAM  = 'sos_demo_exam';          // ...and its own one-time exam choice
   var K_HIST  = 'sos_demo_hist_years';
 
-  var demoAuthed = false;
-  try { demoAuthed = !!localStorage.getItem('sos_name'); } catch(e){}
+  /* Whether this browser is signed in. sos_name only lands if the profile
+     actually carries a name, so an account without one used to read as a
+     guest and keep the demo banner up forever. Any of these is proof of a
+     real session, and SOS.user is the live answer once auth resolves. */
+  function demoSignedIn(){
+    try {
+      if (window.SOS && SOS.user) return true;
+      return !!(localStorage.getItem('sos_name') || localStorage.getItem('sos_uid') ||
+                localStorage.getItem('sos_curriculum'));
+    } catch(e){ return false; }
+  }
+  var demoAuthed = demoSignedIn();
 
   /* The demo question bank: five fixed questions per subject, in a fixed
      order, so every guest who picks a subject sees the same five however
@@ -8260,33 +7371,6 @@ document.addEventListener('DOMContentLoaded', function() {
       wrappedProvide.__demoWrapped = true;
       window.provideLabQuestion = wrappedProvide;
     }
-    if (typeof window.provideExamQuestion === 'function' && !window.provideExamQuestion.__demoWrapped){
-      var origExam = window.provideExamQuestion;
-      var wrappedExam = function(params){
-        if (demoAuthed) return origExam(params);
-        var i = exUsed();
-        if (i >= EXAM_MAX){ showGate(); return Promise.reject(new Error('demo-limit')); }
-        var ex = lockedExam();
-        if (!ex){ ex = chooseExam(params); lsSet(K_EXAM, ex); applyExamLock(); }
-        var bank = GUEST_EXAM[ex] || GUEST_EXAM.cuet;
-        exBump();
-        paintBanner('lab');
-        return Promise.resolve(JSON.parse(JSON.stringify(bank[i % bank.length])));
-      };
-      wrappedExam.__demoWrapped = true;
-      window.provideExamQuestion = wrappedExam;
-    }
-    /* epGenerate re-fires itself on a timer after each answer, so the guard
-       has to sit on the generator too or the demo would auto-refill. */
-    if (typeof window.epGenerate === 'function' && !window.epGenerate.__demoWrapped){
-      var origEp = window.epGenerate;
-      var wrappedEp = function(){
-        if (!demoAuthed && exLeft() <= 0){ showGate(); return; }
-        return origEp.apply(this, arguments);
-      };
-      wrappedEp.__demoWrapped = true;
-      window.epGenerate = wrappedEp;
-    }
     /* Switching tabs changes which allowance the banner should be counting. */
     if (typeof window.labSwitchTab === 'function' && !window.labSwitchTab.__demoWrapped){
       var origTab = window.labSwitchTab;
@@ -8321,6 +7405,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   window.demoGateOnShow = function(id){
+    if (!demoAuthed && demoSignedIn()) grant();          // auth may have landed since
     if (!GATED[id] || demoAuthed){ hideBanner(); hideGate(); return; }
     // The Lab panel holds both tabs, so it is only fully spent when neither has anything left.
     if (id === 'lab' && labLeft() <= 0 && exLeft() <= 0){ hideBanner(); showGate(); return; }
@@ -8357,8 +7442,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  /* session.js fires its callback list once, at the moment auth resolves.
+     Anything registering after that never hears, so a signed-in student could
+     be left staring at the demo banner. Watch briefly as a backstop. */
+  function watchAuth(){
+    if (demoAuthed) return;
+    var tries = 0;
+    var t = setInterval(function(){
+      if (demoSignedIn()) { grant(); clearInterval(t); }
+      else if (++tries > 24) clearInterval(t);          // ~12s then give up
+    }, 500);
+  }
+
   function boot(){
-    inject(); wrapLab();
+    inject(); wrapLab(); watchAuth();
     if (!demoAuthed && lockedSubject()) applySubjectLock();
     if (!demoAuthed && lockedExam()) applyExamLock();
     if (window.SOS && typeof SOS.onSession === 'function'){

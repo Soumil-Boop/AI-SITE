@@ -140,7 +140,12 @@ service cloud.firestore {
     // their own school so the panel can show its name; nobody else can
     // read the list at all.
     match /schools/{schoolId} {
-      allow get:    if isOwner() || (isSchoolAdmin() && mySchoolId() == schoolId);
+      // A student has to be able to read the school they belong to, or the
+      // crest and name their own pages show cannot be fetched at all. Scoped
+      // to their own school by the same id the profile carries, so this opens
+      // nothing sideways: there is no request that returns another school.
+      allow get:    if isOwner()
+                    || (isSignedIn() && mySchoolId() == schoolId);
       allow list:   if isOwner();
       allow write:  if isOwner();
     }
@@ -252,6 +257,96 @@ service cloud.firestore {
             && get(/databases/$(database)/documents/users/$(uid)).data.get('bucket', '')
                  == myBucket())
       );
+    }
+
+    // ── Syllabus (per school → per grade+subject) ──────────────
+    // The topic list a school actually teaches. Every signed-in student may
+    // read it — a student needs their own school's list, and reading another
+    // school's topic names exposes no student data. Writing is restricted to
+    // the admin of that same school, so an admin still cannot reach beyond
+    // their own school; the owner may set any of them.
+    match /syllabus/{schoolId}/{document=**} {
+      allow read:  if isSignedIn();
+      allow write: if isOwner() || (isSchoolAdmin() && mySchoolId() == schoolId);
+    }
+
+    // ── A student's own syllabus additions (per user → per grade+subject) ──
+    // Topics a student adds beyond what their school teaches, plus their
+    // choice to hide the standard fallback list when no school syllabus is
+    // set. Mirrored here so it follows the student across devices — but
+    // unlike planner and progress above, strictly the student's own: no
+    // owner or admin override. It is personal study material, not
+    // something staff need to see or set.
+    match /ownSyllabus/{uid}/{document=**} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ── Exams (written centrally, sat by a grade) ─────────────
+    // The paper is written once and stored on the exam, so every student in
+    // the grade sits the same questions. Any signed-in member may read the
+    // exams collection: a student has to find the ones set for them, and
+    // Firestore cannot filter a list on their behalf.
+    //
+    // The exam document carries the questions, the options and the hints —
+    // everything needed to sit the paper, and nothing that gives it away.
+    // The answers are not here. They are in key/ below.
+    match /exams/{examId} {
+      allow read:  if isSignedIn();
+      allow write: if isOwner();
+    }
+
+    // ── The answer key ────────────────────────────────────────
+    // Sealed until the student has handed their paper in. A student may read
+    // it only once a result of their own exists for this exam, so the key
+    // cannot be opened in another tab and read off mid-test.
+    //
+    // The honest edge: somebody could submit a deliberately empty paper to
+    // unlock the key early. They would be reading the answers to a test they
+    // have already handed in — and results are immutable below, so the marks
+    // they submitted are the marks they keep. Unlocking the key IS finishing.
+    //
+    // Teachers and the owner may read it whenever; reviewing a paper is the
+    // job. It stays owner-only to write.
+    match /exams/{examId}/key/{doc} {
+      allow read: if isSignedIn() && (
+        isOwner()
+        || isSchoolAdmin()
+        || exists(/databases/$(database)/documents/examResults/$(examId)/students/$(request.auth.uid))
+      );
+      allow write: if isOwner();
+    }
+
+    // ── Exam results (per exam → per student) ─────────────────
+    // A student writes only their own result. Their school's admin may read
+    // the results of their own school and no other, which is what makes a
+    // set exam worth setting. The school is stamped on the result when it is
+    // written, so an admin's query is one equality filter — the same shape
+    // the members list uses, and satisfiable without a composite index.
+    match /examResults/{examId}/students/{uid} {
+      allow get: if isSignedIn() && (
+        request.auth.uid == uid
+        || isOwner()
+        || (isSchoolAdmin() && resource.data.get('schoolId', '') == mySchoolId())
+      );
+      allow list: if isSignedIn() && (
+        isOwner()
+        || (isSchoolAdmin() && resource.data.get('schoolId', '') == mySchoolId())
+      );
+      // Only ever your own, and the school stamped on it has to be the one
+      // your profile actually says — otherwise a result could be filed into
+      // somebody else's school and show up in their teacher's list.
+      allow create: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.get('schoolId', '') == me().get('schoolId', '');
+
+      // Submitted answers are final. The update exists so the client can write
+      // the marks back after it has read the key — it must not become a way to
+      // change what was answered once the answers are known.
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.get('schoolId', '') == me().get('schoolId', '')
+        && request.resource.data.answers == resource.data.answers;
+      allow delete: if isOwner();
     }
 
     // ── Practice progress (per user → per day/subject) ────────

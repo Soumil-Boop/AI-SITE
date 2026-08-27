@@ -1,45 +1,14 @@
 /* ============================================================
-   nav.js — Shared Navigation (3-row header)
-   Row 1: utility bar (Help + Sign In / Dashboard)
-   Row 2: menu links + small logo on the left
-   Row 3: brand banner (logo + tagline)
-   Used by all pages inside the pages/ folder.
+   nav.js — the header for the pages under pages/.
+
+   It used to carry a copy of the site menu. It does not any more: the
+   site is the shell at study.html, and its rail is the one place every
+   destination lives. A second menu here — different shape, different
+   place, same links — was only somewhere for the two to disagree.
+
+   What is left is what a page away from the rail actually needs: a way
+   back to the site, and the account menu that owns sign-out.
    ============================================================ */
-
-/* The one and only menu. Every item opens a section of the single-page home
-   experience at ../index.html#<section>.
-
-   There used to be a second list here pointing at standalone copies of these
-   pages (lab.html, what-is-ai.html, history.html and so on). Those copies were
-   an older build of the site that stopped being updated, and any page that
-   mounted the menu without { homeLinks: true } quietly sent people into it —
-   which is how account settings became a doorway back to the old Lab. There is
-   now nothing to get wrong: one list, current content, no way to reach the old
-   pages from the menu. */
-const NAV_LINKS = [
-  { hash: 'home',      label: 'Home' },
-  { hash: 'what',      label: 'What is AI?' },
-  { hash: 'history',   label: 'History' },
-  { hash: 'types',     label: 'Types' },
-  { hash: 'study',     label: 'Study Tools' },
-  { hash: 'ethics',    label: 'Ethics' },
-  { hash: 'lab',       label: '\u{1F9EA} Learning Lab' },
-  { hash: 'finder',    label: 'Find My AI Tool' },
-  { hash: 'resources', label: 'Help & Resources' },
-  { hash: 'contact',   label: 'Contact Us' },
-];
-
-/* Kept so older calls still work; the standalone pages they named are gone. */
-const HOME_NAV_LINKS = NAV_LINKS;
-
-/* Which legacy filename corresponds to which home section, so a page that still
-   passes its own name to mountNav highlights the right menu item. */
-const PAGE_TO_HASH = {
-  'index.html': 'home', 'what-is-ai.html': 'what', 'history.html': 'history',
-  'types.html': 'types', 'study-tools.html': 'study', 'ethics.html': 'ethics',
-  'lab.html': 'lab', 'finder.html': 'finder', 'resources.html': 'resources',
-  'more-study.html': 'resources', 'contact.html': 'contact'
-};
 
 /* Seek-O-Sphere solar mark. Pass a unique id prefix so gradient ids don't clash. */
 function sosMark(pfx) {
@@ -60,27 +29,14 @@ function mountNav(activePage, opts) {
   const mount = document.getElementById('nav-mount');
   if (!mount) return;
 
-  // opts.homeLinks is accepted for compatibility but no longer changes anything:
-  // the menu always points at the current home page.
-  const activeHash = PAGE_TO_HASH[activePage] || '';
-  const links = NAV_LINKS.map(link => {
-    const isActive = link.hash === activeHash;
-    return `<a href="../index.html#${link.hash}" class="${isActive ? 'active' : ''}">${link.label}</a>`;
-  }).join('');
-
-  const helpHref = '../index.html#resources';
-
+  /* activePage is still accepted so the five callers need no edit, but there
+     is no menu left to mark a page active in. */
   mount.innerHTML = `
     <div class="topbar">
-      <a href="${helpHref}">Help</a>
       <div id="acctMenu"><a href="login.html" class="topbar-auth">Sign In</a></div>
     </div>
     <nav>
-      <a class="nav-logo" href="../index.html"><span>Seek-</span>${sosMark('navSos')}-Sphere</a>
-      <div class="nav-links" id="navLinks">${links}</div>
-      <button class="hamburger" onclick="toggleMobileNav()" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
+      <a class="nav-logo" href="../study.html"><span>Seek-</span>${sosMark('navSos')}-Sphere</a>
     </nav>
     ${opts.noBanner ? '' : `<div class="brand-banner">
       <div class="brand-banner-inner">
@@ -94,6 +50,3 @@ function mountNav(activePage, opts) {
   // The account menu (#acctMenu) is populated by session.js once Firebase auth state resolves.
 }
 
-function toggleMobileNav() {
-  document.getElementById('navLinks').classList.toggle('open');
-}
