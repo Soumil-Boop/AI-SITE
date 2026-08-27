@@ -314,7 +314,6 @@
             <div>
               <div class="schoice">
                 <label><input type="radio" name="sType" value="student" onchange="setToggleType()"/> School (Grades 1&ndash;12)</label>
-                <label><input type="radio" name="sType" value="examprep" onchange="setToggleType()"/> Entrance &amp; Government Exams</label>
               </div>
               <p class="shint">Entrance covers CUET; government covers Railways, Bank PO, SSC and UPSC.</p>
             </div>
@@ -336,18 +335,6 @@
                   <option value="uk">UK National Curriculum</option><option value="us">US Common Core</option>
                   <option value="ib">IB</option>
                 </select>
-              </div>
-            </div>
-          </div>
-          <div id="sExamFields" style="display:none;">
-            <div class="srow">
-              <div class="srow-lab"><b>Which exams</b><span>Pick as many as apply.</span></div>
-              <div class="schips">
-                <label><input type="checkbox" class="s-exam" value="CUET"/> <em>&#127891;</em> CUET</label>
-                <label><input type="checkbox" class="s-exam" value="Railways"/> <em>&#128644;</em> Railways</label>
-                <label><input type="checkbox" class="s-exam" value="Bank PO"/> <em>&#127974;</em> Bank PO</label>
-                <label><input type="checkbox" class="s-exam" value="SSC"/> <em>&#128203;</em> SSC</label>
-                <label><input type="checkbox" class="s-exam" value="UPSC"/> <em>&#127963;</em> UPSC</label>
               </div>
             </div>
           </div>
@@ -487,7 +474,11 @@
   function setToggleType(){
     var t = (document.querySelector('input[name="sType"]:checked') || {}).value || 'student';
     document.getElementById('sStudentFields').style.display = (t === 'student') ? 'block' : 'none';
-    document.getElementById('sExamFields').style.display    = (t === 'examprep') ? 'block' : 'none';
+    /* The exam track was removed, so this element is no longer in the markup.
+       Asked for unguarded it returned null and threw, taking the rest of this
+       function — and the subject chips — down with it. */
+    var ef = document.getElementById('sExamFields');
+    if (ef) ef.style.display = (t === 'examprep') ? 'block' : 'none';
     paintSubjectChips();
   }
   function setMsg(id, text, ok){
@@ -639,7 +630,7 @@
     }
     document.getElementById('sZip').value = p.zip || '';
 
-    var type = p.type === 'examprep' ? 'examprep' : 'student';
+    var type = 'student';   // the exam track is gone; every account is a school one
     var radio = document.querySelector('input[name="sType"][value="' + type + '"]');
     if (radio) radio.checked = true;
     setSel('sGrade', p.grade, /^\s*(?:grade\s*)?(\d{1,2})\s*$/i, 'Grade $1');

@@ -1587,10 +1587,18 @@ if (!libReady) {
   var cv = document.getElementById('sky'); if (!cv || !cv.getContext) return;
   var cx = cv.getContext('2d');
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var stars = [], W = 0, H = 0;
+  var stars = [], W = 0, H = 0, tries = 0;
   function size(){
     var d = window.devicePixelRatio || 1;
-    W = cv.clientWidth; H = cv.clientHeight;
+    /* This script runs while the document is still parsing, and a page that is
+       not being displayed yet — a background tab, a hidden frame — reports no
+       size at all until it is. Measured once and trusted, that wrote a canvas
+       0 pixels wide and left the sky permanently blank, because the events
+       that would have corrected it had already gone by. So a zero measure is
+       not accepted: it simply asks again until the page has a size to give. */
+    W = window.innerWidth || cv.clientWidth;
+    H = window.innerHeight || cv.clientHeight;
+    if ((!W || !H) && tries++ < 60) { setTimeout(function(){ size(); draw(0); }, 100); return; }
     cv.width = W * d; cv.height = H * d; cx.setTransform(d,0,0,d,0,0);
     stars = [];
     var n = Math.round(W * H / 7000);
@@ -1614,6 +1622,8 @@ if (!libReady) {
   }
   function loop(t){ draw(t); requestAnimationFrame(loop); }
   window.addEventListener('resize', function(){ size(); draw(0); });
+  /* Once more after load, in case the first measure happened mid-parse. */
+  window.addEventListener('load', function(){ size(); draw(0); });
   size(); draw(0);
   if (!still) requestAnimationFrame(loop);
 })();
