@@ -282,36 +282,68 @@ service cloud.firestore {
     }
 
     // ── Exams (written centrally, sat by a grade) ─────────────
+    // Read once per rule evaluation and cached by Firestore, so this costs
+    // one document read however many clauses below mention it.
+    function examOf(examId) {
+      return get(/databases/$(database)/documents/exams/$(examId)).data;
+    }
+
     // The paper is written once and stored on the exam, so every student in
-    // the grade sits the same questions. Any signed-in member may read the
-    // exams collection: a student has to find the ones set for them, and
-    // Firestore cannot filter a list on their behalf.
+    // the grade sits the same questions.
     //
     // The exam document carries the questions, the options and the hints —
     // everything needed to sit the paper, and nothing that gives it away.
     // The answers are not here. They are in key/ below.
+    //
+    // Who may read one is decided by its `audience` array: ['all'] for a paper
+    // set to every school, or ['school:<id>', ...] for named schools. A reader
+    // has to appear in it. That one field is what keeps a school out of another
+    // school's papers, and it works for a list as well as a get: the client
+    // queries array-contains-any ['all', 'school:<mine>'], so every document
+    // the query can return is one this rule already allows. A query without
+    // that constraint matches documents the rule refuses, and Firestore rejects
+    // the whole query rather than quietly returning a filtered subset. There is
+    // therefore no way to phrase a read that yields another school's exam.
+    //
+    // Only the owner writes. A school admin never authors or withdraws a paper,
+    // so nothing a school admin can do reaches a school that is not theirs.
     match /exams/{examId} {
-      allow read:  if isSignedIn();
+      allow get, list: if isSignedIn() && (
+        isOwner()
+        || 'all' in resource.data.get('audience', [])
+        || ('school:' + mySchoolId()) in resource.data.get('audience', [])
+      );
       allow write: if isOwner();
     }
 
     // ── The answer key ────────────────────────────────────────
-    // Sealed until the student has handed their paper in. A student may read
-    // it only once a result of their own exists for this exam, so the key
-    // cannot be opened in another tab and read off mid-test.
+    // Sealed until the student has handed their paper in for the last time.
+    // Three things must hold together for a student to read it:
     //
-    // The honest edge: somebody could submit a deliberately empty paper to
-    // unlock the key early. They would be reading the answers to a test they
-    // have already handed in — and results are immutable below, so the marks
-    // they submitted are the marks they keep. Unlocking the key IS finishing.
+    //   1. a result of their own exists for this exam — they have submitted;
+    //   2. they have used every attempt the exam allows. Otherwise the key
+    //      could be opened after a throwaway first try and used on the second,
+    //      which is precisely what a second attempt would otherwise buy;
+    //   3. the exam says answers may be shown at all.
     //
-    // Teachers and the owner may read it whenever; reviewing a paper is the
-    // job. It stays owner-only to write.
+    // The honest edge that remains: on a one-attempt exam somebody can submit
+    // a deliberately blank paper to unlock the key early. They would be reading
+    // the answers to a test they have already handed in, and submitted answers
+    // are frozen below once the attempts are spent, so the marks they handed in
+    // are the marks they keep. Unlocking the key IS finishing.
+    //
+    // A school admin may read the key only for a paper their own school was
+    // actually set — marking is their job, but only their own students' paper.
     match /exams/{examId}/key/{doc} {
       allow read: if isSignedIn() && (
         isOwner()
-        || isSchoolAdmin()
-        || exists(/databases/$(database)/documents/examResults/$(examId)/students/$(request.auth.uid))
+        || (isSchoolAdmin()
+            && ('all' in examOf(examId).get('audience', [])
+                || ('school:' + mySchoolId()) in examOf(examId).get('audience', [])))
+        || (exists(/databases/$(database)/documents/examResults/$(examId)/students/$(request.auth.uid))
+            && get(/databases/$(database)/documents/examResults/$(examId)/students/$(request.auth.uid))
+                 .data.get('attemptsUsed', 1) >= examOf(examId).get('attempts', 1)
+            && examOf(examId).get('revealAnswers', true) == true)
       );
       allow write: if isOwner();
     }
@@ -339,13 +371,24 @@ service cloud.firestore {
         && request.auth.uid == uid
         && request.resource.data.get('schoolId', '') == me().get('schoolId', '');
 
-      // Submitted answers are final. The update exists so the client can write
-      // the marks back after it has read the key — it must not become a way to
-      // change what was answered once the answers are known.
+      // Two kinds of update, and what separates them is whether an attempt
+      // is left.
+      //
+      // While the student still has one, a resit may replace the answers — but
+      // attemptsUsed has to go up, so the allowance is spent rather than resat
+      // for ever. Once it reaches the exam's limit the answers freeze, and the
+      // only update left is the client writing back marks it worked out after
+      // reading the key. That must not double as a way to change what was
+      // answered now that the answers are known.
       allow update: if isSignedIn()
         && request.auth.uid == uid
         && request.resource.data.get('schoolId', '') == me().get('schoolId', '')
-        && request.resource.data.answers == resource.data.answers;
+        && (
+          request.resource.data.answers == resource.data.answers
+          || (resource.data.get('attemptsUsed', 1) < examOf(examId).get('attempts', 1)
+              && request.resource.data.get('attemptsUsed', 1)
+                   > resource.data.get('attemptsUsed', 1))
+        );
       allow delete: if isOwner();
     }
 

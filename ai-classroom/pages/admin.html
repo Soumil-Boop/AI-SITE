@@ -263,6 +263,11 @@
     .ex-item .who { font-size:.75rem; color:var(--ink-soft); }
     .ex-item .meta { font-size:.74rem; color:var(--ink-soft); margin-top:.3rem; }
     .ex-item .acts { margin-top:.55rem; display:flex; gap:.4rem; flex-wrap:wrap; }
+    .ex-res { margin-top:.7rem; border-top:1px solid var(--border); padding-top:.6rem; }
+    .ex-ressum { font-size:.76rem; color:var(--ink-soft); margin-bottom:.45rem; }
+    .ex-restable { width:100%; border-collapse:collapse; font-size:.75rem; }
+    .ex-restable th { text-align:left; color:var(--faint); font-weight:600; padding:.25rem .4rem; }
+    .ex-restable td { padding:.25rem .4rem; border-top:1px solid var(--border); color:var(--text); }
     .ex-empty { font-size:.82rem; color:var(--ink-soft); padding:1.2rem; text-align:center;
                 border:1px dashed var(--border); border-radius:14px; }
     .ex-pill { font-size:.68rem; font-weight:700; border-radius:100px; padding:.12rem .5rem;
@@ -449,12 +454,15 @@
       <div class="ad-scards" id="adSchoolCards"></div>
     </section>
 
-    <!-- Owner only: write an exam, choose which schools and which grade sit it. -->
+    <!-- The owner writes exams and picks who sits them. A school admin sees
+         this same section read-only, and only ever their own school's papers:
+         the authoring card below is removed for them, and exLoad() queries by
+         audience so another school's exam is never even fetched. -->
     <section class="ad-exams" id="adExams" style="display:none;">
       <h2>Exams</h2>
-      <p class="sub">A paper is written once and sat by every student in the grades and schools you pick.</p>
+      <p class="sub" id="exLede">A paper is written once and sat by every student in the grade and schools you pick.</p>
       <div class="ex-wrap">
-        <div class="ex-card">
+        <div class="ex-card" id="exAuthor">
           <h3>Set an exam</h3>
           <p class="note">Questions are generated when you save, and then fixed — every student sits
             the same paper.</p>
@@ -476,9 +484,23 @@
           <p class="ex-hint">0 minutes means no time limit.</p>
 
           <div class="ex-row ex-two">
-            <div><label for="exOpens">Opens</label><input type="date" id="exOpens"/></div>
-            <div><label for="exCloses">Closes</label><input type="date" id="exCloses"/></div>
+            <div><label for="exOpens">Opens</label><input type="datetime-local" id="exOpens"/></div>
+            <div><label for="exCloses">Closes</label><input type="datetime-local" id="exCloses"/></div>
           </div>
+          <p class="ex-hint">A test cannot be started before it opens or after it closes.
+            Leave either blank to leave that end open.</p>
+
+          <div class="ex-row ex-two">
+            <div><label for="exAttempts">Attempts</label>
+              <input type="number" id="exAttempts" min="1" max="5" value="1"/></div>
+            <div><label for="exReveal">After submitting</label>
+              <select id="exReveal">
+                <option value="1" selected>Show the student their score and the answers</option>
+                <option value="0">Show nothing until you release it</option>
+              </select></div>
+          </div>
+          <p class="ex-hint">Answers are only ever shown once a student has used their last
+            attempt &mdash; otherwise the key could be opened on a first try and used on a second.</p>
 
           <div class="ex-row">
             <label>Who sits it</label>
@@ -631,10 +653,16 @@ var SYL_GROUP_OF = {
   german:'Languages', mandarin:'Languages',
   art:'Arts & PE', music:'Arts & PE', physical_education:'Arts & PE', design_technology:'Arts & PE'
 };
+/* Only the subjects the selected grade is actually taught. exSubjectsFor()
+   is the same function the exam scheduler uses, so a teacher is never offered
+   a syllabus box that no student at that grade would ever see -- setting
+   Science for a Grade 11 class, say, or Physics for a Grade 5 one. */
 function sylGroupedSubjects(){
   var subs = SYL_SUBJECTS || sylFallback();
+  var gradeEl = document.getElementById('sylGrade');
+  var band = exSubjectsFor(gradeEl ? gradeEl.value : '1');
   var byGroup = {};
-  Object.keys(subs).forEach(function(k){
+  Object.keys(subs).filter(function(k){ return band.indexOf(k) !== -1; }).forEach(function(k){
     var g = SYL_GROUP_OF[k] || 'Other';
     (byGroup[g] = byGroup[g] || []).push(k);
   });
@@ -963,7 +991,17 @@ function shapeForRole() {
   document.getElementById('adSchools').style.display = owner ? '' : 'none';
   /* Exams are written centrally, so only the owner sees the authoring side.
      A school's own admin gets the results, which is a later slice. */
-  document.getElementById('adExams').style.display = owner ? '' : 'none';
+  /* Both kinds of admin get the Exams section: the owner to write papers and
+     see every school, a school admin to watch their own school sit them. Only
+     the owner gets the authoring card -- a school admin has no control that
+     could reach another school's paper, because the control is not there. */
+  document.getElementById('adExams').style.display = '';
+  var author = document.getElementById('exAuthor');
+  if (author) author.style.display = owner ? '' : 'none';
+  var lede = document.getElementById('exLede');
+  if (lede) lede.textContent = owner
+    ? 'A paper is written once and sat by every student in the grade and schools you pick.'
+    : 'Papers set for ' + MY_SCHOOL.name + ', and how your students did. Only your school is shown.';
 
   // A school admin's list is students only, so role tabs and a Role column
   // would be four ways of saying the same thing.
@@ -993,7 +1031,14 @@ function loadAdminData() {
     ? db.collection('users')
     : db.collection('users').where('bucket', '==', 'school:' + MY_SCHOOL.id);
 
-  if (amOwner()) loadSchools();
+  if (amOwner()) {
+    loadSchools();            // paints the school picker, then loads the exams
+  } else {
+    /* A school admin may not list the schools collection, so the exam load
+       cannot hang off loadSchools() the way the owner's does -- without this
+       their Exams section would sit on "Loading..." for ever. */
+    try { exLoad(); } catch(e){}
+  }
 
   query.get().then(function(snap) {
     allUsers = snap.docs.map(function(d) {
@@ -1358,9 +1403,7 @@ function paintSchools() {
     '<div class="ad-newschool">' +
       '<label for="adNewName">Add a school</label>' +
       '<input type="text" id="adNewName" placeholder="e.g. Springfield High" autocomplete="off"/>' +
-      '<label for="adNewCode">Join code</label>' +
-      '<input type="text" id="adNewCode" placeholder="e.g. SPRINGFIELD-24" autocomplete="off" spellcheck="false"/>' +
-      '<p class="hint">Students type this at sign-up. Letters, numbers and hyphens; not case sensitive.</p>' +
+      '<p class="hint">A join code is generated automatically once you create the school — six digits, numbers only.</p>' +
       '<button class="ad-mini" onclick="createSchool()">Create school</button>' +
       '<p class="ad-schoolmsg" id="adSchoolMsg"></p>' +
     '</div>';
@@ -1470,8 +1513,15 @@ function exSave(){
   var subject = document.getElementById('exSubject').value;
   var count   = Math.min(35, Math.max(5, parseInt(document.getElementById('exCount').value, 10) || 20));
   var minutes = Math.max(0, parseInt(document.getElementById('exMinutes').value, 10) || 0);
-  var opens   = document.getElementById('exOpens').value;
-  var closes  = document.getElementById('exCloses').value;
+  /* datetime-local hands back local wall-clock text with no zone. Parsing it
+     to epoch here means every later comparison is a number against Date.now()
+     -- string dates would have compared "2026-09-01T09:00" lexically, which
+     happens to work for one format and silently stops working the moment a
+     zone or a seconds field appears. */
+  var opens   = exWhen(document.getElementById('exOpens').value);
+  var closes  = exWhen(document.getElementById('exCloses').value);
+  var attempts = Math.min(5, Math.max(1, parseInt(document.getElementById('exAttempts').value, 10) || 1));
+  var reveal   = document.getElementById('exReveal').value === '1';
 
   var everyone = (document.getElementById('exAllSchools') || {}).checked;
   var picked = [].map.call(document.querySelectorAll('.ex-school:checked'), function(c){ return c.value; });
@@ -1486,11 +1536,21 @@ function exSave(){
   exBuildPaper(subject, grade, count).then(function(paper){
     exFinishSave(paper, { title:title, grade:grade, subject:subject, count:count,
                           minutes:minutes, opens:opens, closes:closes,
+                          attempts:attempts, reveal:reveal,
                           everyone:everyone, picked:picked });
   }).catch(function(e){
     if (btnEarly) btnEarly.disabled = false;
     exMsg('Could not generate the paper: ' + ((e && e.message) || 'unknown error'), false);
   });
+}
+
+/* "" from an empty datetime-local, a real value otherwise. Returns null or
+   epoch milliseconds; an unparseable value is treated as "not set" rather
+   than as NaN, which would have compared false against everything. */
+function exWhen(v){
+  if (!v) return null;
+  var t = new Date(v).getTime();
+  return isNaN(t) ? null : t;
 }
 
 function exFinishSave(paper, cfg){
@@ -1526,11 +1586,24 @@ function exFinishSave(paper, cfg){
     explanations: paper.map(function(q){ return q.explanation || ''; })
   };
 
+  /* One array the whole site queries on. A student and a school admin both
+     ask "array-contains-any ['all','school:<mine>']", which returns exactly
+     the papers they are entitled to and nothing else -- so isolation holds in
+     the query itself, not only in the rules, and a school admin never even
+     fetches another school's exam to then have it hidden.
+
+     allSchools and schoolIds are kept alongside it for display; audience is
+     the one the rules read. */
+  var audience = everyone ? ['all'] : picked.map(function(id){ return 'school:' + id; });
+
   db.collection('exams').add({
     title: title, subject: subject, grade: String(grade),
     minutes: minutes, questions: publicPaper, count: publicPaper.length,
-    opensAt: opens || null, closesAt: closes || null,
+    opensAt: opens, closesAt: closes,
+    attempts: cfg.attempts || 1,
+    revealAnswers: cfg.reveal !== false,
     allSchools: !!everyone, schoolIds: everyone ? [] : picked,
+    audience: audience,
     createdAt: Date.now(),
     createdBy: (firebase.auth().currentUser || {}).uid || null
   }).then(function(ref){
@@ -1570,22 +1643,88 @@ function exLoad(){
     rows.sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
     if (!rows.length) { host.innerHTML = '<p class="ex-empty">No exams set yet.</p>'; return; }
     host.innerHTML = rows.map(function(x){
-      var when = (x.opensAt || x.closesAt)
-        ? ((x.opensAt || 'any time') + ' to ' + (x.closesAt || 'no close date'))
-        : 'No dates set';
+      var w = exWindow(x);
+      var att = (x.attempts || 1) > 1 ? (x.attempts + ' attempts') : 'one attempt';
+      /* Withdrawing is the owner's call. A school admin can read the paper's
+         details and its results and nothing else -- there is no control here
+         that would let one school's admin touch a paper another school sits. */
+      var acts = '<button class="ad-mini" onclick="exResults(\'' + adEsc(x.id) + '\')">Results</button>' +
+        (amOwner() ? ' <button class="ad-mini danger" onclick="exRemove(\'' + adEsc(x.id) + '\')">Withdraw</button>' : '');
       return '<div class="ex-item"><div class="top">' +
         '<b>' + adEsc(x.title || 'Untitled') + '</b>' +
-        '<span class="ex-pill">Grade ' + adEsc(x.grade) + ' \u00b7 ' +
+        '<span class="ex-pill">Grade ' + adEsc(x.grade) + ' · ' + 
           adEsc(EX_LABELS[x.subject] || x.subject) + '</span>' +
         '<span class="who">' + adEsc(exWho(x)) + '</span></div>' +
-        '<p class="meta">' + (x.count || 0) + ' questions \u00b7 ' +
-          (x.minutes ? x.minutes + ' minutes' : 'no time limit') + ' \u00b7 ' + adEsc(when) + '</p>' +
-        '<div class="acts"><button class="ad-mini danger" onclick="exRemove(\'' + adEsc(x.id) + '\')">' +
-          'Withdraw</button></div></div>';
+        '<p class="meta">' + (x.count || 0) + ' questions' + ' · ' + 
+          (x.minutes ? x.minutes + ' minutes' : 'no time limit') + ' · ' +  att + ' · ' + 
+          adEsc(w.text) + ' · ' + 
+          (x.revealAnswers !== false ? 'answers shown after' : 'answers held back') + '</p>' +
+        '<div class="acts">' + acts + '</div>' +
+        '<div class="ex-res" id="exRes_' + adEsc(x.id) + '" hidden></div></div>';
     }).join('');
   }).catch(function(e){
     host.innerHTML = '<p class="ex-empty">Could not load exams: ' + adEsc((e && e.message) || 'unknown') + '</p>';
   });
+}
+
+/* ══ WHO SAT IT, AND HOW THEY DID ═══════════════════════════════════
+   A school admin sees their own school's students and no one else's. The
+   query says so (schoolId ==) and the rules say so again; the list rule
+   refuses an unconstrained read outright, so there is no version of this
+   that quietly returns another school's marks.
+
+   Marking happens here rather than being trusted from the student: the key
+   is read and the answers are compared, so a result cannot be inflated by
+   editing what gets written on submit. */
+function exResults(examId){
+  var host = document.getElementById('exRes_' + examId);
+  if (!host) return;
+  if (!host.hidden) { host.hidden = true; host.innerHTML = ''; return; }
+  host.hidden = false;
+  host.innerHTML = '<p class="ex-empty">Loading results...</p>';
+
+  var q = db.collection('examResults').doc(examId).collection('students');
+  if (!amOwner()) q = q.where('schoolId', '==', (MY_SCHOOL && MY_SCHOOL.id) || '');
+
+  Promise.all([
+    q.get(),
+    db.collection('exams').doc(examId).collection('key').doc('paper').get()
+  ]).then(function(res){
+    var key = (res[1].exists && res[1].data().answers) || [];
+    var rows = [];
+    res[0].forEach(function(d){ rows.push(Object.assign({ uid: d.id }, d.data())); });
+    if (!rows.length) { host.innerHTML = '<p class="ex-empty">Nobody has sat this yet.</p>'; return; }
+
+    rows.forEach(function(r){
+      var given = r.answers || [];
+      var right = 0;
+      for (var i = 0; i < key.length; i++)
+        if (given[i] != null && String(given[i]).trim().toLowerCase() === String(key[i]).trim().toLowerCase()) right++;
+      r._right = right;
+      r._total = key.length || given.length;
+      r._pct = r._total ? Math.round(right / r._total * 100) : 0;
+    });
+    rows.sort(function(a, b){ return b._pct - a._pct; });
+
+    var sat = rows.length;
+    var avg = Math.round(rows.reduce(function(s, r){ return s + r._pct; }, 0) / sat);
+    host.innerHTML =
+      '<p class="ex-ressum"><b>' + sat + '</b> sat it · average <b>' + avg + '%</b></p>' +
+      '<table class="ex-restable"><thead><tr><th>Student</th><th>Right</th><th>Score</th>' +
+      (amOwner() ? '<th>School</th>' : '') + '</tr></thead><tbody>' +
+      rows.map(function(r){
+        return '<tr><td>' + adEsc(r.name || r.uid) + '</td>' +
+               '<td>' + r._right + ' of ' + r._total + '</td>' +
+               '<td>' + r._pct + '%</td>' +
+               (amOwner() ? '<td>' + adEsc(exSchoolName(r.schoolId)) + '</td>' : '') + '</tr>';
+      }).join('') + '</tbody></table>';
+  }).catch(function(e){
+    host.innerHTML = '<p class="ex-empty">Could not load results: ' + adEsc((e && e.message) || 'unknown') + '</p>';
+  });
+}
+function exSchoolName(id){
+  var s = SCHOOLS.filter(function(y){ return y.id === id; })[0];
+  return s ? s.name : (id || 'no school');
 }
 
 function exRemove(id){
@@ -1677,35 +1816,54 @@ function schoolMsg(text, ok) {
   el.className = 'ad-schoolmsg ' + (ok ? 'ok' : 'err');
 }
 
-function createSchool() {
-  var name = (document.getElementById('adNewName').value || '').trim();
-  var code = (document.getElementById('adNewCode').value || '').trim().toUpperCase();
-  if (!name) { schoolMsg('Give the school a name.', false); return; }
-  if (!/^[A-Z0-9][A-Z0-9-]{2,23}$/.test(code)) {
-    schoolMsg('The code needs 3\u201324 characters: letters, numbers and hyphens.', false); return;
+/* Six digits, drawn with crypto.getRandomValues rather than Math.random so
+   two schools created back to back cannot land on the same code by a weak
+   generator's bias, and rejection-sampled so every digit 0-9 is exactly as
+   likely as any other (a plain modulo would slightly favour the low digits). */
+function genJoinCode() {
+  var out = '';
+  var buf = new Uint32Array(1);
+  while (out.length < 6) {
+    crypto.getRandomValues(buf);
+    var d = buf[0] % 10;
+    if (buf[0] - d <= 4294967295 - 10) out += d;   // reject the biased tail
   }
-  schoolMsg('Creating\u2026', true);
+  return out;
+}
+
+/* Retried a handful of times, not because a collision is likely -- a million
+   six-digit codes and a few dozen schools -- but because "try again" is a
+   strange thing to ask an admin to click for a number the site chose. */
+function createSchoolWithCode(name, triesLeft) {
+  if (triesLeft <= 0) { schoolMsg('Could not find a free join code. Try again.', false); return; }
+  var code = genJoinCode();
 
   // Claim the code first. Its document id IS the code, so a second school
   // cannot quietly take a code that is already handing students to another.
   var codeRef = db.collection('joinCodes').doc(code);
   codeRef.get().then(function(snap) {
-    if (snap.exists) throw new Error('That join code is already in use.');
+    if (snap.exists) return createSchoolWithCode(name, triesLeft - 1);
     var schoolRef = db.collection('schools').doc();          // random, unguessable id
     return schoolRef.set({
       name: name, code: code,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function() {
       return codeRef.set({ schoolId: schoolRef.id, name: name });
+    }).then(function() {
+      document.getElementById('adNewName').value = '';
+      schoolMsg('School created. Its join code is ' + code + '\u2014' + ' share it with its students.', true);
+      loadSchools();
     });
-  }).then(function() {
-    document.getElementById('adNewName').value = '';
-    document.getElementById('adNewCode').value = '';
-    schoolMsg('School created. Share the code with its students.', true);
-    loadSchools();
   }).catch(function(err) {
     schoolMsg((err && err.message) || 'Could not create the school.', false);
   });
+}
+
+function createSchool() {
+  var name = (document.getElementById('adNewName').value || '').trim();
+  if (!name) { schoolMsg('Give the school a name.', false); return; }
+  schoolMsg('Creating' + '\u2026', true);
+  createSchoolWithCode(name, 5);
 }
 
 /* Turn a member into a school's admin, or hand them back to being a student.

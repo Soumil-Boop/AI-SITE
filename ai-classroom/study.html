@@ -799,11 +799,13 @@ function openPanel(panel, btn, mode){
     openFrame('index.html?' + (mode === 'embed' ? 'embed=1' : 'shell=1') + '#' + panel, btn);
   }
 }
-/* Test Mode is the one thing the Lab is for now, so the rail opens the test
-   setup rather than the practice panel. The engine lives in the frame; this
-   shows it and asks it to open, waiting for the load when the frame is cold.
-   A subject can be handed over so picking one from WorkHub sets up a test on
-   it rather than dropping the student somewhere generic. */
+/* Tests are set by the school, so this opens the list of papers addressed to
+   this student rather than a form for building one. The engine lives in the
+   frame; this shows it and asks it to open, waiting for the load when the
+   frame is cold.
+
+   `subject` is still accepted because the call sites pass it, but there is
+   nothing left for it to choose -- the paper decides its own subject. */
 function openTest(btn, subject){
   var f = document.getElementById('frame'), w = labWindow();
   if (w) {
@@ -1472,15 +1474,29 @@ function esc(s){ return String(s == null ? '' : s)
    account settings reached from it) while this tab stays open. Without
    re-running this, a long-lived study.html tab would keep the grade it
    had when it first loaded, no matter what the account was updated to. */
-/* The six subjects the site teaches. Kept in step with SUBJECTS_LIVE in
-   index.html and with data/topics.json -- a label here for a subject the
-   other two have dropped would put a name on a rail that leads nowhere. */
+/* The six subjects the site teaches. Kept in step with subjectsLiveFor()
+   below, with index.html and with data/topics.json -- a label here for a
+   subject the others have dropped would name a rail that leads nowhere. */
 var LABELS = { maths:'Math', english:'English', science:'Science',
   physics:'Physics', chemistry:'Chemistry', biology:'Biology' };
 /* Every one of the six carries a hue lifted for the dark ground, so nothing
    falls through to a light-theme value on near-black. */
 var ACCT_HUE = { maths:'--maths', english:'--english', science:'--science',
             physics:'--physics', chemistry:'--chemistry', biology:'--biology' };
+/* Which subjects a grade is offered. Math and English run the whole way;
+   Science is the single science subject up to Grade 10 and is replaced at 11
+   and 12 by Physics, Chemistry and Biology, where the streams split.
+
+   This is the one place the Lab decides it, so the subject tiles, the test
+   setup and the syllabus all agree without three lists to keep in step. It
+   deliberately matches exSubjectsFor() in pages/admin.html, which decides the
+   same thing for exams — if one is ever changed, change the other, or a
+   student is set an exam in a subject their own Lab does not offer. */
+function subjectsLiveFor(gradeStr){
+  var g = parseInt(gradeStr, 10) || 1;
+  return g >= 11 ? ['maths', 'english', 'physics', 'chemistry', 'biology']
+                 : ['maths', 'english', 'science'];
+}
 /* sos_grade is written from the account profile, where it reads "Grade 10",
    not "10" — so it is normalised here. Left raw it produced "Grade Grade 10"
    in the bar and matched no topic list at all. */
@@ -1574,25 +1590,17 @@ function paintAccountContext(){
   document.getElementById('streakChip').hidden = !(run > 0);
   if (run > 0) document.getElementById('streakN').textContent = run;
 
-  /* Physics, Chemistry and Biology only start at Grade 11, so the grid is
-     filtered by what this grade actually has topics for rather than showing
-     all six to everyone — a card that opens onto an empty topic list is a
-     dead end, and a Grade 5 student has no use for three of them.
-     topicsFor() is used rather than the built-in list so a school that has
-     published its own topics for a subject brings that subject back. */
-  var list = ['maths','english','science','physics','chemistry','biology']
-    .filter(function(s){
-      try { return topicsFor(s, grade).length > 0; } catch(e){ return true; }
-    });
-  // Nothing matched means the topic data never loaded, not that the grade is
-  // empty. Fall back to all six rather than painting a blank page.
-  if (!list.length) list = ['maths','english','science','physics','chemistry','biology'];
+  var list = subjectsLiveFor(grade);
   if (current && S.subject && list.indexOf(S.subject) === -1) list.unshift(S.subject);
   document.getElementById('subjGrid').innerHTML = list.map(function(s){
     var hue = ACCT_HUE[s] || '--accent';
+    /* These open the subject's notes and topics. They used to start a test,
+       which is no longer a student's to start -- a card that offered one would
+       be promising something the site will refuse. */
+    var n = LIB.notes.filter(function(x){ return x.grade === grade && x.subject === s; }).length;
     return '<button class="sub-card" style="--c:var(' + hue + ')" onclick="pickSubject(\'' + s + '\')">' +
-      '<div class="sub-head"><b>' + (LABELS[s] || s) + '</b><span class="go">Test →</span></div>' +
-      '<small>' + (worked && S.subject === s ? 'Last worked on' : 'Set up a test') + '</small></button>';
+      '<div class="sub-head"><b>' + (LABELS[s] || s) + '</b><span class="go">Open →</span></div>' +
+      '<small>' + (n ? n + (n === 1 ? ' note' : ' notes') : 'No notes yet') + '</small></button>';
   }).join('');
 
   try { paintConsole(S, worked, grade); } catch(e){}
@@ -1641,19 +1649,18 @@ function acctAgo(ts){
    than borrowing a number from somewhere else. */
 function consoleSubjects(grade){
   var subs = (LIB.topics && LIB.topics.subjects) || {};
-  var keys = Object.keys(subs);
-  if (!keys.length) keys = ['maths','english','science','physics','chemistry','biology'];
+  var band = subjectsLiveFor(grade);
+  /* Banded, not just whatever topics.json happens to carry: a Grade 11
+     student is not offered general Science, and a Grade 5 student is not
+     offered the three streams, whatever topics exist for them. */
+  var keys = Object.keys(subs).filter(function(k){ return band.indexOf(k) !== -1; });
+  if (!keys.length) keys = band;
   return keys.map(function(k){
     var topics = 0;
     try { topics = topicsFor(k, grade).length; } catch(e){}
     var notes = LIB.notes.filter(function(n){ return n.grade === grade && n.subject === k; }).length;
     var vids  = allVideos().filter(function(v){ return v.grade === grade && v.subject === k; }).length;
     return { k:k, label:(subs[k] || LABELS[k] || k), topics:topics, notes:notes, videos:vids };
-  }).filter(function(s){
-    // A subject with no topics at this grade and nothing filed against it has
-    // nothing to show — the stream subjects below Grade 11, mostly. One note
-    // or one video is enough to keep it, so a student never loses their own work.
-    return s.topics > 0 || s.notes > 0 || s.videos > 0;
   }).sort(function(a,b){ return (b.notes + b.videos) - (a.notes + a.videos) || b.topics - a.topics; });
 }
 function paintConsole(S, current, grade){
@@ -1818,20 +1825,12 @@ window.addEventListener('pageshow', function(ev){
   if (ev && ev.persisted) acctRepaint();
 });
 
-/* Hand the subject to the Lab. If the Lab is already running in the frame it
-   is told directly; otherwise the choice is left in localStorage for the Lab
-   to pick up as it loads. */
+/* Picking a subject opens that subject's notes. It used to start a test on it;
+   tests are set by the school now, so the only thing a subject can still lead
+   to is the student's own material for it. */
 function pickSubject(s){
-  var w = labWindow();
-  if (w && typeof w.labSetSubject === 'function') {
-    try {
-      localStorage.removeItem('sos_open_subject');
-      openTest(document.querySelector('.nav button[data-v="test"]'), s);
-      return;
-    } catch(e){}
-  }
-  try { localStorage.setItem('sos_open_subject', s); } catch(e){}
-  openTest(document.querySelector('.nav button[data-v="test"]'), s);
+  if (VIEWS.note) VIEWS.note.subject = s;
+  showView('note', document.querySelector('.nav button[data-v=\'notes\']'));
 }
 </script>
 
