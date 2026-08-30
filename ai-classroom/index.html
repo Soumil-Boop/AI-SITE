@@ -1052,11 +1052,11 @@
        the subject picker, the question card, the session tally and the
        tool dock — is not shown at all.
 
-       Not deleted, though, and deliberately so: the test seeds itself from
-       these same controls. #labSubject, #labCurriculum, #labAge and
-       #labTopic are read by tmSeedFromLab, tmRefreshSubjects and
-       sosApplyProfile, and the tiles write to them. Taking the markup out
-       would take the settings a test is built from with it.
+       Not deleted, though, and deliberately so: #labSubject, #labCurriculum,
+       #labAge and #labTopic are still read by sosApplyProfile, and the tiles
+       write to them. Tests are set by the school now and seed themselves from
+       the paper, so nothing here feeds a test any more — but taking the markup
+       out would still take the profile plumbing with it.
 
        !important because the tiles are shown and hidden from script, which
        writes an inline display no selector can outrank. */
@@ -1132,6 +1132,118 @@
     .tm-start{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;
       margin-top:1.8rem;padding-top:1.4rem;border-top:1px solid var(--border);}
     .tm-summary{font-size:.9rem;color:var(--muted);}
+    /* One row per paper. The state pill carries the meaning, so the row reads
+       the same whether it is sittable or not and nothing has to be re-read. */
+    .ax-list{display:flex;flex-direction:column;gap:.7rem;margin-top:1.2rem;}
+    .ax-empty{color:var(--muted);font-size:.9rem;padding:1.2rem 0;text-align:center;}
+    .ax-item{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+      background:var(--cream);border:1px solid var(--gray-200);border-radius:14px;padding:.9rem 1.1rem;}
+    .ax-main{flex:1 1 16rem;min-width:0;}
+    .ax-title{font-weight:700;color:var(--text);font-size:.95rem;}
+    .ax-meta{color:var(--muted);font-size:.8rem;margin-top:.25rem;}
+    .ax-pill{font-size:.7rem;font-weight:700;border-radius:100px;padding:.2rem .6rem;white-space:nowrap;}
+    .ax-pill.open{background:var(--accent-light);color:var(--accent-dark);}
+    .ax-pill.upcoming{background:var(--brand-light);color:var(--brand-mid);}
+    .ax-pill.closed,.ax-pill.done{background:var(--gray-100);color:var(--faint);}
+    .ax-go{border:0;border-radius:100px;padding:.5rem 1.1rem;font-weight:700;font-size:.85rem;
+      cursor:pointer;background:var(--accent);color:var(--on-fill);}
+    .ax-go[disabled]{background:var(--gray-100);color:var(--faint);cursor:not-allowed;}
+
+    /* ══ RESOURCES + CONTACT ══════════════════════════════════════
+       Both panels share one layout language: a breadcrumb, a two-tone
+       display headline with a drawn underline under the emphasised half,
+       and cards on the raised surface. Everything below is scoped to
+       .pg- so it cannot collide with .type-card or .analogy-card, which
+       are still used elsewhere on the site. */
+    .pg-crumb{display:flex;align-items:center;gap:.5rem;font-family:'Space Grotesk','Nunito',sans-serif;
+      font-size:.72rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);margin-bottom:1.6rem;}
+    .pg-crumb button{background:none;border:none;padding:0;cursor:pointer;font:inherit;letter-spacing:inherit;
+      color:var(--faint);transition:color .18s;}
+    .pg-crumb button:hover{color:var(--accent);}
+    .pg-crumb .pg-sep{color:var(--gray-200);}
+    .pg-crumb .pg-here{color:var(--accent);}
+
+    .pg-hero{margin-bottom:3rem;max-width:64ch;}
+    .pg-hero-copy h2{font-family:'Space Grotesk','Nunito',sans-serif;font-weight:600;letter-spacing:-.03em;
+      font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.08;margin:0 0 1rem;text-wrap:balance;}
+    /* The emphasised half of the headline, with the underline drawn beneath
+       it as a background image so it tracks the text if the line wraps. */
+    .pg-em{color:var(--accent);position:relative;white-space:nowrap;}
+    .pg-em::after{content:'';position:absolute;left:0;right:0;bottom:-.16em;height:.34em;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8.5C38 3.4 92 2.2 132 5.1c22 1.6 46 4.2 66 2.1' fill='none' stroke='%23C79BFF' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/100% 100%;
+      pointer-events:none;}
+    .pg-hero-copy p{color:var(--muted);font-size:1rem;line-height:1.7;max-width:54ch;margin:0;}
+    .pg-hero-copy p + p{margin-top:.6rem;}
+
+    /* The "New to AI?" strip. One ember-tinted band, the only warm thing on
+       the page, because it is the one line every first-time visitor should
+       read before anything else. */
+    .pg-start{display:flex;align-items:center;gap:1.15rem;flex-wrap:wrap;background:var(--brand-light);
+      border:1px solid rgba(255,138,76,.28);border-radius:16px;padding:1.15rem 1.35rem;margin-bottom:2.6rem;}
+    .pg-start-ic{flex:0 0 auto;width:38px;height:38px;border-radius:11px;background:var(--brand);
+      display:flex;align-items:center;justify-content:center;}
+    .pg-start p{flex:1 1 300px;margin:0;color:var(--muted);font-size:.92rem;line-height:1.6;min-width:0;}
+    .pg-start p strong{color:var(--text);font-weight:700;}
+
+    .pg-sec-head{display:flex;align-items:baseline;gap:.75rem;margin:0 0 1.15rem;flex-wrap:wrap;}
+    .pg-sec-head h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.22rem;margin:0;color:var(--text);}
+    .pg-sec-head span{color:var(--faint);font-size:.84rem;}
+
+    .pg-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+    .pg-card{background:var(--white);border:1px solid var(--gray-100);border-radius:16px;padding:1.25rem 1.3rem;
+      display:flex;flex-direction:column;transition:border-color .2s,transform .2s;}
+    .pg-card:hover{border-color:var(--accent);transform:translateY(-3px);}
+    .pg-card-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;margin-bottom:.85rem;background:var(--accent-light);}
+    .pg-card h4{margin:0;font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;color:var(--text);
+      line-height:1.3;cursor:pointer;position:relative;padding-right:1.4rem;transition:color .18s;}
+    .pg-card h4:hover{color:var(--accent);}
+    .pg-card h4::after{content:'+';position:absolute;right:0;top:50%;transform:translateY(-50%);
+      color:var(--accent);font-weight:400;font-size:1.15rem;line-height:1;transition:transform .2s;}
+    .pg-card h4.open::after{transform:translateY(-50%) rotate(45deg);}
+    .pg-card .expandable{max-height:0;overflow:hidden;transition:max-height .28s ease;}
+    .pg-card .expandable.open{max-height:340px;}
+    .pg-card .expandable p{margin:.65rem 0 0;color:var(--muted);font-size:.86rem;line-height:1.6;}
+    .pg-card .expandable a{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:none;}
+    .pg-card .expandable a:hover{text-decoration:underline;}
+
+    /* Contact: the form is the page, so it takes the wide column. */
+    .pg-desk{display:grid;grid-template-columns:1.55fr 1fr;gap:2rem;align-items:start;}
+    .pg-compose{background:var(--white);border:1px solid var(--gray-100);border-radius:18px;padding:1.75rem;
+      box-shadow:var(--shadow-md);}
+    .pg-compose h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.15rem;margin:0 0 1.3rem;color:var(--text);}
+    .pg-field{margin-bottom:1rem;}
+    .pg-field label{display:block;font-family:'Inter',sans-serif;font-size:.74rem;font-weight:600;color:var(--faint);
+      text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem;}
+    .pg-field input,.pg-field textarea{width:100%;background:var(--cream);border:1px solid var(--gray-100);
+      border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:.94rem;padding:.75rem .85rem;
+      outline:none;transition:border-color .18s;}
+    .pg-field input:focus,.pg-field textarea:focus{border-color:var(--accent);}
+    .pg-field textarea{min-height:120px;resize:vertical;}
+    .pg-send{width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;border:none;cursor:pointer;
+      font-family:'Space Grotesk','Nunito',sans-serif;font-weight:600;font-size:.95rem;color:var(--on-fill);
+      background:var(--accent);border-radius:100px;padding:.85rem;transition:background .18s;}
+    .pg-send:hover{background:var(--accent-dark);}
+    .pg-replynote{display:flex;align-items:center;justify-content:center;gap:.45rem;color:var(--faint);
+      font-size:.8rem;margin:.75rem 0 0;}
+
+    .pg-aside{background:var(--white);border:1px solid var(--gray-100);border-radius:18px;padding:1.6rem;}
+    .pg-aside h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;margin:0 0 1.25rem;color:var(--text);}
+    .pg-note{display:flex;gap:.85rem;align-items:flex-start;}
+    .pg-note + .pg-note{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--gray-100);}
+    .pg-note-ic{flex:0 0 auto;width:34px;height:34px;border-radius:10px;background:var(--accent-light);
+      display:flex;align-items:center;justify-content:center;font-size:1rem;}
+    .pg-note b{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.92rem;color:var(--text);margin-bottom:.15rem;}
+    .pg-note span{color:var(--muted);font-size:.85rem;line-height:1.55;}
+
+    @media(max-width:900px){
+      .pg-cards{grid-template-columns:repeat(2,1fr);}
+      .pg-desk{grid-template-columns:1fr;}
+    }
+    @media(max-width:560px){
+      .pg-cards{grid-template-columns:1fr;}
+      .pg-em{white-space:normal;}
+    }
     .tm-note{margin-top:1rem;padding:.75rem .95rem;border-radius:10px;font-size:.86rem;line-height:1.6;
       border:1px solid #E0B15A;background:#FBF0DA;color:#6B4E10;}
     .tm-note.blocking{border-color:#DDBDB4;background:#FBEAE6;color:#9A2B18;}
@@ -2618,8 +2730,8 @@
            banner competing with the practice card for attention. -->
       <div class="lab-test-invite" id="labInviteCurr">
         <span class="lti-ico">&#9201;</span>
-        <span class="lti-line">Sit a timed test on any subject. <b>Nothing is marked until you submit.</b></span>
-        <button type="button" class="lti-go" onclick="tmOpenSetup('curriculum', this)">Test mode &rarr;</button>
+        <span class="lti-line">Tests set by your school. <b>Nothing is marked until you submit.</b></span>
+        <button type="button" class="lti-go" onclick="tmOpenTests(this)">Your tests &rarr;</button>
       </div>
 
       <!-- Curriculum and age are set once and rarely touched, so they sit
@@ -2800,105 +2912,13 @@
       </div>
 
       <div class="tm-setup" id="tmSetup" style="display:none;">
-        <p class="tm-kick">Test mode</p>
-        <h3 class="tm-h" id="tmSetupTitle">Set your test up</h3>
-        <p class="tm-sub">Everything else on the site closes while you work. You can move between
-          questions freely, flag any you want to come back to, and change an answer right up until
-          you submit.</p>
+        <p class="tm-kick">Your tests</p>
+        <h3 class="tm-h">Tests set for you</h3>
+        <p class="tm-sub">Your school writes these papers and decides when each one opens. Everything
+          else on the site closes while you work. You can move between questions freely, flag any you
+          want to come back to, and change an answer right up until you submit.</p>
 
-        <div class="tm-track" role="group" aria-label="What you are testing on">
-          <button type="button" class="tm-trk active" data-track="curriculum" onclick="tmPickTrack('curriculum',this)">
-            &#127891; School (Grades 1&ndash;12)</button>
-        </div>
-
-        <!-- School curriculum -->
-        <div class="tm-grid" id="tmCurrFields">
-          <label class="tm-field"><span>&#128218; Subject</span>
-            <select id="tmSubject">
-              <option value="maths">&#10133; Math</option>
-              <option value="science">&#128300; Science</option>
-              <option value="english">&#128214; English</option>
-              <option value="history">&#128220; History</option>
-              <option value="geography">&#127758; Geography</option>
-            </select></label>
-          <label class="tm-field tm-locked-field"><span>&#127758; Curriculum</span>
-            <select id="tmCurriculum" onchange="tmRefreshSubjects()">
-              <option value="cbse">CBSE (India)</option>
-              <option value="icse">ICSE (India)</option>
-              <option value="uk">UK National Curriculum</option>
-              <option value="us">US Common Core</option>
-              <option value="ib">IB</option>
-            </select></label>
-          <label class="tm-field tm-locked-field"><span>&#127891; Grade</span>
-            <select id="tmAge" onchange="tmRefreshSubjects()">
-              <option value="1">Grade 1</option>
-              <option value="2">Grade 2</option>
-              <option value="3">Grade 3</option>
-              <option value="4">Grade 4</option>
-              <option value="5">Grade 5</option>
-              <option value="6" selected>Grade 6</option>
-              <option value="7">Grade 7</option>
-              <option value="8">Grade 8</option>
-              <option value="9">Grade 9</option>
-              <option value="10">Grade 10</option>
-              <option value="11">Grade 11</option>
-              <option value="12">Grade 12</option>
-            </select></label>
-        </div>
-
-        <!-- Entrance & Government Exams -->
-        <div class="tm-grid" id="tmExamFields" style="display:none;">
-          <label class="tm-field"><span>&#127891; Exam</span>
-            <select id="tmExam">
-              <option value="cuet">&#127891; CUET</option>
-              <option value="railways">&#128644; Railways RRB</option>
-              <option value="bankpo">&#127974; Bank PO</option>
-              <option value="ssc">&#128203; SSC</option>
-              <option value="upsc">&#127963;&#65039; UPSC Prelims</option>
-            </select></label>
-          <label class="tm-field"><span>&#128218; Subject</span>
-            <select id="tmExamSubject">
-              <option value="gk">&#127760; General Knowledge</option>
-              <option value="aptitude">&#128290; Quantitative Aptitude</option>
-              <option value="reasoning">&#129513; Logical Reasoning</option>
-              <option value="english">&#128214; English Language</option>
-            </select></label>
-          <label class="tm-field"><span>&#127919; Difficulty</span>
-            <select id="tmDifficulty">
-              <option value="easy">Easy</option>
-              <option value="medium" selected>Medium</option>
-              <option value="hard">Hard</option>
-            </select></label>
-        </div>
-
-        <div class="tm-row">
-          <div class="tm-half">
-            <span class="tm-lab">&#128221; How many questions</span>
-            <div class="tm-count">
-              <input type="range" id="tmCount" min="5" max="35" step="1" value="15"
-                     oninput="tmCountChanged()" aria-label="Number of questions"/>
-              <output id="tmCountOut">15</output>
-            </div>
-            <p class="tm-hint">Anywhere from 5 to 35.</p>
-          </div>
-          <div class="tm-half">
-            <span class="tm-lab">&#9201;&#65039; Time limit</span>
-            <div class="tm-times" id="tmTimes">
-              <button type="button" class="tm-time" data-mins="0" onclick="tmPickTime(0,this)">No timer</button>
-              <button type="button" class="tm-time" data-mins="10" onclick="tmPickTime(10,this)">10 min</button>
-              <button type="button" class="tm-time active" data-mins="20" onclick="tmPickTime(20,this)">20 min</button>
-              <button type="button" class="tm-time" data-mins="30" onclick="tmPickTime(30,this)">30 min</button>
-              <button type="button" class="tm-time" data-mins="45" onclick="tmPickTime(45,this)">45 min</button>
-              <button type="button" class="tm-time" data-mins="60" onclick="tmPickTime(60,this)">60 min</button>
-            </div>
-            <p class="tm-hint" id="tmTimeHint">The clock counts down and submits for you when it runs out.</p>
-          </div>
-        </div>
-
-        <div class="tm-start">
-          <p class="tm-summary" id="tmSummary"></p>
-          <button class="btn" onclick="tmStart()">Start test &rarr;</button>
-        </div>
+        <div class="ax-list" id="axList"><p class="ax-empty">Loading your tests&hellip;</p></div>
         <p class="tm-note" id="tmNote" style="display:none;"></p>
       </div>
 
@@ -2924,27 +2944,81 @@
 <!-- ══════════════════════════════════════ RESOURCES ══════════════════════════════════════ -->
 <div id="resources" class="panel">
   <div class="section-inner">
-    <div class="page-illus-row" style="margin-bottom:2rem;">
-      <div class="page-illus-text">
+
+    <nav class="pg-crumb" aria-label="Breadcrumb">
+      <button type="button" onclick="showPage(\'home\')">Home</button>
+      <span class="pg-sep" aria-hidden="true">/</span>
+      <span class="pg-here" aria-current="page">Resources</span>
+    </nav>
+
+    <div class="pg-hero">
+      <div class="pg-hero-copy">
         <span class="eyebrow">Keep Learning</span>
-        <h2>Not sure where to go next?</h2>
+        <h2>Not sure where to <span class="pg-em">go next?</span></h2>
         <p>Whether you want to watch a video, read a book, take a free course, or just understand what a confusing AI term means , we have rounded up the best free resources for students at every level.</p>
         <p>Click any card heading below to expand its full recommendation.</p>
       </div>
-      <img class="page-illus-svg" src="assets/images/resources/resources_2.png" alt="Four ways to keep learning — books, videos, courses and a glossary"/>
     </div>
-    <div class="definition-box"><p><strong>New to AI?</strong> Open the Lab from the menu, pick a subject and answer a few questions — Eulid explains every answer, so the explaining happens as you go.</p></div>
-    <div class="grid-3" style="margin-top:2rem;">
-      <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">📺</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Videos</h3><div class="expandable open"><div class="expandable-inner"><p>3Blue1Brown's neural network series and Crash Course AI , both free , are excellent video explainers. Search for them on YouTube and start with whichever topic interests you most.</p></div></div></div>
-      <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)"><span class="tc-icon">📖</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Recommended Reading</h3><div class="expandable open"><div class="expandable-inner"><p>"AI Superpowers" by Kai-Fu Lee and "Life 3.0" by Max Tegmark are two of the most accessible books on the topic for students and curious adults.</p></div></div></div>
-      <div class="type-card tc-purple" style="background:var(--blush);" onclick="addRipple(event,this)"><span class="tc-icon">🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Free Online Courses</h3><div class="expandable open"><div class="expandable-inner"><p>Khan Academy, Coursera's "AI For Everyone" by Andrew Ng, and Google's "AI Essentials" are all free, beginner-friendly and take just a few hours to complete.</p></div></div></div>
-      <div class="type-card tc-coral" style="background:var(--accent-light);" onclick="addRipple(event,this)"><span class="tc-icon">🛠️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Troubleshooting AI Tools</h3><div class="expandable open"><div class="expandable-inner"><p>Getting strange answers? Try being more specific, breaking your question into smaller parts, or giving an example of the kind of answer you want.</p></div></div></div>
-      <div class="type-card" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">🗂️</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Glossary of AI Terms</h3><div class="expandable open"><div class="expandable-inner"><p>Confused by "token", "parameter", "fine-tuning" or "embedding"? Send us a message on the Contact page and we will explain it clearly.</p></div></div></div>
-      <div class="type-card tc-green" style="background:var(--cream);" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍🏫</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">For Teachers and Parents</h3><div class="expandable open"><div class="expandable-inner"><p>We have collected age-appropriate talking points, lesson hooks and discussion questions for introducing AI at home or in the classroom. Contact us to request the full educator guide.</p></div></div></div>
-      <div class="type-card tc-purple" style="background:var(--blush);" onclick="addRipple(event,this)"><span class="tc-icon">💼</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">AI Tools for Job Hunting</h3><div class="expandable open"><div class="expandable-inner"><p>Use Claude or ChatGPT to polish your resume and cover letter, Yoodli to practice interview answers, and LinkedIn AI to improve your profile.</p></div></div></div>
-      <div class="type-card tc-blue" style="background:var(--parchment);" onclick="addRipple(event,this)"><span class="tc-icon">🧑‍💻</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Community and Forums</h3><div class="expandable open"><div class="expandable-inner"><p>Reddit's r/artificial and r/MachineLearning plus Hugging Face's community forums are friendly spaces for AI questions. Most people are welcoming to beginners.</p></div></div></div>
-      <div class="type-card tc-gold" style="background:var(--accent-light);" onclick="addRipple(event,this)"><span class="tc-icon">❓</span><h3 class="clickable-heading" onclick="toggleHeading(this,event);event.stopPropagation()">Frequently Asked Questions</h3><div class="expandable open"><div class="expandable-inner"><p>Wondering if AI will take over jobs, or whether it is conscious? Visit our Contact page and ask , we love these questions and answer every one.</p></div></div></div>
+
+    <div class="pg-start">
+      <span class="pg-start-ic" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="var(--on-fill)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.6 6.6L21 10l-5 4.3 1.6 6.7L12 17.6 6.4 21 8 14.3 3 10l6.4-1.4z"/></svg>
+      </span>
+      <p><strong>New to AI?</strong> Open the Lab from the menu, pick a subject and answer a few questions &mdash; Eulid explains every answer, so the explaining happens as you go.</p>
     </div>
+
+    <div class="pg-sec-head">
+      <h3>Where to go next</h3>
+      <span>Tap a heading to fold it away</span>
+    </div>
+    <div class="pg-cards">
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--accent-light);" aria-hidden="true">&#128250;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">Recommended Videos</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>3Blue1Brown's neural network series and Crash Course AI , both free , are excellent video explainers. Search for them on YouTube and start with whichever topic interests you most.</p></div></div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--green-light);" aria-hidden="true">&#128214;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">Recommended Reading</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>&quot;AI Superpowers&quot; by Kai-Fu Lee and &quot;Life 3.0&quot; by Max Tegmark are two of the most accessible books on the topic for students and curious adults.</p></div></div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--purple-light);" aria-hidden="true">&#127979;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">Free Online Courses</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>Khan Academy, Coursera's &quot;AI For Everyone&quot; by Andrew Ng, and Google's &quot;AI Essentials&quot; are all free, beginner-friendly and take just a few hours to complete.</p></div></div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--brand-light);" aria-hidden="true">&#128736;&#65039;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">Troubleshooting AI Tools</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>Getting strange answers? Try being more specific, breaking your question into smaller parts, or giving an example of the kind of answer you want.</p></div></div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--accent-light);" aria-hidden="true">&#128451;&#65039;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">Glossary of AI Terms</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>Confused by &quot;token&quot;, &quot;parameter&quot;, &quot;fine-tuning&quot; or &quot;embedding&quot;? <a onclick="showPage(\'contact\')">Send us a message on the Contact page</a> and we will explain it clearly.</p></div></div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--green-light);" aria-hidden="true">&#129489;&#8205;&#127979;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">For Teachers and Parents</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>We have collected age-appropriate talking points, lesson hooks and discussion questions for introducing AI at home or in the classroom. <a onclick="showPage(\'contact\')">Contact us</a> to request the full educator guide.</p></div></div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--purple-light);" aria-hidden="true">&#128188;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">AI Tools for Job Hunting</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>Use Claude or ChatGPT to polish your resume and cover letter, Yoodli to practice interview answers, and LinkedIn AI to improve your profile.</p></div></div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--accent-light);" aria-hidden="true">&#129489;&#8205;&#128187;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">Community and Forums</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>Reddit's r/artificial and r/MachineLearning plus Hugging Face's community forums are friendly spaces for AI questions. Most people are welcoming to beginners.</p></div></div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-card-ic" style="background:var(--brand-light);" aria-hidden="true">&#10067;</div>
+          <h4 class="open" onclick="toggleHeading(this,event)">Frequently Asked Questions</h4>
+          <div class="expandable open"><div class="expandable-inner"><p>Wondering if AI will take over jobs, or whether it is conscious? <a onclick="showPage(\'contact\')">Visit our Contact page</a> and ask , we love these questions and answer every one.</p></div></div>
+        </div>
+    </div>
+
   </div>
 </div>
 
@@ -3107,66 +3181,70 @@
 
 <div id="contact" class="panel">
   <div class="section-inner">
-    <div class="page-illus-row flip" style="margin-bottom:2rem;">
-      <div class="page-illus-text">
+
+    <nav class="pg-crumb" aria-label="Breadcrumb">
+      <button type="button" onclick="showPage('home')">Home</button>
+      <span class="pg-sep" aria-hidden="true">/</span>
+      <span class="pg-here" aria-current="page">Contact Us</span>
+    </nav>
+
+    <div class="pg-hero">
+      <div class="pg-hero-copy">
         <span class="eyebrow">Get in Touch</span>
-        <h2>We would love to hear from you</h2>
+        <h2>We would love to <span class="pg-em">hear from you</span></h2>
         <p>Whether you are a student with a question, a teacher interested in this resource, or you spotted something that needs fixing , we want to hear from you.</p>
         <p>Teachers and parents are especially welcome , ask about bringing these lessons into the classroom.</p>
       </div>
-      <svg class="illus" viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" role="img" aria-label="A message travelling along an arc towards Eulid"><path d="M44 236 C 120 236, 200 200, 264 96" fill="none" stroke="var(--border)"
-        stroke-width="1.4" stroke-dasharray="5 9"/>
-  <g transform="translate(232 58) rotate(28)">
-    <path d="M0 0 L58 22 L0 44 L12 22z" fill="var(--accent)"/>
-    <path d="M0 0 L58 22 L12 22z" fill="var(--accent-dark)" opacity=".55"/>
-  </g>
-  <g fill="var(--faint)"><circle cx="44" cy="236" r="6"/></g>
-  <g fill="var(--accent)" opacity=".4">
-    <path d="M136 92 l3 7.6 7.6 3 -7.6 3 -3 7.6 -3 -7.6 -7.6 -3 7.6 -3z"/></g>
-  <g transform="translate(268 150) scale(1.25)" aria-hidden="true"><g transform="scale(-1 1) translate(-100 0)">
-      <g fill="#6E8A5C"><path d="M28 58 q-14 12 -18 30 q-2 8 5 9 q7 1 8 -6 q3 -18 14 -25z"/>
-      <path d="M72 58 q14 12 18 30 q2 8 -5 9 q-7 1 -8 -6 q-3 -18 -14 -25z"/>
-      <path d="M50 62 q-6 18 -5 34 q0 8 7 7 q6 -1 5 -8 q-1 -18 4 -32z"/></g>
-      <path d="M52 62 q26 6 34 -16 q3 -8 -5 -10 q-8 -2 -10 6 q-3 12 -19 12z" fill="#6E8A5C"/>
-      <path d="M26 30 q-8 -8 -4 -16 q9 3 11 14z" fill="#7E9A6B"/>
-      <path d="M74 30 q8 -8 4 -16 q-9 3 -11 14z" fill="#7E9A6B"/>
-      <circle cx="50" cy="42" r="30" fill="#7E9A6B"/>
-      <circle cx="50" cy="42" r="40" fill="none" stroke="rgba(99,230,226,.30)" stroke-width="1.4"/>
-      <ellipse cx="50" cy="38" rx="15" ry="17" fill="#EEF4F8"/>
-      <ellipse cx="46" cy="42" rx="6.6" ry="10" fill="#26324C"/>
-      <circle cx="49" cy="37" r="2.4" fill="#fff"/>
-      <path d="M43 60 q7 6 14 0" stroke="#3E2B1E" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-      <path d="M50 12 q0 -8 5 -11" stroke="#5C7350" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <circle cx="55" cy="0" r="3.4" fill="var(--brand)"/>
-    </g></g></svg>
     </div>
-    <div class="two-col">
-      <div>
-        <h2 class="section-title">Let us Talk</h2>
-        <p class="section-desc">Whether you are a student with a question, a teacher interested in using this resource, or you spotted something that needs fixing , we want to hear from you.</p>
-        <div class="analogy-card"><span class="analogy-icon">✉️</span><div><strong>Email Us</strong><span style="color:var(--muted);font-size:.9rem;">hello@theaiclassroom.example</span></div></div>
-        <div class="analogy-card"><span class="analogy-icon">⏱️</span><div><strong>Response Time</strong><span style="color:var(--muted);font-size:.9rem;">We typically reply within 1 to 2 business days</span></div></div>
-        <div class="analogy-card"><span class="analogy-icon">🏫</span><div><strong>For Educators</strong><span style="color:var(--muted);font-size:.9rem;">Ask about bringing this curriculum to your classroom</span></div></div>
-      </div>
-      <div class="card">
+
+    <div class="pg-desk">
+      <div class="pg-compose">
         <div id="contact-form-wrap">
+          <h3>Send us a message</h3>
           <form id="contactForm" onsubmit="submitContact(event)">
-            <div class="form-group"><label for="c-name">Full Name</label><input type="text" id="c-name" placeholder="Your name" required/></div>
-            <div class="form-group"><label for="c-email">Email</label><input type="email" id="c-email" placeholder="you@example.com" required/></div>
-            <div class="form-group"><label for="c-message">Message</label><textarea id="c-message" placeholder="Tell us what is on your mind..." required></textarea></div>
-            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Send Message →</button>
+            <div class="pg-field"><label for="c-name">Full Name</label>
+              <input type="text" id="c-name" placeholder="Your name" required/></div>
+            <div class="pg-field"><label for="c-email">Email</label>
+              <input type="email" id="c-email" placeholder="you@example.com" required/></div>
+            <div class="pg-field"><label for="c-message">Message</label>
+              <textarea id="c-message" placeholder="Tell us what is on your mind..." required></textarea></div>
+            <button type="submit" class="pg-send">Send Message
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </button>
+            <p class="pg-replynote">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+              We typically reply within 1 to 2 business days
+            </p>
           </form>
         </div>
         <div id="form-success" style="display:none;text-align:center;padding:2rem;">
-          <div style="font-size:2.5rem;margin-bottom:1rem;">📬</div>
+          <div style="font-size:2.5rem;margin-bottom:1rem;">&#128236;</div>
           <h3 style="font-family:'Nunito',sans-serif;font-weight:900;margin-bottom:.5rem;">Message Sent!</h3>
           <p style="color:var(--muted);">Thanks for reaching out. We will get back to you within 1 to 2 business days.</p>
           <button class="btn btn-secondary" style="margin-top:1.25rem;" onclick="resetContactForm()">Send Another Message</button>
         </div>
       </div>
+
+      <aside class="pg-aside">
+        <h3>We are here to help</h3>
+        <div class="pg-note">
+          <span class="pg-note-ic" aria-hidden="true">&#9993;&#65039;</span>
+          <div><b>Email Us</b><span>hello@theaiclassroom.example</span></div>
+        </div>
+        <div class="pg-note">
+          <span class="pg-note-ic" aria-hidden="true">&#9201;&#65039;</span>
+          <div><b>Response Time</b><span>We typically reply within 1 to 2 business days</span></div>
+        </div>
+        <div class="pg-note">
+          <span class="pg-note-ic" aria-hidden="true">&#127979;</span>
+          <div><b>For Educators</b><span>Ask about bringing this curriculum to your classroom</span></div>
+        </div>
+      </aside>
     </div>
+
   </div>
 </div>
+
 
 <!-- ══════════════════════════════════════
      MISSION BAND — the last thing before the footer
@@ -3288,15 +3366,12 @@ var TM = {
   // which tools are open, and what was done with them on each question
   tools: [], work: [],
   minutes: 20, endsAt: 0, startedAt: 0, tick: null, submitted: false,
-  // 'curriculum' — school subjects at an age and board.
-  // 'exam'       — CUET, Railways, Bank PO, SSC or UPSC at a difficulty.
   track: 'curriculum',
   subject: 'maths', curriculum: 'cbse', age: '6',
-  exam: 'cuet', difficulty: 'medium'
+  /* The paper being sat. Tests are set by the school now, so there is always
+     one -- a student cannot arrive at the runner without an exam behind it. */
+  examId: null, examTitle: '', attempts: 1, attemptsUsed: 1, revealAnswers: true
 };
-var TM_EXAM_NAMES = { cuet:'CUET', railways:'Railways RRB', bankpo:'Bank PO', ssc:'SSC', upsc:'UPSC Prelims' };
-var TM_EXAM_SUBJ  = { gk:'General Knowledge', aptitude:'Quantitative Aptitude',
-                      reasoning:'Logical Reasoning', english:'English Language' };
 var TM_MAX = 35;
 
 
@@ -3379,21 +3454,20 @@ function tmDrawWork(canvas, store){
 
 function tmEl(id){ return document.getElementById(id); }
 
-/* Only members. The setup panel and the locked notice are swapped by the
-   session, so a guest never sees controls that will refuse them. */
+/* Only members. The list of tests and the locked notice are swapped by the
+   session, so a guest never sees papers that will refuse them. */
 function tmApplyAccess(signedIn){
   var lock = tmEl('tmLocked'), set = tmEl('tmSetup');
   if (!lock || !set) return;
   lock.style.display = signedIn ? 'none'  : 'block';
   set.style.display  = signedIn ? 'block' : 'none';
-  if (signedIn) tmSyncSummary();
+  if (signedIn) axLoad();
 }
 
-/* Test mode is opened from inside a Lab now, so the Lab says which track it
-   is and the setup does not have to ask. The one setup panel is moved to the
-   Lab that called for it — one of it, no duplicated ids, and it always appears
-   directly under the invitation that was clicked. */
-function tmOpenSetup(track, btn){
+/* The one panel is moved to the Lab that called for it — one of it, no
+   duplicated ids, and it always appears directly under the invitation that
+   was clicked. */
+function tmOpenTests(btn){
   var home = tmEl('tmHome');
   var invite = btn.closest('.lab-test-invite');
   if (!home || !invite) return;
@@ -3413,11 +3487,8 @@ function tmOpenSetup(track, btn){
   invite.classList.add('open');
   invite.querySelector('.lti-go').textContent = 'Close';
 
-  TM.track = track;
-  tmSyncTrackFields();
-  tmSeedFromLab(track);
   tmApplyAccess(!!(window.SOS && SOS.user));
-  tmSyncSummary();
+  axLoad();
   setTimeout(function(){
     host.scrollIntoView({ behavior:'smooth', block:'nearest' });
   }, 60);
@@ -3433,7 +3504,7 @@ function tmCloseSetup(){
   [].forEach.call(document.querySelectorAll('.lab-test-invite'), function(x){
     x.classList.remove('open');
     var go = x.querySelector('.lti-go');
-    if (go) go.innerHTML = 'Test mode &rarr;';
+    if (go) go.innerHTML = 'Your tests &rarr;';
   });
 }
 
@@ -3444,120 +3515,26 @@ function tmCloseSetup(){
    Humanities streams from Grade 11, core + electives below that). Keeps the
    current pick if it still belongs to the list; otherwise falls back to the
    first subject on offer. */
-function tmRefreshSubjects(){
-  var curSel = tmEl('tmCurriculum'), ageSel = tmEl('tmAge'), sel = tmEl('tmSubject');
-  if (!curSel || !ageSel || !sel) return;
-  var groups = labGroupsFor(curSel.value, ageSel.value);
-  var prev = sel.value;
-  sel.innerHTML = groups.map(function(g){
-    return '<optgroup label="' + g.label + '">' + g.subjects.map(function(s){
-      var meta = LAB_ALL_SUBJECTS[s] || { label: s };
-      return '<option value="' + s + '">' + meta.label + '</option>';
-    }).join('') + '</optgroup>';
-  }).join('');
-  var all = groups.reduce(function(a, g){ return a.concat(g.subjects); }, []);
-  sel.value = all.indexOf(prev) !== -1 ? prev : all[0];
-}
-function tmSyncTrackFields(){
-  var curr = tmEl('tmCurrFields'), exam = tmEl('tmExamFields');
-  if (curr) curr.style.display = (TM.track === 'curriculum') ? 'grid' : 'none';
-  if (exam) exam.style.display = (TM.track === 'exam')       ? 'grid' : 'none';
-  var trk = document.querySelector('.tm-track');
-  if (trk) trk.style.display = 'none';
-  var h = tmEl('tmSetupTitle');
-  if (h) h.textContent = (TM.track === 'exam') ? 'Set your exam paper up' : 'Set your test up';
-}
-
-/* Start them where they already are: the subject, board and age they have been
-   practising on, so the only thing left to decide is how long and how many. */
-function tmSeedFromLab(track){
-  // Both LAB and EP are declared with const, so they are not on window — they
-  // are reached by name, inside a guard, rather than through it.
-  try {
-    if (track === 'curriculum') {
-      if (typeof LAB === 'object' && LAB) {
-        // Curriculum and grade first, so the subject list is rebuilt for
-        // where the student actually is before their subject is applied —
-        // otherwise a stream subject like 'accountancy' has no matching
-        // option yet and silently fails to take.
-        var _p = sosProfile();
-        tmEl('tmCurriculum').value = _p.curriculum;
-        tmEl('tmAge').value        = _p.grade;
-        tmRefreshSubjects();
-        if (LAB.subject)    tmEl('tmSubject').value    = LAB.subject;
-      }
-    } else if (typeof EP === 'object' && EP) {
-      if (EP.exam)       tmEl('tmExam').value        = EP.exam;
-      if (EP.subject)    tmEl('tmExamSubject').value = EP.subject;
-      if (EP.difficulty) tmEl('tmDifficulty').value  = EP.difficulty;
-    }
-  } catch (e) {}
-}
-
-/* The shell's Test Mode item comes through here. The setup panel is anchored
-   to the invitation inside the Curriculum tab — it is moved next to whichever
-   invite opened it — so this drives that same control rather than growing a
-   second way of opening the same thing that could drift out of step with it. */
-function sosOpenTestMode(subject){
+/* These used to read the setup form. The paper now says what it is, so they
+   read TM instead and there is no form left to disagree with. */
+/* study.html's rail calls this. There is no subject to choose any more --
+   the school sets the paper and says who sits it -- so the argument is ignored,
+   and kept only so a shell that still passes one keeps working. */
+function sosOpenTestMode(){
   try {
     showPage('lab');
-    if (subject) { try { if (labSetSubject(subject)) labOnSubjectChange(); } catch(e){} }
     var invite = document.getElementById('labInviteCurr');
     var btn = invite && invite.querySelector('.lti-go');
     if (!btn) return;
-    if (!invite.classList.contains('open')) tmOpenSetup('curriculum', btn);
-    if (subject) {
-      var s = document.getElementById('tmSubject');
-      if (s && [].some.call(s.options, function(o){ return o.value === subject; })) {
-        s.value = subject;
-        try { tmSyncSummary(); } catch(e){}
-      }
-    }
+    if (!invite.classList.contains('open')) tmOpenTests(btn);
     var setup = document.getElementById('tmSetup');
     if (setup && setup.scrollIntoView) setup.scrollIntoView({ behavior:'smooth', block:'center' });
   } catch(e){}
 }
-function tmPickTrack(track, btn){
-  TM.track = track;
-  var all = document.querySelectorAll('.tm-track .tm-trk');
-  for (var i = 0; i < all.length; i++) all[i].classList.toggle('active', all[i] === btn);
-  tmEl('tmCurrFields').style.display = (track === 'curriculum') ? 'grid' : 'none';
-  tmEl('tmExamFields').style.display = (track === 'exam')       ? 'grid' : 'none';
-  tmNote('', false);
-  tmSyncSummary();
-}
 
-/* What this test is about, in words — used in the summary, the top bar and
-   the label the result is filed under. */
-function tmSubjectKey(){
-  return TM.track === 'exam' ? tmEl('tmExamSubject').value : tmEl('tmSubject').value;
-}
-function tmSubjectName(){
-  return TM.track === 'exam'
-    ? (TM_EXAM_SUBJ[tmEl('tmExamSubject').value] || tmEl('tmExamSubject').value)
-    : (LAB_SUBJ_LABEL[tmEl('tmSubject').value] || tmEl('tmSubject').value);
-}
-function tmTestName(){
-  return TM.track === 'exam'
-    ? (TM_EXAM_NAMES[TM.exam] || TM.exam) + ' · ' + (TM_EXAM_SUBJ[TM.subject] || TM.subject)
-    : (LAB_SUBJ_LABEL[TM.subject] || TM.subject);
-}
-
-function tmCountChanged(){
-  var n = parseInt(tmEl('tmCount').value, 10) || 5;
-  tmEl('tmCountOut').textContent = n;
-  tmSyncSummary();
-}
-
-function tmPickTime(mins, btn){
-  TM.minutes = mins;
-  var all = document.querySelectorAll('#tmTimes .tm-time');
-  for (var i = 0; i < all.length; i++) all[i].classList.toggle('active', all[i] === btn);
-  tmEl('tmTimeHint').textContent = mins
-    ? 'The clock counts down and submits for you when it runs out.'
-    : 'No countdown — the clock just counts up so you know how long you took.';
-  tmSyncSummary();
-}
+function tmSubjectKey(){ return TM.subject; }
+function tmSubjectName(){ return LAB_SUBJ_LABEL[TM.subject] || TM.subject; }
+function tmTestName(){ return TM.examTitle || (LAB_SUBJ_LABEL[TM.subject] || TM.subject); }
 
 /* One line under the Start button, for when the paper could not be built as
    asked. Amber when the test still runs, red when it cannot. */
@@ -3569,93 +3546,175 @@ function tmNote(text, blocking){
   el.className = 'tm-note' + (blocking ? ' blocking' : '');
 }
 
-function tmSyncSummary(){
-  var n = parseInt(tmEl('tmCount').value, 10) || 15;
-  var what = TM.track === 'exam'
-    ? tmEl('tmExamSubject').selectedOptions[0].textContent.trim() + ' for ' +
-      tmEl('tmExam').selectedOptions[0].textContent.trim()
-    : tmEl('tmSubject').selectedOptions[0].textContent.trim();
-  tmEl('tmSummary').innerHTML = '<b>' + n + '</b> questions on <b>' + what + '</b>, ' +
-    (TM.minutes ? 'in <b>' + TM.minutes + ' minutes</b>.' : '<b>untimed</b>.');
+/* ══ ASSIGNED TESTS ═══════════════════════════════════════════════════
+   Students no longer build a paper. The school writes one, says who sits it
+   and when, and this is the whole of what a student may do about it: see the
+   ones addressed to them, and sit the ones that are open.
+
+   The query is the isolation. array-contains-any ['all','school:<mine>'] can
+   only return papers this student is in the audience of, which is the same
+   condition the rules enforce -- ask for anything wider and Firestore refuses
+   the query outright rather than returning a filtered subset. Grade is matched
+   here rather than in the query so no composite index is needed for what is,
+   in practice, a handful of documents.
+
+   AX.results is read alongside, because a paper already sat has to read as sat
+   rather than as an invitation to sit it again. */
+var AX = { exams: [], results: {}, loading: false };
+
+function axStamp(ms){
+  if (!ms) return '';
+  var d = new Date(ms);
+  return d.toLocaleDateString([], { day:'numeric', month:'short' }) + ', ' +
+         d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
 }
 
-/* ── Building the paper ─────────────────────────────────────────
-   Ask the engine for one more than we need and drop duplicates, so a
-   short topic list does not produce the same question twice. If it
-   simply cannot supply enough distinct ones we run with what there is
-   rather than padding the paper with repeats. */
-async function tmBuild(count){
-  var out = [], seen = {}, tries = 0;
-  var topics = TM.track === 'curriculum' ? labTopicsFor(TM.subject) : [''];
-  if (!topics.length) topics = [''];
+/* One paper's standing for this student, in the order the student cares
+   about: finished beats open, and a window that has not started beats one
+   that will not open again. */
+function axState(x){
+  var now = Date.now();
+  var r = AX.results[x.id];
+  var used = r ? (r.attemptsUsed || 1) : 0;
+  var allowed = x.attempts || 1;
 
-  while (out.length < count && tries < count * 6) {
-    tries++;
-    var topic = topics[out.length % topics.length];
-    var recent = out.map(function(x){ return x.question; });
-    var q;
-    try {
-      q = await provideLabQuestion({ subject: TM.subject, curriculum: TM.curriculum,
-                                     age: TM.age, topic: topic, recent: recent });
-    } catch (e) { continue; }
-    if (!q || !q.question || seen[q.question]) continue;
-    seen[q.question] = 1;
-    q.topic = topic;
-    out.push(q);
-  }
-  return out;
+  if (r && used >= allowed) return { k:'done',     label:'Handed in',  can:false };
+  if (x.opensAt && now < x.opensAt)   return { k:'upcoming', label:'Opens ' + axStamp(x.opensAt), can:false };
+  if (x.closesAt && now > x.closesAt) return { k:'closed',   label:'Closed',     can:false };
+  if (r) return { k:'open', label:'Attempt ' + (used + 1) + ' of ' + allowed, can:true };
+  return { k:'open', label: x.closesAt ? 'Open until ' + axStamp(x.closesAt) : 'Open now', can:true };
 }
 
-async function tmStart(){
-  if (!(window.SOS && SOS.user)) { tmApplyAccess(false); return; }
-  var count = Math.min(TM_MAX, Math.max(5, parseInt(tmEl('tmCount').value, 10) || 15));
-  if (TM.track === 'exam') {
-    TM.exam       = tmEl('tmExam').value;
-    TM.subject    = tmEl('tmExamSubject').value;
-    TM.difficulty = tmEl('tmDifficulty').value;
-  } else {
-    TM.subject    = tmEl('tmSubject').value;
-    TM.curriculum = tmEl('tmCurriculum').value;
-    TM.age        = tmEl('tmAge').value;
-  }
+function axLoad(){
+  var host = document.getElementById('axList');
+  if (!host || AX.loading) return;
+  var p = sosProfile();
+  var uid = (window.SOS && SOS.user && SOS.user.uid) || null;
+  if (!uid) { host.innerHTML = '<p class="ax-empty">Sign in to see the tests set for you.</p>'; return; }
 
-  var btn = document.querySelector('.tm-start .btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Preparing your test…'; }
+  AX.loading = true;
+  host.innerHTML = '<p class="ax-empty">Loading your tests' + '\u2026' + '</p>';
 
-  var qs = await tmBuild(count);
-  if (btn) { btn.disabled = false; btn.innerHTML = 'Start test &rarr;'; }
+  var school = p.schoolId || '';
+  db.collection('exams')
+    .where('audience', 'array-contains-any', ['all', 'school:' + school])
+    .get()
+    .then(function(snap){
+      var rows = [];
+      snap.forEach(function(d){ rows.push(Object.assign({ id: d.id }, d.data())); });
+      /* Their own grade only. A paper for another year group is not theirs to
+         sit, and showing it would only ever be a dead end. */
+      rows = rows.filter(function(x){ return String(x.grade) === String(p.grade); });
+      AX.exams = rows;
 
-  /* A subject and age can simply not have enough distinct questions behind it
-     yet. Saying so beats quietly handing over a three-question "test" and
-     letting the student wonder why it ended. */
-  if (qs.length < 3) {
-    tmNote('There are not enough questions for ' + tmTestName() +
-           (TM.track === 'exam' ? ' at that difficulty yet. Try another subject or difficulty.'
-                                : ' at this age group yet. Try another subject or age.'), true);
+      // Their own result for each, so a finished paper says so.
+      return Promise.all(rows.map(function(x){
+        return db.collection('examResults').doc(x.id).collection('students').doc(uid).get()
+          .then(function(d){ if (d.exists) AX.results[x.id] = d.data(); })
+          .catch(function(){});
+      }));
+    })
+    .then(function(){ AX.loading = false; axPaint(); })
+    .catch(function(e){
+      AX.loading = false;
+      host.innerHTML = '<p class="ax-empty">Could not load your tests: ' +
+        tmEsc((e && e.message) || 'unknown error') + '</p>';
+    });
+}
+
+function axPaint(){
+  var host = document.getElementById('axList');
+  if (!host) return;
+  if (!AX.exams.length) {
+    host.innerHTML = '<p class="ax-empty">No tests have been set for your class yet. ' +
+      'When your school sets one it will appear here.</p>';
     return;
   }
-  if (qs.length < count) {
-    tmNote('Only ' + qs.length + ' different questions are available for ' + tmTestName() +
-           ', so this test has ' + qs.length + ' rather than ' + count + '.', false);
-  } else {
-    tmNote('', false);
+  var order = { open:0, upcoming:1, done:2, closed:3 };
+  var rows = AX.exams.slice().sort(function(a, b){
+    var sa = axState(a), sb = axState(b);
+    return (order[sa.k] - order[sb.k]) || ((a.opensAt || 0) - (b.opensAt || 0));
+  });
+
+  host.innerHTML = rows.map(function(x){
+    var s = axState(x);
+    var r = AX.results[x.id];
+    var meta = (x.count || 0) + ' questions \u00b7 ' +
+      (x.minutes ? x.minutes + ' minutes' : 'no time limit') + ' \u00b7 ' +
+      (LAB_SUBJ_LABEL[x.subject] || x.subject);
+    /* A score is only shown when the student is allowed to know it. Where the
+       key is still sealed the row says it was handed in and stops there,
+       rather than showing a zero that would read as a mark. */
+    if (s.k === 'done') {
+      meta += ' \u00b7 ' + (r && typeof r.pct === 'number'
+        ? 'You scored ' + r.pct + '%'
+        : 'Your school has not released the marks yet');
+    }
+    return '<div class="ax-item">' +
+      '<div class="ax-main"><div class="ax-title">' + tmEsc(x.title || 'Test') + '</div>' +
+      '<div class="ax-meta">' + meta + '</div></div>' +
+      '<span class="ax-pill ' + s.k + '">' + tmEsc(s.label) + '</span>' +
+      '<button class="ax-go" ' + (s.can ? '' : 'disabled ') +
+        'onclick="axSit(\'' + tmEsc(x.id) + '\')">' +
+        (s.k === 'done' ? 'Handed in' : 'Start') + '</button></div>';
+  }).join('');
+}
+
+/* Opening a paper re-reads it rather than trusting the copy the list was
+   painted from: the window may have closed, or the last attempt may have been
+   used in another tab, between the list loading and the button being pressed. */
+function axSit(examId){
+  var x = AX.exams.filter(function(y){ return y.id === examId; })[0];
+  if (!x) return;
+  var s = axState(x);
+  if (!s.can) { tmNote('That test is not open.', true); axLoad(); return; }
+  if (!(x.questions && x.questions.length)) {
+    tmNote('That paper has no questions in it yet. Tell your teacher.', true);
+    return;
   }
+  tmNote('', false);
+  tmStartExam(x);
+}
+
+/* The runner, handed a paper instead of building one. Everything downstream of
+   here is the test mode that already existed -- same cards, same clock, same
+   submit -- because the only thing that changed is where the questions came
+   from.
+
+   The questions carry no answers. The key is a subcollection the rules will
+   not open until the paper is handed in, so there is nothing in this browser
+   to read ahead even with devtools open. */
+function tmStartExam(x){
+  var p = sosProfile();
+  TM.examId  = x.id;
+  TM.examTitle = x.title || 'Test';
+  TM.attempts = x.attempts || 1;
+  TM.attemptsUsed = ((AX.results[x.id] || {}).attemptsUsed || 0) + 1;
+  TM.revealAnswers = x.revealAnswers !== false;
+  TM.subject = x.subject;
+  TM.curriculum = p.curriculum || 'cbse';
+  TM.age = String(x.grade);
+  TM.minutes = x.minutes || 0;
+
+  var qs = (x.questions || []).map(function(q){
+    return { question: q.question, options: (q.options || []).slice(),
+             hint: q.hint || '', answer: '', explanation: '', topic: '' };
+  });
 
   TM.questions = qs;
-  TM.answers   = qs.map(function(){ return null; });
-  TM.flags     = qs.map(function(){ return false; });
+  TM.answers = qs.map(function(){ return null; });
+  TM.flags   = qs.map(function(){ return false; });
   TM.at = 0; TM.submitted = false; TM.on = true;
-  // Rough work and the ordering board belong to a question, so they start
-  // empty; the tools this subject may open are decided by the subject.
   TM.work  = qs.map(function(){ return SOSTestTools.newStore(); });
   TM.tools = [];
   tmCloseLabTools();
   TM.startedAt = Date.now();
   TM.endsAt = TM.minutes ? TM.startedAt + TM.minutes * 60000 : 0;
 
-  tmEl('tmBarTitle').textContent = tmTestName() + ' test';
-  tmEl('tmBarMeta').textContent  = qs.length + ' questions · ' +
-    (TM.minutes ? TM.minutes + ' minute limit' : 'no time limit');
+  tmEl('tmBarTitle').textContent = TM.examTitle;
+  tmEl('tmBarMeta').textContent  = qs.length + ' questions \u00b7 ' +
+    (TM.minutes ? TM.minutes + ' minute limit' : 'no time limit') +
+    (TM.attempts > 1 ? ' \u00b7 attempt ' + TM.attemptsUsed + ' of ' + TM.attempts : '');
   tmEl('tmResults').style.display = 'none';
   tmResetChrome();
   tmEl('tmBody').style.display = '';
@@ -3666,6 +3725,49 @@ async function tmStart(){
 
   tmRenderAll();
   tmStartClock();
+}
+
+/* Handing in, then marking -- in that order, and the order is the point.
+   The rules only open the key once a result exists, so the answers have to be
+   filed before anything can be marked. That also means the submitted answers
+   are already immutable by the time the key is readable: unlocking it cannot
+   be used to improve the paper it unlocks.
+
+   Returns a promise for the key, or null when the student may not see it. */
+function axSubmitAndReveal(){
+  if (!TM.examId) return Promise.resolve(null);
+  var uid = (window.SOS && SOS.user && SOS.user.uid) || null;
+  if (!uid) return Promise.resolve(null);
+  var p = sosProfile();
+
+  var doc = db.collection('examResults').doc(TM.examId).collection('students').doc(uid);
+  var record = {
+    uid: uid,
+    name: (p.name || '').trim() || 'A student',
+    schoolId: p.schoolId || '',
+    grade: String(TM.age),
+    subject: TM.subject,
+    examTitle: TM.examTitle,
+    answers: TM.answers.map(function(a){ return a == null ? '' : String(a); }),
+    attemptsUsed: TM.attemptsUsed,
+    durationSec: Math.round((Date.now() - TM.startedAt) / 1000),
+    submittedAt: Date.now()
+  };
+
+  return doc.set(record, { merge: true })
+    .then(function(){
+      /* Only worth asking for when the student is entitled to it. Asking
+         anyway would produce a permission error on every held-back paper and
+         teach whoever reads the console to ignore them. */
+      if (!TM.revealAnswers || TM.attemptsUsed < TM.attempts) return null;
+      return db.collection('exams').doc(TM.examId).collection('key').doc('paper').get()
+        .then(function(d){ return d.exists ? d.data() : null; })
+        .catch(function(){ return null; });
+    })
+    .catch(function(e){
+      console.warn('Could not file the result:', e);
+      return null;
+    });
 }
 
 /* ── The clock ── */
@@ -4054,8 +4156,8 @@ function tmPaintTop(){
   if (f) f.textContent = TM.flags.filter(Boolean).length;
   var sl = tmEl('tmFigSetLabel'), sv = tmEl('tmFigSet');
   if (sl && sv) {
-    if (TM.track === 'exam') { sl.textContent = 'Exam'; sv.textContent = TM_EXAM_NAMES[TM.exam] || 'Exam'; }
-    else { sl.textContent = 'Grade'; sv.textContent = TM.age ? ('Grade ' + TM.age) : '\u2014'; }
+    sl.textContent = 'Grade';
+    sv.textContent = TM.age ? ('Grade ' + TM.age) : '\u2014';
   }
 
   var jump = tmEl('tmJump');
@@ -4119,9 +4221,13 @@ function tmSnapshot(){
   return {
     v: 1,
     savedAt: Date.now(),
-    track: TM.track, subject: TM.subject,
+    subject: TM.subject,
     curriculum: TM.curriculum, age: TM.age,
-    exam: TM.exam, difficulty: TM.difficulty,
+    /* Which paper this is. Without it a resumed test would have answers and
+       nowhere to file them, and the student would sit it again for nothing. */
+    examId: TM.examId, examTitle: TM.examTitle,
+    attempts: TM.attempts, attemptsUsed: TM.attemptsUsed,
+    revealAnswers: TM.revealAnswers,
     minutes: TM.minutes,
     // What is left on the clock, not when it was due to end — the pause may
     // last a week and the time remaining has to survive it.
@@ -4202,9 +4308,13 @@ function tmResume(){
   if (!(window.SOS && SOS.user)) { tmApplyAccess(false); return; }
   tmCloseLabTools();
 
-  TM.track = st.track; TM.subject = st.subject;
+  TM.subject = st.subject;
   TM.curriculum = st.curriculum; TM.age = st.age;
-  TM.exam = st.exam; TM.difficulty = st.difficulty;
+  TM.examId = st.examId || null;
+  TM.examTitle = st.examTitle || '';
+  TM.attempts = st.attempts || 1;
+  TM.attemptsUsed = st.attemptsUsed || 1;
+  TM.revealAnswers = st.revealAnswers !== false;
   TM.minutes = st.minutes;
   TM.questions = st.questions;
   TM.answers = st.answers;
@@ -4263,9 +4373,7 @@ function tmPaintResume(){
     ? Math.max(1, Math.round(st.remainingMs / 60000)) + ' min left'
     : 'no time limit';
   var when = tmWhenSaved(st.savedAt);
-  var name = (st.track === 'exam')
-    ? (TM_EXAM_NAMES[st.exam] || st.exam) + ' · ' + (TM_EXAM_SUBJ[st.subject] || st.subject)
-    : (LAB_SUBJ_LABEL[st.subject] || st.subject);
+  var name = st.examTitle || (LAB_SUBJ_LABEL[st.subject] || st.subject);
 
   var el = document.createElement('div');
   el.className = 'tm-resume';
@@ -4319,6 +4427,11 @@ function tmIsRight(q, given){
   return want.toLowerCase() === got.toLowerCase();
 }
 
+/* Handing in is now two steps, and they cannot be reordered: file the answers,
+   then ask for the key. The paper this browser holds has no answers on it, so
+   until the key comes back there is nothing to mark against — which is the
+   point. A paper whose key stays sealed is shown as handed in, with no score,
+   rather than being marked against blanks and reported as zero. */
 function tmSubmit(byTimer){
   if (TM.submitted) return;
   TM.submitted = true;
@@ -4329,38 +4442,91 @@ function tmSubmit(byTimer){
   tmCloseModal();
   window.removeEventListener('beforeunload', tmWarnLeaving);
 
-  var right = 0;
-  TM.questions.forEach(function(q, i){ if (tmIsRight(q, TM.answers[i])) right++; });
-  var total = TM.questions.length;
-  var pct   = Math.round(right / total * 100);
-  var secs  = Math.round((Date.now() - TM.startedAt) / 1000);
+  var secs = Math.round((Date.now() - TM.startedAt) / 1000);
+  tmHandingIn();
 
-  // Recorded question by question, so a test counts towards the same totals
-  // and streaks as ordinary practice.
-  try {
-    // Filed under 'test' either way, but an exam test carries the exam in its
-    // label so a dashboard can tell a CUET paper from a Science one.
-    var label = tmTestName(), key = tmFilingKey();
+  axSubmitAndReveal().then(function(key){
+    if (!key) { tmRenderHandedIn(); return; }
+
+    /* The key arrived, so the paper can be completed with it and everything
+       downstream works on a whole question again — the same rendering, the
+       same progress records, unchanged. */
+    var answers = key.answers || [], why = key.explanations || [];
     TM.questions.forEach(function(q, i){
-      recordProgress('test', TM.subject, label, tmIsRight(q, TM.answers[i]), 0, key);
+      q.answer = answers[i] == null ? '' : String(answers[i]);
+      q.explanation = why[i] || '';
     });
-  } catch (e) {}
 
-  // And kept as a test in its own right — the whole paper, in its own drawer.
-  tmSaveTest(right, total, pct, secs, byTimer);
+    var right = 0;
+    TM.questions.forEach(function(q, i){ if (tmIsRight(q, TM.answers[i])) right++; });
+    var total = TM.questions.length;
+    var pct   = total ? Math.round(right / total * 100) : 0;
 
-  tmRenderResults(right, total, pct, secs, byTimer);
+    // The mark goes back onto the result so the list, and the teacher, can
+    // read it without re-marking. The answers themselves are already frozen.
+    try {
+      var uid = (window.SOS && SOS.user && SOS.user.uid) || null;
+      if (uid && TM.examId) {
+        db.collection('examResults').doc(TM.examId).collection('students').doc(uid)
+          .set({ correct: right, total: total, pct: pct }, { merge: true })
+          .catch(function(e){ console.warn('Could not write the mark back:', e); });
+      }
+    } catch (e) {}
+
+    // Recorded question by question, so a test counts towards the same totals
+    // and streaks as ordinary practice.
+    try {
+      var label = tmTestName(), fkey = tmFilingKey();
+      TM.questions.forEach(function(q, i){
+        recordProgress('test', TM.subject, label, tmIsRight(q, TM.answers[i]), 0, fkey);
+      });
+    } catch (e) {}
+
+    // And kept as a test in its own right — the whole paper, in its own drawer.
+    tmSaveTest(right, total, pct, secs, byTimer);
+    tmRenderResults(right, total, pct, secs, byTimer);
+  }).catch(function(e){
+    console.warn('Could not finish submitting:', e);
+    tmRenderHandedIn();
+  });
+}
+
+/* Between pressing submit and the answers being filed there is a network
+   round trip, and the student should not be looking at a live-looking paper
+   through it. */
+function tmHandingIn(){
+  var bar = tmEl('tmBarMeta');
+  if (bar) bar.textContent = 'Handing your paper in' + '\u2026';
+}
+
+/* The paper is in and that is all this student gets to know for now: either
+   the school held the answers back, or there are attempts left and releasing
+   the key would hand over the answers to a test they can still resit. */
+function tmRenderHandedIn(){
+  var left = TM.attempts - TM.attemptsUsed;
+  var why = left > 0
+    ? 'You have ' + left + (left === 1 ? ' more attempt' : ' more attempts') +
+      ' on this test, so the answers stay sealed until you have used ' +
+      (left === 1 ? 'it' : 'them') + '.'
+    : 'Your school has chosen not to release the answers for this test yet.';
+
+  tmEl('tmBarTitle').textContent = TM.examTitle;
+  tmEl('tmBarMeta').textContent = 'Handed in';
+  tmEl('tmBody').style.display = 'none';
+  var res = tmEl('tmResults');
+  res.style.display = '';
+  res.innerHTML =
+    '<div class="tm-res-head"><h2>Your paper is in.</h2>' +
+    '<p class="tm-sub">' + tmEsc(why) + '</p></div>' +
+    '<div class="tm-res-acts"><button class="btn" onclick="tmClose()">Back to my tests</button></div>';
+  try { AX.results[TM.examId] = { attemptsUsed: TM.attemptsUsed }; } catch (e) {}
 }
 
 /* Which drawer this paper belongs in. A school test files under its subject;
    an exam test files under exam-and-subject, so a CUET Reasoning paper never
    lands in the same drawer as an SSC one. The key leads the document id, so
    a student's tests sit grouped by subject rather than in one heap. */
-function tmFilingKey(){
-  return TM.track === 'exam'
-    ? (TM.exam + '-' + TM.subject)
-    : ('school-' + TM.subject);
-}
+function tmFilingKey(){ return 'school-' + TM.subject; }
 
 /* ── Keeping a finished test ──────────────────────────────────────
    Two documents, written once, both under the student's own progress
@@ -4383,12 +4549,9 @@ function tmSaveTest(right, total, pct, secs, byTimer){
   if (!(window.SOS && SOS.user && SOS.db)) return;   // guests keep nothing
   try {
     var db = SOS.db, uid = SOS.user.uid, FV = firebase.firestore.FieldValue;
-    var isExam = (TM.track === 'exam');
     var key    = tmFilingKey();
     var label  = tmTestName();
-    var subjName = isExam ? (TM_EXAM_SUBJ[TM.subject] || TM.subject)
-                          : (LAB_SUBJ_LABEL[TM.subject] || TM.subject);
-    var examName = isExam ? (TM_EXAM_NAMES[TM.exam] || TM.exam) : null;
+    var subjName = LAB_SUBJ_LABEL[TM.subject] || TM.subject;
 
     var p2 = function(n){ return ('0' + n).slice(-2); };
     var d  = new Date(TM.startedAt || Date.now());
@@ -4420,16 +4583,19 @@ function tmSaveTest(right, total, pct, secs, byTimer){
       };
     });
 
+    /* Every paper is a school paper now, so the fields that used to separate
+       an entrance-exam sitting from a curriculum one are gone rather than
+       written as null on every record. `examId` replaces them: it says which
+       set paper this was, which is the thing worth knowing later. */
     var about = {
       subjectKey: key,
-      track: TM.track,
+      track: 'school',
       subject: TM.subject,
       subjectName: subjName,
-      exam: isExam ? TM.exam : null,
-      examName: examName,
-      difficulty: isExam ? TM.difficulty : null,
-      curriculum: isExam ? null : TM.curriculum,
-      ageGroup: isExam ? null : TM.age,
+      examId: TM.examId || null,
+      examName: TM.examTitle || null,
+      curriculum: TM.curriculum,
+      ageGroup: TM.age,
       label: label
     };
 
@@ -4512,8 +4678,10 @@ function tmRenderResults(right, total, pct, secs, byTimer){
 
   var acts = document.createElement('div');
   acts.className = 'tm-res-acts';
-  acts.innerHTML = '<button type="button" class="tm-nav primary" onclick="tmClose()">Done</button>' +
-    '<button type="button" class="tm-nav" onclick="tmClose();tmStart();">Take another</button>';
+  /* No "take another": the paper was set, not chosen, and a resit is only
+     possible when the exam allows one -- which the tests list decides, not
+     this button. */
+  acts.innerHTML = '<button type="button" class="tm-nav primary" onclick="tmClose()">Done</button>';
   tmEl('tmStack').appendChild(acts);
 
   tmEl('tmBody').scrollTop = 0;
@@ -4528,11 +4696,6 @@ document.addEventListener('keydown', function(e){
 });
 
 document.addEventListener('DOMContentLoaded', function(){
-  ['tmSubject','tmExam','tmExamSubject','tmDifficulty','tmCurriculum','tmAge'].forEach(function(id){
-    var el = tmEl(id);
-    if (el) el.addEventListener('change', tmSyncSummary);
-  });
-  tmSyncSummary();
   tmApplyAccess(!!(window.SOS && SOS.user));
   if (window.SOS && typeof SOS.onSession === 'function') {
     SOS.onSession(function(user){ tmApplyAccess(!!user); });
@@ -5287,17 +5450,27 @@ Object.keys(LAB_ALL_SUBJECTS).forEach(function(k){ LAB_SUBJ_LABEL[k] = LAB_ALL_S
    core subjects plus whatever that board actually adds this early — Hindi
    for CBSE, General Knowledge for the rest, Computer Science once a school
    would realistically be teaching it. */
-/* The site teaches six subjects. The rest were removed rather than left on a
-   menu with nothing behind them. Filtered in the one place that decides what a
-   grade is offered, so the subject tiles, the test setup and the syllabus all
-   agree without three separate lists to keep in step. */
-const SUBJECTS_LIVE = ['maths', 'english', 'science', 'physics', 'chemistry', 'biology'];
+/* Which subjects a grade is offered. Math and English run the whole way;
+   Science is the single science subject up to Grade 10 and is replaced at 11
+   and 12 by Physics, Chemistry and Biology, where the streams split.
+
+   This is the one place the Lab decides it, so the subject tiles, the test
+   setup and the syllabus all agree without three lists to keep in step. It
+   deliberately matches exSubjectsFor() in pages/admin.html, which decides the
+   same thing for exams -- if one is ever changed, change the other, or a
+   student is set an exam in a subject their own Lab does not offer. */
+function subjectsLiveFor(gradeStr){
+  var g = parseInt(gradeStr, 10) || 1;
+  return g >= 11 ? ['maths', 'english', 'physics', 'chemistry', 'biology']
+                 : ['maths', 'english', 'science'];
+}
 
 function labGroupsFor(curriculum, gradeStr){
+  const live = subjectsLiveFor(gradeStr);
   return labGroupsForAll(curriculum, gradeStr)
     .map(function(g){
       return { id: g.id, label: g.label,
-               subjects: g.subjects.filter(function(s){ return SUBJECTS_LIVE.indexOf(s) !== -1; }) };
+               subjects: g.subjects.filter(function(s){ return live.indexOf(s) !== -1; }) };
     })
     .filter(function(g){ return g.subjects.length; });
 }
@@ -5492,14 +5665,21 @@ function labPaintSubjectTiles(){
    picked when they signed up, mirrored into localStorage by SOS.onSession.
    Nothing in the Lab may contradict it. */
 function sosProfile(){
-  var cur = 'cbse', grade = '1';
+  var cur = 'cbse', grade = '1', school = '', name = '';
   try {
     var c = localStorage.getItem('sos_curriculum');
     var g = localStorage.getItem('sos_grade') || localStorage.getItem('sos_age');
     if (c) cur = c;
     if (g) grade = labGradeToAge(g);
+    /* The school and the name are on the profile too. Assigned tests need the
+       school to know which papers are addressed to this student, and the name
+       so a result reads as a person in their teacher's list rather than a uid.
+       Both are written by js/session.js from the account; empty means signed
+       out or not in a school, and every caller treats it that way. */
+    school = localStorage.getItem('sos_school_id') || '';
+    name   = localStorage.getItem('sos_name') || '';
   } catch(e){}
-  return { curriculum: cur, grade: grade };
+  return { curriculum: cur, grade: grade, schoolId: school, name: name };
 }
 /* Force every control that carries these values back to the profile, wherever
    it lives — the Lab, Test Mode, or anything added later. */
@@ -6555,7 +6735,7 @@ window.SOSToolCtx = function(){
     // A test in progress wins: the tool was opened over the paper, not the Lab.
     var shell = document.getElementById('tmShell');
     var testOpen = shell && !shell.hidden && shell.offsetParent !== null;
-    if (testOpen && typeof TM === 'object' && TM && TM.track === 'curriculum') {
+    if (testOpen && typeof TM === 'object' && TM) {
       return { subject: TM.subject, grade: TM.age };
     }
     if (typeof LAB === 'object' && LAB) return { subject: LAB.subject, grade: LAB.age };
@@ -6756,7 +6936,6 @@ labSyncSubjectPicker(true);
 labConsumeHandover();
 ptRender();
 fsInit();
-try { tmRefreshSubjects(); } catch(e){}
 
 
 /* ══════════════════════════════════════
