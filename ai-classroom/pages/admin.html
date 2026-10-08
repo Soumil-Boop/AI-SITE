@@ -238,14 +238,22 @@
     .ad-exams { margin-top:2rem; }
     .ad-exams h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.1rem; color:var(--text); }
     .ad-exams .sub { font-size:.8rem; color:var(--ink-soft); margin-top:.12rem; }
-    .ex-wrap { display:grid; grid-template-columns:minmax(0,340px) minmax(0,1fr); gap:1.4rem;
+    /* The form used to sit in a fixed 340px column with the exam list beside
+       it, which left a twelve-field form scrolling inside a third of the page
+       while the other two thirds were usually the words "No exams set yet."
+       It now runs full width in grouped cards, and the list sits underneath. */
+    .ex-wrap { display:flex; flex-direction:column; gap:1.4rem;
                align-items:start; margin-top:1rem; }
     .ex-card { background:var(--white); border:1px solid var(--border); border-radius:16px; padding:1.15rem 1.25rem; }
     .ex-card h3 { font-family:'Nunito',sans-serif; font-weight:900; font-size:.95rem; color:var(--text); margin-bottom:.2rem; }
     .ex-card .note { font-size:.76rem; color:var(--ink-soft); margin-bottom:.9rem; line-height:1.5; }
     .ex-row { margin-bottom:.75rem; }
     .ex-row > label { display:block; font-size:.76rem; font-weight:600; color:var(--text); margin-bottom:.3rem; }
-    .ex-row input[type=text], .ex-row input[type=date], .ex-row input[type=number], .ex-row select {
+    /* datetime-local was missing from this list, so Opens and Closes rendered
+       in the browser's native style -- a different font on a different ground,
+       in the middle of a form where every other control matched. */
+    .ex-row input[type=text], .ex-row input[type=date], .ex-row input[type=datetime-local],
+    .ex-row input[type=number], .ex-row select {
       width:100%; height:36px; border:1px solid var(--border); border-radius:8px; background:var(--surface);
       padding:0 .7rem; font-family:'Inter',sans-serif; font-size:.85rem; color:var(--text); outline:none; }
     .ex-row input:focus, .ex-row select:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,86,47,.12); }
@@ -263,6 +271,73 @@
     .ex-item .who { font-size:.75rem; color:var(--ink-soft); }
     .ex-item .meta { font-size:.74rem; color:var(--ink-soft); margin-top:.3rem; }
     .ex-item .acts { margin-top:.55rem; display:flex; gap:.4rem; flex-wrap:wrap; }
+    /* Five groups across two columns. "The paper" and the action bar span both,
+       because the first is what everything else qualifies and the last is what
+       you press when the rest is settled. */
+    .ex-groups { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:1rem;
+      align-items:start; }
+    .ex-g { background:var(--white); border:1px solid var(--border); border-radius:16px;
+      padding:1.1rem 1.2rem; }
+    .ex-g.span { grid-column:1 / -1; }
+    .ex-g > h4 { font-family:'Nunito',sans-serif; font-weight:900; font-size:.92rem;
+      color:var(--text); margin:0 0 .15rem; display:flex; align-items:center; gap:.5rem; }
+    .ex-g > h4::before { content:''; width:3px; height:14px; border-radius:2px; background:var(--accent); }
+    .ex-g > .gsub { font-size:.75rem; color:var(--ink-soft); margin:0 0 .9rem; line-height:1.5; }
+    .ex-g .ex-row:last-of-type { margin-bottom:0; }
+
+    .ex-foot { grid-column:1 / -1; background:var(--white); border:1px solid var(--border);
+      border-radius:16px; padding:1rem 1.2rem; }
+    .ex-footrow { display:flex; justify-content:space-between; align-items:center;
+      gap:1rem; flex-wrap:wrap; }
+    .ex-sum { font-size:.8rem; color:var(--ink-soft); margin:0; }
+    .ex-sum b { color:var(--text); font-weight:600; }
+    @media (max-width:860px) { .ex-groups { grid-template-columns:1fr; } }
+
+    .ex-go { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .ad-mini.ghost { background:transparent; border:1px solid var(--border); color:var(--ink-soft); }
+    .ad-mini.ghost:hover { border-color:var(--accent); color:var(--text); }
+    .ex-upload { margin-top:.9rem; border-top:1px solid var(--border); padding-top:.9rem; }
+    .ex-upload[hidden] { display:none; }
+    .ex-uphelp { font-size:.76rem; color:var(--ink-soft); line-height:1.55; margin:0 0 .6rem; }
+    .ex-uphelp code { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:.72rem;
+      background:var(--gray-50); border:1px solid var(--gray-100); border-radius:5px; padding:.05rem .3rem; }
+    #exUpFile { font-size:.78rem; color:var(--ink-soft); margin-bottom:.5rem; display:block; }
+    #exUpText { width:100%; min-height:110px; resize:vertical; background:var(--gray-50);
+      border:1px solid var(--gray-100); border-radius:9px; color:var(--text);
+      font-family:'JetBrains Mono',ui-monospace,monospace; font-size:.76rem; padding:.55rem .7rem;
+      outline:none; margin-bottom:.6rem; }
+    #exUpText:focus { border-color:var(--accent); }
+
+    /* ── Requests from schools ── */
+    .rq-wrap { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:1.2rem; align-items:start; }
+    @media (max-width:860px) { .rq-wrap { grid-template-columns:1fr; } }
+    .rq-card { background:var(--white); border:1px solid var(--border); border-radius:16px; padding:1.1rem 1.2rem; }
+    .rq-card h3 { font-size:.95rem; margin:0 0 .2rem; }
+    .rq-card .note { font-size:.76rem; color:var(--ink-soft); margin:0 0 .9rem; }
+    .rq-row { margin-bottom:.7rem; }
+    .rq-row label { display:block; font-size:.72rem; font-weight:600; color:var(--faint);
+      text-transform:uppercase; letter-spacing:.06em; margin-bottom:.3rem; }
+    .rq-two { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; }
+    .rq-row input, .rq-row select, .rq-row textarea { width:100%; background:var(--gray-50);
+      border:1px solid var(--gray-100); border-radius:9px; color:var(--text);
+      font:inherit; font-size:.84rem; padding:.5rem .65rem; outline:none; }
+    .rq-row textarea { min-height:70px; resize:vertical; }
+    .rq-row input:focus, .rq-row select:focus, .rq-row textarea:focus { border-color:var(--accent); }
+    .rq-msg { font-size:.78rem; margin-top:.5rem; min-height:1.1em; }
+    .rq-msg.ok { color:var(--green); } .rq-msg.err { color:var(--danger); }
+    .rq-list { display:flex; flex-direction:column; gap:.6rem; }
+    .rq-empty { font-size:.8rem; color:var(--ink-soft); padding:.9rem 0; }
+    .rq-item { background:var(--white); border:1px solid var(--border); border-radius:14px; padding:.85rem 1rem; }
+    .rq-top { display:flex; align-items:baseline; gap:.5rem; flex-wrap:wrap; margin-bottom:.35rem; }
+    .rq-top b { font-size:.88rem; color:var(--text); }
+    .rq-pill { font-size:.68rem; font-weight:700; border-radius:100px; padding:.12rem .5rem; }
+    .rq-pill.open  { background:var(--brand-light); color:var(--brand-mid); }
+    .rq-pill.noted { background:var(--accent-light); color:var(--accent); }
+    .rq-pill.done  { background:var(--green-light); color:var(--green); }
+    .rq-when { font-size:.72rem; color:var(--faint); margin-left:auto; }
+    .rq-field { font-size:.78rem; color:var(--ink-soft); margin-top:.3rem; line-height:1.5; }
+    .rq-field b { color:var(--text); font-weight:600; }
+    .rq-acts { margin-top:.6rem; display:flex; gap:.4rem; flex-wrap:wrap; }
     .ex-res { margin-top:.7rem; border-top:1px solid var(--border); padding-top:.6rem; }
     .ex-ressum { font-size:.76rem; color:var(--ink-soft); margin-bottom:.45rem; }
     .ex-restable { width:100%; border-collapse:collapse; font-size:.75rem; }
@@ -462,58 +537,151 @@
       <h2>Exams</h2>
       <p class="sub" id="exLede">A paper is written once and sat by every student in the grade and schools you pick.</p>
       <div class="ex-wrap">
-        <div class="ex-card" id="exAuthor">
-          <h3>Set an exam</h3>
-          <p class="note">Questions are generated when you save, and then fixed — every student sits
-            the same paper.</p>
+<div id="exAuthor">
+          <div class="ex-groups">
 
-          <div class="ex-row"><label for="exTitle">Title</label>
-            <input type="text" id="exTitle" placeholder="October Monthly — Maths" autocomplete="off"/></div>
+            <div class="ex-g span">
+              <h4>The paper</h4>
+              <p class="gsub">Questions are generated when you save, and then fixed &mdash; every
+                student sits the same paper.</p>
 
-          <div class="ex-row ex-two">
-            <div><label for="exGrade">Grade</label><select id="exGrade" onchange="exGradeChanged()"></select></div>
-            <div><label for="exSubject">Subject</label><select id="exSubject"></select></div>
+              <div class="ex-row"><label for="exTitle">Title</label>
+                <input type="text" id="exTitle" placeholder="October Monthly &mdash; Maths" autocomplete="off"/></div>
+
+              <div class="ex-row ex-two">
+                <div><label for="exGrade">Grade</label><select id="exGrade" onchange="exGradeChanged()"></select></div>
+                <div><label for="exSubject">Subject</label><select id="exSubject"></select></div>
+              </div>
+
+              <div class="ex-row"><label for="exTopics">Topics to focus on</label>
+                <input type="text" id="exTopics" placeholder="e.g. Quadratic equations, Trigonometry" autocomplete="off"/>
+                <p class="ex-hint">Optional. Left blank, the paper covers the whole subject for that
+                  grade. A school&rsquo;s request fills this in for you.</p></div>
+            </div>
+
+            <div class="ex-g">
+              <h4>How it is written</h4>
+              <p class="gsub">Which model writes it, and whether it is worth waiting for.</p>
+              <div class="ex-row ex-two">
+                <div><label for="exModel">Written by</label>
+                  <select id="exModel" onchange="exModelChanged()"></select></div>
+                <div><label for="exBatch">When</label>
+                  <select id="exBatch" onchange="exModelChanged()">
+                    <option value="0">Generate now</option>
+                    <option value="1">Generate overnight (cheaper)</option>
+                  </select></div>
+              </div>
+              <p class="ex-hint" id="exCostHint"></p>
+            </div>
+
+            <div class="ex-g">
+              <h4>When it runs</h4>
+              <p class="gsub">Picking how often fills the dates in for you.</p>
+              <div class="ex-row ex-two">
+                <div><label for="exCadence">How often</label>
+                  <select id="exCadence" onchange="exCadenceChanged()"></select></div>
+                <div><label for="exMinutes">Minutes</label>
+                  <input type="number" id="exMinutes" min="0" max="180" value="30"/></div>
+              </div>
+              <p class="ex-hint" id="exCountHint"></p>
+
+              <div class="ex-row ex-two">
+                <div><label for="exOpens">Opens</label><input type="datetime-local" id="exOpens"/></div>
+                <div><label for="exCloses">Closes</label><input type="datetime-local" id="exCloses"/></div>
+              </div>
+              <p class="ex-hint">A monthly test runs from the 1st to the last day, a weekly one from
+                Monday to Sunday. Change either if you want different dates. A test cannot be started
+                before it opens or after it closes.</p>
+            </div>
+
+            <div class="ex-g">
+              <h4>Sitting rules</h4>
+              <p class="gsub">How many goes, and when the answers are released.</p>
+              <div class="ex-row ex-two">
+                <div><label for="exAttempts">Attempts</label>
+                  <input type="number" id="exAttempts" min="1" max="5" value="1"/></div>
+                <div><label for="exReveal">After submitting</label>
+                  <select id="exReveal">
+                    <option value="1" selected>Show the student their score and the answers</option>
+                    <option value="0">Show nothing until you release it</option>
+                  </select></div>
+              </div>
+              <p class="ex-hint">Answers are only ever shown once a student has used their last
+                attempt &mdash; otherwise the key could be opened on a first try and used on a second.</p>
+            </div>
+
+            <div class="ex-g">
+              <h4>Who sits it</h4>
+              <p class="gsub">Only the grade you chose, in the schools you tick.</p>
+              <div class="ex-row">
+                <div class="ex-schools" id="exSchools"></div>
+              </div>
+            </div>
+
+            <div class="ex-foot">
+              <div class="ex-footrow">
+                <p class="ex-sum" id="exSum"></p>
+                <div class="ex-go">
+                  <button class="ad-mini" onclick="exSave()" id="exSaveBtn">Generate paper and set exam</button>
+                  <button class="ad-mini ghost" onclick="exToggleUpload()" id="exUpBtn">Upload a paper instead</button>
+                </div>
+              </div>
+              <p class="ex-msg" id="exMsg"></p>
+
+              <div class="ex-upload" id="exUpload" hidden>
+                <p class="ex-uphelp">A JSON array of questions, or a CSV with the columns
+                  <code>question, option1, option2, option3, option4, answer, hint, explanation</code>.
+                  The answer must match one of the options exactly. Everything above still applies
+                  &mdash; grade, subject, dates and who sits it are taken from the form.</p>
+                <input type="file" id="exUpFile" accept=".json,.csv,.txt" onchange="exUpPick(this)"/>
+                <textarea id="exUpText" placeholder="&#91;&#123;&quot;question&quot;: &quot;...&quot;, &quot;options&quot;: &#91;&quot;a&quot;,&quot;b&quot;&#93;, &quot;answer&quot;: &quot;a&quot;&#125;&#93;"></textarea>
+                <button class="ad-mini" onclick="exUpSave()" id="exUpSaveBtn">Check and set exam</button>
+                <p class="ex-msg" id="exUpMsg"></p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        
+          <div class="ex-list" id="exList"></div>
+      </div>
+    </section>
+
+    <!-- Requests travel one way: a school admin writes in about what their
+         class has covered and what they want tested, and the owner answers by
+         setting a paper. A school admin only ever sees their own school's
+         requests -- the query says so and the rules say so again. -->
+    <section class="ad-reqs" id="adRequests" style="display:none;">
+      <h2>Requests from schools</h2>
+      <p class="sub" id="rqLede"></p>
+      <div class="rq-wrap">
+
+        <div class="rq-card" id="rqCompose">
+          <h3>Ask for a test</h3>
+          <p class="note">Tell us what your class has covered and what you would like them tested on.</p>
+
+          <div class="rq-row rq-two">
+            <div><label for="rqGrade">Grade</label>
+              <select id="rqGrade" onchange="rqGradeChanged()"></select></div>
+            <div><label for="rqSubject">Subject</label><select id="rqSubject"></select></div>
           </div>
 
-          <div class="ex-row ex-two">
-            <div><label for="exCount">Questions</label>
-              <input type="number" id="exCount" min="5" max="35" value="20"/></div>
-            <div><label for="exMinutes">Minutes</label>
-              <input type="number" id="exMinutes" min="0" max="180" value="30"/></div>
-          </div>
-          <p class="ex-hint">0 minutes means no time limit.</p>
+          <div class="rq-row"><label for="rqCovered">What the class has covered</label>
+            <textarea id="rqCovered" placeholder="e.g. Linear equations, coordinate geometry, surface area"></textarea></div>
 
-          <div class="ex-row ex-two">
-            <div><label for="exOpens">Opens</label><input type="datetime-local" id="exOpens"/></div>
-            <div><label for="exCloses">Closes</label><input type="datetime-local" id="exCloses"/></div>
-          </div>
-          <p class="ex-hint">A test cannot be started before it opens or after it closes.
-            Leave either blank to leave that end open.</p>
+          <div class="rq-row"><label for="rqWanted">What you would like tested</label>
+            <textarea id="rqWanted" placeholder="e.g. Mostly coordinate geometry \u2014 they are weakest there"></textarea></div>
 
-          <div class="ex-row ex-two">
-            <div><label for="exAttempts">Attempts</label>
-              <input type="number" id="exAttempts" min="1" max="5" value="1"/></div>
-            <div><label for="exReveal">After submitting</label>
-              <select id="exReveal">
-                <option value="1" selected>Show the student their score and the answers</option>
-                <option value="0">Show nothing until you release it</option>
-              </select></div>
-          </div>
-          <p class="ex-hint">Answers are only ever shown once a student has used their last
-            attempt &mdash; otherwise the key could be opened on a first try and used on a second.</p>
+          <div class="rq-row"><label for="rqNote">Anything else</label>
+            <input type="text" id="rqNote" placeholder="Optional" autocomplete="off"/></div>
 
-          <div class="ex-row">
-            <label>Who sits it</label>
-            <div class="ex-schools" id="exSchools"></div>
-            <p class="ex-hint">Only the grade you chose, in the schools you tick.</p>
-          </div>
-
-          <button class="ad-mini" onclick="exSave()" id="exSaveBtn">Generate paper and set exam</button>
-          <p class="ex-msg" id="exMsg"></p>
+          <button class="ad-mini" id="rqSendBtn" onclick="rqSend()">Send request</button>
+          <p class="rq-msg" id="rqMsg"></p>
         </div>
 
         <div>
-          <div class="ex-list" id="exList"></div>
+          <div class="rq-list" id="rqList"></div>
         </div>
       </div>
     </section>
@@ -998,6 +1166,17 @@ function shapeForRole() {
   document.getElementById('adExams').style.display = '';
   var author = document.getElementById('exAuthor');
   if (author) author.style.display = owner ? '' : 'none';
+  /* Both kinds of admin get the Requests section, but for opposite reasons:
+     a school admin to write in, the owner to answer. Neither sees the other's
+     half, so the compose card is removed for the owner rather than disabled. */
+  document.getElementById('adRequests').style.display = '';
+  var rqc = document.getElementById('rqCompose');
+  if (rqc) rqc.style.display = owner ? 'none' : '';
+  var rqLede = document.getElementById('rqLede');
+  if (rqLede) rqLede.textContent = owner
+    ? 'What schools have asked to be tested on. Setting a paper from one fills the exam form in for you.'
+    : 'Tell Seek-O-Sphere what your class has covered and what they need testing on.';
+
   var lede = document.getElementById('exLede');
   if (lede) lede.textContent = owner
     ? 'A paper is written once and sat by every student in the grade and schools you pick.'
@@ -1039,6 +1218,7 @@ function loadAdminData() {
        their Exams section would sit on "Loading..." for ever. */
     try { exLoad(); } catch(e){}
   }
+  try { rqInit(); rqLoad(); } catch(e){}
 
   query.get().then(function(snap) {
     allUsers = snap.docs.map(function(d) {
@@ -1338,6 +1518,7 @@ function loadSchools() {
     paintSchools();
     paintSchoolFilter();
     try { exInit(); exPaintSchools(); exLoad(); } catch(e){}
+    try { rqInit(); rqLoad(); } catch(e){}
   }).catch(function(err) {
     console.error('Could not load schools:', err && err.code, err && err.message);
     document.getElementById('adSchoolCards').innerHTML =
@@ -1424,20 +1605,53 @@ function paintSchools() {
 ================================================================== */
 
 /* What each grade band actually sits, monthly. */
+/* The three bands a test can be set for. Each one fixes its own paper length
+   and which cadences it may be set at, so neither is a free-text field an
+   admin has to remember the right answer for.
+
+   Classes 1-8 sit one paper a month on what they have covered, so weekly is
+   not offered to them at all rather than offered and then discouraged. */
+/* Which model writes a band's paper, and whether it is worth waiting for.
+   The expensive model is pointed only at 11-12, where the reasoning actually
+   has to hold up; the lower bands are recall-shaped and a cheap model handles
+   them. That split is the whole reason the bill is tens of dollars a month
+   rather than hundreds.
+
+   These are defaults, not locks -- the form lets the owner override either per
+   paper, because a model that turns out to be weak at one subject should not
+   need a code change to route around. */
 var EX_BANDS = [
-  { from: 1,  to: 8,  subjects: ['maths', 'english', 'science'] },
-  { from: 9,  to: 10, subjects: ['maths', 'english', 'science'] },
-  { from: 11, to: 12, subjects: ['physics', 'chemistry', 'maths', 'english', 'biology'] }
+  { from: 1,  to: 8,  subjects: ['maths', 'english', 'science'],
+    count: 25, cadences: ['monthly'], model: 'cheap', batch: false },
+  { from: 9,  to: 10, subjects: ['maths', 'english', 'science'],
+    count: 25, cadences: ['weekly', 'monthly'], model: 'cheap', batch: false },
+  { from: 11, to: 12, subjects: ['physics', 'chemistry', 'maths', 'english', 'biology'],
+    count: 25, cadences: ['weekly', 'monthly'], model: 'strong', batch: true }
 ];
+
+/* Two names, not two model ids. The admin panel is a static page on GitHub
+   Pages, so it holds no keys and talks to no model vendor -- it sends a tier
+   to your own endpoint and the endpoint decides what that means. Changing
+   vendor later is then a change at the endpoint, not a redeploy of the site.
+
+   The per-paper prices are the ones from the costing: a 25-question paper on
+   the strong model is 1.5 cents run now, 0.75 cents run overnight in a batch.
+   The cheap tier was not priced per paper, so nothing is claimed for it. */
+var EX_MODELS = {
+  cheap:  { label: 'Cheap model (recall-style questions)', perPaper: null,      batchable: false },
+  strong: { label: 'Strong model (reasoning, board grades)', perPaper: 0.015,   batchable: true  }
+};
+var EX_CADENCE_LABEL = { weekly: 'Every week', monthly: 'Every month' };
 var EX_LABELS = { maths:'Math', english:'English', science:'Science',
                   physics:'Physics', chemistry:'Chemistry', biology:'Biology' };
 
-function exSubjectsFor(grade){
+function exBandFor(grade){
   var g = parseInt(grade, 10) || 1;
   for (var i = 0; i < EX_BANDS.length; i++)
-    if (g >= EX_BANDS[i].from && g <= EX_BANDS[i].to) return EX_BANDS[i].subjects;
-  return EX_BANDS[0].subjects;
+    if (g >= EX_BANDS[i].from && g <= EX_BANDS[i].to) return EX_BANDS[i];
+  return EX_BANDS[0];
 }
+function exSubjectsFor(grade){ return exBandFor(grade).subjects; }
 
 function exMsg(text, ok){
   var el = document.getElementById('exMsg');
@@ -1460,11 +1674,102 @@ function exInit(){
 function exGradeChanged(){
   var sel = document.getElementById('exSubject');
   if (!sel) return;
+  var band = exBandFor(document.getElementById('exGrade').value);
+
   var keep = sel.value;
-  var subs = exSubjectsFor(document.getElementById('exGrade').value);
-  sel.innerHTML = subs.map(function(s){
+  sel.innerHTML = band.subjects.map(function(s){
     return '<option value="' + s + '">' + (EX_LABELS[s] || s) + '</option>'; }).join('');
-  if (keep && subs.indexOf(keep) !== -1) sel.value = keep;
+  if (keep && band.subjects.indexOf(keep) !== -1) sel.value = keep;
+
+  /* The cadence list belongs to the band too: Classes 1-8 are monthly, so the
+     control shows one option rather than letting a weekly test be set and
+     then quietly behaving like a monthly one. */
+  var cad = document.getElementById('exCadence');
+  var keepC = cad.value;
+  cad.innerHTML = band.cadences.map(function(c){
+    return '<option value="' + c + '">' + EX_CADENCE_LABEL[c] + '</option>'; }).join('');
+  if (keepC && band.cadences.indexOf(keepC) !== -1) cad.value = keepC;
+
+  /* The model list is the same for every band; what changes is which one is
+     selected by default. Offering both everywhere means a paper can be moved
+     to the strong model for one hard topic without touching the bands. */
+  var mdl = document.getElementById('exModel');
+  if (mdl && !mdl.options.length) {
+    mdl.innerHTML = Object.keys(EX_MODELS).map(function(k){
+      return '<option value="' + k + '">' + EX_MODELS[k].label + '</option>'; }).join('');
+  }
+  if (mdl) mdl.value = band.model;
+  var bt = document.getElementById('exBatch');
+  if (bt) bt.value = band.batch ? '1' : '0';
+  exModelChanged();
+  exSummary();
+
+  var hint = document.getElementById('exCountHint');
+  if (hint) hint.textContent = 'Every paper is ' + band.count + ' questions. ' +
+    (band.cadences.length === 1
+      ? 'Classes ' + band.from + '-' + band.to + ' sit one a month.'
+      : '0 minutes means no time limit.');
+
+  exCadenceChanged();
+}
+
+/* Two dates from one choice. Monthly runs the calendar month, weekly runs
+   Monday to Sunday -- both from the next one that has not started yet, so
+   setting a test on a Thursday does not open it into a week already half
+   gone. Either field can still be edited afterwards. */
+/* What this paper will cost, and whether the batch option means anything for
+   the model chosen. Only the strong model has a published per-paper price, so
+   the cheap tier says so rather than inventing a number. */
+function exModelChanged(){
+  var mdl = document.getElementById('exModel'), bt = document.getElementById('exBatch');
+  var hint = document.getElementById('exCostHint');
+  if (!mdl || !bt || !hint) return;
+
+  var m = EX_MODELS[mdl.value] || EX_MODELS.cheap;
+  var band = exBandFor(document.getElementById('exGrade').value);
+  var batched = bt.value === '1';
+
+  bt.disabled = !m.batchable;
+  if (!m.batchable) bt.value = '0';
+
+  if (m.perPaper == null) {
+    hint.textContent = 'The cheap tier has no published per-paper price here. ' +
+      'Overnight batching only applies to the strong model.';
+    return;
+  }
+  var each = batched ? m.perPaper / 2 : m.perPaper;
+  hint.textContent = 'About $' + each.toFixed(4) + ' per student for a ' + band.count +
+    '-question paper' + (batched
+      ? ' \u2014 half price because it is generated overnight rather than on demand.'
+      : '. Generating overnight halves it.');
+}
+
+function exCadenceChanged(){
+  var cad = document.getElementById('exCadence');
+  var o = document.getElementById('exOpens'), c = document.getElementById('exCloses');
+  if (!cad || !o || !c) return;
+
+  var now = new Date(), from, to;
+  if (cad.value === 'weekly') {
+    from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var ahead = (8 - from.getDay()) % 7 || 7;          // the next Monday
+    from.setDate(from.getDate() + ahead);
+    to = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 6, 23, 59);
+  } else {
+    from = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    to = new Date(from.getFullYear(), from.getMonth() + 1, 0, 23, 59);
+  }
+  o.value = exLocalStamp(from);
+  c.value = exLocalStamp(to);
+  exSummary();
+}
+
+/* datetime-local wants local wall-clock text. toISOString would convert to
+   UTC first and hand back a date that is one day out for half the world. */
+function exLocalStamp(d){
+  var p = function(n){ return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) +
+         'T' + p(d.getHours()) + ':' + p(d.getMinutes());
 }
 
 function exPaintSchools(){
@@ -1476,8 +1781,10 @@ function exPaintSchools(){
     SCHOOLS.map(function(s){
       return '<label><input type="checkbox" class="ex-school" value="' + adEsc(s.id) + '"/> ' +
              adEsc(s.name) + '</label>'; }).join('');
+  exSummary();
 }
 function exToggleAll(box){
+  setTimeout(exSummary, 0);
   [].forEach.call(document.querySelectorAll('.ex-school'), function(c){
     c.checked = false; c.disabled = box.checked; });
 }
@@ -1488,7 +1795,7 @@ function exToggleAll(box){
    Duplicates are refused rather than padded over: a twenty-question paper with
    the same question three times is worse than an eighteen-question one, and
    the caller is told the real number either way. */
-async function exBuildPaper(subject, grade, count){
+async function exBuildPaper(subject, grade, count, topics, model, batch){
   if (typeof provideLabQuestion !== 'function') return [];
   var out = [], seen = {}, tries = 0;
   while (out.length < count && tries < count * 6) {
@@ -1496,7 +1803,8 @@ async function exBuildPaper(subject, grade, count){
     var q = null;
     try {
       q = await provideLabQuestion({
-        subject: subject, curriculum: 'cbse', age: String(grade), topic: '',
+        subject: subject, curriculum: 'cbse', age: String(grade), topic: topics || '',
+        model: model || 'cheap', batch: !!batch,
         recent: out.map(function(x){ return x.question; })
       });
     } catch (e) { break; }
@@ -1507,12 +1815,197 @@ async function exBuildPaper(subject, grade, count){
   return out;
 }
 
-function exSave(){
+/* ══ UPLOADING A PAPER ══════════════════════════════════════════════
+   The one route that needs no endpoint and no model. It is also the fallback
+   for when generation fails, so it refuses on anything it cannot be sure
+   about rather than saving a half-usable paper: a question with no answer, an
+   answer that matches none of its options, or the wrong number of questions
+   for the band. A paper that is wrong in Firestore has already been sat by
+   the time anybody notices. */
+function exToggleUpload(){
+  var box = document.getElementById('exUpload');
+  var btn = document.getElementById('exUpBtn');
+  if (!box) return;
+  box.hidden = !box.hidden;
+  if (btn) btn.textContent = box.hidden ? 'Upload a paper instead' : 'Hide the upload box';
+}
+
+function exUpMsg(text, ok){
+  var el = document.getElementById('exUpMsg');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'ex-msg ' + (ok ? 'ok' : 'err');
+}
+
+function exUpPick(input){
+  var f = input.files && input.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    document.getElementById('exUpText').value = String(r.result || '');
+    exUpMsg('Loaded ' + f.name + '. Check it over, then set the exam.', true);
+  };
+  r.onerror = function(){ exUpMsg('Could not read that file.', false); };
+  r.readAsText(f);
+}
+
+/* CSV, minimally but correctly: quoted fields may contain commas and escaped
+   quotes, which a split(',') would tear apart silently. */
+function exUpCsvRows(text){
+  var rows = [], row = [], cur = '', q = false;
+  for (var i = 0; i < text.length; i++) {
+    var c = text[i];
+    if (q) {
+      if (c === '"' && text[i + 1] === '"') { cur += '"'; i++; }
+      else if (c === '"') q = false;
+      else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { row.push(cur); cur = ''; }
+    else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+    else if (c !== '\r') cur += c;
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(function(r){ return r.some(function(v){ return String(v).trim() !== ''; }); });
+}
+
+function exUpParse(text){
+  text = String(text || '').trim();
+  if (!text) throw new Error('Nothing to read. Paste the questions or choose a file.');
+
+  var raw;
+  if (text.charAt(0) === '[' || text.charAt(0) === '{') {
+    try { raw = JSON.parse(text); }
+    catch (e) { throw new Error('That is not valid JSON: ' + e.message); }
+    if (raw && !Array.isArray(raw) && Array.isArray(raw.questions)) raw = raw.questions;
+    if (!Array.isArray(raw)) throw new Error('The JSON needs to be an array of questions.');
+  } else {
+    var rows = exUpCsvRows(text);
+    if (rows.length < 2) throw new Error('That CSV has no rows under its header.');
+    var head = rows[0].map(function(s){ return String(s).trim().toLowerCase(); });
+    var at = function(n){ return head.indexOf(n); };
+    var qi = at('question'), ai = at('answer');
+    if (qi === -1 || ai === -1) throw new Error('The CSV needs at least a question and an answer column.');
+    var opts = ['option1','option2','option3','option4'].map(at);
+    raw = rows.slice(1).map(function(r){
+      return {
+        question: r[qi], answer: r[ai],
+        options: opts.filter(function(i){ return i !== -1; })
+                     .map(function(i){ return r[i]; })
+                     .filter(function(v){ return String(v || '').trim() !== ''; }),
+        hint: at('hint') !== -1 ? r[at('hint')] : '',
+        explanation: at('explanation') !== -1 ? r[at('explanation')] : ''
+      };
+    });
+  }
+
+  return raw.map(function(q, i){
+    var n = i + 1;
+    var question = String((q && q.question) || '').trim();
+    var answer   = String((q && q.answer) || '').trim();
+    var options  = (q && q.options || []).map(function(o){ return String(o).trim(); })
+                                         .filter(function(o){ return o !== ''; });
+    if (!question) throw new Error('Question ' + n + ' has no question text.');
+    if (!answer)   throw new Error('Question ' + n + ' has no answer.');
+    /* A multiple-choice question whose answer is not among its options can
+       never be marked right, so it is refused here rather than at marking
+       time, when the student has already sat it. */
+    if (options.length && options.map(function(o){ return o.toLowerCase(); })
+                                 .indexOf(answer.toLowerCase()) === -1)
+      throw new Error('Question ' + n + ': the answer is not one of its options.');
+    return { question: question, options: options, answer: answer,
+             hint: String((q && q.hint) || '').trim(),
+             explanation: String((q && q.explanation) || '').trim() };
+  });
+}
+
+function exUpSave(){
+  var cfg;
+  try { cfg = exReadForm(); } catch (e) { exUpMsg(e.message, false); return; }
+
+  var paper;
+  try { paper = exUpParse(document.getElementById('exUpText').value); }
+  catch (e) { exUpMsg(e.message, false); return; }
+
+  var band = exBandFor(cfg.grade);
+  if (paper.length !== band.count) {
+    exUpMsg('Grades ' + band.from + '-' + band.to + ' sit ' + band.count +
+            '-question papers; this file has ' + paper.length + '.', false);
+    return;
+  }
+
+  exUpMsg('Setting the exam\u2026', true);
+  cfg.count = paper.length;
+  cfg.model = 'uploaded';
+  cfg.batch = false;
+  exFinishSave(paper, cfg);
+}
+
+/* Everything the form says, validated once. Both routes into an exam -- the
+   generated one and the uploaded one -- go through here, so a rule like "a
+   paper cannot close before it opens" cannot hold on one and not the other.
+   Throws rather than returning null, so no caller can forget to check. */
+/* One line saying what is about to be set, next to the button that sets it.
+   With the form spread over five cards, the alternative is reading all five
+   back before pressing Generate -- and the two fields most worth re-reading,
+   the dates and the schools, are the two the form fills in on your behalf.
+
+   Driven by one delegated listener rather than a handler per control, so a
+   field added later is included without anybody remembering to wire it. */
+function exSummary(){
+  var el = document.getElementById('exSum');
+  if (!el) return;
+  var get = function(id){ var n = document.getElementById(id); return n ? n.value : ''; };
+
+  var grade = get('exGrade'), subject = get('exSubject');
+  var band = exBandFor(grade);
+  var subjName = EX_LABELS[subject] || subject || '\u2014';
+  var mins = parseInt(get('exMinutes'), 10) || 0;
+
+  var when = function(v){
+    if (!v) return null;
+    var d = new Date(v);
+    return isNaN(d.getTime()) ? null
+      : d.toLocaleDateString([], { day:'numeric', month:'short' });
+  };
+  var o = when(get('exOpens')), c = when(get('exCloses'));
+
+  /* Whoever is actually going to sit it, named. "3 schools" would be the one
+     part of this line you still had to scroll up to check. */
+  var everyone = (document.getElementById('exAllSchools') || {}).checked;
+  var picked = [].map.call(document.querySelectorAll('.ex-school:checked'), function(cb){
+    var lab = cb.parentNode ? cb.parentNode.textContent.trim() : '';
+    return lab || cb.value;
+  });
+  var who = everyone ? 'Every school'
+          : (picked.length ? picked.join(', ') : 'nobody yet');
+
+  var bits = [
+    '<b>Grade ' + adEsc(grade) + ' ' + adEsc(subjName) + '</b>',
+    band.count + ' questions',
+    mins ? mins + ' minutes' : 'no time limit',
+    (o && c) ? (o + ' \u2013 ' + c) : (o ? 'from ' + o : (c ? 'until ' + c : 'no dates')),
+    adEsc(who)
+  ];
+  el.innerHTML = bits.join(' · ');
+}
+
+/* input covers typing, change covers selects, checkboxes and the date
+   pickers; both are caught on the way up so one listener serves the lot. */
+(function(){
+  var host = document.getElementById('exAuthor');
+  if (!host) return;
+  host.addEventListener('input', exSummary);
+  host.addEventListener('change', exSummary);
+})();
+
+function exReadForm(){
   var title   = (document.getElementById('exTitle').value || '').trim();
   var grade   = document.getElementById('exGrade').value;
   var subject = document.getElementById('exSubject').value;
-  var count   = Math.min(35, Math.max(5, parseInt(document.getElementById('exCount').value, 10) || 20));
-  var minutes = Math.max(0, parseInt(document.getElementById('exMinutes').value, 10) || 0);
+  /* The paper length belongs to the band, not to whoever is filling the form
+     in: every test is the same length so two students' marks mean the same
+     thing, and there is no field left to get it wrong in. */
+  var band    = exBandFor(grade);
   /* datetime-local hands back local wall-clock text with no zone. Parsing it
      to epoch here means every later comparison is a number against Date.now()
      -- string dates would have compared "2026-09-01T09:00" lexically, which
@@ -1520,28 +2013,42 @@ function exSave(){
      zone or a seconds field appears. */
   var opens   = exWhen(document.getElementById('exOpens').value);
   var closes  = exWhen(document.getElementById('exCloses').value);
-  var attempts = Math.min(5, Math.max(1, parseInt(document.getElementById('exAttempts').value, 10) || 1));
-  var reveal   = document.getElementById('exReveal').value === '1';
 
   var everyone = (document.getElementById('exAllSchools') || {}).checked;
   var picked = [].map.call(document.querySelectorAll('.ex-school:checked'), function(c){ return c.value; });
 
-  if (!title) { exMsg('Give the exam a title.', false); return; }
-  if (!everyone && !picked.length) { exMsg('Pick at least one school, or tick every school.', false); return; }
-  if (opens && closes && closes < opens) { exMsg('It cannot close before it opens.', false); return; }
+  if (!title) throw new Error('Give the exam a title.');
+  if (!everyone && !picked.length) throw new Error('Pick at least one school, or tick every school.');
+  if (opens && closes && closes < opens) throw new Error('It cannot close before it opens.');
+
+  return {
+    title: title, grade: grade, subject: subject, count: band.count,
+    cadence: document.getElementById('exCadence').value,
+    topics: (document.getElementById('exTopics').value || '').trim(),
+    model: document.getElementById('exModel').value,
+    batch: document.getElementById('exBatch').value === '1',
+    minutes: Math.max(0, parseInt(document.getElementById('exMinutes').value, 10) || 0),
+    opens: opens, closes: closes,
+    attempts: Math.min(5, Math.max(1, parseInt(document.getElementById('exAttempts').value, 10) || 1)),
+    reveal: document.getElementById('exReveal').value === '1',
+    everyone: everyone, picked: picked
+  };
+}
+
+function exSave(){
+  var cfg;
+  try { cfg = exReadForm(); } catch (e) { exMsg(e.message, false); return; }
 
   exMsg('Generating the paper...', true);
   var btnEarly = document.getElementById('exSaveBtn');
   if (btnEarly) btnEarly.disabled = true;
-  exBuildPaper(subject, grade, count).then(function(paper){
-    exFinishSave(paper, { title:title, grade:grade, subject:subject, count:count,
-                          minutes:minutes, opens:opens, closes:closes,
-                          attempts:attempts, reveal:reveal,
-                          everyone:everyone, picked:picked });
-  }).catch(function(e){
-    if (btnEarly) btnEarly.disabled = false;
-    exMsg('Could not generate the paper: ' + ((e && e.message) || 'unknown error'), false);
-  });
+
+  exBuildPaper(cfg.subject, cfg.grade, cfg.count, cfg.topics, cfg.model, cfg.batch)
+    .then(function(paper){ exFinishSave(paper, cfg); })
+    .catch(function(e){
+      if (btnEarly) btnEarly.disabled = false;
+      exMsg('Could not generate the paper: ' + ((e && e.message) || 'unknown error'), false);
+    });
 }
 
 /* "" from an empty datetime-local, a real value otherwise. Returns null or
@@ -1602,6 +2109,12 @@ function exFinishSave(paper, cfg){
     opensAt: opens, closesAt: closes,
     attempts: cfg.attempts || 1,
     revealAnswers: cfg.reveal !== false,
+    cadence: cfg.cadence || 'monthly',
+    topics: cfg.topics || '',
+    /* Kept on the paper so a bad batch can be traced back to the model that
+       wrote it, rather than guessed at from the date. */
+    model: cfg.model || 'cheap',
+    batch: !!cfg.batch,
     allSchools: !!everyone, schoolIds: everyone ? [] : picked,
     audience: audience,
     createdAt: Date.now(),
@@ -1614,6 +2127,7 @@ function exFinishSave(paper, cfg){
   }).then(function(){
     if (btn) btn.disabled = false;
     document.getElementById('exTitle').value = '';
+    document.getElementById('exTopics').value = '';
     exMsg('Exam set - ' + paper.length + ' questions, Grade ' + grade + ' ' +
           (EX_LABELS[subject] || subject) + '.' +
           (paper.length < count ? ' Only ' + paper.length + ' different questions were available.' : ''), true);
@@ -1645,6 +2159,7 @@ function exLoad(){
     host.innerHTML = rows.map(function(x){
       var w = exWindow(x);
       var att = (x.attempts || 1) > 1 ? (x.attempts + ' attempts') : 'one attempt';
+      var cad = EX_CADENCE_LABEL[x.cadence] || 'Every month';
       /* Withdrawing is the owner's call. A school admin can read the paper's
          details and its results and nothing else -- there is no control here
          that would let one school's admin touch a paper another school sits. */
@@ -1655,7 +2170,7 @@ function exLoad(){
         '<span class="ex-pill">Grade ' + adEsc(x.grade) + ' · ' + 
           adEsc(EX_LABELS[x.subject] || x.subject) + '</span>' +
         '<span class="who">' + adEsc(exWho(x)) + '</span></div>' +
-        '<p class="meta">' + (x.count || 0) + ' questions' + ' · ' + 
+        '<p class="meta">' + (x.count || 0) + ' questions' + ' · ' + adEsc(cad) + ' · ' +
           (x.minutes ? x.minutes + ' minutes' : 'no time limit') + ' · ' +  att + ' · ' + 
           adEsc(w.text) + ' · ' + 
           (x.revealAnswers !== false ? 'answers shown after' : 'answers held back') + '</p>' +
@@ -1725,6 +2240,189 @@ function exResults(examId){
 function exSchoolName(id){
   var s = SCHOOLS.filter(function(y){ return y.id === id; })[0];
   return s ? s.name : (id || 'no school');
+}
+
+/* ══ REQUESTS FROM SCHOOLS ══════════════════════════════════════════
+   A school admin writes in about what their class has covered and what they
+   want tested; the owner reads every school's and answers by setting a paper.
+
+   The isolation is the query, not a filter applied afterwards: a school admin
+   asks for schoolId == their own, which is the same condition the rules
+   enforce, so a wider read is refused by Firestore rather than quietly
+   returning somebody else's. The owner reads the collection unconstrained,
+   which only they are allowed to do.
+
+   Status is the owner's to set. A school admin cannot mark their own request
+   done -- that would make the inbox a record of what schools think happened
+   rather than of what did. */
+var RQ_STATUS = { open:'Waiting', noted:'Noted', done:'Test set' };
+var RQ_ALL = [];
+
+function rqMsg(text, ok){
+  var el = document.getElementById('rqMsg');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'rq-msg ' + (ok ? 'ok' : 'err');
+}
+
+function rqInit(){
+  var g = document.getElementById('rqGrade');
+  if (!g || g.options.length) return;
+  var o = '';
+  for (var i = 1; i <= 12; i++) o += '<option value="' + i + '">Grade ' + i + '</option>';
+  g.innerHTML = o;
+  rqGradeChanged();
+}
+
+/* The same bands the exams use, so a school cannot ask for a Grade 4
+   Chemistry paper that could never be set. */
+function rqGradeChanged(){
+  var sel = document.getElementById('rqSubject');
+  if (!sel) return;
+  var keep = sel.value;
+  var subs = exSubjectsFor(document.getElementById('rqGrade').value);
+  sel.innerHTML = subs.map(function(s){
+    return '<option value="' + s + '">' + (EX_LABELS[s] || s) + '</option>'; }).join('');
+  if (keep && subs.indexOf(keep) !== -1) sel.value = keep;
+}
+
+function rqSend(){
+  var grade   = document.getElementById('rqGrade').value;
+  var subject = document.getElementById('rqSubject').value;
+  var covered = (document.getElementById('rqCovered').value || '').trim();
+  var wanted  = (document.getElementById('rqWanted').value || '').trim();
+  var note    = (document.getElementById('rqNote').value || '').trim();
+
+  if (!covered && !wanted) {
+    rqMsg('Say what the class has covered, or what you would like tested.', false); return;
+  }
+  if (!MY_SCHOOL) { rqMsg('Only a school admin can send a request.', false); return; }
+
+  var btn = document.getElementById('rqSendBtn');
+  if (btn) btn.disabled = true;
+  rqMsg('Sending\u2026', true);
+
+  db.collection('examRequests').add({
+    schoolId: MY_SCHOOL.id,
+    schoolName: MY_SCHOOL.name || 'a school',
+    grade: String(grade), subject: subject,
+    covered: covered, wanted: wanted, note: note,
+    status: 'open',
+    createdAt: Date.now(),
+    createdBy: (firebase.auth().currentUser || {}).uid || null
+  }).then(function(){
+    if (btn) btn.disabled = false;
+    document.getElementById('rqCovered').value = '';
+    document.getElementById('rqWanted').value = '';
+    document.getElementById('rqNote').value = '';
+    rqMsg('Sent. It will show in the list once Seek-O-Sphere has seen it.', true);
+    rqLoad();
+  }).catch(function(e){
+    if (btn) btn.disabled = false;
+    rqMsg('Could not send it: ' + ((e && e.message) || 'unknown error'), false);
+  });
+}
+
+function rqQuery(){
+  if (amOwner()) return db.collection('examRequests');
+  return db.collection('examRequests').where('schoolId', '==', (MY_SCHOOL && MY_SCHOOL.id) || '');
+}
+
+function rqLoad(){
+  var host = document.getElementById('rqList');
+  if (!host) return;
+  host.innerHTML = '<p class="rq-empty">Loading\u2026</p>';
+  rqQuery().get().then(function(snap){
+    RQ_ALL = [];
+    snap.forEach(function(d){ RQ_ALL.push(Object.assign({ id: d.id }, d.data())); });
+    /* Waiting first, then by age: the owner should land on what has not been
+       answered rather than on whatever happens to be newest. */
+    var rank = { open:0, noted:1, done:2 };
+    RQ_ALL.sort(function(a, b){
+      return (rank[a.status] - rank[b.status]) || ((b.createdAt || 0) - (a.createdAt || 0));
+    });
+    rqPaint();
+  }).catch(function(e){
+    host.innerHTML = '<p class="rq-empty">Could not load requests: ' +
+      adEsc((e && e.message) || 'unknown') + '</p>';
+  });
+}
+
+function rqWhen(ms){
+  if (!ms) return '';
+  var d = new Date(ms);
+  return d.toLocaleDateString([], { day:'numeric', month:'short' });
+}
+
+function rqPaint(){
+  var host = document.getElementById('rqList');
+  if (!host) return;
+  if (!RQ_ALL.length) {
+    host.innerHTML = '<p class="rq-empty">' + (amOwner()
+      ? 'No school has written in yet.'
+      : 'You have not sent a request yet.') + '</p>';
+    return;
+  }
+  host.innerHTML = RQ_ALL.map(function(r){
+    var st = r.status || 'open';
+    /* Only the owner acts on a request, so only the owner is given anything
+       to act with. A school admin reads their own and waits. */
+    var acts = '';
+    if (amOwner()) {
+      acts = '<div class="rq-acts">' +
+        '<button class="ad-mini" onclick="rqToExam(\'' + adEsc(r.id) + '\')">Set a test from this</button>' +
+        (st !== 'noted' ? '<button class="ad-mini" onclick="rqStatus(\'' + adEsc(r.id) + '\',\'noted\')">Mark noted</button>' : '') +
+        (st !== 'done'  ? '<button class="ad-mini" onclick="rqStatus(\'' + adEsc(r.id) + '\',\'done\')">Mark done</button>' : '') +
+        '</div>';
+    }
+    return '<div class="rq-item">' +
+      '<div class="rq-top">' +
+        (amOwner() ? '<b>' + adEsc(r.schoolName || 'A school') + '</b>' : '') +
+        '<span class="ex-pill">Grade ' + adEsc(r.grade) + ' \u00b7 ' +
+          adEsc(EX_LABELS[r.subject] || r.subject) + '</span>' +
+        '<span class="rq-pill ' + adEsc(st) + '">' + adEsc(RQ_STATUS[st] || st) + '</span>' +
+        '<span class="rq-when">' + adEsc(rqWhen(r.createdAt)) + '</span>' +
+      '</div>' +
+      (r.covered ? '<p class="rq-field"><b>Covered:</b> ' + adEsc(r.covered) + '</p>' : '') +
+      (r.wanted  ? '<p class="rq-field"><b>Wants tested:</b> ' + adEsc(r.wanted) + '</p>' : '') +
+      (r.note    ? '<p class="rq-field"><b>Note:</b> ' + adEsc(r.note) + '</p>' : '') +
+      acts +
+    '</div>';
+  }).join('');
+}
+
+function rqStatus(id, status){
+  db.collection('examRequests').doc(id).update({ status: status, handledAt: Date.now() })
+    .then(rqLoad)
+    .catch(function(e){ alert('Could not update it: ' + ((e && e.message) || 'unknown error')); });
+}
+
+/* Carry the request into the exam form. The topics the school asked for go
+   into the field that actually reaches question generation, so the paper is
+   about what they asked for rather than about the subject in general. */
+function rqToExam(id){
+  var r = RQ_ALL.filter(function(x){ return x.id === id; })[0];
+  if (!r) return;
+
+  document.getElementById('exGrade').value = String(r.grade);
+  exGradeChanged();
+  var subj = document.getElementById('exSubject');
+  if ([].some.call(subj.options, function(o){ return o.value === r.subject; })) subj.value = r.subject;
+
+  document.getElementById('exTopics').value = r.wanted || r.covered || '';
+  document.getElementById('exTitle').value =
+    (EX_LABELS[r.subject] || r.subject) + ' \u2014 Grade ' + r.grade;
+
+  /* Addressed to the school that asked, not to everybody. */
+  var all = document.getElementById('exAllSchools');
+  if (all && all.checked) { all.checked = false; exToggleAll(all); }
+  [].forEach.call(document.querySelectorAll('.ex-school'), function(c){
+    c.checked = (c.value === r.schoolId);
+  });
+
+  var card = document.getElementById('exAuthor');
+  if (card && card.scrollIntoView) card.scrollIntoView({ behavior:'smooth', block:'start' });
+  exMsg('Filled in from ' + (r.schoolName || 'the request') + '. Check it over, then generate.', true);
 }
 
 function exRemove(id){

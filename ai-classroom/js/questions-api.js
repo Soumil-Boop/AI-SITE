@@ -18,7 +18,12 @@
    it and nothing else makes questions.
 
    It is called with:
-     { subject, curriculum, age, topic, recent }
+     { subject, curriculum, age, topic, recent, model, batch }
+   where `model` is a tier -- 'cheap' or 'strong' -- and NOT a vendor model id.
+   The endpoint maps a tier onto whatever it actually calls, so switching
+   vendor or version never touches this site. `batch` asks for the cheaper
+   asynchronous path where the vendor offers one; an endpoint that has no
+   batch mode can ignore it and answer immediately.
    where `recent` is the questions already in this paper, so the API can
    avoid repeating itself, and must resolve to:
      { question, options: [..], answer, hint, explanation }
@@ -39,6 +44,8 @@ async function provideLabQuestion(params) {
       curriculum: params.curriculum,
       grade: params.age,
       topic: params.topic || '',
+      model: params.model || 'cheap',
+      batch: !!params.batch,
       exclude: params.recent || []
     })
   });
