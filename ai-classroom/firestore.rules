@@ -348,6 +348,42 @@ service cloud.firestore {
       allow write: if isOwner();
     }
 
+    // ── Requests from schools ─────────────────────────────────
+    // A school admin writes in about what their class has covered and what
+    // they want tested. The owner reads every school's and answers by setting
+    // a paper.
+    //
+    // Reads are scoped by schoolId, the same field the client constrains its
+    // query on. A school admin asking for anything wider matches documents
+    // this rule refuses, and Firestore rejects the whole query rather than
+    // returning a filtered subset — so there is no phrasing that yields
+    // another school's requests.
+    //
+    // A school admin may only file a request against their own school, and
+    // only as 'open': they cannot post one already marked done, which would
+    // let a school write its own record of what was answered.
+    //
+    // Status is the owner's alone. A school may withdraw a request while it
+    // is still open, so a typo is not permanent, but once the owner has noted
+    // or answered it the request stops being the school's to remove.
+    match /examRequests/{reqId} {
+      allow get, list: if isSignedIn() && (
+        isOwner()
+        || (isSchoolAdmin() && resource.data.get('schoolId', '') == mySchoolId())
+      );
+
+      allow create: if isSignedIn() && isSchoolAdmin()
+        && request.resource.data.get('schoolId', '') == mySchoolId()
+        && request.resource.data.get('status', '') == 'open';
+
+      allow update: if isOwner();
+
+      allow delete: if isOwner()
+        || (isSchoolAdmin()
+            && resource.data.get('schoolId', '') == mySchoolId()
+            && resource.data.get('status', '') == 'open');
+    }
+
     // ── Exam results (per exam → per student) ─────────────────
     // A student writes only their own result. Their school's admin may read
     // the results of their own school and no other, which is what makes a
